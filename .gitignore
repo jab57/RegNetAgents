@@ -1,0 +1,15 @@
+# Python virtual environment
+gremln-env/
+
+# Bytecode and cache
+__pycache__/
+*.py[cod]
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDE/project files
+.vscode/
+*.sublime-project
+*.sublime-workspace
