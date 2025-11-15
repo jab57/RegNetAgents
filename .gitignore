@@ -1,9 +1,15 @@
-# Python virtual environment
-gremln-env/
+# Python virtual environments (common names)
+regnetagents-env/
+env/
+venv/
+.venv/
+ENV/
+VENV/
 
 # Bytecode and cache
 __pycache__/
 *.py[cod]
+cache/
 
 # OS-specific
 .DS_Store
@@ -13,3 +19,22 @@ Thumbs.db
 .vscode/
 *.sublime-project
 *.sublime-workspace
+
+# Environment variables (SENSITIVE - never commit!)
+.env
+
+# GREmLN source (separate repository)
+gremln_source/
+
+# Results and outputs (users generate their own)
+results/*.json
+
+# Temporary files
+*.tmp
+*.log
+.pytest_cache/
+*.pyc
+
+# Git/GitHub specific
+.git/
+.gitattributes

@@ -1,0 +1,8 @@
+ Rank Regulator  PageRank  Out-Degree Centrality  Downstream Targets Validation Status
+    1     WWTR1    0.4734                 0.0200                 293       ✓ Validated
+    2     RBPMS    0.4691                 0.0276                 403             Novel
+    3     PRRX2    0.4544                 0.0064                  93             Novel
+    4      CHD4    0.4434                 0.0166                 243       ✓ Validated
+    5      THRA    0.4077                 0.0055                  81             Novel
+    6      YAP1    0.4021                 0.0142                 207       ✓ Validated
+    7     IKZF2    0.3986                 0.0077                 112             Novel
