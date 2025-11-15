@@ -28,7 +28,7 @@ For experienced users:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/[username]/RegNetAgents.git
+git clone https://github.com/jab57/RegNetAgents.git
 cd RegNetAgents
 
 # 2. Install dependencies
@@ -76,8 +76,8 @@ git lfs install
 ### 1.2 Clone the Repository
 
 ```bash
-# Clone repository (replace [username] with actual GitHub username)
-git clone https://github.com/[username]/RegNetAgents.git
+# Clone repository
+git clone https://github.com/jab57/RegNetAgents.git
 
 # Navigate to directory
 cd RegNetAgents
