@@ -6,9 +6,9 @@
 
 ## ABSTRACT
 
-**RegNetAgents** is a validated LLM-powered multi-agent AI framework that automates gene regulatory network analysis through intelligent workflow orchestration, transforming multi-hour manual processes into second-scale automated analysis. The system deploys four specialized LLM-powered domain agents (cancer biology, drug discovery, clinical relevance, systems biology) using local language model inference (Ollama/llama3.1:8b) to generate scientific insights with rationales, with graceful fallback to rule-based heuristics for reliability. Built on pre-computed regulatory networks derived from 500K+ single-cell RNA-seq profiles from CellxGene Data Portal (processed via ARACNe algorithm), **perturbation analysis** ranks therapeutic targets using network centrality metrics (PageRank, out-degree centrality), analyzing all upstream regulators comprehensively and successfully identifying experimentally validated regulators. **Framework validation** on colorectal cancer biomarkers showed **100% concordance** with published literature across five genes and complete perturbation analysis of 99 regulators. Perturbation analysis successfully identified experimentally validated TP53 regulators (WWTR1, YAP1, CHD4 from Hippo pathway) alongside novel testable hypotheses (RBPMS, PRRX2), demonstrating reliable hypothesis generation for experimental prioritization. Natural language interface via Claude Desktop makes sophisticated gene analysis accessible without programming.
+**RegNetAgents** is a validated LLM-powered multi-agent AI framework that automates gene regulatory network analysis through intelligent workflow orchestration, transforming labor-intensive manual processes into second-scale automated analysis. The system deploys four specialized LLM-powered domain agents (cancer biology, drug discovery, clinical relevance, systems biology) using local language model inference (Ollama/llama3.1:8b) to generate scientific insights with rationales, with graceful fallback to rule-based heuristics for reliability. Built on pre-computed regulatory networks derived from 500K+ single-cell RNA-seq profiles from CellxGene Data Portal (processed via ARACNe algorithm), **perturbation analysis** ranks therapeutic targets using network centrality metrics (PageRank, out-degree centrality), analyzing all upstream regulators comprehensively and successfully identifying experimentally validated regulators. **Framework validation** on colorectal cancer biomarkers showed **100% concordance** with published literature across five genes and complete perturbation analysis of 99 regulators. Perturbation analysis successfully identified experimentally validated TP53 regulators (WWTR1, YAP1, CHD4 from Hippo pathway) alongside novel testable hypotheses (RBPMS, PRRX2), demonstrating reliable hypothesis generation for experimental prioritization. Natural language interface via Claude Desktop makes sophisticated gene analysis accessible without programming.
 
-**KEY INNOVATION**: LLM-Powered Agents with Scientific Rationales • Local Inference (Ollama) • Hours → Seconds (15-62 sec with LLM, <1 sec rule-based) • 4 Parallel Domain Agents • Complete Perturbation Analysis (All Regulators) • Conversational Interface • Graceful Fallback Architecture
+**KEY INNOVATION**: LLM-Powered Agents with Scientific Rationales • Local Inference (Ollama) • Manual → Seconds (15-62 sec with LLM, <1 sec rule-based) • 4 Parallel Domain Agents • Complete Perturbation Analysis (All Regulators) • Conversational Interface • Graceful Fallback Architecture
 
 ---
 
@@ -16,7 +16,7 @@
 
 ### The Current State of Gene Regulatory Analysis
 
-**Traditional Manual Workflow (multiple hours per gene)**:
+**Traditional Manual Workflow (labor-intensive per gene)**:
 - Query network databases (STRING, BioGRID, Cytoscape) - manual web interface
 - Pathway enrichment (Enrichr, DAVID, Reactome) - separate tool, separate query
 - Literature search for cancer/drug/clinical context - manual curation
@@ -41,10 +41,10 @@
 
 | Analysis Task | Traditional Tools | Gene Regulatory Agents | Comparison |
 |---------------|------------------|---------------|---------|
-| **Single gene (rule-based)** | Multiple hours (manual multi-tool workflow) | 0.68 sec | **Hours → instant** |
-| **Single gene (LLM-powered)** | Multiple hours (manual multi-tool workflow) | ~15 sec | **Hours → seconds** (AI-generated rationales) |
-| **Multi-gene (5 genes, LLM)** | Multiple hours (sequential) | ~62 sec | **Hours → seconds** (99 regulators analyzed + AI insights) |
-| **Multi-gene (5 genes, rules)** | Multiple hours (sequential) | 15.49 sec | **Hours → seconds** (99 regulators analyzed) |
+| **Single gene (rule-based)** | Labor-intensive (manual multi-tool workflow) | 0.68 sec | **Manual → instant** |
+| **Single gene (LLM-powered)** | Labor-intensive (manual multi-tool workflow) | ~15 sec | **Manual → seconds** (AI-generated rationales) |
+| **Multi-gene (5 genes, LLM)** | Labor-intensive (sequential) | ~62 sec | **Manual → seconds** (99 regulators analyzed + AI insights) |
+| **Multi-gene (5 genes, rules)** | Labor-intensive (sequential) | 15.49 sec | **Manual → seconds** (99 regulators analyzed) |
 | **Cross-cell comparison** | Repeat workflow per cell type | <0.01 sec | **Instant** |
 | **Domain integration** | Manual synthesis required | LLM-powered parallel agents | **AI-automated** |
 | **Interface** | Multiple web forms + file exports | Natural language | **Conversational** |
@@ -54,7 +54,7 @@
 1. **LLM-Powered Domain Analysis**: 4 specialized agents use local language model inference (Ollama/llama3.1:8b) to generate scientific insights with rationales
 2. **Novel Architecture**: LangGraph + local MCP server integration for bioinformatics workflow orchestration
 3. **Graceful Degradation**: Robust fallback to rule-based heuristics ensures reliability without LLM dependency
-4. **Practical Impact**: Transforms multi-hour manual workflows into seconds (115-480× faster than literature review)
+4. **Practical Impact**: Transforms labor-intensive manual workflows into seconds (orders of magnitude faster than manual review)
 5. **Parallel Multi-Agent System**: Simultaneous execution of 4 LLM-powered domain agents per gene
 6. **Perturbation Analysis**: Network-based simulation prioritizes candidate regulators using standard centrality rankings (PageRank, degree)
 7. **Modular Design**: Separation of workflow engine (LangGraph) from interface (MCP) enables reuse across CLI, API, notebook environments
@@ -67,7 +67,7 @@
 
 ### The Challenge
 - Gene regulatory networks are complex, multi-layered systems requiring multiple database queries
-- Manual analysis across multiple domains (cancer, drug, clinical) requires hours of work per gene
+- Manual analysis across multiple domains (cancer, drug, clinical) requires labor-intensive effort per gene
 - Traditional tools lack integration across biological perspectives (separate tools for networks, pathways, literature)
 - Cross-cell-type analysis requires repeating the entire workflow per cell type
 - No conversational interface for hypothesis-driven exploration
@@ -225,7 +225,7 @@ RegNetAgents is accessed through natural language prompts to Claude Desktop, mak
 
 **System Execution**: Multi-gene parallel analysis across epithelial cells with comprehensive domain analysis (cancer, drug, clinical, systems biology)
 
-**Traditional Manual Workflow** (multiple hours):
+**Traditional Manual Workflow** (labor-intensive):
 1. Literature review → identify candidate pathways
 2. Query pathway databases (Reactome, KEGG) → extract gene lists
 3. **Manual gene selection** from pathway results
@@ -281,7 +281,7 @@ Given the candidate genes, the system automatically:
 - ✓ **KRAS**: FDA-approved companion diagnostic for anti-EGFR therapy in CRC
 - ✓ **CCND1**: Emerging prognostic marker (Bahnassy et al., World J Gastro 2015)
 
-**Outcome**: All 5 candidate biomarkers rapidly characterized, with regulatory patterns aligning with published CRC literature. System accelerates the analysis bottleneck (hours → seconds) for hypothesis generation and experimental prioritization.
+**Outcome**: All 5 candidate biomarkers rapidly characterized, with regulatory patterns aligning with published CRC literature. System accelerates the analysis bottleneck (labor-intensive manual → seconds) for hypothesis generation and experimental prioritization.
 
 ### Case Study 2: Single Gene Deep Dive - TP53 Analysis
 
@@ -453,8 +453,8 @@ Given the candidate genes, the system automatically:
 
 **1. Pre-Computed Network Architecture**
 - ARACNe networks pre-computed from 500K+ single cells (GREmLN team)
-- Network cache loads in <1 second (vs. hours for real-time inference)
-- Enables 115-480× speedup over traditional workflows
+- Network cache loads in <1 second (vs. slow real-time inference)
+- Enables orders of magnitude speedup over traditional workflows
 - Strategic design choice: prioritize query speed over dynamic network updates
 
 **2. Parallel Multi-Agent Execution**

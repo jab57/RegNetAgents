@@ -7,7 +7,7 @@
 ## The Problem
 
 Gene regulatory network analysis currently requires:
-- ⏱️ **Multiple hours** of manual work per gene
+- ⏱️ **Labor-intensive manual effort** per gene
 - 🔀 **Multiple tools**: STRING, BioGRID, Enrichr, DAVID, manual literature curation
 - 📊 **Sequential processing**: Analyzing 5 genes = 5× the time
 - 🧠 **Expert knowledge**: Separate analysis for cancer, drug, clinical, systems biology
@@ -25,7 +25,7 @@ Gene regulatory network analysis currently requires:
 1. **⚡ Fast Analysis**
    - Rule-based mode: **15.49 seconds** for 5 genes (99 regulators analyzed)
    - LLM-powered mode: **~62 seconds** for 5 genes with scientific rationales
-   - 115-480× faster than manual workflows (hours → seconds)
+   - Orders of magnitude faster than manual multi-database workflows
 
 2. **🤖 LLM-Powered Multi-Agent System**
    - 4 specialized domain agents (cancer, drug, clinical, systems biology)
@@ -86,7 +86,7 @@ All candidates ranked by PageRank (primary) and out-degree centrality (secondary
 
 | Feature | Traditional | RegNetAgents |
 |---------|------------|---------------|
-| **Speed** | Hours | Seconds (15-62 sec for 5 genes) |
+| **Speed** | Labor-intensive | Seconds (15-62 sec for 5 genes) |
 | **Integration** | Manual | Automated |
 | **Domains** | Siloed | 4 LLM-powered parallel agents |
 | **Insights** | Manual literature | AI-generated with rationales |
@@ -132,7 +132,7 @@ jbird@birdaisolutions.com
 - Single gene (LLM mode): ~15 seconds
 - Single gene (rule-based): 0.60 seconds
 - Cross-cell (10 types): <0.01 seconds
-- 115-480× faster than manual literature review
+- Orders of magnitude faster than manual multi-database workflows
 
 **Framework Validation**:
 - Regulatory patterns align with published literature
@@ -149,4 +149,4 @@ jbird@birdaisolutions.com
 
 ---
 
-**Transform hours of manual analysis into seconds of automated insights.**
+**Transform labor-intensive manual analysis into seconds of automated insights.**

@@ -346,9 +346,9 @@ def create_poster(sections):
     if 'innovation_table' in sections and len(sections['innovation_table']) > 1:
         add_subheader(innovation_frame, "\nPerformance Impact")
         # Show key comparisons
-        add_bullet(innovation_frame, "Single gene (rule-based): Hours → 0.68 sec", bold=True)
-        add_bullet(innovation_frame, "Single gene (LLM-powered): Hours → 15 sec", bold=True)
-        add_bullet(innovation_frame, "5 genes (LLM-powered): Hours → 62 sec", bold=True)
+        add_bullet(innovation_frame, "Single gene (rule-based): Manual → 0.68 sec", bold=True)
+        add_bullet(innovation_frame, "Single gene (LLM-powered): Manual → 15 sec", bold=True)
+        add_bullet(innovation_frame, "5 genes (LLM-powered): Manual → 62 sec", bold=True)
 
     # Introduction - condensed
     # Innovation ends at 17.5 + 6.0 = 23.5, so start challenge at 24.0

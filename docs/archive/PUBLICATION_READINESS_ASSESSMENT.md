@@ -39,7 +39,7 @@
 **Current Validation**:
 - ✅ 5-gene colorectal cancer biomarker panel (regulatory patterns align with literature)
 - ✅ TP53 perturbation analysis (WWTR1, YAP1, CHD4 confirmed in literature as known regulators)
-- ✅ Performance benchmarking (15-62 seconds vs hours)
+- ✅ Performance benchmarking (15-62 seconds, orders of magnitude faster than manual workflows)
 - ✅ Clear methodology with reproducible results
 
 **Enhancement Opportunities**:

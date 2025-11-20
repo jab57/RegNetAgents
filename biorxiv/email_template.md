@@ -28,7 +28,7 @@ published work on [mention their specific work - e.g., "ARACNe networks"
 or "colorectal cancer biomarkers" or "Hippo pathway regulation"], I
 thought you might find it interesting.
 
-The system automates what traditionally takes hours of manual work across
+The system automates labor-intensive manual workflows across
 multiple databases (STRING, BioGRID, Enrichr, etc.) into subsecond analysis.
 We validated it on colorectal cancer biomarkers with 100% alignment to
 published literature, and the perturbation analysis identified both known
