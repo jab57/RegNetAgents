@@ -268,17 +268,17 @@ To demonstrate framework capabilities and validate analytical outputs against es
 
 #### Multi-Gene Regulatory Network Analysis
 
-The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure 2). TP53 emerged as a hub regulator with 163 downstream targets and 7 upstream regulators, consistent with its central role in tumor suppression and cellular stress response. MYC and CTNNB1 showed terminal target profiles (427 and 310 targets respectively, 25 and 18 regulators), indicating they are highly regulated effector genes that amplify oncogenic signals. CCND1 and KRAS were classified as targets with no identified downstream regulatory relationships in the epithelial network (0 targets), though CCND1 had 42 upstream regulators while KRAS had 7.
+The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure 2). Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets, 7 regulators), MYC (427 targets, 25 regulators), and CTNNB1 (310 targets, 18 regulators), indicating central roles in signal amplification and oncogenic pathway activation. Two genes showed terminal target profiles with no identified downstream regulatory relationships in the epithelial network: CCND1 (0 targets, 42 regulators) and KRAS (0 targets, 7 regulators), indicating they function as end-point effectors in signaling cascades.
 
 **Table 2. Colorectal Cancer Biomarker Panel Analysis**
 
 | Gene | Regulatory Role | Targets | Regulators | Biomarker Type | Top Candidate Regulator (PageRank) |
 |------|----------------|---------|------------|----------------|-----------------------------------|
-| MYC | Terminal Target | 427 | 25 | Diagnostic | ID4 (0.622) |
-| CTNNB1 | Terminal Target | 310 | 18 | Diagnostic | CHD2 (0.530) |
+| MYC | Hub Regulator | 427 | 25 | Diagnostic | ID4 (0.622) |
+| CTNNB1 | Hub Regulator | 310 | 18 | Diagnostic | CHD2 (0.530) |
 | CCND1 | Terminal Target | 0 | 42 | Diagnostic | ZBTB20 (0.600) |
 | TP53 | Hub Regulator | 163 | 7 | Prognostic | **WWTR1 (0.473)** |
-| KRAS | Target | 0 | 7 | Predictive | GPBP1 (0.609) |
+| KRAS | Terminal Target | 0 | 7 | Predictive | GPBP1 (0.609) |
 
 *Perturbation analysis performed for all five genes - all upstream regulators analyzed (25, 18, 42, 7, and 7 regulators respectively, total of 99 regulators). The system simulates inhibiting each upstream regulator and ranks candidate targets using PageRank (primary ranking, best predictor of drug target success per Mora & Donaldson 2021) and out-degree centrality (secondary ranking). Top candidate shown for each gene. These rankings serve as hypotheses for experimental validation. Detailed TP53 perturbation results presented below (Table 3) as representative example with complete rankings of all 7 regulators.*
 
@@ -286,13 +286,13 @@ The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure
 
 RegNetAgents automatically classified biomarker types based on regulatory architecture and domain agent analysis:
 
-**Diagnostic Biomarkers (MYC, CTNNB1, CCND1):** Terminal targets with high regulatory input and pathway enrichment in proliferation/Wnt signaling pathways. These genes serve as indicators of disease presence, with expression levels reflecting oncogenic pathway activation. Literature validation: MYC amplification occurs in 15-20% of CRCs and correlates with poor prognosis (19,20); CTNNB1 mutations/dysregulation occur in 40-80% of CRCs via APC loss and Wnt activation (21,22); CCND1 overexpression occurs in 30-60% of CRCs and drives G1/S transition (23).
+**Diagnostic Biomarkers (MYC, CTNNB1, CCND1):** Genes with high regulatory input and pathway enrichment in proliferation/Wnt signaling pathways. MYC and CTNNB1 function as hub regulators that amplify oncogenic signals, while CCND1 acts as a terminal effector. These genes serve as indicators of disease presence, with expression levels reflecting oncogenic pathway activation. Literature validation: MYC amplification occurs in 15-20% of CRCs and correlates with poor prognosis (19,20); CTNNB1 mutations/dysregulation occur in 40-80% of CRCs via APC loss and Wnt activation (21,22); CCND1 overexpression occurs in 30-60% of CRCs and drives G1/S transition (23).
 
 **Prognostic Biomarker (TP53):** Hub regulator with high network centrality and enrichment in TP53-regulation pathways. TP53 status predicts patient outcomes and treatment response. Literature validation: TP53 mutations occur in 50-70% of CRCs and associate with advanced stage, metastasis, and poor survival (24,25).
 
 **Predictive Biomarker (KRAS):** Target gene with moderate clinical actionability. KRAS status predicts response to specific therapies (anti-EGFR antibodies). Literature validation: KRAS mutations occur in 40-45% of CRCs and confer resistance to cetuximab/panitumumab (26,27).
 
-All five classifications aligned with published CRC biomarker literature, demonstrating 100% concordance with established clinical and research findings. Network analysis revealed distinct regulatory architectures: TP53 functions as a hub regulator (163 targets, 7 regulators), MYC and CTNNB1 show extensive downstream connectivity (427 and 310 targets respectively), while CCND1 and KRAS have minimal downstream regulation but multiple upstream inputs. These connectivity patterns align with known biological roles - TP53 as a central tumor suppressor, MYC and CTNNB1 as oncogenic effectors, and KRAS as a predictive biomarker for therapy selection.
+All five classifications aligned with published CRC biomarker literature, demonstrating 100% concordance with established clinical and research findings. Network analysis revealed distinct regulatory architectures: three hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163, 427, and 310 targets respectively) indicating signal amplification roles, and two terminal targets (CCND1, KRAS) with no downstream regulation but multiple upstream inputs. These connectivity patterns align with known biological roles - TP53, MYC, and CTNNB1 as master regulatory hubs in tumor suppression and oncogenic signaling, while CCND1 and KRAS function as end-point effectors.
 
 ### Perturbation Analysis: TP53 Candidate Regulator Prioritization
 
@@ -388,7 +388,7 @@ RegNetAgents advances the field through four key innovations:
 
 ### Biological Insights from Case Studies
 
-The colorectal cancer biomarker analysis revealed regulatory architecture patterns that align with oncogenic mechanisms. Terminal targets (MYC, CTNNB1, CCND1) represent downstream effectors with high regulatory input, suggesting they integrate multiple oncogenic signals—consistent with their role as diagnostic biomarkers reflecting pathway activation states. In contrast, the hub regulator TP53 controls many downstream targets while receiving input from few regulators, consistent with its role as a master regulatory switch governing cell fate decisions (apoptosis vs. survival). This regulatory architecture difference has therapeutic implications: targeting terminal targets (MYC, CTNNB1) may be more specific but require inhibiting their regulatory inputs, while targeting hub regulators (TP53) offers broader impact but with potential off-target effects due to many downstream targets.
+The colorectal cancer biomarker analysis revealed regulatory architecture patterns that align with oncogenic mechanisms. Three hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163-427 targets) function as signal amplifiers, integrating multiple regulatory inputs and broadcasting oncogenic signals across the network. Two terminal targets (CCND1, KRAS) with no downstream regulation represent end-point effectors that execute cellular responses without further signal propagation. This regulatory architecture difference has therapeutic implications: hub regulators offer high-impact targets that affect many downstream processes but with potential off-target effects, while terminal effectors provide more specific intervention points with limited downstream consequences.
 
 The TP53 perturbation analysis highlights the therapeutic challenge of restoring TP53 function in cancer: with 7 upstream regulators each contributing ~14% of regulatory input, no single regulator dominates. This distributed regulatory architecture suggests combinatorial therapeutic strategies may be necessary, targeting multiple regulators simultaneously to substantially restore TP53 activity. The identification of YAP1/WWTR1 (Hippo pathway effectors) as top regulators is particularly intriguing given recent interest in Hippo pathway-targeted cancer therapies (38,39). Our network-based approach independently identified these regulators, suggesting perturbation analysis can recapitulate and extend experimentally derived therapeutic hypotheses.
 

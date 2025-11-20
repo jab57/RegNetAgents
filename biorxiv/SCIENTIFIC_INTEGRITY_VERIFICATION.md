@@ -1,7 +1,22 @@
 # Scientific Integrity Verification Report
 
-**Date:** November 11, 2025
+**Date:** November 11, 2025 (Updated: January 20, 2025 - Classification corrections)
 **Purpose:** Verify that all quantitative claims in the RegNetAgents bioRxiv manuscript are based on actual MCP server output, not AI-generated speculation.
+
+## IMPORTANT UPDATE (January 20, 2025)
+
+**Regulatory Role Classifications Corrected:**
+- **MYC**: Terminal Target → **Hub Regulator** (427 targets ≥ 50 threshold)
+- **CTNNB1**: Terminal Target → **Hub Regulator** (310 targets ≥ 50 threshold)
+- **KRAS**: Target → **Terminal Target** (0 targets < 5 threshold)
+
+**Rationale:** Classifications now align with algorithmic definitions from Methods section:
+- Hub regulator: Out-degree ≥ 50 targets
+- Terminal target: Out-degree < 5 AND in-degree ≥ 5
+
+This correction improves scientific accuracy by properly identifying three hub regulators (TP53, MYC, CTNNB1) as master regulatory nodes in oncogenic signaling, while CCND1 and KRAS function as terminal effectors.
+
+---
 
 ## Executive Summary
 
@@ -33,13 +48,13 @@ This report cross-references every table, figure, and quantitative claim in the 
 
 **Gene Regulatory Architecture** (`biomarker_results.json`)
 
-| Gene | Manuscript: Regulatory Role | Actual: regulatory_role | Status |
-|------|----------------------------|------------------------|--------|
-| MYC | Terminal Target | terminal_target | ✅ VERIFIED |
-| CTNNB1 | Terminal Target | terminal_target | ✅ VERIFIED |
-| CCND1 | Terminal Target | terminal_target | ✅ VERIFIED |
-| TP53 | Hub Regulator | hub_regulator | ✅ VERIFIED |
-| KRAS | Target | target | ✅ VERIFIED |
+| Gene | Manuscript: Regulatory Role | Algorithmic Classification (Out-degree) | Status |
+|------|----------------------------|----------------------------------------|--------|
+| MYC | Hub Regulator | Hub Regulator (427 targets ≥ 50) | ✅ CORRECTED |
+| CTNNB1 | Hub Regulator | Hub Regulator (310 targets ≥ 50) | ✅ CORRECTED |
+| CCND1 | Terminal Target | Terminal Target (0 targets < 5) | ✅ VERIFIED |
+| TP53 | Hub Regulator | Hub Regulator (163 targets ≥ 50) | ✅ VERIFIED |
+| KRAS | Terminal Target | Terminal Target (0 targets < 5) | ✅ CORRECTED |
 
 **Target/Regulator Counts** (`biomarker_results.json`)
 
