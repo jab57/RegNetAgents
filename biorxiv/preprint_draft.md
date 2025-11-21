@@ -63,12 +63,12 @@ Cell-type-specific regulatory networks were obtained as pre-computed ARACNe netw
 Networks are provided in tab-separated value (TSV) format with the following structure: regulator gene ID (Ensembl), target gene ID (Ensembl), mutual information score (MI), Spearman correlation coefficient (SCC), bootstrap count, and log-transformed p-value. We downloaded pre-computed networks from the GREmLN Quickstart Tutorial (https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart) and converted them to NetworkX-compatible pickle caches for rapid querying. Network statistics: epithelial cells (183,247 edges), CD8 T cells (3,154 edges), monocyte-derived dendritic cells (5,317 edges), erythrocytes (19,398 edges), NKT cells (2,509 edges), CD14 monocytes (2,009 edges), CD16 monocytes (1,236 edges), CD4 T cells (1,371 edges), CD20 B cells (1,128 edges), and NK cells (404 edges). Gene identifiers use Ensembl IDs (GRCh38) with bidirectional mapping to HGNC gene symbols for user queries.
 
 #### Pathway Annotation
-Pathway enrichment analysis uses the Reactome Pathway Database (https://reactome.org), a manually curated, peer-reviewed database of human biological pathways (17). Given a set of genes (query gene plus regulators and targets), we query the Reactome Analysis Service API (https://reactome.org/AnalysisService/) with POST requests containing gene lists. The API returns enriched pathways with statistical validation: p-values from hypergeometric tests and false discovery rate (FDR) corrections via Benjamini-Hochberg method. We report pathways with FDR < 0.05 as significantly enriched.
+Pathway enrichment analysis uses the Reactome Pathway Database (https://reactome.org), a manually curated, peer-reviewed database of human biological pathways (19). Given a set of genes (query gene plus regulators and targets), we query the Reactome Analysis Service API (https://reactome.org/AnalysisService/) with POST requests containing gene lists. The API returns enriched pathways with statistical validation: p-values from hypergeometric tests and false discovery rate (FDR) corrections via Benjamini-Hochberg method. We report pathways with FDR < 0.05 as significantly enriched.
 
 For pathway enrichment, gene lists are constructed from the query gene plus its top 10 upstream regulators and top 10 downstream targets (ranked by network centrality). This focused approach balances biological signal with statistical specificity: limiting to the immediate regulatory neighborhood captures direct mechanistic relationships while preventing pathway over-enrichment that occurs with large gene sets. Reactome enrichment analysis performs optimally with focused gene sets of 10-50 genes (as recommended in Reactome documentation); larger gene lists dilute specificity by matching too many broad pathways, while smaller lists lack statistical power. For hub regulators like MYC (427 targets), using all targets would produce overly general pathway enrichment; the top 10 approach focuses on the strongest regulatory relationships (highest PageRank and degree centrality) most likely to drive functional effects.
 
 #### Gene Annotation
-Gene-level annotations including full names, synonyms, chromosomal locations, and functional descriptions are retrieved from the MyGene.info API (https://mygene.info) (18). This NCBI-backed service provides consistent gene metadata across identifiers.
+Gene-level annotations including full names, synonyms, and functional descriptions are retrieved from local NCBI and UniProt databases. Gene identifier conversion between gene symbols and Ensembl IDs uses the Ensembl REST API (https://rest.ensembl.org) (18) with local caching for performance optimization.
 
 ### Multi-Agent Workflow
 
@@ -209,7 +209,7 @@ Each MCP tool accepts structured parameters (gene symbols, cell types, analysis 
 
 The system is implemented in Python 3.8+ using LangGraph (v0.1+) for workflow orchestration. Network data structures use dictionaries with Ensembl IDs as keys for O(1) lookup performance. Gene ID mapping is cached in memory (pickle serialization) for instant symbol-to-Ensembl conversion. Network indices are pre-computed and loaded at server startup to minimize query latency.
 
-External API calls (Reactome, MyGene.info) use asynchronous requests with 10-second timeouts and exponential backoff retry logic. Parallel agent execution uses Python's concurrent.futures ThreadPoolExecutor with a maximum of 4 concurrent threads.
+External API calls (Reactome, Ensembl REST API) use asynchronous requests with 10-second timeouts and exponential backoff retry logic. Parallel agent execution uses Python's concurrent.futures ThreadPoolExecutor with a maximum of 4 concurrent threads.
 
 ### Performance Benchmarking
 
@@ -223,7 +223,7 @@ Each scenario was executed 10 times with cold starts (server restarted between r
 
 ### Data Availability
 
-Regulatory network data were obtained from the GREmLN foundation model (Zhang et al. 2025, bioRxiv 2025.07.03.663009). Preprocessed ARACNe networks for 10 cell types (CD14 monocytes, CD16 monocytes, CD20 B cells, CD4 T cells, CD8 T cells, NK cells, NKT cells, monocyte-derived dendritic cells, erythrocytes, and epithelial cells) are publicly available through the GREmLN Quickstart Tutorial at https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart. Networks are provided as TSV files downloaded via Google Drive in the tutorial materials. The underlying scRNA-seq data (11 million profiles across 162 cell types) were sourced from the CZ CELLxGENE Data Portal (Census release: 2024-07-01). Pathway annotations use the publicly accessible Reactome API (https://reactome.org/AnalysisService/). Gene-level annotations are retrieved from the MyGene.info API (https://mygene.info).
+Regulatory network data were obtained from the GREmLN foundation model (Zhang et al. 2025, bioRxiv 2025.07.03.663009). Preprocessed ARACNe networks for 10 cell types (CD14 monocytes, CD16 monocytes, CD20 B cells, CD4 T cells, CD8 T cells, NK cells, NKT cells, monocyte-derived dendritic cells, erythrocytes, and epithelial cells) are publicly available through the GREmLN Quickstart Tutorial at https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart. Networks are provided as TSV files downloaded via Google Drive in the tutorial materials. The underlying scRNA-seq data (11 million profiles across 162 cell types) were sourced from the CZ CELLxGENE Data Portal (Census release: 2024-07-01). Pathway annotations use the publicly accessible Reactome API (https://reactome.org/AnalysisService/). Gene-level annotations use local NCBI and UniProt databases. Gene identifier conversion uses the Ensembl REST API (https://rest.ensembl.org).
 
 ---
 
@@ -496,9 +496,9 @@ The authors declare no competing interests.
 
 17. Lachmann A, Giorgi FM, Lopez G, Califano A. ARACNe-AP: gene network reverse engineering through adaptive partitioning inference of mutual information. Bioinformatics. 2016;32(14):2233-2235.
 
-18. Gillespie M, Jassal B, Stephan R, et al. The reactome pathway knowledgebase 2022. Nucleic Acids Res. 2022;50(D1):D687-D692.
+18. Yates AD, Achuthan P, Akanni W, et al. Ensembl 2020. Nucleic Acids Res. 2020;48(D1):D682-D688.
 
-19. Xin J, Mark A, Afrasiabi C, et al. High-performance web services for querying gene and variant annotation. Genome Biol. 2016;17(1):91.
+19. Gillespie M, Jassal B, Stephan R, et al. The reactome pathway knowledgebase 2022. Nucleic Acids Res. 2022;50(D1):D687-D692.
 
 20. Erisman MD, Rothberg PG, Diehl RE, Morse CC, Spandorfer JM, Astrin SM. Deregulation of c-myc gene expression in human colon carcinoma is not accompanied by amplification or rearrangement of the gene. Mol Cell Biol. 1985;5(8):1969-1976.
 

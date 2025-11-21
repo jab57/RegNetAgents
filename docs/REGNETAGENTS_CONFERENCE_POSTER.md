@@ -525,7 +525,7 @@ RegNetAgents demonstrates that **multi-agent AI frameworks** can effectively orc
 
 The framework successfully bridges computational biology, AI workflow orchestration (LangGraph), and conversational interfaces (local MCP server for Claude Desktop) to make sophisticated gene analysis accessible to researchers.
 
-**Data Availability**: All regulatory network data obtained from publicly available sources: GREmLN Quickstart Tutorial (pre-computed ARACNe networks from GREmLN team), CZ CELLxGENE Data Portal (scRNA-seq data), Reactome API (pathway annotations), and MyGene.info API (gene annotations).
+**Data Availability**: All regulatory network data obtained from publicly available sources: GREmLN Quickstart Tutorial (pre-computed ARACNe networks from GREmLN team), CZ CELLxGENE Data Portal (scRNA-seq data), Reactome API (pathway annotations), local NCBI and UniProt databases (gene annotations), and Ensembl REST API (gene ID mapping).
 
 ---
 
@@ -556,7 +556,8 @@ Bird AI Solutions
 - **CellxGene Data Portal**: Chan Zuckerberg Initiative (single-cell RNA-seq datasets)
 - **ARACNe Algorithm**: Califano Lab, Columbia University (network inference methodology)
 - **Reactome Pathways**: Open access pathway database
-- **MyGene.info**: NCBI-backed gene annotation service
+- **NCBI/UniProt**: Gene annotation databases (local)
+- **Ensembl REST API**: Gene identifier conversion
 - **License**: All data sources are publicly available under open licenses
 
 ### Gene Regulatory Agents Framework

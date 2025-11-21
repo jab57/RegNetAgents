@@ -285,7 +285,7 @@ The regulatory networks were derived from publicly available single-cell RNA-seq
 ### Additional Data Sources
 
 - **Pathway Analysis**: Reactome Pathway Database (manually curated, peer-reviewed)
-- **Gene Annotations**: Ensembl (via MyGene.info API)
+- **Gene Annotations**: Local NCBI and UniProt databases; Ensembl REST API for gene ID mapping
 
 ### RegNetAgents Agents Framework
 
