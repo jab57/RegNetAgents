@@ -68,7 +68,7 @@ Pathway enrichment analysis uses the Reactome Pathway Database (https://reactome
 For pathway enrichment, gene lists are constructed from the query gene plus its top 10 upstream regulators and top 10 downstream targets (ranked by network centrality). This focused approach balances biological signal with statistical specificity: limiting to the immediate regulatory neighborhood captures direct mechanistic relationships while preventing pathway over-enrichment that occurs with large gene sets. Reactome enrichment analysis performs optimally with focused gene sets of 10-50 genes (as recommended in Reactome documentation); larger gene lists dilute specificity by matching too many broad pathways, while smaller lists lack statistical power. For hub regulators like MYC (427 targets), using all targets would produce overly general pathway enrichment; the top 10 approach focuses on the strongest regulatory relationships (highest PageRank and degree centrality) most likely to drive functional effects.
 
 #### Gene Annotation
-Gene-level annotations including full names, synonyms, and functional descriptions are retrieved from local NCBI and UniProt databases. Gene identifier conversion between gene symbols and Ensembl IDs uses the Ensembl REST API (https://rest.ensembl.org) (18) with local caching for performance optimization.
+Gene-level annotations including full names and functional descriptions are retrieved from local NCBI and UniProt databases. Gene identifier conversion between gene symbols and Ensembl IDs uses the Ensembl REST API (https://rest.ensembl.org) (18) with local caching for performance optimization.
 
 ### Multi-Agent Workflow
 
