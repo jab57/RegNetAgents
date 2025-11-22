@@ -799,9 +799,19 @@ class DomainAnalysisAgents:
                 # Extract pathway names from list of dicts
                 enriched_pathways = [p.get('pathway_name', p.get('name', str(p))) for p in pathways if p][:10]
 
-        # Build structured prompt
-        prompt = f"""Analyze the gene {gene} from a cancer biology perspective.
+        # Extract functional description if available
+        gene_function = None
+        if gene_info and isinstance(gene_info, dict) and 'gene_info' in gene_info:
+            # gene_info contains the GeneInfo object as dict
+            gene_obj = gene_info['gene_info']
+            if gene_obj and isinstance(gene_obj, dict):
+                gene_function = gene_obj.get('function', None)
 
+        # Build structured prompt
+        function_context = f"\nGene Function: {gene_function}\n" if gene_function else ""
+
+        prompt = f"""Analyze the gene {gene} from a cancer biology perspective.
+{function_context}
 Gene Network Context:
 - Regulatory Role: {gene_info.get('regulatory_role', 'unknown')}
 - Upstream Regulators: {gene_info.get('num_regulators', 0)}
@@ -923,8 +933,17 @@ Provide only the JSON, no additional text."""
         target_count = targets_analysis.get('target_summary', {}).get('total_targets', 0) if targets_analysis else 0
         regulator_count = regulators_analysis.get('regulator_summary', {}).get('total_regulators', 0) if regulators_analysis else 0
 
-        prompt = f"""Analyze the gene {gene} from a drug development perspective.
+        # Extract functional description if available
+        gene_function = None
+        if gene_info and isinstance(gene_info, dict) and 'gene_info' in gene_info:
+            gene_obj = gene_info['gene_info']
+            if gene_obj and isinstance(gene_obj, dict):
+                gene_function = gene_obj.get('function', None)
 
+        function_context = f"\nGene Function: {gene_function}\n" if gene_function else ""
+
+        prompt = f"""Analyze the gene {gene} from a drug development perspective.
+{function_context}
 Gene Network Context:
 - Regulatory Role: {gene_info.get('regulatory_role', 'unknown')}
 - Upstream Regulators: {gene_info.get('num_regulators', 0)}
@@ -1031,6 +1050,13 @@ Provide only the JSON, no additional text."""
     async def _analyze_clinical_llm(self, gene: str, gene_info: Dict, cross_cell_analysis: Dict) -> Dict:
         """LLM-powered clinical relevance analysis"""
 
+        # Extract functional description if available
+        gene_function = None
+        if gene_info and isinstance(gene_info, dict) and 'gene_info' in gene_info:
+            gene_obj = gene_info['gene_info']
+            if gene_obj and isinstance(gene_obj, dict):
+                gene_function = gene_obj.get('function', None)
+
         # Prepare context for LLM
         num_regulators = gene_info.get('num_regulators', 0)
         num_targets = gene_info.get('num_targets', 0)
@@ -1043,8 +1069,10 @@ Provide only the JSON, no additional text."""
             active_cell_types = [ct for ct, data in cell_analysis.items() if data.get('in_network', False)]
             tissue_context = f"Active in {len(active_cell_types)} cell types: {', '.join(active_cell_types[:5])}"
 
-        prompt = f"""Analyze the gene {gene} from a clinical medicine and personalized healthcare perspective.
+        function_context = f"\nGene Function: {gene_function}\n" if gene_function else ""
 
+        prompt = f"""Analyze the gene {gene} from a clinical medicine and personalized healthcare perspective.
+{function_context}
 Gene Network Context:
 - Regulatory Role: {regulatory_role}
 - Upstream Regulators: {num_regulators}
@@ -1160,6 +1188,13 @@ Provide only the JSON, no additional text."""
     async def _analyze_systems_llm(self, gene: str, gene_info: Dict, regulators_analysis: Dict, targets_analysis: Dict) -> Dict:
         """LLM-powered systems biology analysis"""
 
+        # Extract functional description if available
+        gene_function = None
+        if gene_info and isinstance(gene_info, dict) and 'gene_info' in gene_info:
+            gene_obj = gene_info['gene_info']
+            if gene_obj and isinstance(gene_obj, dict):
+                gene_function = gene_obj.get('function', None)
+
         # Prepare context for LLM
         num_regulators = gene_info.get('num_regulators', 0)
         num_targets = gene_info.get('num_targets', 0)
@@ -1170,8 +1205,10 @@ Provide only the JSON, no additional text."""
         reg_count = regulators_analysis.get('regulator_summary', {}).get('total_regulators', 0) if regulators_analysis else num_regulators
         target_count = targets_analysis.get('target_summary', {}).get('total_targets', 0) if targets_analysis else num_targets
 
-        prompt = f"""Analyze the gene {gene} from a systems biology and network theory perspective.
+        function_context = f"\nGene Function: {gene_function}\n" if gene_function else ""
 
+        prompt = f"""Analyze the gene {gene} from a systems biology and network theory perspective.
+{function_context}
 Gene Network Context:
 - Regulatory Role: {regulatory_role}
 - Upstream Regulators: {num_regulators} (total in cascade: {reg_count})
