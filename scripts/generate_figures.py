@@ -139,25 +139,26 @@ def create_figure1():
     create_box(ax, 5, 6.3, 4.5, 0.5, 'Parallel Domain Analysis (LLM-Powered)',
                '#FFD700', fontsize=10, fontweight='bold')
 
-    # Gene annotation data source (left side for domain agents)
-    create_box(ax, 1.5, 5.5, 1.8, 0.7, 'NCBI+UniProt\nGene Annotations\n(15,347 genes)',
-               color_data, fontsize=7)
-    create_arrow(ax, 2.4, 5.2, 2.4, 4.9, style='solid', color='gray')
+    # Gene annotation data source (feeds into all domain agents via header)
+    create_box(ax, 1.15, 5.5, 1.0, 0.6, 'NCBI+UniProt\n(15,347)',
+               color_data, fontsize=6.5)
+    # Arrow to domain analysis header (shows all agents get annotations)
+    create_arrow(ax, 1.65, 5.5, 2.5, 6.15, style='solid', color='gray')
 
-    # Four parallel agent boxes
-    agent_positions = [2, 4, 6, 8]
-    agent_labels = ['Cancer\nBiology\nAgent', 'Drug\nDiscovery\nAgent',
-                    'Clinical\nRelevance\nAgent', 'Systems\nBiology\nAgent']
+    # Four parallel agent boxes (smaller and better spaced)
+    agent_positions = [2.8, 4.5, 6.2, 7.9]
+    agent_labels = ['Cancer\nBiology', 'Drug\nDiscovery',
+                    'Clinical\nRelevance', 'Systems\nBiology']
 
     # Arrows from header to each agent
     for pos in agent_positions:
-        create_arrow(ax, 5, 6.05, pos, 5.4, style='solid')
+        create_arrow(ax, 5, 6.05, pos, 5.3, style='solid')
 
-    # Create agent boxes
+    # Create agent boxes (smaller width and height)
     for i, (pos, label) in enumerate(zip(agent_positions, agent_labels)):
-        create_box(ax, pos, 4.8, 1.4, 1, label, color_domain, fontsize=9, fontweight='bold')
+        create_box(ax, pos, 4.8, 1.15, 0.8, label, color_domain, fontsize=8, fontweight='bold')
         # Arrows from agents to integration
-        create_arrow(ax, pos, 4.3, 5, 3.6, style='solid')
+        create_arrow(ax, pos, 4.4, 5, 3.6, style='solid')
 
     # 8. Integration Agent
     create_box(ax, 5, 3, 4, 1, 'Integration & Reporting Agent\n• Synthesize multi-domain insights\n• Generate comprehensive JSON report\n• Rank therapeutic targets',
