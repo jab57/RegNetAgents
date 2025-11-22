@@ -148,6 +148,7 @@ Four domain-specific agents execute in parallel, each providing specialized biol
 
 **LLM-Powered Mode (Primary):**
 Each domain agent receives structured prompts containing:
+- Gene functional descriptions from NCBI/UniProt databases (providing validated biological context)
 - Gene regulatory context (role, upstream regulators, downstream targets, PageRank)
 - Pathway enrichment results (when available)
 - Cross-cell-type expression patterns (for clinical agent)

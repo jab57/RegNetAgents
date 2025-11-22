@@ -393,6 +393,7 @@ pip install -r requirements.txt
 - **Cell-Type Specific**: Support for 10 cell types with pre-computed networks
 - **LLM-Powered Domain Analysis**: 4 specialized AI agents (cancer, drug development, clinical relevance, systems biology)
   - **Primary mode**: LLM-generated insights with scientific rationales (Ollama/llama3.1:8b)
+  - **Biological context**: Gene functional descriptions from NCBI/UniProt databases provide validated biological information to LLM agents
   - **Graceful fallback**: Rule-based heuristics if LLM unavailable (reliability feature)
   - Each analysis result includes `llm_powered: true/false` flag for transparency
 - **Pathway Enrichment**: Reactome API integration with p-values and FDR
