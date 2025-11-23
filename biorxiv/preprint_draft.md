@@ -172,7 +172,7 @@ If LLM is unavailable or fails, agents use fast heuristic algorithms:
 
 **Systems Biology Agent:** Quantifies network centrality (out-degree normalized to maximum in network), regulatory hierarchy (hub/intermediate/terminal classification), information flow (moderate for intermediate nodes connecting hubs and terminals), network vulnerability (critical for hubs, moderate for intermediates, low for terminals), perturbation impact (system-wide for hubs, localized for terminals), and evolutionary conservation (inferred as high for hubs, moderate for intermediates).
 
-**Performance:** LLM mode adds ~5 seconds per gene (4 agents × ~1.25s each, sequential) compared to rule-based mode. For 5-gene analysis: ~6 seconds (rule-based) vs ~20 seconds (LLM). Both remain 100-200× faster than manual literature review.
+**Performance:** LLM mode adds ~5 seconds per gene (4 agents in parallel, ~1.25s each) compared to rule-based mode. For 5-gene analysis: ~6 seconds (rule-based) vs ~20 seconds (LLM). Both remain 100-200× faster than manual literature review.
 
 **LLM Reproducibility:** LLM-generated outputs exhibit variability across runs due to temperature-based sampling (temperature = 0.7 for llama3.1:8b). Core classifications (oncogenic potential, druggability scores) remain consistent across runs, but specific wording in rationales may vary. For deterministic analysis, rule-based mode provides identical results on repeated execution. JSON structure validation ensures all required fields are present regardless of LLM output variability. For the analyses reported in this manuscript, we used rule-based mode for quantitative results (perturbation rankings, PageRank scores) and LLM mode for qualitative insights (domain-specific rationales). All quantitative metrics are deterministic and fully reproducible.
 
@@ -489,7 +489,7 @@ The authors declare no competing interests.
 
 13. Anthropic. Model Context Protocol Documentation. https://modelcontextprotocol.io
 
-14. Zhang M, Swamy V, Cassius R, Dupire L, Karaletsos T, Califano A. GREmLN: A Cellular Regulatory Network-Aware Transcriptomics Foundation Model. bioRxiv. 2025. doi:10.1101/2025.07.03.663009
+14. Zhang M, Swamy V, Cassius R, Dupire L, Karaletsos T, Califano A. GREmLN: A Cellular Graph Structure Aware Transcriptomics Foundation Model. bioRxiv. 2025. doi:10.1101/2025.07.03.663009
 
 15. Megill C, Martin B, Weaver C, et al. cellxgene: a performant, scalable exploration platform for high dimensional sparse matrices. bioRxiv. 2021. doi:10.1101/2021.04.05.438318
 
