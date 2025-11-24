@@ -411,11 +411,6 @@ def create_figure3():
     for i, (bar, score) in enumerate(zip(bars, pagerank_sorted)):
         ax2.text(score + 0.01, i, f'{score:.3f}', va='center', fontsize=8)
 
-    # Add "High" label
-    ax2.text(0.95, 0.05, 'All PageRank >0.30\n(High Potential)', transform=ax2.transAxes,
-            ha='right', va='bottom', fontsize=9, style='italic',
-            bbox=dict(boxstyle='round', facecolor='#2ecc71', alpha=0.3))
-
     # C) Alternative ranking by degree centrality (downstream targets)
     ax3 = plt.subplot(1, 3, 3)
 
@@ -450,10 +445,10 @@ def create_figure3():
     for i, (bar, targets) in enumerate(zip(bars, targets_by_degree)):
         ax3.text(targets + 10, i, f'{targets}', va='center', fontsize=8)
 
-    # Add validation notes
+    # Add validation notes (bottom right corner for clarity)
     validation_text = "Green = Top 3 by PageRank\n[V] WWTR1/YAP1: Validated\n[?] RBPMS: Novel"
-    ax3.text(0.98, 0.98, validation_text, transform=ax3.transAxes,
-            ha='right', va='top', fontsize=8, style='italic',
+    ax3.text(0.98, 0.05, validation_text, transform=ax3.transAxes,
+            ha='right', va='bottom', fontsize=8, style='italic',
             bbox=dict(boxstyle='round', facecolor='#f39c12', alpha=0.3))
 
     plt.tight_layout()
