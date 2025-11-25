@@ -459,6 +459,227 @@ def create_figure3():
     plt.close()
 
 #############################################################################
+# FIGURE 4: Framework Value Demonstration (Workflow + LLM Comparison)
+#############################################################################
+
+def create_figure4():
+    """Create Figure 4: Framework Value Demonstration"""
+
+    # Load timing data
+    with open(os.path.join(results_dir, 'comprehensive_timing_results.json'), 'r') as f:
+        timing_data = json.load(f)
+
+    fig = plt.figure(figsize=(14, 10))
+
+    # ========== PANEL A: Manual Workflow ===========
+    ax1 = plt.subplot(2, 2, 1)
+    ax1.set_xlim(0, 10)
+    ax1.set_ylim(0, 13)
+    ax1.axis('off')
+    ax1.set_title('A) Traditional Manual Workflow', fontsize=11, fontweight='bold', pad=10)
+
+    # Manual workflow steps (vertical flowchart) - more spacing
+    steps = [
+        ("STRING Database\nLookup", "5-10 min", 11),
+        ("Reactome/Enrichr\nPathway Enrichment", "10-15 min", 8.3),
+        ("PubMed Literature\nCuration", "60-120 min", 5.6),
+        ("Manual Integration\n& Synthesis", "30-60 min", 2.9)
+    ]
+
+    for i, (step_text, time_text, y_pos) in enumerate(steps):
+        # Step box (gray)
+        box = FancyBboxPatch((0.5, y_pos-0.5), 7.5, 1.0,
+                             boxstyle="round,pad=0.08",
+                             edgecolor='black', facecolor='#CCCCCC', linewidth=1.5)
+        ax1.add_patch(box)
+        ax1.text(4.25, y_pos, step_text, ha='center', va='center', fontsize=8, fontweight='bold')
+        ax1.text(8.5, y_pos, time_text, ha='right', va='center', fontsize=7, style='italic')
+
+        # Arrow to next step
+        if i < len(steps) - 1:
+            arrow = FancyArrowPatch((4.25, y_pos-0.6), (4.25, steps[i+1][2]+0.6),
+                                   arrowstyle='->', mutation_scale=12,
+                                   color='black', linewidth=1.5)
+            ax1.add_patch(arrow)
+
+    # Total time annotation
+    ax1.text(5, 1, 'Total: 2-4 hours per gene', ha='center', va='center',
+            fontsize=10, fontweight='bold',
+            bbox=dict(boxstyle='round', facecolor='#FF9999', alpha=0.7))
+
+    # ========== PANEL B: RegNetAgents Workflow ===========
+    ax2 = plt.subplot(2, 2, 2)
+    ax2.set_xlim(0, 10)
+    ax2.set_ylim(0, 13)
+    ax2.axis('off')
+    ax2.set_title('B) RegNetAgents Automated Workflow', fontsize=11, fontweight='bold', pad=10)
+
+    # Input box
+    input_box = FancyBboxPatch((2, 11-0.4), 6, 0.8,
+                               boxstyle="round,pad=0.1",
+                               edgecolor='black', facecolor='#E8F4F8', linewidth=2)
+    ax2.add_patch(input_box)
+    ax2.text(5, 11, 'Natural Language Query\n"Analyze TP53 in epithelial cells"',
+            ha='center', va='center', fontsize=8, fontweight='bold')
+
+    # Arrow down
+    arrow = FancyArrowPatch((5, 10.5), (5, 9.2),
+                           arrowstyle='->', mutation_scale=14,
+                           color='black', linewidth=2)
+    ax2.add_patch(arrow)
+
+    # Parallel execution box
+    parallel_box = FancyBboxPatch((1, 6.8), 8, 2.2,
+                                  boxstyle="round,pad=0.1",
+                                  edgecolor='black', facecolor='#B8E6B8', linewidth=2)
+    ax2.add_patch(parallel_box)
+    ax2.text(5, 8.6, 'Parallel Multi-Agent Execution', ha='center', va='top',
+            fontsize=9, fontweight='bold')
+
+    # Agent components (smaller boxes inside)
+    agents = [
+        ("Network\nModeling", 2, 7.6),
+        ("Perturbation\nAnalysis", 4, 7.6),
+        ("Pathway\nEnrichment", 6, 7.6),
+        ("Domain\nAgents (4)", 8, 7.6)
+    ]
+
+    for agent_text, x, y in agents:
+        mini_box = FancyBboxPatch((x-0.7, y-0.4), 1.4, 0.8,
+                                 boxstyle="round,pad=0.05",
+                                 edgecolor='darkgreen', facecolor='#D4F1D4', linewidth=1)
+        ax2.add_patch(mini_box)
+        ax2.text(x, y, agent_text, ha='center', va='center', fontsize=7)
+
+    # Execution time annotation (below parallel box)
+    ax2.text(5, 6.5, '<1s network | 0.3-0.5s pathways | 3-4s×4 LLM agents (parallel)',
+            ha='center', va='top', fontsize=7, style='italic', color='darkgreen')
+
+    # Arrow down
+    arrow = FancyArrowPatch((5, 6.2), (5, 5.3),
+                           arrowstyle='->', mutation_scale=14,
+                           color='black', linewidth=2)
+    ax2.add_patch(arrow)
+
+    # Output box
+    output_box = FancyBboxPatch((2, 4.3), 6, 0.9,
+                               boxstyle="round,pad=0.1",
+                               edgecolor='black', facecolor='#E8D4F8', linewidth=2)
+    ax2.add_patch(output_box)
+    ax2.text(5, 4.75, 'Comprehensive Analysis Report\n(JSON with network, pathways, domain insights)',
+            ha='center', va='center', fontsize=8, fontweight='bold')
+
+    # Total time annotation
+    ax2.text(5, 2.5, 'Total: 0.6-15 seconds', ha='center', va='center',
+            fontsize=10, fontweight='bold',
+            bbox=dict(boxstyle='round', facecolor='#99FF99', alpha=0.7))
+
+    ax2.text(5, 1.2, 'Speedup: 480-24,000×', ha='center', va='center',
+            fontsize=9, fontweight='bold', color='darkgreen')
+
+    # ========== PANEL C: Time Comparison ===========
+    ax3 = plt.subplot(2, 2, 3)
+    ax3.set_title('C) Performance Comparison', fontsize=11, fontweight='bold', pad=10)
+
+    # Data for bar chart
+    scenarios = ['Single Gene\n(Rule-based)', 'Single Gene\n(LLM)', '5 Genes\n(Rule-based)', '5 Genes\n(LLM)']
+    manual_times = [2.5*3600, 2.5*3600, 12.5*3600, 12.5*3600]  # Convert hours to seconds
+    regnet_times = [
+        timing_data['rule_based']['single_comprehensive_sec'],
+        timing_data['llm_powered']['single_comprehensive_sec'],
+        timing_data['rule_based']['multi_5genes_sec'],
+        timing_data['llm_powered']['multi_5genes_sec']
+    ]
+
+    # Calculate speedups
+    speedups = [manual/regnet for manual, regnet in zip(manual_times, regnet_times)]
+
+    x = np.arange(len(scenarios))
+    width = 0.32
+
+    # Bars
+    bars1 = ax3.barh(x - width/2, manual_times, width, label='Manual Workflow', color='#FF9999')
+    bars2 = ax3.barh(x + width/2, regnet_times, width, label='RegNetAgents', color='#99FF99')
+
+    ax3.set_xlabel('Time (seconds, log scale)', fontsize=9)
+    ax3.set_yticks(x)
+    ax3.set_yticklabels(scenarios, fontsize=8)
+    ax3.set_xscale('log')
+    ax3.legend(loc='upper right', fontsize=8)
+    ax3.grid(axis='x', alpha=0.3)
+
+    # Add speedup annotations (offset to avoid bar overlap)
+    for i, (speedup, regnet_time) in enumerate(zip(speedups, regnet_times)):
+        ax3.text(regnet_time * 5, i + width/2, f'{speedup:.0f}×',
+                va='center', fontsize=7, fontweight='bold', color='darkgreen')
+
+    # ========== PANEL D: LLM Intelligence Demo ===========
+    ax4 = plt.subplot(2, 2, 4)
+    ax4.set_xlim(0, 10)
+    ax4.set_ylim(0, 11)
+    ax4.axis('off')
+    ax4.set_title('D) LLM-Powered Scientific Context', fontsize=11, fontweight='bold', pad=10)
+
+    # Left: Rule-based (classifications only)
+    rule_box = FancyBboxPatch((0.3, 6), 4, 3.5,
+                              boxstyle="round,pad=0.15",
+                              edgecolor='black', facecolor='#E8E8E8', linewidth=2)
+    ax4.add_patch(rule_box)
+    ax4.text(2.3, 9, 'Rule-Based Mode (0.6s)', ha='center', va='center',
+            fontsize=9, fontweight='bold')
+    ax4.text(2.3, 8.3, 'TP53 Analysis:', ha='center', va='center',
+            fontsize=8, fontweight='bold', style='italic')
+    ax4.text(2.3, 7.7, '• Oncogenic: HIGH', ha='center', va='center', fontsize=8)
+    ax4.text(2.3, 7.3, '• Hub regulator', ha='center', va='center', fontsize=8)
+    ax4.text(2.3, 6.9, '• 163 targets, 7 regulators', ha='center', va='center', fontsize=8)
+    ax4.text(2.3, 6.3, 'Network metrics only,\nno rationales', ha='center', va='center',
+            fontsize=7, style='italic', color='#666666')
+
+    # Right: LLM-powered (classifications + context)
+    llm_box = FancyBboxPatch((5.7, 6), 4, 3.5,
+                             boxstyle="round,pad=0.15",
+                             edgecolor='black', facecolor='#D4E6F1', linewidth=2)
+    ax4.add_patch(llm_box)
+    ax4.text(7.7, 9, 'LLM-Powered Mode (15s)', ha='center', va='center',
+            fontsize=9, fontweight='bold')
+    ax4.text(7.7, 8.3, 'TP53 Analysis:', ha='center', va='center',
+            fontsize=8, fontweight='bold', style='italic')
+    ax4.text(7.7, 7.7, '• Oncogenic: HIGH', ha='center', va='center', fontsize=8)
+    ax4.text(7.7, 7.3, '• Hub regulator', ha='center', va='center', fontsize=8)
+    ax4.text(7.7, 6.9, '• 163 targets, 7 regulators', ha='center', va='center', fontsize=8)
+
+    # Note about added context (inside box, matching left side)
+    ax4.text(7.7, 6.3, '+ Scientific rationales\n& interpretations', ha='center', va='center',
+            fontsize=7, style='italic', color='#006600', fontweight='bold')
+
+    # Rationale example box (OUTSIDE and below the LLM box - moved further down)
+    rationale_text = 'Example Rationale:\n"TP53 functions as hub regulator (163 targets)\nconsistent with tumor suppressor role.\nHigh regulatory input suggests multiple\ncontrol checkpoints..."'
+    ax4.text(7.7, 4.7, rationale_text, ha='center', va='center',
+            fontsize=7, style='italic', color='#003366',
+            bbox=dict(boxstyle='round,pad=0.12', facecolor='#E8F4F8', alpha=0.8, edgecolor='#0066CC', linewidth=1.5))
+
+    # Bottom annotations (moved down further to avoid overlap)
+    ax4.text(5, 3.0, '+14 seconds for scientific context & biological interpretation',
+            ha='center', va='center', fontsize=8, fontweight='bold',
+            bbox=dict(boxstyle='round', facecolor='#FFFFCC', alpha=0.7))
+
+    ax4.text(5, 1.8, 'LLM agents integrate gene function data (NCBI/UniProt) with network topology',
+            ha='center', va='center', fontsize=7, style='italic', color='#666666')
+
+    # Trade-off note
+    ax4.text(5, 1.2, 'Trade-off: Speed vs Scientific Context\n(System gracefully falls back to rule-based if LLM unavailable)',
+            ha='center', va='center', fontsize=7, style='italic', color='#666666')
+
+    # Overall layout adjustment
+    plt.tight_layout(pad=2.0)
+
+    # Save
+    plt.savefig(os.path.join(output_dir, 'figure4_framework_value.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir, 'figure4_framework_value.pdf'), bbox_inches='tight')
+    print(f"[OK] Figure 4 saved: {output_dir}/figure4_framework_value.png and .pdf")
+    plt.close()
+
+#############################################################################
 # TABLE 2: Biomarker Results (CSV for inclusion)
 #############################################################################
 
@@ -544,6 +765,9 @@ if __name__ == "__main__":
     print("\nCreating Figure 3: TP53 Perturbation Analysis...")
     create_figure3()
 
+    print("\nCreating Figure 4: Framework Value Demonstration...")
+    create_figure4()
+
     print("\nCreating Table 2: Biomarker Results...")
     create_table2()
 
@@ -557,6 +781,7 @@ if __name__ == "__main__":
     print("  - figure1_architecture.png (and .pdf)")
     print("  - figure2_biomarker_panel.png (and .pdf)")
     print("  - figure3_tp53_perturbation.png (and .pdf)")
+    print("  - figure4_framework_value.png (and .pdf)")
     print("  - table2_biomarker_results.csv (and .txt)")
     print("  - table3_tp53_perturbation.csv (and .txt)")
     print("\nReady for your bioRxiv submission!")

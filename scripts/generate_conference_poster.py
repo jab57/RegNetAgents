@@ -248,6 +248,10 @@ def parse_performance_table(text):
 def create_poster(sections):
     """Create the PowerPoint poster from parsed sections"""
 
+    # Get project root directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+
     # Create presentation with poster dimensions (landscape: 48" x 36")
     prs = Presentation()
     prs.slide_width = Inches(48)
@@ -661,7 +665,7 @@ def create_poster(sections):
 
     discussion_header = add_section_header(slide, col4_x, Inches(4.2), col4_width, "DISCUSSION", LIGHT_BLUE)
 
-    discussion_box = slide.shapes.add_textbox(col4_x, Inches(5.2), col4_width, Inches(10))
+    discussion_box = slide.shapes.add_textbox(col4_x, Inches(5.2), col4_width, Inches(9))
     discussion_frame = discussion_box.text_frame
     discussion_frame.word_wrap = True
     discussion_frame.auto_size = None
@@ -704,63 +708,84 @@ def create_poster(sections):
     p.font.italic = True
     p.space_after = Pt(10)
 
-    # Conclusions
-    conclusions_header = add_section_header(slide, col4_x, Inches(16), col4_width, "CONCLUSIONS", PURPLE)
+    # Add Figure 4: Framework Value image (readable size)
+    figure4_y = Inches(13.5)
+    figure4_path = os.path.join(project_root, 'biorxiv', 'figure4_framework_value.png')
 
-    conclusions_box = slide.shapes.add_textbox(col4_x, Inches(17), col4_width, Inches(6))
+    if os.path.exists(figure4_path):
+        try:
+            # Add small caption above figure
+            fig_caption_box = slide.shapes.add_textbox(col4_x, figure4_y, col4_width, Inches(0.25))
+            fig_caption_frame = fig_caption_box.text_frame
+            p = fig_caption_frame.add_paragraph()
+            p.text = "Figure 4: Framework Performance (480-24,000× speedup)"
+            p.font.size = Pt(14)
+            p.font.bold = True
+            p.font.color.rgb = ORANGE
+            p.alignment = PP_ALIGN.CENTER
+
+            # Add figure image (full column width for maximum readability)
+            fig_pic = slide.shapes.add_picture(figure4_path, col4_x + Inches(0.2), figure4_y + Inches(0.3),
+                                               width=col4_width - Inches(0.4))
+
+            # Adjust conclusions header position to be below figure
+            conclusions_y = figure4_y + Inches(0.3) + fig_pic.height + Inches(0.15)
+        except Exception as e:
+            print(f"   [WARNING] Could not add Figure 4: {e}")
+            conclusions_y = Inches(16)
+    else:
+        conclusions_y = Inches(16)
+
+    # Conclusions
+    conclusions_header = add_section_header(slide, col4_x, conclusions_y, col4_width, "CONCLUSIONS", PURPLE)
+
+    conclusions_box = slide.shapes.add_textbox(col4_x, conclusions_y + Inches(1), col4_width, Inches(3.2))
     conclusions_frame = conclusions_box.text_frame
     conclusions_frame.word_wrap = True
     conclusions_frame.auto_size = None
 
-    # Conclusions content
+    # Conclusions content (compact)
     p = conclusions_frame.add_paragraph()
     p.text = "Gene Regulatory Agents demonstrates that multi-agent AI frameworks can effectively orchestrate complex gene regulatory network analyses across multiple biological domains. The framework successfully bridges computational biology, AI workflow orchestration, and conversational interfaces to make sophisticated gene analysis accessible to researchers."
-    p.font.size = Pt(22)
+    p.font.size = Pt(20)
     p.font.color.rgb = BLACK
-    p.space_after = Pt(12)
+    p.space_after = Pt(8)
 
     add_subheader(conclusions_frame, "Key Innovations")
 
     p = conclusions_frame.add_paragraph()
     p.text = "• Intelligent routing optimizes analysis paths based on gene characteristics"
-    p.font.size = Pt(20)
+    p.font.size = Pt(18)
     p.font.bold = True
     p.font.color.rgb = DARK_BLUE
-    p.space_after = Pt(4)
+    p.space_after = Pt(2)
 
     p = conclusions_frame.add_paragraph()
     p.text = "• Parallel execution enables second-scale analysis (0.6-62 sec depending on mode)"
-    p.font.size = Pt(20)
+    p.font.size = Pt(18)
     p.font.bold = True
     p.font.color.rgb = DARK_BLUE
-    p.space_after = Pt(4)
+    p.space_after = Pt(2)
 
     p = conclusions_frame.add_paragraph()
     p.text = "• Domain-specific agents provide specialized cancer, drug, clinical, and systems perspectives"
-    p.font.size = Pt(20)
+    p.font.size = Pt(18)
     p.font.bold = True
     p.font.color.rgb = DARK_BLUE
-    p.space_after = Pt(4)
+    p.space_after = Pt(2)
 
     p = conclusions_frame.add_paragraph()
     p.text = "• Cell-type specificity supports translational research questions"
-    p.font.size = Pt(20)
+    p.font.size = Pt(18)
     p.font.bold = True
     p.font.color.rgb = DARK_BLUE
-    p.space_after = Pt(12)
+    p.space_after = Pt(8)
 
-    # Data availability note
-    p = conclusions_frame.add_paragraph()
-    p.text = "Data Availability: All regulatory network data from publicly accessible sources"
-    p.font.size = Pt(18)
-    p.font.italic = True
-    p.font.color.rgb = GRAY
-
-    # References section
-    ref_y = Inches(23)
+    # References section (positioned after conclusions)
+    ref_y = conclusions_y + Inches(5.0)  # Conclusions box is 3.2" tall + 1.8" spacing for clearance
     ref_header = add_section_header(slide, col4_x, ref_y, col4_width, "REFERENCES", GRAY)
 
-    ref_box = slide.shapes.add_textbox(col4_x, ref_y + Inches(1), col4_width, Inches(4))
+    ref_box = slide.shapes.add_textbox(col4_x, ref_y + Inches(1), col4_width, Inches(3))
     ref_frame = ref_box.text_frame
     ref_frame.word_wrap = True
 
@@ -782,7 +807,7 @@ def create_poster(sections):
         p.space_after = Pt(4)
 
     # ===== CONTACT & QR CODE (Bottom - Column 4) =====
-    contact_y = Inches(28)
+    contact_y = ref_y + Inches(4)  # References section + spacing
     contact_x = Inches(35.5)
     contact_width = Inches(12)
 
