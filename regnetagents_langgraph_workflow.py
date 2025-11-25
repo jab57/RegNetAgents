@@ -2,7 +2,35 @@
 #!/usr/bin/env python3
 """
 RegNetAgents LangGraph Workflow
-Multi-agent framework for gene regulatory network analysis with LangGraph orchestration
+=================================
+
+Multi-agent AI framework for gene regulatory network analysis powered by LangGraph orchestration.
+
+This module implements a sophisticated workflow system that coordinates multiple specialized agents
+to perform comprehensive gene regulatory network analysis. The framework integrates:
+
+- Network modeling (regulatory relationships from ARACNe networks)
+- Pathway enrichment (Reactome API integration)
+- Perturbation analysis (therapeutic target ranking via network centrality)
+- Domain-specific insights (LLM-powered cancer, drug, clinical, systems biology agents)
+- Cross-cell type comparison
+
+The workflow uses LangGraph for state management and parallel execution of independent analysis steps,
+achieving 480-24,000× speedup compared to manual analysis workflows.
+
+Architecture:
+    - State-based workflow orchestration (LangGraph StateGraph)
+    - Parallel batch processing of independent analyses
+    - Conditional routing based on gene network position
+    - Graceful degradation (LLM agents fallback to rule-based heuristics)
+
+Performance:
+    - Rule-based mode: 0.6-15 seconds for comprehensive analysis
+    - LLM-powered mode: 15-62 seconds with scientific rationales
+    - Perturbation analysis: Pre-computed PageRank enables instant ranking
+
+Author: Jose A. Bird, PhD
+License: MIT
 """
 
 from typing import Dict, List, TypedDict, Optional, Any
@@ -233,16 +261,33 @@ class RegNetAgentsModelingAgent:
         max_regulators: int = 100
     ) -> dict:
         """
-        Simulate inhibiting upstream regulators and measure network impact.
+        Analyze therapeutic target potential by simulating regulator inhibition.
+
+        Performs network perturbation analysis to rank upstream regulators as potential
+        therapeutic targets. Uses pre-computed PageRank centrality scores to measure
+        each regulator's importance in the network, providing instant ranking without
+        expensive recomputation.
+
+        The analysis measures:
+        - Regulatory loss: % of target gene regulation lost if regulator inhibited
+        - Network centrality: PageRank score (best predictor of drug targets per literature)
+        - Out-degree centrality: Number of genes regulated (cascade breadth)
+        - Degree centrality: Total connectivity (overall network importance)
+
+        Automatically triggered for genes with >5 regulators, identifying the most
+        promising candidates for experimental validation or drug development.
 
         Args:
-            target_gene: Gene to analyze (e.g., "TP53")
-            cell_type: Cell type for analysis
-            regulators: List of regulator dicts (if already computed)
-            max_regulators: Max number of regulators to test (default 100 to analyze all)
+            target_gene: Gene to analyze (e.g., "TP53", "BRCA1")
+            cell_type: Cell type for analysis (affects network topology)
+            regulators: List of regulator dicts (if already computed from prior analysis)
+            max_regulators: Maximum number of regulators to analyze (default 100)
 
         Returns:
-            Perturbation analysis results with impact scores
+            dict: Perturbation analysis results containing:
+                - ranked_regulators: List sorted by PageRank (best targets first)
+                - summary: Analysis metadata (total regulators, ranking metric)
+                - Each regulator includes: symbol, PageRank, regulatory_loss, centrality scores
         """
         logger.info(f"Starting perturbation analysis for {target_gene}")
 
@@ -1361,10 +1406,51 @@ class GeneAnalysisState(TypedDict):
     analysis_metadata: Dict
 
 class RegNetAgentsWorkflow:
-    """LangGraph implementation of RegNetAgents gene analysis workflow"""
+    """
+    LangGraph implementation of RegNetAgents gene analysis workflow.
+
+    This class orchestrates a multi-agent system for comprehensive gene regulatory network analysis.
+    It coordinates specialized agents (modeling, pathway, domain) through a state-based workflow
+    that optimizes parallel execution while maintaining dependencies between analysis steps.
+
+    The workflow architecture uses LangGraph's StateGraph for:
+    - Parallel batch processing of independent analyses (regulators, targets, pathways)
+    - Conditional routing based on gene network characteristics
+    - State persistence for long-running analyses
+    - Error handling with graceful degradation
+
+    Key Features:
+        - Multi-agent coordination with specialized domain expertise
+        - Parallel execution of independent analysis tasks
+        - Automatic perturbation analysis for genes with >5 regulators
+        - LLM-powered insights with rule-based fallback
+        - Cross-cell type comparison capabilities
+
+    Attributes:
+        cache (RegNetAgentsCache): Pre-loaded network indices for 10 cell types
+        modeling_agent (RegNetAgentsModelingAgent): Network topology analysis
+        integration_agent (CrossSystemIntegrationAgent): Multi-gene integration
+        pathway_enricher (PathwayEnricherAgent): Reactome pathway enrichment
+        domain_agents (DomainAnalysisAgents): LLM-powered domain insights
+        workflow (StateGraph): Compiled LangGraph workflow
+
+    Example:
+        >>> workflow = RegNetAgentsWorkflow()
+        >>> result = await workflow.run(
+        ...     gene="TP53",
+        ...     cell_type=CellType.EPITHELIAL_CELLS,
+        ...     analysis_depth="comprehensive"
+        ... )
+    """
 
     def __init__(self):
-        """Initialize the workflow with RegNetAgents components"""
+        """
+        Initialize the workflow with RegNetAgents components.
+
+        Loads network indices for all available cell types, initializes specialized agents,
+        and compiles the LangGraph workflow structure with appropriate node connections
+        and conditional routing logic.
+        """
         self.cache = RegNetAgentsCache()
         self.modeling_agent = RegNetAgentsModelingAgent(self.cache)
         self.integration_agent = CrossSystemIntegrationAgent(self.cache)
@@ -1376,15 +1462,33 @@ class RegNetAgentsWorkflow:
         logger.info("RegNetAgents LangGraph workflow initialized")
 
     def _create_workflow(self) -> StateGraph:
-        """Create the LangGraph workflow structure"""
+        """
+        Create the LangGraph workflow structure with optimized parallel execution.
+
+        Constructs a state graph that orchestrates gene analysis through multiple stages:
+        1. Initialization and gene network position analysis
+        2. Conditional routing based on network characteristics
+        3. Parallel batch processing of independent analyses
+        4. Domain-specific insights generation (LLM-powered)
+        5. Final report compilation
+
+        The workflow uses batch nodes to parallelize independent analyses, reducing
+        execution time from sequential ~2-3 seconds to parallel ~0.6-1 second for
+        core analyses (network + regulators + targets + pathways).
+
+        Returns:
+            StateGraph: Compiled LangGraph workflow ready for execution
+        """
         workflow = StateGraph(GeneAnalysisState)
 
-        # Add analysis nodes
+        # Add initialization and routing nodes
+        # These run sequentially to establish gene context and determine analysis path
         workflow.add_node("initialize_analysis", self._initialize_analysis)
         workflow.add_node("analyze_gene_network", self._analyze_gene_network)
         workflow.add_node("decide_next_steps", self._decide_next_steps)
 
         # Parallel batch nodes for core analyses
+        # These execute independent analyses concurrently for optimal performance
         workflow.add_node("batch_core_analyses", self._batch_core_analyses)
         workflow.add_node("batch_secondary_analyses", self._batch_secondary_analyses)
         workflow.add_node("batch_domain_analyses", self._batch_domain_analyses)

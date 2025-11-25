@@ -158,7 +158,24 @@ If network cache files are missing, contact the repository maintainer.
 
 3. **Restart Claude Desktop** completely (quit and reopen)
 
-### Step 6: Test Installation
+### Step 6: Verify Installation
+
+Run the verification script to ensure everything is set up correctly:
+
+```bash
+python verify_installation.py
+```
+
+This will check:
+- Python version (3.8+)
+- Required packages
+- Network data files
+- Ollama installation (optional)
+- Core modules
+
+**Expected output:** `5/5 checks passed`
+
+### Step 7: Test with Claude Desktop
 
 Open Claude Desktop and ask:
 
@@ -175,9 +192,9 @@ Analyze the TP53 gene in epithelial cells
 
 If Ollama is running, you should see detailed scientific rationales. Check the analysis includes `"llm_powered": true` in domain results.
 
-**Success!** 🎉 You're ready to use RegNetAgents.
+**Success!** You're ready to use RegNetAgents!
 
-### Step 7: Test LLM Integration (Optional)
+### Step 8: Test LLM Integration (Optional)
 
 Run the test suite to verify all 4 domain agents are using LLM:
 
@@ -192,7 +209,7 @@ python tests/test_ollama_agents.py
 ✓ ALL TESTS PASSED!
 ```
 
-### Step 8: Try More Examples
+### Step 9: Try More Examples
 
 ```
 What regulates BRCA1 in epithelial cells?

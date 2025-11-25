@@ -1,10 +1,42 @@
 #!/usr/bin/env python3
 """
 RegNetAgents LangGraph-Powered MCP Server
-Combines the power of LangGraph workflows with MCP integration for Claude Desktop
+==========================================
 
-This server uses LangGraph for intelligent workflow orchestration while maintaining
-the MCP interface for seamless Claude Desktop integration.
+Model Context Protocol (MCP) server that exposes RegNetAgents multi-agent workflow
+to Claude Desktop for conversational gene regulatory network analysis.
+
+This server bridges LangGraph's sophisticated workflow orchestration with Claude Desktop's
+MCP protocol, enabling natural language queries like "Analyze TP53 in epithelial cells"
+to trigger comprehensive multi-agent analysis workflows.
+
+Architecture:
+    - MCP Server: Handles Claude Desktop communication and tool registration
+    - LangGraph Workflow: Orchestrates multi-agent analysis pipeline
+    - Tool Registry: Exposes 6 analysis tools to Claude Desktop
+
+Available Tools:
+    1. comprehensive_gene_analysis: Full workflow-driven analysis (recommended)
+    2. multi_gene_analysis: Parallel processing of multiple genes
+    3. pathway_focused_analysis: Pathway-centric analysis
+    4. workflow_status: Real-time execution monitoring
+    5. workflow_insights: Performance analytics
+    6. create_analysis_report: Generate formatted reports
+
+Key Features:
+    - Conversational interface (natural language → structured analysis)
+    - Automatic workflow orchestration (no manual configuration)
+    - Parallel execution of independent analyses
+    - Real-time progress monitoring
+    - LLM-powered domain insights with rule-based fallback
+
+Performance:
+    - Single gene: 0.6-15 seconds (comprehensive)
+    - Multi-gene (5): 15-62 seconds (parallel execution)
+    - Instant cross-cell comparison (pre-computed indices)
+
+Author: Jose A. Bird, PhD
+License: MIT
 """
 
 import asyncio
@@ -45,7 +77,22 @@ server = Server("regnetagents-langgraph-server")
 workflow_instance = None
 
 async def get_workflow():
-    """Get or create the global workflow instance"""
+    """
+    Get or create the global workflow instance (singleton pattern).
+
+    Initializes the LangGraph workflow on first call, loading network indices
+    for all 10 cell types. Subsequent calls return the cached instance for
+    optimal performance. The workflow initialization includes:
+    - Loading pre-computed network indices (~183K edges for epithelial cells)
+    - Initializing specialized agents (modeling, pathway, domain)
+    - Compiling the LangGraph state machine
+
+    Returns:
+        RegNetAgentsWorkflow: Initialized workflow instance ready for analysis
+
+    Note:
+        Initialization takes ~2-3 seconds on first call. Cached afterwards.
+    """
     global workflow_instance
     if workflow_instance is None:
         logger.info("Initializing LangGraph workflow...")
