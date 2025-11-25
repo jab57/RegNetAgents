@@ -1,5 +1,9 @@
 # RegNetAgents
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![bioRxiv](https://img.shields.io/badge/bioRxiv-pending-red.svg)](https://biorxiv.org/)
+
 **LLM-Powered Multi-Agent Framework for Gene Regulatory Analysis**
 
 RegNetAgents is an AI-powered multi-agent framework that provides comprehensive gene regulatory network analysis through Claude Desktop. Built on **pre-computed gene regulatory networks** derived from single-cell RNA-seq data, and powered by LangGraph workflow orchestration, it deploys four specialized LLM-powered domain agents (cancer biology, drug discovery, clinical relevance, and systems biology) that generate scientific insights using local Ollama inference.
@@ -47,24 +51,24 @@ RegNetAgents is an AI-powered multi-agent framework that provides comprehensive 
 
 ## 🚀 Quick Start
 
-**Note:** RegNetAgents software is available from the corresponding author upon reasonable request for academic research purposes. Contact jbird@birdaisolutions.com for access inquiries.
+**Note:** RegNetAgents is open source and publicly available at https://github.com/jab57/RegNetAgents under the MIT License.
 
-**Time required:** 5-10 minutes (once you have access to the code)
+**Time required:** 5-10 minutes
 
 ### Step 1: Prerequisites
 
 - Python 3.8 or higher
 - Claude Desktop installed
 - Internet connection (for Reactome pathway analysis)
-- Access to RegNetAgents code package
 
 ### Step 2: Environment Setup
 
-If you have received the RegNetAgents code package:
+Clone the repository and set up your environment:
 
 ```bash
-# Navigate to the RegNetAgents directory
-cd /path/to/RegNetAgents
+# Clone the repository
+git clone https://github.com/jab57/RegNetAgents.git
+cd RegNetAgents
 
 # Create and activate virtual environment
 python -m venv env

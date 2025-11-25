@@ -579,7 +579,9 @@ Raw analysis outputs (JSON format) for the case study analyses presented in this
 
 ## CODE AVAILABILITY
 
-The RegNetAgents software implementation is available from the corresponding author upon reasonable request for academic research purposes. All analytical methods, network centrality algorithms, perturbation analysis procedures, and workflow orchestration logic are fully described in the Methods section to facilitate independent re-implementation by interested researchers.
+The RegNetAgents software implementation is publicly available at https://github.com/jab57/RegNetAgents under the MIT License.
+
+Installation requires Python 3.8+ and takes approximately 5-10 minutes. Network data files (pre-computed ARACNe networks from GREmLN) are downloaded from the GREmLN Quickstart Tutorial as documented in the repository README. All analytical methods and workflow orchestration code are provided to facilitate independent use and extension by the research community.
 
 Network data used in this study are publicly available through the GREmLN Quickstart Tutorial (https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart). Pathway enrichment was performed using the publicly accessible Reactome API (https://reactome.org/AnalysisService/).
 
