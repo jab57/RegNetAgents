@@ -258,9 +258,9 @@ Performance breakdown: Network lookups from pre-computed indices are near-instan
 |--------------|-------|----------------|------------|
 | Focused (rule-based) | TP53 | 0.68 sec | Network lookup, regulators, targets, complete perturbation (all 7 regulators) |
 | Comprehensive (rule-based) | TP53 | 0.60 sec | Network analysis + Reactome pathway enrichment (16 pathways, FDR correction) |
-| Comprehensive (LLM-powered) | TP53 | ~15 sec | Rule-based analysis + 4 domain agents with scientific rationales |
+| Comprehensive (LLM-powered) | TP53 | ~15 sec | Network + perturbation + pathways + 4 LLM agents with scientific rationales |
 | Multi-gene (rule-based) | 5 genes | 15.49 sec | Network analysis, complete perturbation (all 99 regulators, parallel execution) |
-| Multi-gene (LLM-powered) | 5 genes | ~62 sec | Rule-based analysis (all 99 regulators) + parallel LLM domain insights |
+| Multi-gene (LLM-powered) | 5 genes | ~62 sec | Network + perturbation (99 regulators) + pathways + 4 parallel LLM agents |
 | Cross-cell comparison | TP53, 10 types | <0.01 sec | Regulatory role comparison across all cell types (pre-computed indices) |
 
 *Rule-based mode provides deterministic analysis without LLM dependencies. LLM-powered mode adds domain-specific insights via local Ollama inference (llama3.1:8b) with 4 parallel agents. PageRank pre-computation in network cache enables instant perturbation analysis. All measurements via Claude Desktop MCP integration on standard laptop (Intel i7, 16GB RAM) with stable internet connection and Ollama server running locally.*
