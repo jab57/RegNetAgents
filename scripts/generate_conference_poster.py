@@ -708,18 +708,18 @@ def create_poster(sections):
     p.font.italic = True
     p.space_after = Pt(10)
 
-    # Add Figure 4: Framework Value image (readable size)
-    figure4_y = Inches(13.5)
+    # Add Figure 4: Framework Value image (readable size, after Discussion ends)
+    figure4_y = Inches(14.3)
     figure4_path = os.path.join(project_root, 'biorxiv', 'figure4_framework_value.png')
 
     if os.path.exists(figure4_path):
         try:
-            # Add small caption above figure
-            fig_caption_box = slide.shapes.add_textbox(col4_x, figure4_y, col4_width, Inches(0.25))
+            # Add caption above figure
+            fig_caption_box = slide.shapes.add_textbox(col4_x, figure4_y, col4_width, Inches(0.45))
             fig_caption_frame = fig_caption_box.text_frame
             p = fig_caption_frame.add_paragraph()
             p.text = "Figure 4: Framework Performance (480-24,000× speedup)"
-            p.font.size = Pt(14)
+            p.font.size = Pt(30)
             p.font.bold = True
             p.font.color.rgb = ORANGE
             p.alignment = PP_ALIGN.CENTER

@@ -119,7 +119,7 @@ Multi-agent AI framework with:
 ├─────────────────────────────────────────────────────────────┤
 │ Cancer Agent    │ Drug Agent  │ Clinical Agent │ Systems   │
 │ • Oncogenic     │ • Druggab.  │ • Biomarker    │ • Network │
-│   potential     │   scoring   │   utility      │   topology│
+│   potential     │   assess.   │   utility      │   topology│
 │ • Tumor supp.   │ • Strategy  │ • Disease      │ • Hub     │
 │ • Therapeutic   │   (inh/act) │   association  │   analysis│
 │   targets       │ • Timeline  │ • Actionable   │ • Cascade │
@@ -137,8 +137,8 @@ Multi-agent AI framework with:
 |-------|-------------|--------|
 | **RegNetAgentsModelingAgent** | Analyzes gene regulatory networks to identify upstream regulators and downstream targets; determines regulatory role (hub/intermediate/terminal); performs cross-cell-type comparison; simulates inhibiting each upstream regulator to identify therapeutic targets using network centrality metrics (PageRank, out-degree centrality) | Gene position in regulatory hierarchy, regulatory strength, cell-type specificity; perturbation analysis with centrality-based rankings (PageRank primary, out-degree secondary), cascade effects, network connectivity assessment |
 | **PathwayEnricherAgent** | Statistical pathway enrichment via Reactome API; identifies significant biological pathways with FDR correction | Top enriched pathways with p-values and FDR scores; biological process context |
-| **Cancer Research Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference (llama3.1:8b); evaluates cancer biology relevance with scientific rationales; graceful fallback to rule-based heuristics if LLM unavailable | AI-generated oncogenic potential assessment with rationale, tumor suppressor likelihood with explanation, therapeutic target scoring with scientific justification; falls back to network connectivity-based heuristics for reliability |
-| **Drug Development Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference; analyzes therapeutic potential with scientific rationales for druggability assessments and intervention strategies | AI-generated druggability scoring with rationale, intervention strategy recommendations with explanation, development timeline estimates with justification; falls back to connectivity-based rules for reliability |
+| **Cancer Research Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference (llama3.1:8b); evaluates cancer biology relevance with scientific rationales; graceful fallback to rule-based heuristics if LLM unavailable | AI-generated oncogenic potential classification with rationale, tumor suppressor likelihood with explanation, therapeutic target classification with scientific justification; falls back to network connectivity-based heuristics for reliability |
+| **Drug Development Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference; analyzes therapeutic potential with scientific rationales for druggability assessments and intervention strategies | AI-generated druggability assessment with rationale, intervention strategy recommendations with explanation, development timeline estimates with justification; falls back to connectivity-based rules for reliability |
 | **Clinical Relevance Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference; determines clinical utility with scientific rationales for biomarker classifications | AI-generated biomarker classification with rationale (diagnostic/prognostic/predictive), disease association likelihood with explanation, clinical actionability assessment with justification; falls back to network position analysis for reliability |
 | **Systems Biology Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference; quantifies network topology with scientific rationales for centrality interpretations | AI-generated network centrality interpretations with rationale, hub analysis with explanation, perturbation impact predictions with scientific justification; falls back to PageRank/degree centrality calculations for reliability |
 
@@ -370,11 +370,11 @@ Given the candidate genes, the system automatically:
 
 ### How Domain Agents Work
 
-**Rule-Based Scoring Systems** (not machine learning models):
+**Rule-Based Classification Systems** (not machine learning models):
 
 - **Cancer Agent**: Evaluates genes against cancer biology principles (Hanahan & Weinberg hallmarks of cancer). Uses network connectivity patterns to assess regulatory complexity and therapeutic targeting opportunities.
 
-- **Clinical Agent**: Classifies biomarker types using FDA framework categories (diagnostic = detects disease; prognostic = predicts outcome; predictive = guides treatment). Scores based on network position and regulatory role.
+- **Clinical Agent**: Classifies biomarker types using FDA framework categories (diagnostic = detects disease; prognostic = predicts outcome; predictive = guides treatment). Classifications based on network position and regulatory role.
 
 - **Drug Agent**: Assesses therapeutic potential from network topology and connectivity patterns. Suggests intervention strategies based on upstream/downstream regulatory patterns.
 
@@ -418,7 +418,7 @@ Given the candidate genes, the system automatically:
 **What This Validates**:
 - ✓ Network data reflects established regulatory relationships
 - ✓ Pathway enrichment identifies relevant biological processes
-- ✓ Domain agent scoring correlates with literature-known gene functions
+- ✓ Domain agent classifications correlate with literature-known gene functions
 
 **What This Does NOT Validate**:
 - ✗ Novel predictions (untested genes would require experimental validation)
@@ -470,7 +470,7 @@ Given the candidate genes, the system automatically:
 
 **4. Domain-Specific Expertise**
 - Cancer, drug, clinical, systems biology agents
-- Specialized scoring algorithms per domain
+- Specialized classification algorithms per domain
 - Integration of disparate analysis types
 
 **5. Cell-Type Specificity**
@@ -495,7 +495,7 @@ Given the candidate genes, the system automatically:
 - Expand cell type coverage as additional networks become available
 - Integrate additional pathway databases (KEGG, GO, MSigDB)
 - Optimize batch processing for large gene panels
-- Enhance domain agent scoring algorithms
+- Enhance domain agent classification algorithms
 - Improve cross-cell comparison visualizations
 - Add combination perturbation analysis (inhibit multiple regulators simultaneously)
 
