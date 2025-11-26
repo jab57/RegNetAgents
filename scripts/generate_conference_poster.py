@@ -847,10 +847,10 @@ def create_poster(sections):
         p.font.italic = True
         p.font.color.rgb = GRAY
 
-        # QR Code placeholder
-        qr_x = contact_x + Inches(8)
+        # QR Code placeholder (position after contact text box with spacing)
+        qr_x = contact_x + Inches(7.5)  # After 7.5" contact box, minimal spacing
         qr_box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, qr_x, contact_y + Inches(1),
-                                        Inches(3.5), Inches(3.5))
+                                        Inches(2.75), Inches(2.75))
         qr_box.fill.solid()
         qr_box.fill.fore_color.rgb = RGBColor(240, 240, 240)
         qr_box.line.color.rgb = BLACK
