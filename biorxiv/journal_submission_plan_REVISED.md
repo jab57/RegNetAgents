@@ -93,7 +93,7 @@
 **Week 2 completion:**
 - ✅ Figure 4 created (workflow + framework comparison + LLM value demonstration)
 - ✅ New Results sections added (~800 words)
-- ✅ Framework value clearly demonstrated (480-24,000× speedup)
+- ✅ Framework value clearly demonstrated (orders of magnitude speedup)
 - ✅ Option 3 revisions implemented (removed unvalidated scores, added classification rationale)
 - ✅ All documentation updated with consistent "classification" language
 - ✅ Figure 4 fonts increased for poster readability
@@ -284,7 +284,7 @@ pathway enrichment queries Reactome API (0.3-0.5s), and four specialized
 LLM agents generate domain insights concurrently (cancer, drug, clinical,
 systems biology; 3-4s per agent in parallel). Total execution time:
 0.6 seconds (rule-based mode) or ~15 seconds (LLM-powered mode),
-representing a 480-24,000× speedup compared to manual workflows.
+representing a orders of magnitude speedup compared to manual workflows.
 
 This acceleration enables exploratory analyses previously impractical
 due to time constraints. For example, analyzing a 5-gene biomarker panel
@@ -365,7 +365,7 @@ ensuring reliability.
 2. Days 4-6: LLM value demonstration (Option B)
 
 **Result:** Shows framework value from two angles:
-- **Speed:** 480x faster than manual workflow
+- **Speed:** orders of magnitude faster than manual workflow
 - **Intelligence:** LLM adds scientific context
 
 ---
@@ -613,7 +613,7 @@ This integrated approach maximizes both citation impact AND real-world usage.
 - [ ] Add MIT LICENSE file
 - [ ] Create exceptional README with:
   - Demo GIF showing tool in action
-  - Clear value proposition (480x faster)
+  - Clear value proposition (orders of magnitude faster)
   - Quick start guide
   - Visual appeal (badges, screenshots)
 - [ ] Update manuscript Code Availability section with GitHub link
@@ -783,7 +783,7 @@ I can:
 - ✅ Created comprehensive 4-panel Figure 4 combining workflow comparison AND LLM value demonstration
 - ✅ Panel A: Traditional manual workflow (4 steps, 2-4 hours)
 - ✅ Panel B: RegNetAgents automated workflow (parallel execution, 0.6-15 seconds)
-- ✅ Panel C: Performance comparison bar chart (480-24,000× speedup)
+- ✅ Panel C: Performance comparison bar chart (orders of magnitude speedup)
 - ✅ Panel D: LLM-powered scientific context demonstration
 - ✅ Increased all font sizes for conference poster readability (titles 11→16pt, body 7-8→10-13pt)
 

@@ -718,7 +718,7 @@ def create_poster(sections):
             fig_caption_box = slide.shapes.add_textbox(col4_x, figure4_y, col4_width, Inches(0.45))
             fig_caption_frame = fig_caption_box.text_frame
             p = fig_caption_frame.add_paragraph()
-            p.text = "Figure 4: Framework Performance (480-24,000× speedup)"
+            p.text = "Figure 4: Framework Performance (orders of magnitude speedup)"
             p.font.size = Pt(30)
             p.font.bold = True
             p.font.color.rgb = ORANGE

@@ -574,7 +574,7 @@ def create_figure4():
             fontsize=14, fontweight='bold',
             bbox=dict(boxstyle='round', facecolor='#99FF99', alpha=0.7))
 
-    ax2.text(5, 1.2, 'Speedup: 480-24,000×', ha='center', va='center',
+    ax2.text(5, 1.2, 'Orders of Magnitude Speedup', ha='center', va='center',
             fontsize=13, fontweight='bold', color='darkgreen')
 
     # ========== PANEL C: Time Comparison ===========

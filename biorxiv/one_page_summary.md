@@ -53,7 +53,7 @@ Gene regulatory network analysis currently requires:
 - ✅ **Framework validation** - **100% concordance** with published literature across five genes
 - ✅ **Automated classification** - diagnostic, prognostic, predictive biomarkers
 - ✅ **Perturbation analysis** - all 99 regulators analyzed across 5 genes
-- ✅ **Validated predictions** - successfully identified experimentally validated TP53 regulators (WWTR1, YAP1, CHD4 from Hippo pathway)
+- ✅ **Validated predictions** - perturbation analysis correctly ranked experimentally validated TP53 regulators (WWTR1, YAP1, CHD4) among top candidates; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses
 - ✅ **15.49 seconds** - complete network and perturbation analysis (all 99 regulators, rule-based)
 - ✅ **~62 seconds** - comprehensive analysis with LLM-powered domain insights
 

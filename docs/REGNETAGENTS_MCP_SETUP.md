@@ -84,7 +84,7 @@ cp .env.example .env
 **Performance**:
 - With Ollama: ~4 seconds per gene (LLM-generated insights with rationales)
 - Without Ollama: Instant (rule-based heuristics, automatic fallback)
-- Still 100-200× faster than manual literature review
+- Both modes orders of magnitude faster than manual literature review
 
 **Note**: System works perfectly without Ollama using fast rule-based heuristics. LLM mode adds scientific rationales and interpretations.
 

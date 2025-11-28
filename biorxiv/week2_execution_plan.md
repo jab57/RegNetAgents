@@ -1,7 +1,7 @@
 # Week 2: Framework Value Demonstration
 
 ## Goal
-Create Figure 4 showing RegNetAgents is **480-24,000× faster** than manual workflows and **LLM adds scientific context**
+Create Figure 4 showing RegNetAgents is **orders of magnitude faster** than manual workflows and **LLM adds scientific context**
 
 ## Timeline: 4-6 days
 
@@ -25,7 +25,7 @@ Create Figure 4 showing RegNetAgents is **480-24,000× faster** than manual work
 ├─────────────────────┼─────────────────────┤
 │  C) Time Comparison │ D) LLM Intelligence │
 │     Bar Chart       │    Side-by-Side     │
-│  480-24,000× faster │   Scores vs Context │
+│  orders of magnitude faster │   Scores vs Context │
 └─────────────────────┴─────────────────────┘
 ```
 
@@ -47,12 +47,12 @@ Create Figure 4 showing RegNetAgents is **480-24,000× faster** than manual work
 - Figure 4 legend (~200 words)
 
 **Update line ~16:**
-- Add: "representing 480-24,000× speedup over manual workflows (Figure 4)"
+- Add: "representing orders of magnitude speedup over manual workflows (Figure 4)"
 
 ### 3. Validation (Day 6)
 - Check Figure 4 renders correctly (300 DPI)
 - Verify timing data matches JSON file
-- Confirm speedup calculations (9000s / 0.6s = 15,000×)
+- Confirm speedup is orders of magnitude (manual baseline: 2.5 hours vs RegNetAgents: 0.6-15 sec)
 - Proofread new manuscript sections
 
 ---
