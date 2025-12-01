@@ -145,14 +145,14 @@ class RegNetAgentsModelingAgent:
             # Find regulators (genes that regulate this gene)
             regulators = target_regulators.get(ensembl_id, [])
 
-            # Determine regulatory role
+            # Determine regulatory role - prioritize hub status over terminal status
             num_regulators = len(regulators)
             num_targets = len(targets)
 
-            if num_regulators > 15:
+            if num_targets > 20:
+                regulatory_role = "hub_regulator"    # Regulates many (high priority)
+            elif num_regulators > 15:
                 regulatory_role = "terminal_target"  # Highly regulated
-            elif num_targets > 20:
-                regulatory_role = "hub_regulator"    # Regulates many
             elif num_targets > 5 and num_regulators > 5:
                 regulatory_role = "intermediate_node"
             elif num_targets > 0:
