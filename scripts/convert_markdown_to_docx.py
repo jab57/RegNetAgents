@@ -132,21 +132,30 @@ def clean_markdown_text(text):
     return text
 
 if __name__ == '__main__':
+    from docx2pdf import convert as convert_to_pdf
+
     md_file = Path('biorxiv/preprint_draft.md')
     docx_file = Path('biorxiv/regnetagents_preprint.docx')
+    pdf_file = Path('biorxiv/regnetagents_preprint.pdf')
 
     print("=" * 60)
-    print("Converting Markdown to DOCX for bioRxiv Submission")
+    print("Converting Markdown to DOCX + PDF for bioRxiv Submission")
     print("=" * 60)
 
+    # Generate DOCX
+    print("\n1. Generating DOCX...")
     convert_markdown_to_docx(md_file, docx_file)
 
+    # Generate PDF from DOCX
+    print("\n2. Generating PDF...")
+    convert_to_pdf(str(docx_file.absolute()), str(pdf_file.absolute()))
+    print(f"[OK] Converted {docx_file} -> {pdf_file}")
+
     print("\n" + "=" * 60)
-    print("[SUCCESS] Conversion complete!")
+    print("[SUCCESS] Both files generated!")
     print("=" * 60)
-    print(f"\nOutput file: {docx_file.absolute()}")
-    print("\nNext steps:")
-    print("1. Open the DOCX file in Microsoft Word")
-    print("2. Review formatting and make any final adjustments")
-    print("3. Export as PDF: File > Save As > PDF")
-    print("4. Ready for bioRxiv submission!")
+    print(f"\nGenerated files:")
+    print(f"  - DOCX: {docx_file.absolute()}")
+    print(f"  - PDF:  {pdf_file.absolute()}")
+    print("\nReady for bioRxiv submission!")
+    print("Upload the PDF file to bioRxiv.")
