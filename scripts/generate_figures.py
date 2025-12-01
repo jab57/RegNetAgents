@@ -251,10 +251,10 @@ def create_figure2():
 
     # B) Regulatory role classification
     ax2 = plt.subplot(2, 2, 2)
-    role_map = {'hub_regulator': 'Hub Regulator', 'terminal_target': 'Terminal Target',
-                'target': 'Target', 'master_regulator': 'Master Regulator'}
-    role_colors = {'hub_regulator': '#e74c3c', 'terminal_target': '#f39c12',
-                   'target': '#3498db', 'master_regulator': '#9b59b6'}
+    role_map = {'hub_regulator': 'Hub Regulator', 'heavily_regulated': 'Heavily Regulated',
+                'weakly_regulated': 'Weakly Regulated', 'master_regulator': 'Master Regulator'}
+    role_colors = {'hub_regulator': '#e74c3c', 'heavily_regulated': '#f39c12',
+                   'weakly_regulated': '#3498db', 'master_regulator': '#9b59b6'}
 
     for i, (gene, role) in enumerate(zip(genes, regulatory_roles)):
         color = role_colors.get(role, '#95a5a6')

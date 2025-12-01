@@ -254,9 +254,9 @@ Given the candidate genes, the system automatically:
 |------|----------------|---------|------------|----------------|-----------------------------------|
 | **MYC** | Hub Regulator | 427 | 25 | Diagnostic | **ID4** (0.622) |
 | **CTNNB1** | Hub Regulator | 310 | 18 | Diagnostic | **CHD2** (0.530) |
-| **CCND1** | Terminal Target | 0 | 42 | Diagnostic | **ZBTB20** (0.600) |
+| **CCND1** | Heavily Regulated | 0 | 42 | Diagnostic | **ZBTB20** (0.600) |
 | **TP53** | Hub Regulator | 163 | 7 | Prognostic | **WWTR1** (0.473) |
-| **KRAS** | Terminal Target | 0 | 7 | Predictive | **GPBP1** (0.609) |
+| **KRAS** | Heavily Regulated | 0 | 7 | Predictive | **GPBP1** (0.609) |
 
 *Perturbation analysis performed for all 5 genes - all regulators analyzed (25, 18, 42, 7, 7 respectively). Top candidate regulator prioritized by PageRank (associated with drug target success per Mora & Donaldson 2021). Rankings serve as hypotheses for experimental validation. Full TP53 perturbation results shown in Case Study 2 (Table 3) with detailed rankings of all 7 regulators.*
 
@@ -266,7 +266,7 @@ Given the candidate genes, the system automatically:
 - **Predictive**: Predicts response to specific therapy (treatment selection)
 
 **Multi-Agent Analysis Summary**:
-- **Network Modeling**: Identified regulatory roles - 3 hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity, 2 terminal targets (CCND1, KRAS) as end-point effectors
+- **Network Modeling**: Identified regulatory roles - 3 hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity, 2 heavily regulated genes (CCND1 with 42 regulators, KRAS with 7 regulators) as end-point effectors
 - **Pathway Enrichment**: 242 total significant pathways identified (FDR < 0.05) across 5 genes (MYC: 58, CTNNB1: 7, CCND1: 20, TP53: 16, KRAS: 141)
 - **Biomarker Classification**: 3 diagnostic, 1 prognostic, 1 predictive (based on regulatory architecture)
 - **Perturbation Analysis** (PageRank Rankings): All 5 genes qualify for perturbation analysis (>5 regulators each)

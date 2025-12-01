@@ -145,20 +145,20 @@ class RegNetAgentsModelingAgent:
             # Find regulators (genes that regulate this gene)
             regulators = target_regulators.get(ensembl_id, [])
 
-            # Determine regulatory role - prioritize hub status over terminal status
+            # Determine regulatory role - prioritize hub status over heavily regulated status
             num_regulators = len(regulators)
             num_targets = len(targets)
 
             if num_targets > 20:
-                regulatory_role = "hub_regulator"    # Regulates many (high priority)
+                regulatory_role = "hub_regulator"      # Regulates many genes (high priority)
             elif num_regulators > 15:
-                regulatory_role = "terminal_target"  # Highly regulated
+                regulatory_role = "heavily_regulated"  # Controlled by many regulators
             elif num_targets > 5 and num_regulators > 5:
-                regulatory_role = "intermediate_node"
+                regulatory_role = "intermediate_node"  # Balanced regulatory role
             elif num_targets > 0:
-                regulatory_role = "regulator"
+                regulatory_role = "regulator"          # Has downstream targets
             else:
-                regulatory_role = "target"
+                regulatory_role = "weakly_regulated"   # Few regulators, no targets
 
         # Determine if gene is actually in the network (has connections)
         in_network = len(regulators) > 0 or len(targets) > 0
@@ -1194,8 +1194,8 @@ Provide only the JSON, no additional text."""
         # Clinical significance assessment
         clinical_insights = {
             "disease_association_likelihood": "high" if num_regulators > 15 else "moderate" if num_regulators > 5 else "low",
-            "biomarker_utility": "diagnostic" if regulatory_role == "terminal_target" else "prognostic" if regulatory_role == "hub_regulator" else "predictive",
-            "clinical_actionability": "high" if num_regulators > 10 and regulatory_role in ['hub_regulator', 'terminal_target'] else "moderate"
+            "biomarker_utility": "diagnostic" if regulatory_role == "heavily_regulated" else "prognostic" if regulatory_role == "hub_regulator" else "predictive",
+            "clinical_actionability": "high" if num_regulators > 10 and regulatory_role in ['hub_regulator', 'heavily_regulated'] else "moderate"
         }
 
         # Cross-cell type clinical insights
@@ -1849,7 +1849,7 @@ class RegNetAgentsWorkflow:
 
         if ('cancer_domain_analysis' not in completed_steps
             and (num_regulators > 10 or num_targets > 15 or
-                 regulatory_role in ['hub_regulator', 'master_regulator', 'terminal_target'])):
+                 regulatory_role in ['hub_regulator', 'master_regulator', 'heavily_regulated'])):
             tasks.append(self.domain_agents.analyze_cancer_context(state['gene'], gene_info, pathway_analysis))
             task_names.append('cancer')
 

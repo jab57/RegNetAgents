@@ -515,7 +515,7 @@ ERROR: Please run: python build_network_cache.py --all
 **LangGraph Execution Flow (Optimized Sequential):**
 ```
 Input: APC (epithelial cells - tissue barriers)
-├── Gene Network Analysis → terminal_target, 23 regulators
+├── Gene Network Analysis → heavily_regulated, 23 regulators
 ├── Smart Routing → High priority: regulators (23 regulators)
 │
 ├── Step 1: Regulators Analysis
@@ -526,7 +526,7 @@ Input: APC (epithelial cells - tissue barriers)
 ├── Step 2: Pathway Analysis (Reactome)
 │   └── Reactome enrichment: Wnt signaling, Cell cycle (p-values, FDR)
 │
-├── Smart Routing → Cross-cell (terminal target with 23 regulators)
+├── Smart Routing → Cross-cell (heavily regulated with 23 regulators)
 │
 ├── Step 3: Cross-Cell Analysis
 │   └── Active only in epithelial cells (tissue-specific)
@@ -566,8 +566,8 @@ genes = ["APC", "BRCA1", "TP53", "MYC"]
 ```
 
 **Results (Comprehensive Analysis with Domain Insights):**
-- **APC** → Terminal target, 23 regulators, Wnt signaling, tumor suppressor role
-- **BRCA1** → Terminal target, DNA repair pathways, high connectivity (310 targets)
+- **APC** → Heavily regulated, 23 regulators, Wnt signaling, tumor suppressor role
+- **BRCA1** → Heavily regulated, DNA repair pathways, high connectivity (310 targets)
 - **TP53** → Hub regulator, 163 targets, cell cycle, central network position
 - **MYC** → Hub regulator, transcriptional control, extensive regulatory network (427 targets)
 

@@ -1,6 +1,6 @@
-  Gene Regulatory Role  Targets  Regulators Biomarker Type
-   MYC   hub_regulator      427          25     diagnostic
-CTNNB1   hub_regulator      310          18     diagnostic
- CCND1 terminal_target        0          42     diagnostic
-  TP53   hub_regulator      163           7     prognostic
-  KRAS terminal_target        0           7     predictive
+  Gene   Regulatory Role  Targets  Regulators Biomarker Type
+   MYC     hub_regulator      427          25     diagnostic
+CTNNB1     hub_regulator      310          18     diagnostic
+ CCND1 heavily_regulated        0          42     diagnostic
+  TP53     hub_regulator      163           7     prognostic
+  KRAS heavily_regulated        0           7     predictive

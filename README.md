@@ -379,8 +379,9 @@ pip install -r requirements.txt
 
 **Network Terms**:
 - **Regulatory Network**: Map showing which genes control other genes in a specific cell type
-- **Hub Regulator**: A gene that controls many other genes (like a master switch)
-- **Terminal Target**: A gene that is heavily controlled but doesn't control many others
+- **Hub Regulator**: A gene that controls many other genes (>20 targets - like a master switch)
+- **Heavily Regulated**: A gene that is controlled by many regulators (>15 regulators - complex control)
+- **Weakly Regulated**: A gene with few regulators and no downstream targets (simple endpoint)
 
 **Analysis Terms**:
 - **Pathway**: A group of genes working together for a biological process (e.g., "Wnt signaling", "Cell cycle")
