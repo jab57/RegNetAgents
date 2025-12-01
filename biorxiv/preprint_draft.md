@@ -6,7 +6,7 @@
 
 ## Authors
 Jose A. Bird, PhD
-Founder & Data Science Consultant, Bird AI Solutions
+Bird AI Solutions
 jbird@birdaisolutions.com
 
 ---
@@ -238,7 +238,7 @@ Framework validation against established colorectal cancer biology demonstrated:
 - **100% concordance** with published biomarker classifications (5/5 genes correctly classified)
 - **Successful prediction** of experimentally validated TP53 regulators from Hippo pathway (WWTR1, YAP1, CHD4)
 - **Pathway coherence** between network topology and biological pathways (Hippo signaling enrichment, FDR = 0.020)
-- **Novel hypothesis generation** for experimental validation (RBPMS, PRRX2)
+- **Novel hypothesis generation** for experimental validation (RBPMS, PRRX2, THRA, IKZF2)
 
 These results demonstrate the framework produces biologically meaningful outputs suitable for hypothesis generation and experimental prioritization.
 
@@ -345,7 +345,7 @@ We compared the top 3 network-ranked candidates (by PageRank) against published 
 
 **PRRX2:** Paired-related homeobox 2, a transcription factor involved in EMT and mesenchymal stem cell regulation (31). PRRX2's high PageRank despite moderate degree centrality reflects quality over quantity in network connections. Direct TP53 regulation by PRRX2 represents another hypothesis prioritized by network topology requiring experimental validation.
 
-This comparison demonstrates that topology-based ranking can: (1) recapitulate experimentally validated regulators (WWTR1/CHD4/YAP1 from Hippo pathway), and (2) generate testable hypotheses (RBPMS, PRRX2) for experimental follow-up. The framework serves as a hypothesis generation tool to prioritize candidates for experimental validation.
+This comparison demonstrates that topology-based ranking can: (1) recapitulate experimentally validated regulators (WWTR1/CHD4/YAP1 from Hippo pathway), and (2) generate testable hypotheses (RBPMS, PRRX2, THRA, IKZF2) for experimental follow-up. The framework serves as a hypothesis generation tool to prioritize candidates for experimental validation.
 
 ### Cross-Cell-Type Regulatory Analysis
 
@@ -363,7 +363,7 @@ These findings demonstrate how cross-cell-type analysis reveals tissue-specific 
 
 ### Pathway Enrichment Analysis
 
-Reactome pathway enrichment for the TP53 regulatory network (TP53 + 7 regulators + top 10 targets) identified 16 statistically significant enriched pathways (FDR < 0.05, Table S1). Top pathways included:
+Reactome pathway enrichment for the TP53 regulatory network (TP53 + 7 regulators + top 10 targets) identified 16 statistically significant enriched pathways (FDR < 0.05). Top pathways included:
 
 1. **Regulation of TP53 Expression** (FDR = 0.0033, 2/4 genes)
 2. **RUNX3 regulates YAP1-mediated transcription** (FDR = 0.0084, 2/9 genes)
@@ -379,7 +379,7 @@ The enrichment of Hippo signaling pathways (YAP1/WWTR1-mediated transcription) d
 
 ### Principal Findings
 
-We developed RegNetAgents, a multi-agent AI framework that streamlines gene regulatory network analysis and makes sophisticated computational methods accessible to experimental biologists. The system integrates network modeling, automated perturbation simulation for candidate regulator prioritization, pathway enrichment with statistical validation, and parallel domain-specific interpretation into a unified conversational interface accessible without programming expertise. A demonstration case study on colorectal cancer biomarkers showed the framework can recapitulate literature-confirmed regulatory patterns across five genes (99 total regulators analyzed) and generate testable hypotheses for experimental validation. Perturbation analysis of TP53 correctly ranked experimentally validated Hippo pathway regulators (WWTR1, CHD4, YAP1) alongside novel hypotheses (RBPMS, PRRX2), demonstrating utility for hypothesis generation. Performance benchmarks show orders of magnitude speedup compared to manual multi-database workflows, with complete network analysis completing in 15.49 seconds for 5 genes (rule-based mode) or ~62 seconds (LLM-powered mode with domain agent insights), compared to labor-intensive manual alternatives. **The framework is designed as a hypothesis generation and experimental prioritization tool, not a replacement for experimental validation or expert biological interpretation.**
+We developed RegNetAgents, a multi-agent AI framework that streamlines gene regulatory network analysis and makes sophisticated computational methods accessible to experimental biologists. The system integrates network modeling, automated perturbation simulation for candidate regulator prioritization, pathway enrichment with statistical validation, and parallel domain-specific interpretation into a unified conversational interface accessible without programming expertise. A demonstration case study on colorectal cancer biomarkers showed the framework can recapitulate literature-confirmed regulatory patterns across five genes (99 total regulators analyzed) and generate testable hypotheses for experimental validation. Perturbation analysis of TP53 correctly ranked experimentally validated Hippo pathway regulators (WWTR1, CHD4, YAP1) alongside novel hypotheses (RBPMS, PRRX2, THRA, IKZF2), demonstrating utility for hypothesis generation. Performance benchmarks show orders of magnitude speedup compared to manual multi-database workflows, with complete network analysis completing in 15.49 seconds for 5 genes (rule-based mode) or ~62 seconds (LLM-powered mode with domain agent insights), compared to labor-intensive manual alternatives. **The framework is designed as a hypothesis generation and experimental prioritization tool, not a replacement for experimental validation or expert biological interpretation.**
 
 ### Framework Validation Against Known Biology
 
@@ -391,7 +391,7 @@ A critical question for any computational tool is whether it produces biological
 
 **3. Pathway-network concordance:** Pathway enrichment independently identified Hippo signaling (FDR = 0.020), confirming biological coherence between network structure and pathway-level regulation.
 
-These validations demonstrate the framework recapitulates established biology while generating novel testable hypotheses (RBPMS, PRRX2). This positions RegNetAgents as a reliable hypothesis generation tool for experimental biologists.
+These validations demonstrate the framework recapitulates established biology while generating novel testable hypotheses (RBPMS, PRRX2, THRA, IKZF2). This positions RegNetAgents as a reliable hypothesis generation tool for experimental biologists.
 
 ### Comparison to Existing Approaches
 
@@ -611,8 +611,8 @@ Network data used in this study are publicly available through the GREmLN Quicks
 **END OF MANUSCRIPT**
 
 **Manuscript Statistics:**
-- Words (excluding references): ~8,500
-- Figures: 3 main
-- Tables: 3 main
+- Words (excluding references): ~8,250
+- Figures: 4
+- Tables: 3
 - References: 44
 - Pages (estimated): 12-15 in typical journal format

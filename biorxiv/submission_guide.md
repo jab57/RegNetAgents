@@ -65,7 +65,7 @@ Use Word Online (free):
 - ✅ Title and headers are properly formatted
 - ✅ References are included
 - ✅ Your name shows: "Jose A. Bird, PhD"
-- ✅ Your affiliation shows: "Founder & Data Science Consultant, Bird AI Solutions"
+- ✅ Your affiliation shows: "Bird AI Solutions"
 
 **Note**: The Word document doesn't include embedded figures. You'll upload figures separately to bioRxiv as supplementary files (instructions in Phase 2).
 
