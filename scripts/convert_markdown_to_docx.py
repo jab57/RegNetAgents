@@ -34,6 +34,7 @@ def convert_markdown_to_docx(md_file, docx_file):
     lines = md_content.split('\n')
     in_table = False
     in_code_block = False
+    in_references = False
     table_data = []
 
     for line in lines:
@@ -48,6 +49,9 @@ def convert_markdown_to_docx(md_file, docx_file):
         if line.startswith('# '):
             p = doc.add_heading(line[2:], level=1)
         elif line.startswith('## '):
+            # Track when we enter References section
+            if 'REFERENCE' in line.upper():
+                in_references = True
             p = doc.add_heading(line[3:], level=2)
         elif line.startswith('### '):
             p = doc.add_heading(line[4:], level=3)
@@ -95,9 +99,16 @@ def convert_markdown_to_docx(md_file, docx_file):
                 text = clean_markdown_text(text)
                 p = doc.add_paragraph(text, style='List Bullet')
             elif re.match(r'^\d+\.', line.strip()):
-                text = re.sub(r'^\d+\.\s*', '', line.strip())
-                text = clean_markdown_text(text)
-                p = doc.add_paragraph(text, style='List Number')
+                if in_references:
+                    # In references section: keep numbers as text, don't use auto-numbering
+                    text = line.strip()
+                    text = clean_markdown_text(text)
+                    p = doc.add_paragraph(text)
+                else:
+                    # In other sections: use Word's auto-numbering
+                    text = re.sub(r'^\d+\.\s*', '', line.strip())
+                    text = clean_markdown_text(text)
+                    p = doc.add_paragraph(text, style='List Number')
 
             # Handle regular paragraphs
             elif line.strip():
