@@ -160,6 +160,8 @@ Each domain agent receives structured prompts containing:
 - Pathway enrichment results (when available)
 - Cross-cell-type expression patterns (for clinical agent)
 
+Complete prompt templates for all four domain agents are provided in **Supplementary Materials Table S1**, enabling full reproducibility of LLM analyses.
+
 Agents return JSON-structured insights with:
 - Domain-specific classifications (e.g., oncogenic potential: high/moderate/low, intervention strategy: inhibition/activation)
 - Scientific rationales explaining each classification
