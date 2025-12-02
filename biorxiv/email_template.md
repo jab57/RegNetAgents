@@ -30,9 +30,10 @@ thought you might find it interesting.
 
 The system automates labor-intensive manual workflows across
 multiple databases (STRING, BioGRID, Enrichr, etc.) into subsecond analysis.
-We validated it on colorectal cancer biomarkers with 100% alignment to
-published literature, and the perturbation analysis identified both known
-(CHD4, YAP1) and novel (RBPMS) therapeutic targets for TP53.
+In a validation panel of five colorectal cancer biomarkers, framework
+classifications showed 100% concordance with published literature, and the
+perturbation analysis identified both known (CHD4, YAP1) and novel (RBPMS)
+therapeutic targets for TP53.
 
 Preprint: [bioRxiv URL - add after submission]
 

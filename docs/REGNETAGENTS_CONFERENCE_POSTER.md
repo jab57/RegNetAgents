@@ -1,6 +1,6 @@
 # RegNetAgents: Validated Multi-Agent Framework for Gene Regulatory Network Analysis
 
-**A LangGraph-Powered AI System for Comprehensive Gene Analysis with 100% Literature Concordance**
+**A LangGraph-Powered AI System for Comprehensive Gene Analysis Validated on Colorectal Cancer Biomarkers**
 
 ---
 

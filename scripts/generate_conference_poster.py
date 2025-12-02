@@ -473,7 +473,7 @@ def create_poster(sections):
 
     # Prominent speed/validation callout
     add_callout_box(slide, col3_x, Inches(4.2), col3_width, Inches(1.2),
-                   "⚡ 0.60-62 sec Analysis • 100% Literature-Validated ✓",
+                   "⚡ 0.60-62 sec Analysis • Validated on CRC Biomarkers ✓",
                    RGBColor(255, 250, 205), ORANGE)  # Light yellow bg, orange border
 
     # ===== COLUMN 3: NATURAL LANGUAGE INTERFACE & RESULTS =====

@@ -50,7 +50,7 @@ Gene regulatory network analysis currently requires:
 **Case Study**: 5-gene panel (MYC, CTNNB1, CCND1, TP53, KRAS)
 
 **Results**:
-- ✅ **Framework validation** - **100% concordance** with published literature across five genes
+- ✅ **Framework validation** - **100% concordance** with published literature in focused 5-gene validation panel (proof-of-concept)
 - ✅ **Automated classification** - diagnostic, prognostic, predictive biomarkers
 - ✅ **Perturbation analysis** - all 99 regulators analyzed across 5 genes
 - ✅ **Validated predictions** - perturbation analysis correctly ranked experimentally validated TP53 regulators (WWTR1, YAP1, CHD4) among top candidates; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses
