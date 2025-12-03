@@ -348,13 +348,13 @@ All seven regulators showed PageRank scores >0.30, meeting the threshold associa
 
 We compared the top 3 network-ranked candidates (by PageRank) against published literature to assess whether topology-based ranking recapitulates known biology:
 
-**WWTR1 (TAZ):** WW domain-containing transcription regulator 1, also known as TAZ, is a Hippo pathway effector that functions as a transcriptional co-activator. WWTR1 and its paralog YAP1 are key downstream effectors of Hippo signaling involved in cell fate decisions, proliferation control, and DNA damage responses (32,33). The high PageRank ranking identifies WWTR1 as a central network node, consistent with the established role of Hippo pathway components in regulating cell growth and tumor suppression (41,42). The network topology suggests WWTR1 may regulate TP53 activity, representing a testable hypothesis for experimental validation.
+**WWTR1 (TAZ):** WW domain-containing transcription regulator 1, also known as TAZ, is a Hippo pathway effector that functions as a transcriptional co-activator. WWTR1 and its paralog YAP1 are key downstream effectors of Hippo signaling involved in cell fate decisions, proliferation control, and DNA damage responses (32,33). The high PageRank ranking identifies WWTR1 as a central network node, consistent with the established role of Hippo pathway components in regulating cell growth and tumor suppression (34,35). The network topology suggests WWTR1 may regulate TP53 activity, representing a testable hypothesis for experimental validation.
 
-**RBPMS:** RNA-binding protein with multiple splicing that shows the highest degree centrality among TP53 regulators (403 downstream targets). The related protein RBPMS2 has been implicated in smooth muscle plasticity and gene regulation (34), suggesting potential roles in tissue-specific transcriptional control. While limited literature exists on RBPMS itself in cancer contexts, its extensive network connectivity and high PageRank (0.469) position it as a high-priority candidate for experimental validation in TP53 regulatory mechanisms.
+**RBPMS:** RNA-binding protein with multiple splicing that shows the highest degree centrality among TP53 regulators (403 downstream targets). The related protein RBPMS2 has been implicated in smooth muscle plasticity and gene regulation (36), suggesting potential roles in tissue-specific transcriptional control. While limited literature exists on RBPMS itself in cancer contexts, its extensive network connectivity and high PageRank (0.469) position it as a high-priority candidate for experimental validation in TP53 regulatory mechanisms.
 
 **PRRX2:** Paired-related homeobox 2, a transcription factor involved in mesenchymal development and epithelial-mesenchymal transition pathways. PRRX2's high PageRank (0.454) despite moderate degree centrality reflects quality over quantity in network connections—suggesting influence through key regulatory hubs rather than direct broad connectivity. Its limited characterization in TP53 regulatory contexts makes it a particularly intriguing novel hypothesis, as homeobox factors often orchestrate complex developmental and disease-relevant gene expression programs.
 
-This comparison demonstrates that topology-based ranking can: (1) recapitulate experimentally validated regulators (WWTR1 and YAP1 from Hippo pathway, CHD4 from chromatin remodeling complexes (35-37)), and (2) generate testable hypotheses (RBPMS, PRRX2, THRA, IKZF2) for experimental follow-up. The framework serves as a hypothesis generation tool to prioritize candidates for experimental validation.
+This comparison demonstrates that topology-based ranking can: (1) recapitulate experimentally validated regulators (WWTR1 and YAP1 from Hippo pathway, CHD4 from chromatin remodeling complexes (37-39)), and (2) generate testable hypotheses (RBPMS, PRRX2, THRA, IKZF2) for experimental follow-up. The framework serves as a hypothesis generation tool to prioritize candidates for experimental validation.
 
 ### Cross-Cell-Type Regulatory Analysis
 
@@ -404,13 +404,13 @@ These validations demonstrate the framework recapitulates established biology wh
 
 ### Comparison to Existing Approaches
 
-Traditional gene regulatory analysis tools operate in isolation: network databases (STRING, BioGRID) provide interaction data but lack pathway context; pathway enrichment tools (Enrichr, DAVID, Reactome web interface) require manual gene list preparation; and domain-specific interpretation (cancer relevance, drug development potential, clinical actionability) remains a manual literature curation task. Recent tools have begun addressing integration: NetworkAnalyst combines network visualization with enrichment analysis (38), while CARNIVAL infers causal networks from perturbation data (39). However, these tools lack conversational interfaces, require programming expertise, and do not provide automated therapeutic target prioritization via perturbation analysis.
+Traditional gene regulatory analysis tools operate in isolation: network databases (STRING, BioGRID) provide interaction data but lack pathway context; pathway enrichment tools (Enrichr, DAVID, Reactome web interface) require manual gene list preparation; and domain-specific interpretation (cancer relevance, drug development potential, clinical actionability) remains a manual literature curation task. Recent tools have begun addressing integration: NetworkAnalyst combines network visualization with enrichment analysis (40), while CARNIVAL infers causal networks from perturbation data (41). However, these tools lack conversational interfaces, require programming expertise, and do not provide automated therapeutic target prioritization via perturbation analysis.
 
 RegNetAgents advances the field through four key innovations:
 
 **1. Multi-Agent Parallelization:** Four domain-specific agents (cancer, drug, clinical, systems) execute simultaneously, providing integrated biological perspectives in a single query. This contrasts with sequential manual workflows where researchers must separately consider each domain.
 
-**2. Automated Perturbation Analysis:** Network topology-based simulation identifies therapeutic targets by quantifying regulatory impact of inhibiting upstream regulators. While gene expression prediction tools exist (e.g., cell2cell for cell-cell communication modeling (40)), our approach prioritizes regulators for experimental validation based on network architecture rather than attempting to predict expression changes, which require dynamic models and experimental perturbation data currently unavailable at single-cell resolution across cell types.
+**2. Automated Perturbation Analysis:** Network topology-based simulation identifies therapeutic targets by quantifying regulatory impact of inhibiting upstream regulators. While gene expression prediction tools exist (e.g., cell2cell for cell-cell communication modeling (42)), our approach prioritizes regulators for experimental validation based on network architecture rather than attempting to predict expression changes, which require dynamic models and experimental perturbation data currently unavailable at single-cell resolution across cell types.
 
 **3. Conversational Interface:** Model Context Protocol integration enables natural language queries ("Analyze TP53 in epithelial cells for cancer pathways") rather than programming or web form interactions. This democratizes access to sophisticated network analysis for experimental biologists without computational training.
 
@@ -418,7 +418,7 @@ RegNetAgents advances the field through four key innovations:
 
 ### Biological Insights from Case Studies
 
-The colorectal cancer analysis revealed distinct regulatory architectures with therapeutic implications. Hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163-427 targets) function as signal amplifiers but present off-target risks, while terminal effectors (CCND1, KRAS) offer more specific intervention points. TP53 perturbation analysis revealed distributed regulatory control (7 regulators, each ~14% contribution), suggesting combinatorial therapeutic strategies may be necessary. The identification of YAP1/WWTR1 (Hippo pathway effectors) as top regulators aligns with recent interest in Hippo pathway-targeted therapies (41,42), demonstrating the framework can recapitulate and extend experimentally derived therapeutic hypotheses.
+The colorectal cancer analysis revealed distinct regulatory architectures with therapeutic implications. Hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163-427 targets) function as signal amplifiers but present off-target risks, while terminal effectors (CCND1, KRAS) offer more specific intervention points. TP53 perturbation analysis revealed distributed regulatory control (7 regulators, each ~14% contribution), suggesting combinatorial therapeutic strategies may be necessary. The identification of YAP1/WWTR1 (Hippo pathway effectors) as top regulators aligns with recent interest in Hippo pathway-targeted therapies (34,35), demonstrating the framework can recapitulate and extend experimentally derived therapeutic hypotheses.
 
 ### Limitations and Considerations
 
@@ -558,23 +558,23 @@ The authors declare no competing interests.
 
 33. Levy D, Adamovich Y, Reuven N, Shaul Y. Yap1 phosphorylation by c-Abl is a critical step in selective activation of proapoptotic genes in response to DNA damage. Mol Cell. 2008;29(3):350-361.
 
-34. Sagnol S, Yang Y, Bessin Y, et al. Homodimerization of RBPMS2 through a new RRM-interaction motif is necessary to control smooth muscle plasticity. Nucleic Acids Res. 2014;42(15):10173-10184.
+34. Zanconato F, Cordenonsi M, Piccolo S. YAP and TAZ: a signalling hub of the tumour microenvironment. Nat Rev Cancer. 2019;19(8):454-464.
 
-35. Polo SE, Kaidi A, Baskcomb L, Galanty Y, Jackson SP. Regulation of DNA-damage responses and cell-cycle progression by the chromatin remodelling factor CHD4. EMBO J. 2010;29(18):3130-3139.
+35. Zhao B, Tumaneng K, Guan KL. The Hippo pathway in organ size control, tissue regeneration and stem cell self-renewal. Nat Cell Biol. 2011;13(8):877-883.
 
-36. Larsen DH, Poinsignon C, Gudjonsson T, et al. The chromatin-remodeling factor CHD4 coordinates signaling and repair after DNA damage. J Cell Biol. 2010;190(5):731-740.
+36. Sagnol S, Yang Y, Bessin Y, et al. Homodimerization of RBPMS2 through a new RRM-interaction motif is necessary to control smooth muscle plasticity. Nucleic Acids Res. 2014;42(15):10173-10184.
 
-37. Smeenk G, Wiegant WW, Vrolijk H, et al. The NuRD chromatin-remodeling complex regulates signaling and repair of DNA damage. J Cell Biol. 2010;190(5):741-749.
+37. Polo SE, Kaidi A, Baskcomb L, Galanty Y, Jackson SP. Regulation of DNA-damage responses and cell-cycle progression by the chromatin remodelling factor CHD4. EMBO J. 2010;29(18):3130-3139.
 
-38. Zhou G, Soufan O, Ewald J, Hancock REW, Basu N, Xia J. NetworkAnalyst 3.0: a visual analytics platform for comprehensive gene expression profiling and meta-analysis. Nucleic Acids Res. 2019;47(W1):W234-W241.
+38. Larsen DH, Poinsignon C, Gudjonsson T, et al. The chromatin-remodeling factor CHD4 coordinates signaling and repair after DNA damage. J Cell Biol. 2010;190(5):731-740.
 
-39. Liu A, Trairatphisan P, Gjerga E, et al. From expression footprints to causal pathways: contextualizing large signaling networks with CARNIVAL. NPJ Syst Biol Appl. 2019;5:40.
+39. Smeenk G, Wiegant WW, Vrolijk H, et al. The NuRD chromatin-remodeling complex regulates signaling and repair of DNA damage. J Cell Biol. 2010;190(5):741-749.
 
-40. Shao DD, Xue W, Krall EB, et al. KRAS and YAP1 converge to regulate EMT and tumor survival. Cell. 2014;158(1):171-184.
+40. Zhou G, Soufan O, Ewald J, Hancock REW, Basu N, Xia J. NetworkAnalyst 3.0: a visual analytics platform for comprehensive gene expression profiling and meta-analysis. Nucleic Acids Res. 2019;47(W1):W234-W241.
 
-41. Zanconato F, Cordenonsi M, Piccolo S. YAP and TAZ: a signalling hub of the tumour microenvironment. Nat Rev Cancer. 2019;19(8):454-464.
+41. Liu A, Trairatphisan P, Gjerga E, et al. From expression footprints to causal pathways: contextualizing large signaling networks with CARNIVAL. NPJ Syst Biol Appl. 2019;5:40.
 
-42. Zhao B, Tumaneng K, Guan KL. The Hippo pathway in organ size control, tissue regeneration and stem cell self-renewal. Nat Cell Biol. 2011;13(8):877-883.
+42. Shao DD, Xue W, Krall EB, et al. KRAS and YAP1 converge to regulate EMT and tumor survival. Cell. 2014;158(1):171-184.
 
 ---
 
