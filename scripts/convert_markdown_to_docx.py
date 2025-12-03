@@ -5,10 +5,29 @@ Convert markdown manuscript to DOCX format for bioRxiv submission
 import re
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_PARAGRAPH_ALIGNMENT, WD_BREAK
 from docx.enum.style import WD_STYLE_TYPE
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
 import markdown
 from pathlib import Path
+
+def add_page_break_before(paragraph):
+    """Add a page break before a paragraph"""
+    run = paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
+
+def set_keep_with_next(paragraph):
+    """Set paragraph to keep with next paragraph (prevents orphaned headings)"""
+    pPr = paragraph._element.get_or_add_pPr()
+    keepNext = OxmlElement('w:keepNext')
+    pPr.append(keepNext)
+
+def set_keep_together(paragraph):
+    """Set paragraph to keep lines together (prevents splitting)"""
+    pPr = paragraph._element.get_or_add_pPr()
+    keepLines = OxmlElement('w:keepLines')
+    pPr.append(keepLines)
 
 def convert_markdown_to_docx(md_file, docx_file):
     """Convert markdown file to formatted DOCX"""
@@ -35,8 +54,9 @@ def convert_markdown_to_docx(md_file, docx_file):
     in_table = False
     in_code_block = False
     table_data = []
+    last_paragraph = None
 
-    for line in lines:
+    for i, line in enumerate(lines):
         # Skip code blocks
         if line.strip().startswith('```'):
             in_code_block = not in_code_block
@@ -47,18 +67,34 @@ def convert_markdown_to_docx(md_file, docx_file):
         # Handle headers
         if line.startswith('# '):
             p = doc.add_heading(line[2:], level=1)
+            set_keep_with_next(p)
+            last_paragraph = p
         elif line.startswith('## '):
+            # Add page break before major sections (METHODS, RESULTS, DISCUSSION, CONCLUSIONS)
+            heading_text = line[3:].strip()
+            if heading_text in ['METHODS', 'RESULTS', 'DISCUSSION', 'CONCLUSIONS']:
+                p = doc.add_paragraph()  # Empty paragraph for page break
+                add_page_break_before(p)
             p = doc.add_heading(line[3:], level=2)
+            set_keep_with_next(p)
+            last_paragraph = p
         elif line.startswith('### '):
             p = doc.add_heading(line[4:], level=3)
+            set_keep_with_next(p)
+            last_paragraph = p
         elif line.startswith('#### '):
             p = doc.add_heading(line[5:], level=4)
+            set_keep_with_next(p)
+            last_paragraph = p
 
         # Handle tables
         elif line.strip().startswith('|') and line.strip().endswith('|'):
             if not in_table:
                 in_table = True
                 table_data = []
+                # If last paragraph is a table caption, keep it with the table
+                if last_paragraph and last_paragraph.text.startswith('Table '):
+                    set_keep_with_next(last_paragraph)
             # Skip separator lines
             if re.match(r'\|[\s\-:]+\|', line):
                 continue
@@ -72,6 +108,18 @@ def convert_markdown_to_docx(md_file, docx_file):
                 num_cols = len(table_data[0])
                 table = doc.add_table(rows=len(table_data), cols=num_cols)
                 table.style = 'Light Grid Accent 1'
+
+                # Set table to keep together (prevent splitting across pages)
+                tblPr = table._element.xpath('./w:tblPr')
+                if tblPr:
+                    tblPr = tblPr[0]
+                else:
+                    tblPr = OxmlElement('w:tblPr')
+                    table._element.insert(0, tblPr)
+
+                # Add keep together property
+                cantSplit = OxmlElement('w:cantSplit')
+                tblPr.append(cantSplit)
 
                 for i, row_data in enumerate(table_data):
                     row = table.rows[i]
@@ -88,23 +136,27 @@ def convert_markdown_to_docx(md_file, docx_file):
 
                 table_data = []
                 in_table = False
+                last_paragraph = None
 
             # Handle lists
             if line.strip().startswith('- ') or line.strip().startswith('* '):
                 text = line.strip()[2:]
                 text = clean_markdown_text(text)
                 p = doc.add_paragraph(text, style='List Bullet')
+                last_paragraph = p
             elif re.match(r'^\d+\.', line.strip()):
                 # Always keep numbers as text to prevent Word's auto-numbering continuation
                 text = line.strip()
                 text = clean_markdown_text(text)
                 p = doc.add_paragraph(text)
+                last_paragraph = p
 
             # Handle regular paragraphs
             elif line.strip():
                 text = clean_markdown_text(line.strip())
                 if text:
                     p = doc.add_paragraph(text)
+                    last_paragraph = p
 
             # Handle blank lines
             else:
