@@ -94,7 +94,7 @@ These exploratory thresholds prioritize hub status over heavily-regulated status
 For genes with five or more upstream regulators, we perform automated perturbation analysis to identify potential therapeutic targets. This analysis simulates inhibiting each upstream regulator individually and evaluates therapeutic potential using standard network centrality metrics.
 
 **Network Centrality Metrics for Therapeutic Target Ranking:**
-We calculate three core centrality measures for each regulator R using NetworkX (42) implementations:
+We calculate three core centrality measures for each regulator R using NetworkX (40) implementations:
 
 **Degree Centrality:**
 C_D(R) = deg(R) / (N - 1)
@@ -109,10 +109,10 @@ Where deg_out(R) is the number of downstream targets regulated by R. This metric
 **PageRank (Primary Ranking Metric):**
 PR(R) = (1-α)/N + α × Σ[PR(v) / L(v)] for all v in M(R)
 
-Where M(R) is the set of nodes with edges pointing to R, L(v) is the out-degree of node v (number of outbound edges), α = 0.85 is the damping factor, and N is the total number of nodes. For large networks (≥1,000 nodes), PageRank is normalized by dividing by the maximum PageRank value to ensure interpretability. This is Google's algorithm adapted for biological networks, measuring connection quality rather than quantity (43).
+Where M(R) is the set of nodes with edges pointing to R, L(v) is the out-degree of node v (number of outbound edges), α = 0.85 is the damping factor, and N is the total number of nodes. For large networks (≥1,000 nodes), PageRank is normalized by dividing by the maximum PageRank value to ensure interpretability. This is Google's algorithm adapted for biological networks, measuring connection quality rather than quantity (41).
 
 **Ranking and Interpretation:**
-Regulators are ranked by PageRank (primary), as this metric was identified as the best predictor of successful drug targets in protein interaction networks (44). We also provide alternative rankings by out-degree centrality for comparison. PageRank differentiates therapeutic potential even when regulators contribute equally to target gene regulation. According to Mora & Donaldson (2021), approved drug targets show significantly higher PageRank and degree centrality compared to non-targets (44).
+Regulators are ranked by PageRank (primary), as this metric was identified as the best predictor of successful drug targets in protein interaction networks (42). We also provide alternative rankings by out-degree centrality for comparison. PageRank differentiates therapeutic potential even when regulators contribute equally to target gene regulation. According to Mora & Donaldson (2021), approved drug targets show significantly higher PageRank and degree centrality compared to non-targets (42).
 
 For each regulator, we report:
 - Network centrality metrics (PageRank, degree centrality, out-degree centrality)
@@ -348,13 +348,13 @@ All seven regulators showed PageRank scores >0.30, meeting the threshold associa
 
 We compared the top 3 network-ranked candidates (by PageRank) against published literature to assess whether topology-based ranking recapitulates known biology:
 
-**WWTR1 (TAZ):** WW domain-containing transcription regulator 1, also known as TAZ, is a Hippo pathway effector that functions as a transcriptional co-activator. WWTR1 and its paralog YAP1 are key downstream effectors of Hippo signaling involved in cell fate decisions, proliferation control, and DNA damage responses (33,34). The high PageRank ranking identifies WWTR1 as a central network node, consistent with the established role of Hippo pathway components in regulating cell growth and tumor suppression (39,40). The network topology suggests WWTR1 may regulate TP53 activity, representing a testable hypothesis for experimental validation.
+**WWTR1 (TAZ):** WW domain-containing transcription regulator 1, also known as TAZ, is a Hippo pathway effector that functions as a transcriptional co-activator. WWTR1 and its paralog YAP1 are key downstream effectors of Hippo signaling involved in cell fate decisions, proliferation control, and DNA damage responses (33,34). The high PageRank ranking identifies WWTR1 as a central network node, consistent with the established role of Hippo pathway components in regulating cell growth and tumor suppression (38,39). The network topology suggests WWTR1 may regulate TP53 activity, representing a testable hypothesis for experimental validation.
 
 **RBPMS:** RNA-binding protein with multiple splicing that shows the highest degree centrality among TP53 regulators (403 downstream targets). The related protein RBPMS2 has been implicated in smooth muscle plasticity and gene regulation (29), suggesting potential roles in tissue-specific transcriptional control. While limited literature exists on RBPMS itself in cancer contexts, its extensive network connectivity and high PageRank (0.469) position it as a high-priority candidate for experimental validation in TP53 regulatory mechanisms.
 
 **PRRX2:** Paired-related homeobox 2, a transcription factor involved in mesenchymal development and epithelial-mesenchymal transition pathways. PRRX2's high PageRank (0.454) despite moderate degree centrality reflects quality over quantity in network connections—suggesting influence through key regulatory hubs rather than direct broad connectivity. Its limited characterization in TP53 regulatory contexts makes it a particularly intriguing novel hypothesis, as homeobox factors often orchestrate complex developmental and disease-relevant gene expression programs.
 
-This comparison demonstrates that topology-based ranking can: (1) recapitulate experimentally validated regulators (WWTR1 and YAP1 from Hippo pathway, CHD4 from chromatin remodeling complexes), and (2) generate testable hypotheses (RBPMS, PRRX2, THRA, IKZF2) for experimental follow-up. The framework serves as a hypothesis generation tool to prioritize candidates for experimental validation.
+This comparison demonstrates that topology-based ranking can: (1) recapitulate experimentally validated regulators (WWTR1 and YAP1 from Hippo pathway, CHD4 from chromatin remodeling complexes (30-32)), and (2) generate testable hypotheses (RBPMS, PRRX2, THRA, IKZF2) for experimental follow-up. The framework serves as a hypothesis generation tool to prioritize candidates for experimental validation.
 
 ### Cross-Cell-Type Regulatory Analysis
 
@@ -566,19 +566,15 @@ The authors declare no competing interests.
 
 37. Liu A, Trairatphisan P, Gjerga E, et al. From expression footprints to causal pathways: contextualizing large signaling networks with CARNIVAL. NPJ Syst Biol Appl. 2019;5:40.
 
-38. Armingol E, Officer A, Harismendy O, Lewis NE. Deciphering cell-cell interactions and communication from gene expression. Nat Rev Genet. 2021;22(2):71-88.
+38. Zanconato F, Cordenonsi M, Piccolo S. YAP and TAZ: a signalling hub of the tumour microenvironment. Nat Rev Cancer. 2019;19(8):454-464.
 
-39. Zanconato F, Cordenonsi M, Piccolo S. YAP and TAZ: a signalling hub of the tumour microenvironment. Nat Rev Cancer. 2019;19(8):454-464.
+39. Zhao B, Tumaneng K, Guan KL. The Hippo pathway in organ size control, tissue regeneration and stem cell self-renewal. Nat Cell Biol. 2011;13(8):877-883.
 
-40. Zhao B, Tumaneng K, Guan KL. The Hippo pathway in organ size control, tissue regeneration and stem cell self-renewal. Nat Cell Biol. 2011;13(8):877-883.
+40. Hagberg AA, Schult DA, Swart PJ. Exploring network structure, dynamics, and function using NetworkX. Proceedings of the 7th Python in Science Conference (SciPy 2008); 2008. p. 11-15.
 
-41. Dixit A, Parnas O, Li B, et al. Perturb-Seq: Dissecting molecular circuits with scalable single-cell RNA profiling of pooled genetic screens. Cell. 2016;167(7):1853-1866.e17.
+41. Koschützki D, Schreiber F. Centrality analysis methods for biological networks and their application to gene regulatory networks. Gene Regulation and Systems Biology. 2008;2:GRSB.S702.
 
-42. Hagberg AA, Schult DA, Swart PJ. Exploring network structure, dynamics, and function using NetworkX. Proceedings of the 7th Python in Science Conference (SciPy 2008); 2008. p. 11-15.
-
-43. Koschützki D, Schreiber F. Centrality analysis methods for biological networks and their application to gene regulatory networks. Gene Regulation and Systems Biology. 2008;2:GRSB.S702.
-
-44. Mora A, Donaldson IM. Effects of protein interaction data integration, representation and reliability on the use of network properties for drug target prediction. BMC Bioinformatics. 2021;22(1):1-29. doi:10.1186/s12859-021-04042-6
+42. Mora A, Donaldson IM. Effects of protein interaction data integration, representation and reliability on the use of network properties for drug target prediction. BMC Bioinformatics. 2021;22(1):1-29. doi:10.1186/s12859-021-04042-6
 
 ---
 
@@ -840,5 +836,5 @@ Due to temperature-based sampling, exact wording of rationales will vary across 
 - Words (excluding references): ~8,250
 - Figures: 4
 - Tables: 3
-- References: 44
+- References: 42
 - Pages (estimated): 12-15 in typical journal format
