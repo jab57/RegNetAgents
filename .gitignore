@@ -38,3 +38,13 @@ results/*.json
 # Git/GitHub specific
 .git/
 .gitattributes
+
+# Internal planning documents (not for public release)
+biorxiv/email_template.md
+biorxiv/journal_submission_plan_REVISED.md
+biorxiv/PROOFREAD_REPORT.md
+biorxiv/submission_guide.md
+biorxiv/week2_execution_plan.md
+biorxiv/timing_verification_protocol.md
+biorxiv/SCIENTIFIC_INTEGRITY_VERIFICATION.md
+biorxiv/one_page_summary.md
