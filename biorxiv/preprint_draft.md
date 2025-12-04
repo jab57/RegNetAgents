@@ -263,6 +263,8 @@ RegNetAgents achieves second-scale execution times for gene regulatory network a
 
 Performance breakdown: Network lookups from pre-computed indices are near-instantaneous (<1 ms), perturbation analysis of all regulators scales linearly with regulator count, Reactome API calls take 0.3-1.5 seconds per query, and LLM inference adds ~3-4 seconds per domain agent call. PageRank pre-computation in network cache enables instant perturbation analysis. Despite comprehensive regulator analysis and optional LLM insights, execution remains orders of magnitude faster than manual workflows, which typically involve sequential querying of network databases, pathway enrichment tools, and extensive literature curation.
 
+<div style="page-break-before: always"></div>
+
 **Table 1. Performance Benchmarks**
 
 | Analysis Type | Genes | Execution Time | Components |
