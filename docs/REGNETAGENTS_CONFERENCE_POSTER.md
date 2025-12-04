@@ -6,7 +6,7 @@
 
 ## ABSTRACT
 
-**RegNetAgents** is an LLM-powered multi-agent AI framework that automates gene regulatory network analysis through intelligent workflow orchestration, transforming labor-intensive manual processes into second-scale automated analysis. The system deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) using local language model inference to generate scientific insights with rationales, with graceful fallback to rule-based heuristics for reliability. Built on pre-computed regulatory networks from 500K+ single-cell RNA-seq profiles, the framework integrates network modeling, automated perturbation analysis using network centrality metrics (PageRank, degree centrality), pathway enrichment, and multi-domain interpretation into a conversational interface via Claude Desktop. **Framework validation** on colorectal cancer biomarkers demonstrated **100% concordance** with published literature across five genes. Perturbation analysis correctly ranked experimentally validated TP53 regulators (WWTR1, YAP1, CHD4) among top candidates; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses for experimental validation. Complete analysis of 99 regulators across 5 genes completed in 15-62 seconds, representing **orders of magnitude speedup** over traditional manual approaches. Natural language interface makes sophisticated gene analysis accessible without programming expertise.
+**RegNetAgents** is an LLM-powered multi-agent AI framework that automates gene regulatory network analysis through intelligent workflow orchestration, transforming labor-intensive manual processes into second-scale automated analysis. The system deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) using local language model inference to generate scientific insights with rationales, with graceful fallback to rule-based heuristics for reliability. Built on pre-computed regulatory networks from 500K+ single-cell RNA-seq profiles, the framework integrates network modeling, automated perturbation analysis using network centrality metrics (PageRank, degree centrality), pathway enrichment, and multi-domain interpretation into a conversational interface via Claude Desktop. **Framework demonstration** on colorectal cancer biomarkers showed complete concordance with published literature across a limited five-gene sample. Perturbation analysis identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among top-ranked candidates based on network topology; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses for experimental validation. Complete analysis of 99 regulators across 5 genes completed in 15-62 seconds, representing **orders of magnitude speedup** over traditional manual approaches. Natural language interface makes sophisticated gene analysis accessible without programming expertise.
 
 
 ---
@@ -303,7 +303,7 @@ Given the candidate genes, the system automatically:
 - **Ranking by PageRank**: WWTR1 > RBPMS > PRRX2 > CHD4 > THRA > YAP1 > IKZF2
 - **Ranking by Out-Degree**: RBPMS > WWTR1 > CHD4 > YAP1 > IKZF2
 - **Evidence-Based**: Uses network centrality metrics (PageRank, degree centrality, out-degree centrality) from computational biology literature
-- **Literature Validation**: ✓ WWTR1 and YAP1 (Hippo pathway) confirmed as validated TP53 regulators
+- **Literature Support**: ✓ WWTR1 and YAP1 (Hippo pathway) have documented functional interactions with TP53
 
 **Perturbation Analysis Methodology**:
 - **Metrics**: NetworkX centrality calculations (Mora & Donaldson 2021)
@@ -384,7 +384,7 @@ Given the candidate genes, the system automatically:
 **Network Centrality Metrics** (NetworkX implementation):
 - **Metrics Used**: PageRank, degree centrality, out-degree centrality
 - **Computational Source**: Network science algorithms from Mora & Donaldson (2021)
-- **Purpose**: Rank upstream regulators by predicted therapeutic impact
+- **Purpose**: Rank upstream regulators for experimental prioritization
 
 **Two Complementary Rankings Provided**:
 
@@ -404,23 +404,23 @@ Given the candidate genes, the system automatically:
 - **Different biological questions**: PageRank = network influence; Out-degree = cascade breadth
 - **Complementary insights**: Some targets rank high on both (e.g., WWTR1, RBPMS for TP53)
 - **Research flexibility**: Researchers can choose ranking based on experimental goals
-- **Validation**: TP53 regulators WWTR1 and YAP1 (Hippo pathway) confirmed in literature
+- **Literature Support**: TP53 regulators WWTR1 and YAP1 (Hippo pathway) have documented interactions
 
-### System Validation Approach
+### Framework Demonstration Approach
 
-**Case Study Validation** (Colorectal Cancer Biomarkers):
+**Case Study Demonstration** (Colorectal Cancer Biomarkers):
 - 5 candidate genes analyzed: MYC, CTNNB1, CCND1, TP53, KRAS
 - All 5 have published literature validating their CRC biomarker roles
 - System classifications (diagnostic/prognostic/predictive) align with clinical use
-- **Interpretation**: System produces biologically plausible hypotheses consistent with known biology
+- **Interpretation**: Framework produces biologically plausible hypotheses consistent with known biology (n=5 limited sample)
 
-**What This Validates**:
+**Framework Capabilities Demonstrated**:
 - ✓ Network data reflects established regulatory relationships
 - ✓ Pathway enrichment identifies relevant biological processes
 - ✓ Domain agent classifications correlate with literature-known gene functions
 
 **What This Does NOT Validate**:
-- ✗ Novel predictions (untested genes would require experimental validation)
+- ✗ Novel hypotheses (untested genes require experimental validation)
 - ✗ Network centrality rankings as experimentally verified drug targets
 - ✗ Biomarker classifications as FDA-approved diagnostics
 - ✗ Gene expression changes from perturbation (topology-based only)

@@ -473,7 +473,7 @@ def create_poster(sections):
 
     # Prominent speed/validation callout
     add_callout_box(slide, col3_x, Inches(4.2), col3_width, Inches(1.2),
-                   "⚡ 0.60-62 sec Analysis • Validated on CRC Biomarkers ✓",
+                   "⚡ 0.60-62 sec Analysis • Demonstrated on CRC Biomarkers ✓",
                    RGBColor(255, 250, 205), ORANGE)  # Light yellow bg, orange border
 
     # ===== COLUMN 3: NATURAL LANGUAGE INTERFACE & RESULTS =====
@@ -638,9 +638,9 @@ def create_poster(sections):
         p.space_after = Pt(6)
 
         # Top targets with rankings
-        add_bullet(tp53_frame, "Top Target (PageRank): WWTR1 (0.473) ✓ Validated Hippo pathway regulator")
+        add_bullet(tp53_frame, "Top Target (PageRank): WWTR1 (0.473) ✓ Literature-supported Hippo pathway regulator")
         add_bullet(tp53_frame, "Top Target (Out-Degree): RBPMS (0.028, 403 targets) - Novel hypothesis")
-        add_bullet(tp53_frame, "Validated: YAP1, CHD4 (Hippo pathway) confirmed in literature")
+        add_bullet(tp53_frame, "Literature-supported: YAP1, CHD4 (Hippo pathway) have documented interactions")
         add_bullet(tp53_frame, "Novel: PRRX2, THRA, IKZF2 prioritized for experimental validation")
 
         # Execution time
@@ -653,7 +653,7 @@ def create_poster(sections):
 
         # Key insight
         p = tp53_frame.add_paragraph()
-        p.text = "Demonstrates: Automated therapeutic target prioritization using PageRank (best predictor of drug target success per Mora & Donaldson 2021) identifies both validated regulators and novel hypotheses for experimental follow-up."
+        p.text = "Demonstrates: Automated therapeutic target prioritization using PageRank (best predictor of drug target success per Mora & Donaldson 2021) identifies both literature-supported regulators and novel hypotheses for experimental follow-up."
         p.font.size = Pt(17)
         p.font.italic = True
         p.font.color.rgb = RGBColor(100, 100, 100)
