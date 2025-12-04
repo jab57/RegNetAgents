@@ -136,11 +136,9 @@ async def handle_list_tools() -> list[Tool]:
                             "epithelial_cell", "cd14_monocytes", "cd16_monocytes",
                             "cd20_b_cells", "cd4_t_cells", "cd8_t_cells",
                             "erythrocytes", "nk_cells", "nkt_cells",
-                            "monocyte-derived_dendritic_cells",
-                            "hepatocytes", "cardiomyocytes", "neurons",
-                            "fibroblasts", "endothelial_cells"
+                            "monocyte-derived_dendritic_cells"
                         ],
-                        "description": "Cell type for network analysis",
+                        "description": "Cell type for network analysis (10 available)",
                         "default": "epithelial_cell"
                     },
                     "analysis_depth": {
@@ -212,11 +210,9 @@ async def handle_list_tools() -> list[Tool]:
                             "epithelial_cell", "cd14_monocytes", "cd16_monocytes",
                             "cd20_b_cells", "cd4_t_cells", "cd8_t_cells",
                             "erythrocytes", "nk_cells", "nkt_cells",
-                            "monocyte-derived_dendritic_cells",
-                            "hepatocytes", "cardiomyocytes", "neurons",
-                            "fibroblasts", "endothelial_cells"
+                            "monocyte-derived_dendritic_cells"
                         ],
-                        "description": "Cell type for network analysis",
+                        "description": "Cell type for network analysis (10 available)",
                         "default": "epithelial_cell"
                     },
                     "analysis_depth": {
@@ -289,11 +285,9 @@ async def handle_list_tools() -> list[Tool]:
                             "epithelial_cell", "cd14_monocytes", "cd16_monocytes",
                             "cd20_b_cells", "cd4_t_cells", "cd8_t_cells",
                             "erythrocytes", "nk_cells", "nkt_cells",
-                            "monocyte-derived_dendritic_cells",
-                            "hepatocytes", "cardiomyocytes", "neurons",
-                            "fibroblasts", "endothelial_cells"
+                            "monocyte-derived_dendritic_cells"
                         ],
-                        "description": "Cell type for analysis",
+                        "description": "Cell type for analysis (10 available)",
                         "default": "epithelial_cell"
                     }
                 },
