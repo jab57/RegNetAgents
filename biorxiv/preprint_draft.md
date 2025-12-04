@@ -17,7 +17,7 @@ Gene regulatory network analysis is essential for understanding disease mechanis
 
 Built on ARACNe networks from 500,000+ single cells across 10 cell types, the framework deploys four specialized agents executing in parallel with rule-based fallback for reliability. Automated perturbation analysis ranks candidate therapeutic targets using network centrality metrics (PageRank, degree centrality).
 
-In a validation panel of five colorectal cancer biomarkers (MYC, CTNNB1, CCND1, TP53, KRAS), framework classifications showed 100% concordance with published literature. Perturbation analysis correctly ranked experimentally validated TP53 regulators (WWTR1, YAP1, CHD4) among the top candidates. Additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses prioritized for experimental validation.
+In a demonstration study of five colorectal cancer biomarkers (MYC, CTNNB1, CCND1, TP53, KRAS), framework classifications showed complete concordance with published literature across this limited sample. Perturbation analysis identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among the top-ranked network neighbors based on topology. Additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses prioritized for experimental validation.
 
 Complete analysis of 99 regulators across 5 genes completed in 15-62 seconds, representing orders of magnitude speedup over manual workflows. RegNetAgents transforms labor-intensive analysis into second-scale automated hypothesis generation accessible to experimental biologists.
 
@@ -135,7 +135,7 @@ Our perturbation analysis makes several simplifying assumptions that warrant con
 
 4. **Static network assumption**: Networks represent time-averaged regulatory relationships and do not capture dynamic rewiring during development, differentiation, or disease progression. Regulator importance may vary across cellular states not represented in the averaged network.
 
-Despite these limitations, topology-based perturbation analysis successfully identifies experimentally validated regulators (as demonstrated with TP53 Hippo pathway effectors) and provides a principled ranking for experimental prioritization. Results should be interpreted as hypotheses for validation, not predictions of molecular outcomes. Experimental validation remains essential to confirm regulatory relationships and quantify expression changes.
+Despite these limitations, topology-based perturbation analysis can identify literature-supported functional interactors (as demonstrated with TP53 Hippo pathway effectors) and provides a principled ranking for experimental prioritization. Results should be interpreted as hypotheses for validation, not predictions of molecular outcomes. Experimental validation remains essential to confirm regulatory relationships and quantify expression changes.
 
 #### Pathway Enrichment Agent
 The pathway agent constructs a gene set consisting of the query gene, all upstream regulators, and a sample of downstream targets (up to 50 genes to optimize API performance). This gene set is submitted to Reactome's over-representation analysis endpoint, which performs hypergeometric tests against all curated pathways in the database.
@@ -244,8 +244,8 @@ Regulatory network data were obtained from the GREmLN foundation model (Zhang et
 ### Validation Summary
 
 Framework validation against established colorectal cancer biology demonstrated:
-- **100% concordance** with published biomarker classifications (5/5 genes correctly classified)
-- **Successful prediction** of experimentally validated TP53 regulators from Hippo pathway (WWTR1, YAP1, CHD4)
+- **Complete concordance** with published biomarker classifications across limited sample (5/5 genes classified consistently with literature)
+- **High-ranking identification** of literature-supported TP53 interactors from Hippo pathway (WWTR1, YAP1, CHD4) based on network topology
 - **Pathway coherence** between network topology and biological pathways (Hippo signaling enrichment, FDR = 0.020)
 - **Novel hypothesis generation** for experimental validation (RBPMS, PRRX2, THRA, IKZF2)
 
@@ -330,19 +330,19 @@ All five classifications aligned with published CRC biomarker literature, demons
 
 To illustrate framework capabilities for hypothesis generation, we performed automated perturbation analysis on TP53, which has 7 upstream regulators in epithelial cells. The analysis simulates inhibiting each regulator individually and ranks candidates using network centrality metrics (Table 3, Figure 3). These rankings serve as hypotheses for experimental validation, not predictions of therapeutic efficacy.
 
-**Table 3. TP53 Perturbation Analysis Results - Validation Against Known Biology**
+**Table 3. TP53 Perturbation Analysis Results - Comparison with Known Biology**
 
-| Rank | Regulator | PageRank | Out-Degree Centrality | Downstream Targets | Validation Status |
+| Rank | Regulator | PageRank | Out-Degree Centrality | Downstream Targets | Literature Status |
 |------|-----------|----------|----------------------|-------------------|-------------------|
-| 1 | WWTR1 | 0.473 | 0.020 | 293 | ✓ Validated |
-| 2 | RBPMS | 0.469 | 0.028 | 403 | Novel |
-| 3 | PRRX2 | 0.454 | 0.006 | 93 | Novel |
-| 4 | CHD4 | 0.443 | 0.017 | 243 | ✓ Validated |
-| 5 | THRA | 0.408 | 0.006 | 81 | Novel |
-| 6 | YAP1 | 0.402 | 0.014 | 207 | ✓ Validated |
-| 7 | IKZF2 | 0.399 | 0.008 | 112 | Novel |
+| 1 | WWTR1 | 0.473 | 0.020 | 293 | ✓ Literature-supported |
+| 2 | RBPMS | 0.469 | 0.028 | 403 | Novel hypothesis |
+| 3 | PRRX2 | 0.454 | 0.006 | 93 | Novel hypothesis |
+| 4 | CHD4 | 0.443 | 0.017 | 243 | ✓ Literature-supported |
+| 5 | THRA | 0.408 | 0.006 | 81 | Novel hypothesis |
+| 6 | YAP1 | 0.402 | 0.014 | 207 | ✓ Literature-supported |
+| 7 | IKZF2 | 0.399 | 0.008 | 112 | Novel hypothesis |
 
-*Regulators ranked by PageRank, a metric associated with drug target success per Mora & Donaldson (2021). PageRank scores >0.30 suggest high-quality network connections. Out-degree centrality measures downstream regulatory influence (hub identification). All 7 regulators contribute equally to TP53 direct regulation (14.3% each = 1/7 regulators). Validation status indicates whether literature supports TP53 regulatory relationships. Three of seven top-ranked regulators (WWTR1, CHD4, YAP1) have experimental validation, demonstrating framework successfully identifies known regulators from network topology alone. Novel candidates (RBPMS, PRRX2, THRA, IKZF2) represent testable hypotheses prioritized for experimental validation.*
+*Regulators ranked by PageRank, a metric associated with drug target success per Mora & Donaldson (2021). PageRank scores >0.30 suggest high-quality network connections. Out-degree centrality measures downstream regulatory influence (hub identification). All 7 regulators contribute equally to TP53 direct regulation (14.3% each = 1/7 regulators). Literature status indicates whether published studies support functional interactions between the regulator and TP53. Three of seven high-ranking regulators (WWTR1, CHD4, YAP1) have literature support for TP53 interactions, demonstrating the framework identifies known functional interactors from network topology. Novel hypotheses (RBPMS, PRRX2, THRA, IKZF2) represent candidates prioritized for experimental validation.*
 
 All seven regulators showed PageRank scores >0.30, meeting the threshold associated with successful drug targets in network studies. Each regulator contributes 14.3% of TP53's total regulatory input (1/7 regulators), representing equal direct regulatory loss. However, regulators differ substantially in network centrality: WWTR1 ranked highest by PageRank (0.473), while RBPMS showed highest out-degree centrality (0.028) with 403 downstream targets, suggesting broader downstream effects. YAP1 (PageRank 0.402) and WWTR1 (PageRank 0.473), both Hippo pathway effectors, showed pathway enrichment for "YAP1- and WWTR1 (TAZ)-stimulated gene expression" (FDR = 0.020), demonstrating biological coherence between network topology and pathway-level regulation.
 
@@ -350,7 +350,7 @@ All seven regulators showed PageRank scores >0.30, meeting the threshold associa
 
 We compared the top 3 network-ranked candidates (by PageRank) against published literature to assess whether topology-based ranking recapitulates known biology:
 
-**WWTR1 (TAZ):** WW domain-containing transcription regulator 1, also known as TAZ, is a Hippo pathway effector that functions as a transcriptional co-activator. WWTR1 and its paralog YAP1 are key downstream effectors of Hippo signaling involved in cell fate decisions, proliferation control, and DNA damage responses (32,33). The high PageRank ranking identifies WWTR1 as a central network node, consistent with the established role of Hippo pathway components in regulating cell growth and tumor suppression (34,35). The network topology suggests WWTR1 may regulate TP53 activity, representing a testable hypothesis for experimental validation.
+**WWTR1 (TAZ):** WW domain-containing transcription regulator 1, also known as TAZ, is a Hippo pathway effector that functions as a transcriptional co-activator. WWTR1 and its paralog YAP1 are key downstream effectors of Hippo signaling involved in cell fate decisions, proliferation control, and DNA damage responses (32,33). The high PageRank ranking identifies WWTR1 as a central network node, consistent with the established role of Hippo pathway components in regulating cell growth and tumor suppression (34,35). Literature documents bidirectional crosstalk between TP53 and Hippo pathway effectors, where TP53 can regulate YAP1/WWTR1 and vice versa depending on cellular context. The network connectivity between WWTR1 and TP53 represents a testable hypothesis for functional interaction warranting experimental validation of the specific regulatory direction in epithelial cells.
 
 **RBPMS:** RNA-binding protein with multiple splicing that shows the highest degree centrality among TP53 regulators (403 downstream targets). The related protein RBPMS2 has been implicated in smooth muscle plasticity and gene regulation (36), suggesting potential roles in tissue-specific transcriptional control. While limited literature exists on RBPMS itself in cancer contexts, its extensive network connectivity and high PageRank (0.469) position it as a high-priority candidate for experimental validation in TP53 regulatory mechanisms.
 
@@ -396,9 +396,9 @@ We developed RegNetAgents, a multi-agent AI framework that streamlines gene regu
 
 A critical question for any computational tool is whether it produces biologically meaningful results. Our colorectal cancer case study provides multiple lines of validation:
 
-**1. Biomarker classification accuracy:** All five genes were correctly classified (diagnostic, prognostic, predictive) with 100% agreement with published clinical literature, despite the framework having no prior knowledge of these classifications.
+**1. Biomarker classification accuracy:** All five genes were correctly classified (diagnostic, prognostic, predictive) with complete agreement with published clinical literature across this limited sample (n=5), despite the framework having no prior knowledge of these classifications.
 
-**2. Known regulatory relationships:** TP53 perturbation analysis ranked WWTR1 (TAZ) and YAP1 as top regulators (PageRank 0.473 and 0.402), both experimentally validated Hippo pathway effectors known to interact with TP53. This occurred purely from network topology analysis without pathway-specific knowledge.
+**2. Known regulatory relationships:** TP53 perturbation analysis ranked WWTR1 (TAZ) and YAP1 as top network neighbors (PageRank 0.473 and 0.402), both Hippo pathway effectors with documented functional interactions with TP53 in the literature. This ranking occurred purely from network topology analysis without pathway-specific knowledge. Note that ARACNe network edges represent statistical associations (mutual information) and do not necessarily indicate regulatory directionality; TP53 and Hippo pathway components exhibit bidirectional crosstalk in various contexts.
 
 **3. Pathway-network concordance:** Pathway enrichment independently identified Hippo signaling (FDR = 0.020), confirming biological coherence between network structure and pathway-level regulation.
 
@@ -432,7 +432,7 @@ Several limitations warrant consideration:
 
 **Topology-Based Perturbation Analysis:** Our perturbation analysis ranks regulators based on network topology (connectivity, cascade overlap) rather than predicting gene expression changes. This design choice reflects data availability—dynamic gene expression prediction requires time-series perturbation experiments currently unavailable at single-cell resolution across cell types. Topology-based ranking identifies regulators for experimental validation rather than replacing experimental perturbation studies. Experimental validation remains essential to confirm predicted regulatory relationships and quantify expression changes.
 
-**Network Construction Methodology:** ARACNe networks are reconstructed from scRNA-seq data using mutual information on the top 1,024 highly variable genes. Genes with low or uniform expression across cells will not appear in networks, potentially missing important regulators with constitutive low expression. Additionally, ARACNe identifies correlation-based associations that suggest regulation but do not confirm direct transcription factor binding. Chromatin immunoprecipitation (ChIP-seq) data could complement networks with binding-site information, though such data are not yet available at single-cell resolution across diverse cell types.
+**Network Construction Methodology:** ARACNe networks are reconstructed from scRNA-seq data using mutual information on the top 1,024 highly variable genes. Several important limitations apply: (1) Genes with low or uniform expression across cells will not appear in networks, potentially missing important regulators with constitutive low expression; (2) ARACNe identifies correlation-based statistical associations (mutual information) rather than directional regulatory relationships—network edges represent co-expression patterns that suggest potential regulation but do not confirm regulatory directionality or direct transcription factor binding; (3) False positive rates in inferred networks depend on sample size and data quality, meaning not all identified edges represent true biological regulation; (4) The method assumes steady-state gene expression and may not capture dynamic or transient regulatory relationships. Chromatin immunoprecipitation (ChIP-seq) data could complement networks with binding-site information to confirm regulatory directionality, though such data are not yet available at single-cell resolution across diverse cell types. Users should interpret network edges as hypotheses about regulatory relationships requiring experimental validation, not as established causal mechanisms.
 
 **Pathway Enrichment Dependence:** Reactome pathway enrichment requires API calls, introducing latency (1-3 seconds) and external dependency. Offline pathway databases could reduce latency but would require periodic updates to maintain currency. Current implementation prioritizes up-to-date pathway annotations over speed.
 
