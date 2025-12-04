@@ -1,0 +1,103 @@
+{
+  "gene": "KRAS",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "KRAS",
+    "ensembl_id": "ENSG00000133703",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "KRAS",
+      "gene_name": "KRAS",
+      "function": "This gene, a Kirsten ras oncogene homolog from the mammalian ras gene family, encodes a protein that is a member of the small GTPase superfamily. A single amino acid substitution is responsible for an activating mutation. The transforming protein that results is implicated in various malignancies, including lung adenocarcinoma, mucinous adenoma, ductal carcinoma of the pancreas and colorectal carcinoma. Alternative splicing leads to variants encoding two isoforms that differ in the C-terminal region. [provided by RefSeq, Jul 2008].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": true,
+    "is_regulator": false,
+    "regulatory_role": "weakly_regulated",
+    "num_regulators": 7,
+    "num_targets": 0,
+    "regulators": [
+      "ENSG00000100325",
+      "ENSG00000082153",
+      "ENSG00000173120",
+      "ENSG00000101040",
+      "ENSG00000123562",
+      "ENSG00000062194",
+      "ENSG00000185650"
+    ],
+    "targets": [],
+    "network_position": {
+      "in_degree": 7,
+      "out_degree": 0,
+      "role": "weakly_regulated"
+    }
+  },
+  "llm_insights": {
+    "clinical_analysis": {
+      "llm_powered": true,
+      "summary": "KRAS mutations have high disease association potential and biomarker utility for cancer diagnosis, prognosis, and therapeutic monitoring.",
+      "insights": {
+        "disease_association_likelihood": "high",
+        "disease_rationale": "KRAS mutations are implicated in various malignancies, including lung adenocarcinoma and colorectal carcinoma.",
+        "biomarker_utility": "diagnostic|prognostic|predictive",
+        "biomarker_rationale": "KRAS mutations can serve as a biomarker for diagnosis, prognosis, and therapeutic monitoring of cancer patients.",
+        "clinical_actionability": "high",
+        "actionability_rationale": "KRAS mutation status is actionable in clinical practice, guiding treatment decisions such as targeted therapy with EGFR inhibitors or BRAF/MEK inhibitors."
+      },
+      "llm_rationale": "",
+      "tissue_specificity": [],
+      "diagnostic_potential": "high"
+    },
+    "systems_analysis": {
+      "llm_powered": true,
+      "summary": "KRAS occupies a peripheral regulatory position and has moderate information flow, but is critical to network function due to its involvement in malignancies. Disrupting this gene would have system-wide effects.",
+      "insights": {
+        "network_centrality": 0.0,
+        "centrality_rationale": "KRAS has a low PageRank centrality score indicating it is not highly connected in the network.",
+        "regulatory_hierarchy": "peripheral",
+        "hierarchy_rationale": "As KRAS has only 7 upstream regulators and no downstream targets, it occupies a peripheral position in the regulatory hierarchy.",
+        "information_flow": "moderate",
+        "flow_rationale": "KRAS is involved in signal transduction pathways, but its moderate information flow suggests it is not a primary hub for processing signals.",
+        "network_vulnerability": "critical",
+        "vulnerability_rationale": "As KRAS mutations are implicated in various malignancies, disrupting this gene would have significant effects on the network, making it critical to network function."
+      },
+      "llm_rationale": "",
+      "network_effects": [],
+      "perturbation_impact": "system-wide"
+    }
+  },
+  "pathway_summary": {
+    "total_pathways": 141,
+    "significant_pathways": 141
+  },
+  "cross_cell_analysis": null,
+  "key_insights": {
+    "regulatory_role": "weakly_regulated",
+    "regulation_strength": "moderate",
+    "regulatory_influence": "low",
+    "clinical_significance": "unknown",
+    "biomarker_potential": "unknown",
+    "network_importance": "unknown",
+    "systems_complexity": "unknown"
+  },
+  "workflow_metadata": {
+    "start_time": 1093743.484,
+    "steps_completed": [
+      "gene_network_analysis",
+      "regulators_analysis",
+      "perturbation_analysis",
+      "pathway_analysis",
+      "clinical_domain_analysis",
+      "systems_domain_analysis",
+      "cancer_domain_analysis",
+      "drug_domain_analysis"
+    ],
+    "total_analysis_time": 31359.000000171363
+  }
+}

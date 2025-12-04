@@ -1,0 +1,230 @@
+{
+  "gene": "CCND1",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "CCND1",
+    "ensembl_id": "ENSG00000110092",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "CCND1",
+      "gene_name": "CCND1",
+      "function": "The protein encoded by this gene belongs to the highly conserved cyclin family, whose members are characterized by a dramatic periodicity in protein abundance throughout the cell cycle. Cyclins function as regulators of CDK kinases. Different cyclins exhibit distinct expression and degradation patterns which contribute to the temporal coordination of each mitotic event. This cyclin forms a complex with and functions as a regulatory subunit of CDK4 or CDK6, whose activity is required for cell cycle G1/S transition. This protein has been shown to interact with tumor suppressor protein Rb and the expression of this gene is regulated positively by Rb. Mutations, amplification and overexpression of this gene, which alters cell cycle progression, are observed frequently in a variety of human cancers. [provided by RefSeq, Dec 2019].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": true,
+    "is_regulator": false,
+    "regulatory_role": "heavily_regulated",
+    "num_regulators": 42,
+    "num_targets": 0,
+    "regulators": [
+      "ENSG00000166848",
+      "ENSG00000137574",
+      "ENSG00000255302",
+      "ENSG00000177469",
+      "ENSG00000176788",
+      "ENSG00000146223",
+      "ENSG00000123908",
+      "ENSG00000130816",
+      "ENSG00000119508",
+      "ENSG00000132485"
+    ],
+    "targets": [],
+    "network_position": {
+      "in_degree": 42,
+      "out_degree": 0,
+      "role": "heavily_regulated"
+    }
+  },
+  "llm_insights": {
+    "cancer_analysis": {
+      "llm_powered": true,
+      "summary": "CCND1 is a critical regulator of cell cycle progression and is frequently altered in cancer, making it an important therapeutic target and potential biomarker.",
+      "insights": {
+        "oncogenic_potential": "high",
+        "tumor_suppressor_likelihood": "low",
+        "therapeutic_target_score": 0.8,
+        "mutation_impact": "high"
+      },
+      "llm_rationale": {
+        "oncogenic": "CCND1 is heavily regulated and forms a complex with CDK4/6 to promote cell cycle progression, which is frequently altered in cancer.",
+        "tumor_suppressor": "The expression of CCND1 is positively regulated by the tumor suppressor protein Rb, suggesting it may not be a tumor suppressor itself.",
+        "therapeutic": "CCND1's role in promoting cell cycle progression and its frequent alteration in cancer make it an attractive therapeutic target for cancer treatment.",
+        "biomarker": "CCND1 overexpression may serve as a prognostic marker for cancer, indicating a more aggressive disease course."
+      },
+      "cancer_pathways": [
+        "Nuclear events stimulated by ALK signaling in cancer",
+        "Signaling by ALK fusions and activated point mutants"
+      ],
+      "biomarker_potential": "moderate"
+    },
+    "clinical_analysis": {
+      "llm_powered": true,
+      "summary": "CCND1 is a critical gene involved in cell cycle regulation and cancer development, offering opportunities for prognostic and predictive biomarker applications, as well as therapeutic targeting.",
+      "insights": {
+        "disease_association_likelihood": "high",
+        "disease_rationale": "CCND1's role in cell cycle progression and frequent mutations in various cancers indicate a strong association with disease.",
+        "biomarker_utility": "prognostic|predictive",
+        "biomarker_rationale": "Overexpression of CCND1 can serve as an indicator for aggressive tumor behavior, while its amplification or mutation may predict treatment response.",
+        "clinical_actionability": "high",
+        "actionability_rationale": "CCND1's involvement in cancer development and progression makes it a valuable target for therapeutic interventions, such as targeted therapies or immunotherapies."
+      },
+      "llm_rationale": "",
+      "tissue_specificity": [
+        "Tissue-specific expression in 2 cell types"
+      ],
+      "diagnostic_potential": "moderate"
+    },
+    "systems_analysis": {
+      "llm_powered": true,
+      "summary": "The CCND1 gene plays a key regulatory role in the cell cycle network as an intermediate node with moderate information flow. Its disruption would have significant system-wide effects due to its critical position in G1/S transition.",
+      "insights": {
+        "network_centrality": 0.0,
+        "centrality_rationale": "CCND1 has a low PageRank centrality score, indicating it is not a central node in the network.",
+        "regulatory_hierarchy": "intermediate",
+        "hierarchy_rationale": "As an intermediate regulator with 42 upstream regulators and no downstream targets, CCND1 plays a key role in signal transduction but does not have direct control over other genes.",
+        "information_flow": "moderate",
+        "flow_rationale": "CCND1's moderate information flow is due to its position as an intermediate regulator, receiving signals from many upstream regulators and passing them on to downstream targets indirectly.",
+        "network_vulnerability": "critical",
+        "vulnerability_rationale": "Given its critical role in cell cycle progression and frequent mutations in human cancers, CCND1's disruption would have significant network-wide effects."
+      },
+      "llm_rationale": "",
+      "network_effects": [
+        "Highly regulated node with 42 upstream controllers"
+      ],
+      "perturbation_impact": "system-wide"
+    }
+  },
+  "pathway_summary": {
+    "total_pathways": 20,
+    "significant_pathways": 20
+  },
+  "cross_cell_analysis": {
+    "gene": "CCND1",
+    "cell_type_analysis": {
+      "epithelial_cell": {
+        "regulatory_role": "heavily_regulated",
+        "num_regulators": 42,
+        "num_targets": 0,
+        "in_network": true
+      },
+      "cd14_monocytes": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd16_monocytes": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd20_b_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd4_t_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd8_t_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "erythrocytes": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "nk_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "nkt_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "monocyte-derived_dendritic_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 3,
+        "num_targets": 0,
+        "in_network": true
+      },
+      "hepatocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cardiomyocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "neurons": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "fibroblasts": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "endothelial_cells": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      }
+    },
+    "summary": "Cross-cell analysis completed"
+  },
+  "key_insights": {
+    "regulatory_role": "heavily_regulated",
+    "regulation_strength": "high",
+    "regulatory_influence": "low",
+    "cell_type_specificity": "low",
+    "cancer_relevance": "unknown",
+    "therapeutic_potential": 0,
+    "clinical_significance": "unknown",
+    "biomarker_potential": "unknown",
+    "network_importance": "unknown",
+    "systems_complexity": "unknown"
+  },
+  "workflow_metadata": {
+    "start_time": 1093743.484,
+    "steps_completed": [
+      "gene_network_analysis",
+      "regulators_analysis",
+      "perturbation_analysis",
+      "pathway_analysis",
+      "cross_cell_analysis",
+      "cancer_domain_analysis",
+      "clinical_domain_analysis",
+      "systems_domain_analysis",
+      "drug_domain_analysis"
+    ],
+    "total_analysis_time": 26937.000000150874
+  }
+}

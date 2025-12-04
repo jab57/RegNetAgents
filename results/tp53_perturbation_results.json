@@ -1,0 +1,686 @@
+{
+  "gene_analysis_summary": {
+    "gene": "TP53",
+    "cell_type": "epithelial_cell",
+    "regulatory_role": "hub_regulator",
+    "analysis_depth": "comprehensive"
+  },
+  "network_analysis": {
+    "gene": "TP53",
+    "ensembl_id": "ENSG00000141510",
+    "cell_type": "epithelial_cell",
+    "gene_info": null,
+    "network_available": true,
+    "in_network": true,
+    "is_regulator": true,
+    "regulatory_role": "hub_regulator",
+    "num_regulators": 7,
+    "num_targets": 163,
+    "regulators": [
+      "ENSG00000157110",
+      "ENSG00000111642",
+      "ENSG00000167157",
+      "ENSG00000030419",
+      "ENSG00000126351",
+      "ENSG00000137693",
+      "ENSG00000018408"
+    ],
+    "targets": [
+      "ENSG00000284753",
+      "ENSG00000273899",
+      "ENSG00000244734",
+      "ENSG00000235162",
+      "ENSG00000217128",
+      "ENSG00000215252",
+      "ENSG00000214194",
+      "ENSG00000213654",
+      "ENSG00000205544",
+      "ENSG00000205502"
+    ],
+    "network_position": {
+      "in_degree": 7,
+      "out_degree": 163,
+      "role": "hub_regulator"
+    }
+  },
+  "regulatory_analysis": {
+    "gene": "TP53",
+    "cell_type": "epithelial_cell",
+    "regulator_summary": {
+      "total_regulators": 7,
+      "analyzed_regulators": 7
+    },
+    "hub_regulators": [
+      {
+        "gene_symbol": "RBPMS",
+        "ensembl_id": "ENSG00000157110",
+        "regulatory_strength": "moderate"
+      },
+      {
+        "gene_symbol": "CHD4",
+        "ensembl_id": "ENSG00000111642",
+        "regulatory_strength": "moderate"
+      },
+      {
+        "gene_symbol": "PRRX2",
+        "ensembl_id": "ENSG00000167157",
+        "regulatory_strength": "moderate"
+      },
+      {
+        "gene_symbol": "IKZF2",
+        "ensembl_id": "ENSG00000030419",
+        "regulatory_strength": "moderate"
+      },
+      {
+        "gene_symbol": "THRA",
+        "ensembl_id": "ENSG00000126351",
+        "regulatory_strength": "moderate"
+      },
+      {
+        "gene_symbol": "YAP1",
+        "ensembl_id": "ENSG00000137693",
+        "regulatory_strength": "moderate"
+      },
+      {
+        "gene_symbol": "WWTR1",
+        "ensembl_id": "ENSG00000018408",
+        "regulatory_strength": "moderate"
+      }
+    ]
+  },
+  "target_analysis": {
+    "gene": "TP53",
+    "cell_type": "epithelial_cell",
+    "target_summary": {
+      "total_targets": 10,
+      "analyzed_targets": 10
+    },
+    "cascade_targets": [
+      {
+        "gene_symbol": "EEF1AKMT4",
+        "ensembl_id": "ENSG00000284753",
+        "cascade_level": 1
+      },
+      {
+        "gene_symbol": "NOL12",
+        "ensembl_id": "ENSG00000273899",
+        "cascade_level": 1
+      },
+      {
+        "gene_symbol": "HBB",
+        "ensembl_id": "ENSG00000244734",
+        "cascade_level": 1
+      },
+      {
+        "gene_symbol": "C12ORF75",
+        "ensembl_id": "ENSG00000235162",
+        "cascade_level": 1
+      },
+      {
+        "gene_symbol": "FNIP1",
+        "ensembl_id": "ENSG00000217128",
+        "cascade_level": 1
+      },
+      {
+        "gene_symbol": "GOLGA8B",
+        "ensembl_id": "ENSG00000215252",
+        "cascade_level": 1
+      },
+      {
+        "gene_symbol": "SMIM30",
+        "ensembl_id": "ENSG00000214194",
+        "cascade_level": 1
+      },
+      {
+        "gene_symbol": "GPSM3",
+        "ensembl_id": "ENSG00000213654",
+        "cascade_level": 1
+      },
+      {
+        "gene_symbol": "TMEM256",
+        "ensembl_id": "ENSG00000205544",
+        "cascade_level": 1
+      },
+      {
+        "gene_symbol": "C2CD4B",
+        "ensembl_id": "ENSG00000205502",
+        "cascade_level": 1
+      }
+    ]
+  },
+  "pathway_enrichment": {
+    "status": "success",
+    "analysis_type": "reactome_pathway_enrichment",
+    "genes_analyzed": [
+      "GOLGA8B",
+      "C2CD4B",
+      "TMEM256",
+      "YAP1",
+      "C12ORF75",
+      "IKZF2",
+      "FNIP1",
+      "SMIM30",
+      "WWTR1",
+      "CHD4",
+      "PRRX2",
+      "EEF1AKMT4",
+      "GPSM3",
+      "RBPMS",
+      "HBB",
+      "NOL12",
+      "THRA",
+      "TP53"
+    ],
+    "genes_recognized": 0,
+    "token": "MjAyNTEwMjUxNTE2MDVfMTczMzc%3D",
+    "enriched_pathways": [
+      {
+        "pathway_id": "R-HSA-6804754",
+        "pathway_name": "Regulation of TP53 Expression",
+        "p_value": 1.4206272860750602e-05,
+        "fdr": 0.0033384741222763914,
+        "genes_found": 2,
+        "genes_total": 4,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-8951671",
+        "pathway_name": "RUNX3 regulates YAP1-mediated transcription",
+        "p_value": 7.162223497303444e-05,
+        "fdr": 0.00837980149184503,
+        "genes_found": 2,
+        "genes_total": 9,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-2032785",
+        "pathway_name": "YAP1- and WWTR1 (TAZ)-stimulated gene expression",
+        "p_value": 0.00028436358707972786,
+        "fdr": 0.019899192467899063,
+        "genes_found": 2,
+        "genes_total": 18,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-8878159",
+        "pathway_name": "Transcriptional regulation by RUNX3",
+        "p_value": 0.00042226754659924204,
+        "fdr": 0.019899192467899063,
+        "genes_found": 3,
+        "genes_total": 108,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-2028269",
+        "pathway_name": "Signaling by Hippo",
+        "p_value": 0.00042338707378508644,
+        "fdr": 0.019899192467899063,
+        "genes_found": 2,
+        "genes_total": 22,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-9819196",
+        "pathway_name": "Zygotic genome activation (ZGA)",
+        "p_value": 0.0005893896705315704,
+        "fdr": 0.022986197150731247,
+        "genes_found": 2,
+        "genes_total": 26,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-8940973",
+        "pathway_name": "RUNX2 regulates osteoblast differentiation",
+        "p_value": 0.0010012484123187448,
+        "fdr": 0.028958115634214465,
+        "genes_found": 2,
+        "genes_total": 34,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-6804758",
+        "pathway_name": "Regulation of TP53 Activity through Acetylation",
+        "p_value": 0.0013119552241748211,
+        "fdr": 0.028958115634214465,
+        "genes_found": 2,
+        "genes_total": 39,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-9723907",
+        "pathway_name": "Loss of Function of TP53 in Cancer",
+        "p_value": 0.0013653145863551375,
+        "fdr": 0.028958115634214465,
+        "genes_found": 1,
+        "genes_total": 1,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-9723905",
+        "pathway_name": "Loss of function of TP53 in cancer due to loss of tetramerization ability",
+        "p_value": 0.0013653145863551375,
+        "fdr": 0.028958115634214465,
+        "genes_found": 1,
+        "genes_total": 1,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-9619665",
+        "pathway_name": "EGR2 and SOX10-mediated initiation of Schwann cell myelination",
+        "p_value": 0.001378957887343546,
+        "fdr": 0.028958115634214465,
+        "genes_found": 2,
+        "genes_total": 40,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-8941326",
+        "pathway_name": "RUNX2 regulates bone development",
+        "p_value": 0.0015896141572677713,
+        "fdr": 0.0290345056690402,
+        "genes_found": 2,
+        "genes_total": 43,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-5633007",
+        "pathway_name": "Regulation of TP53 Activity",
+        "p_value": 0.0017771167063241888,
+        "fdr": 0.0290345056690402,
+        "genes_found": 3,
+        "genes_total": 178,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-6806003",
+        "pathway_name": "Regulation of TP53 Expression and Degradation",
+        "p_value": 0.0018146566043150125,
+        "fdr": 0.0290345056690402,
+        "genes_found": 2,
+        "genes_total": 46,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-8853884",
+        "pathway_name": "Transcriptional Regulation by VENTX",
+        "p_value": 0.001972622685470715,
+        "fdr": 0.029589340282060728,
+        "genes_found": 2,
+        "genes_total": 48,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-983231",
+        "pathway_name": "Factors involved in megakaryocyte development and platelet production",
+        "p_value": 0.00226842786493453,
+        "fdr": 0.03175799010908342,
+        "genes_found": 3,
+        "genes_total": 194,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-8943724",
+        "pathway_name": "Regulation of PTEN gene transcription",
+        "p_value": 0.003894140463024831,
+        "fdr": 0.050623826019322804,
+        "genes_found": 2,
+        "genes_total": 68,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-9909649",
+        "pathway_name": "Regulation of PD-L1(CD274) transcription",
+        "p_value": 0.0045888996274326965,
+        "fdr": 0.05947490683481105,
+        "genes_found": 2,
+        "genes_total": 74,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-9925563",
+        "pathway_name": "Developmental Lineage of Pancreatic Ductal Cells",
+        "p_value": 0.004956242236234254,
+        "fdr": 0.05947490683481105,
+        "genes_found": 2,
+        "genes_total": 77,
+        "species": "Homo sapiens"
+      },
+      {
+        "pathway_id": "R-HSA-69560",
+        "pathway_name": "Transcriptional activation of p53 responsive genes  ",
+        "p_value": 0.008165239708599836,
+        "fdr": 0.08165239708599836,
+        "genes_found": 1,
+        "genes_total": 6,
+        "species": "Homo sapiens"
+      }
+    ],
+    "summary": {
+      "total_pathways": 20,
+      "significant_pathways": 16
+    }
+  },
+  "perturbation_analysis": {
+    "target_gene": "TP53",
+    "cell_type": "epithelial_cell",
+    "baseline_regulators": 7,
+    "perturbation_results": [
+      {
+        "regulator": "RBPMS",
+        "regulator_ensembl_id": "ENSG00000157110",
+        "impact_score": 0.486,
+        "regulatory_loss_pct": 14.3,
+        "regulator_downstream_targets": 403,
+        "cascade_overlap": 1,
+        "affected_cascades": [
+          "PCDH20",
+          "DUSP14",
+          "NBPF19",
+          "ATF7-NPFF",
+          "KLF14"
+        ],
+        "therapeutic_potential": "high",
+        "druggability_notes": "RBPMS is a hub regulator - high therapeutic impact but may have off-target effects"
+      },
+      {
+        "regulator": "CHD4",
+        "regulator_ensembl_id": "ENSG00000111642",
+        "impact_score": 0.486,
+        "regulatory_loss_pct": 14.3,
+        "regulator_downstream_targets": 243,
+        "cascade_overlap": 2,
+        "affected_cascades": [
+          "SLURP2",
+          "LHX1",
+          "POM121C",
+          "PECAM1",
+          "CEP95"
+        ],
+        "therapeutic_potential": "high",
+        "druggability_notes": "CHD4 is a hub regulator - high therapeutic impact but may have off-target effects"
+      },
+      {
+        "regulator": "IKZF2",
+        "regulator_ensembl_id": "ENSG00000030419",
+        "impact_score": 0.486,
+        "regulatory_loss_pct": 14.3,
+        "regulator_downstream_targets": 112,
+        "cascade_overlap": 0,
+        "affected_cascades": [
+          "MSANTD7",
+          "SYNRG",
+          "PECAM1",
+          "ARFGAP3",
+          "AQP1"
+        ],
+        "therapeutic_potential": "high",
+        "druggability_notes": "IKZF2 is a hub regulator - high therapeutic impact but may have off-target effects"
+      },
+      {
+        "regulator": "YAP1",
+        "regulator_ensembl_id": "ENSG00000137693",
+        "impact_score": 0.486,
+        "regulatory_loss_pct": 14.3,
+        "regulator_downstream_targets": 207,
+        "cascade_overlap": 1,
+        "affected_cascades": [
+          "CCL4",
+          "PECAM1",
+          "HMBS",
+          "ZNF345",
+          "CD302"
+        ],
+        "therapeutic_potential": "high",
+        "druggability_notes": "YAP1 is a hub regulator - high therapeutic impact but may have off-target effects"
+      },
+      {
+        "regulator": "WWTR1",
+        "regulator_ensembl_id": "ENSG00000018408",
+        "impact_score": 0.486,
+        "regulatory_loss_pct": 14.3,
+        "regulator_downstream_targets": 293,
+        "cascade_overlap": 1,
+        "affected_cascades": [
+          "CCL4L2",
+          "NCOA4",
+          "TMEM141",
+          "ARHGEF38",
+          "C12ORF75"
+        ],
+        "therapeutic_potential": "high",
+        "druggability_notes": "WWTR1 is a hub regulator - high therapeutic impact but may have off-target effects"
+      },
+      {
+        "regulator": "PRRX2",
+        "regulator_ensembl_id": "ENSG00000167157",
+        "impact_score": 0.458,
+        "regulatory_loss_pct": 14.3,
+        "regulator_downstream_targets": 93,
+        "cascade_overlap": 1,
+        "affected_cascades": [
+          "MARCKS",
+          "RASSF5",
+          "HBB",
+          "OR5H14",
+          "TNF"
+        ],
+        "therapeutic_potential": "high",
+        "druggability_notes": "PRRX2 is a hub regulator - high therapeutic impact but may have off-target effects"
+      },
+      {
+        "regulator": "THRA",
+        "regulator_ensembl_id": "ENSG00000126351",
+        "impact_score": 0.41,
+        "regulatory_loss_pct": 14.3,
+        "regulator_downstream_targets": 81,
+        "cascade_overlap": 0,
+        "affected_cascades": [
+          "CD302",
+          "VPS52",
+          "JPT2",
+          "RAD54B",
+          "MAPT"
+        ],
+        "therapeutic_potential": "high",
+        "druggability_notes": "THRA is a hub regulator - high therapeutic impact but may have off-target effects"
+      }
+    ],
+    "therapeutic_insights": {
+      "summary": "Identified 7 potential therapeutic targets for TP53",
+      "top_target": {
+        "regulator": "RBPMS",
+        "impact_score": 0.486,
+        "therapeutic_potential": "high"
+      },
+      "high_impact_targets": 7,
+      "strategy": "Inhibiting RBPMS would reduce TP53 regulation by 14.3% and affect 403 downstream genes",
+      "recommendation": "Priority: RBPMS is a high-impact therapeutic target for modulating TP53. Consider small molecule inhibitors or targeted therapies."
+    },
+    "summary": "Analyzed 7 regulatory perturbations for TP53"
+  },
+  "cross_cell_comparison": {
+    "gene": "TP53",
+    "cell_type_analysis": {
+      "epithelial_cell": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 7,
+        "num_targets": 163,
+        "in_network": true
+      },
+      "cd14_monocytes": {
+        "regulatory_role": "regulator",
+        "num_regulators": 1,
+        "num_targets": 1,
+        "in_network": true
+      },
+      "cd16_monocytes": {
+        "regulatory_role": "regulator",
+        "num_regulators": 1,
+        "num_targets": 1,
+        "in_network": true
+      },
+      "cd20_b_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 0,
+        "num_targets": 1,
+        "in_network": true
+      },
+      "cd4_t_cells": {
+        "regulatory_role": "target",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd8_t_cells": {
+        "regulatory_role": "target",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "erythrocytes": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 1,
+        "num_targets": 41,
+        "in_network": true
+      },
+      "nk_cells": {
+        "regulatory_role": "target",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "nkt_cells": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 4,
+        "num_targets": 28,
+        "in_network": true
+      },
+      "monocyte-derived_dendritic_cells": {
+        "regulatory_role": "target",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "hepatocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cardiomyocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "neurons": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "fibroblasts": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "endothelial_cells": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      }
+    },
+    "summary": "Cross-cell analysis completed"
+  },
+  "similarity_analysis": null,
+  "domain_analysis": {
+    "cancer_analysis": {
+      "gene": "TP53",
+      "domain": "cancer_research",
+      "insights": {
+        "oncogenic_potential": "high",
+        "tumor_suppressor_likelihood": "moderate",
+        "therapeutic_target_score": 0.9,
+        "mutation_impact": "high"
+      },
+      "cancer_pathways": [],
+      "biomarker_potential": "high",
+      "research_priority": "high",
+      "summary": "TP53 shows high oncogenic potential with moderate tumor suppressor likelihood"
+    },
+    "drug_analysis": {
+      "gene": "TP53",
+      "domain": "drug_development",
+      "insights": {
+        "druggability_score": 0.95,
+        "target_class": "kinase",
+        "intervention_strategy": "inhibition",
+        "development_complexity": "high"
+      },
+      "cascade_effects": [],
+      "clinical_trial_readiness": "ready",
+      "development_timeline": "3-5 years",
+      "summary": "TP53 has 95.0% druggability score with inhibition strategy recommended"
+    },
+    "clinical_analysis": {
+      "gene": "TP53",
+      "domain": "clinical_relevance",
+      "insights": {
+        "disease_association_likelihood": "moderate",
+        "biomarker_utility": "prognostic",
+        "clinical_actionability": "moderate"
+      },
+      "tissue_specificity": [
+        "Broadly expressed across 6 cell types"
+      ],
+      "diagnostic_potential": "moderate",
+      "summary": "TP53 shows moderate disease association with prognostic biomarker utility"
+    },
+    "systems_analysis": {
+      "gene": "TP53",
+      "domain": "systems_biology",
+      "insights": {
+        "network_centrality": 1.0,
+        "regulatory_hierarchy": "hub",
+        "information_flow": "moderate",
+        "network_vulnerability": "critical"
+      },
+      "network_effects": [],
+      "perturbation_impact": "system-wide",
+      "evolutionary_conservation": "high",
+      "summary": "TP53 has 100.0% network centrality with critical vulnerability level"
+    }
+  },
+  "workflow_metadata": {
+    "start_time": 93672.39,
+    "steps_completed": [
+      "gene_network_analysis",
+      "targets_analysis",
+      "regulators_analysis",
+      "perturbation_analysis",
+      "pathway_analysis",
+      "cross_cell_analysis",
+      "cancer_domain_analysis",
+      "drug_domain_analysis",
+      "clinical_domain_analysis",
+      "systems_domain_analysis"
+    ],
+    "total_analysis_time": 297.0000000059372
+  },
+  "key_insights": {
+    "regulatory_role": "hub_regulator",
+    "regulation_strength": "moderate",
+    "regulatory_influence": "high",
+    "cell_type_specificity": "high",
+    "cancer_relevance": "unknown",
+    "therapeutic_potential": 0,
+    "druggability": 0,
+    "drug_development_priority": "unknown",
+    "clinical_significance": "unknown",
+    "biomarker_potential": "unknown",
+    "network_importance": "unknown",
+    "systems_complexity": "unknown"
+  }
+}

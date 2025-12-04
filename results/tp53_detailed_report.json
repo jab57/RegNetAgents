@@ -1,0 +1,259 @@
+{
+  "gene": "TP53",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "TP53",
+    "ensembl_id": "ENSG00000141510",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "TP53",
+      "gene_name": "TP53",
+      "function": "This gene encodes a tumor suppressor protein containing transcriptional activation, DNA binding, and oligomerization domains. The encoded protein responds to diverse cellular stresses to regulate expression of target genes, thereby inducing cell cycle arrest, apoptosis, senescence, DNA repair, or changes in metabolism. Mutations in this gene are associated with a variety of human cancers, including hereditary cancers such as Li-Fraumeni syndrome. Alternative splicing of this gene and the use of alternate promoters result in multiple transcript variants and isoforms. Additional isoforms have also been shown to result from the use of alternate translation initiation codons from identical transcript variants (PMIDs: 12032546, 20937277). [provided by RefSeq, Dec 2016].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": true,
+    "is_regulator": true,
+    "regulatory_role": "hub_regulator",
+    "num_regulators": 7,
+    "num_targets": 163,
+    "regulators": [
+      "ENSG00000157110",
+      "ENSG00000111642",
+      "ENSG00000167157",
+      "ENSG00000030419",
+      "ENSG00000126351",
+      "ENSG00000137693",
+      "ENSG00000018408"
+    ],
+    "targets": [
+      "ENSG00000284753",
+      "ENSG00000273899",
+      "ENSG00000244734",
+      "ENSG00000235162",
+      "ENSG00000217128",
+      "ENSG00000215252",
+      "ENSG00000214194",
+      "ENSG00000213654",
+      "ENSG00000205544",
+      "ENSG00000205502"
+    ],
+    "network_position": {
+      "in_degree": 7,
+      "out_degree": 163,
+      "role": "hub_regulator"
+    }
+  },
+  "llm_insights": {
+    "cancer_analysis": {
+      "llm_powered": true,
+      "summary": "TP53 is a critical tumor suppressor protein that regulates cellular responses to stress. Its high therapeutic target score and biomarker potential make it an important area of research in cancer biology.",
+      "insights": {
+        "oncogenic_potential": "low",
+        "tumor_suppressor_likelihood": "high",
+        "therapeutic_target_score": 0.8,
+        "mutation_impact": "moderate"
+      },
+      "llm_rationale": {
+        "oncogenic": "TP53 is a hub regulator with high in-degree and out-degree, indicating its critical role in regulating downstream targets and interacting with upstream regulators. Its tumor suppressor function is well-established, making it less likely to contribute to oncogenesis.",
+        "tumor_suppressor": "TP53's ability to induce cell cycle arrest, apoptosis, senescence, DNA repair, and changes in metabolism makes it a key tumor suppressor protein. Mutations in TP53 are associated with various human cancers.",
+        "therapeutic": "Given its critical role in regulating cellular responses to stress, TP53 is an attractive target for cancer therapy. Small molecule inhibitors targeting TP53's acetylation or other regulatory mechanisms could potentially restore tumor suppressor function.",
+        "biomarker": "TP53 mutations are associated with various human cancers, making it a potential biomarker for cancer diagnosis and prognosis."
+      },
+      "cancer_pathways": [
+        "Regulation of TP53 Expression",
+        "Signaling by Hippo"
+      ],
+      "biomarker_potential": "high"
+    },
+    "drug_analysis": {
+      "llm_powered": true,
+      "summary": "TP53's central role in regulating cell cycle and apoptosis makes it a promising target for cancer therapy, but its druggability is complicated by the need to balance between inhibiting or activating its function.",
+      "insights": {
+        "druggability_score": 0.8,
+        "target_class": "transcription_factor",
+        "intervention_strategy": "inhibition|activation",
+        "development_complexity": "high"
+      },
+      "llm_rationale": {
+        "druggability": "TP53's central role in regulating cell cycle and apoptosis makes it a hub gene with broad effects, increasing its druggability.",
+        "intervention": "Inhibiting TP53 could prevent cancer cells from undergoing apoptosis, while activating it could enhance tumor suppression. Both strategies are appropriate given the gene's role in regulating cell cycle and metabolism."
+      },
+      "cascade_effects": [
+        "cell cycle arrest",
+        "apoptosis",
+        "senescence"
+      ],
+      "clinical_trial_readiness": "needs_preclinical"
+    },
+    "clinical_analysis": {
+      "llm_powered": true,
+      "summary": "The TP53 gene is a critical tumor suppressor with high potential for disease association and clinical actionability in cancer diagnosis, prognosis, and treatment.",
+      "insights": {
+        "disease_association_likelihood": "high",
+        "disease_rationale": "TP53's central role as a tumor suppressor and its involvement in Li-Fraumeni syndrome highlight its critical function in cancer development.",
+        "biomarker_utility": "prognostic|predictive",
+        "biomarker_rationale": "Alterations in TP53 expression or mutation status can serve as indicators of cancer risk, prognosis, and response to therapy.",
+        "clinical_actionability": "high",
+        "actionability_rationale": "TP53's role in cancer development and progression makes it a valuable target for personalized medicine strategies, including targeted therapies and predictive biomarkers."
+      },
+      "llm_rationale": "",
+      "tissue_specificity": [
+        "Broadly expressed across 6 cell types"
+      ],
+      "diagnostic_potential": "moderate"
+    },
+    "systems_analysis": {
+      "llm_powered": true,
+      "summary": "TP53 is a critical hub regulator with high information flow, playing a key role in regulating gene expression and maintaining genome stability. Its loss or dysregulation has system-wide consequences for cellular behavior.",
+      "insights": {
+        "network_centrality": 0.0,
+        "centrality_rationale": "TP53 has a low PageRank Centrality score, indicating that it is not highly central in the network.",
+        "regulatory_hierarchy": "hub_regulator",
+        "hierarchy_rationale": "As a hub regulator, TP53 has a high number of upstream regulators and downstream targets, suggesting a key role in regulating gene expression.",
+        "information_flow": "high",
+        "flow_rationale": "TP53's regulatory control over many genes implies significant information flow through this node.",
+        "network_vulnerability": "critical",
+        "vulnerability_rationale": "Mutations in TP53 are associated with various human cancers, indicating that its loss or dysregulation has critical consequences for the network."
+      },
+      "llm_rationale": "",
+      "network_effects": [],
+      "perturbation_impact": "system-wide"
+    }
+  },
+  "pathway_summary": {
+    "total_pathways": 16,
+    "significant_pathways": 16
+  },
+  "cross_cell_analysis": {
+    "gene": "TP53",
+    "cell_type_analysis": {
+      "epithelial_cell": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 7,
+        "num_targets": 163,
+        "in_network": true
+      },
+      "cd14_monocytes": {
+        "regulatory_role": "regulator",
+        "num_regulators": 1,
+        "num_targets": 1,
+        "in_network": true
+      },
+      "cd16_monocytes": {
+        "regulatory_role": "regulator",
+        "num_regulators": 1,
+        "num_targets": 1,
+        "in_network": true
+      },
+      "cd20_b_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 0,
+        "num_targets": 1,
+        "in_network": true
+      },
+      "cd4_t_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd8_t_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "erythrocytes": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 1,
+        "num_targets": 41,
+        "in_network": true
+      },
+      "nk_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "nkt_cells": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 4,
+        "num_targets": 28,
+        "in_network": true
+      },
+      "monocyte-derived_dendritic_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "hepatocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cardiomyocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "neurons": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "fibroblasts": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "endothelial_cells": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      }
+    },
+    "summary": "Cross-cell analysis completed"
+  },
+  "key_insights": {
+    "regulatory_role": "hub_regulator",
+    "regulation_strength": "moderate",
+    "regulatory_influence": "high",
+    "cell_type_specificity": "high",
+    "cancer_relevance": "unknown",
+    "therapeutic_potential": 0,
+    "druggability": 0,
+    "drug_development_priority": "unknown",
+    "clinical_significance": "unknown",
+    "biomarker_potential": "unknown",
+    "network_importance": "unknown",
+    "systems_complexity": "unknown"
+  },
+  "workflow_metadata": {
+    "start_time": 1093743.484,
+    "steps_completed": [
+      "gene_network_analysis",
+      "targets_analysis",
+      "regulators_analysis",
+      "perturbation_analysis",
+      "pathway_analysis",
+      "cross_cell_analysis",
+      "cancer_domain_analysis",
+      "drug_domain_analysis",
+      "clinical_domain_analysis",
+      "systems_domain_analysis"
+    ],
+    "total_analysis_time": 45734.00000017136
+  }
+}

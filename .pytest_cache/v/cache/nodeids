@@ -1,0 +1,4 @@
+[
+  "tests/test_langgraph_workflow.py::test_workflow",
+  "tests/test_perturbation_analysis.py::test_perturbation_analysis"
+]

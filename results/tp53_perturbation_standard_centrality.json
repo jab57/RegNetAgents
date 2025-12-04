@@ -1,0 +1,196 @@
+{
+  "target_gene": "TP53",
+  "cell_type": "epithelial_cell",
+  "baseline_regulators": 7,
+  "perturbation_results": [
+    {
+      "regulator": "WWTR1",
+      "regulator_ensembl_id": "ENSG00000018408",
+      "regulator_downstream_targets": 293,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "CCL4L2",
+        "NCOA4",
+        "TMEM141",
+        "ARHGEF38",
+        "C12ORF75"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0213,
+        "out_degree_centrality": 0.02,
+        "pagerank": 0.4734
+      }
+    },
+    {
+      "regulator": "RBPMS",
+      "regulator_ensembl_id": "ENSG00000157110",
+      "regulator_downstream_targets": 403,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "PCDH20",
+        "DUSP14",
+        "NBPF19",
+        "ATF7-NPFF",
+        "KLF14"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0289,
+        "out_degree_centrality": 0.0276,
+        "pagerank": 0.4691
+      }
+    },
+    {
+      "regulator": "PRRX2",
+      "regulator_ensembl_id": "ENSG00000167157",
+      "regulator_downstream_targets": 93,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "MARCKS",
+        "RASSF5",
+        "HBB",
+        "OR5H14",
+        "TNF"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.007,
+        "out_degree_centrality": 0.0064,
+        "pagerank": 0.4544
+      }
+    },
+    {
+      "regulator": "CHD4",
+      "regulator_ensembl_id": "ENSG00000111642",
+      "regulator_downstream_targets": 243,
+      "cascade_overlap": 2,
+      "affected_cascades": [
+        "SLURP2",
+        "LHX1",
+        "POM121C",
+        "PECAM1",
+        "CEP95"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0183,
+        "out_degree_centrality": 0.0166,
+        "pagerank": 0.4434
+      }
+    },
+    {
+      "regulator": "THRA",
+      "regulator_ensembl_id": "ENSG00000126351",
+      "regulator_downstream_targets": 81,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "CD302",
+        "VPS52",
+        "JPT2",
+        "RAD54B",
+        "MAPT"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.006,
+        "out_degree_centrality": 0.0055,
+        "pagerank": 0.4077
+      }
+    },
+    {
+      "regulator": "YAP1",
+      "regulator_ensembl_id": "ENSG00000137693",
+      "regulator_downstream_targets": 207,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "CCL4",
+        "PECAM1",
+        "HMBS",
+        "ZNF345",
+        "CD302"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0151,
+        "out_degree_centrality": 0.0142,
+        "pagerank": 0.4021
+      }
+    },
+    {
+      "regulator": "IKZF2",
+      "regulator_ensembl_id": "ENSG00000030419",
+      "regulator_downstream_targets": 112,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "MSANTD7",
+        "SYNRG",
+        "PECAM1",
+        "ARFGAP3",
+        "AQP1"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0082,
+        "out_degree_centrality": 0.0077,
+        "pagerank": 0.3986
+      }
+    }
+  ],
+  "rankings": {
+    "by_pagerank": [
+      {
+        "regulator": "WWTR1",
+        "score": 0.4734
+      },
+      {
+        "regulator": "RBPMS",
+        "score": 0.4691
+      },
+      {
+        "regulator": "PRRX2",
+        "score": 0.4544
+      },
+      {
+        "regulator": "CHD4",
+        "score": 0.4434
+      },
+      {
+        "regulator": "THRA",
+        "score": 0.4077
+      }
+    ],
+    "by_degree": [
+      {
+        "regulator": "RBPMS",
+        "score": 0.0289
+      },
+      {
+        "regulator": "WWTR1",
+        "score": 0.0213
+      },
+      {
+        "regulator": "CHD4",
+        "score": 0.0183
+      },
+      {
+        "regulator": "YAP1",
+        "score": 0.0151
+      },
+      {
+        "regulator": "IKZF2",
+        "score": 0.0082
+      }
+    ]
+  },
+  "therapeutic_insights": {
+    "summary": "Identified 7 potential therapeutic targets for TP53",
+    "top_target_by_pagerank": {
+      "regulator": "WWTR1",
+      "pagerank": 0.4734,
+      "downstream_targets": 293
+    },
+    "top_target_by_degree": {
+      "regulator": "RBPMS",
+      "degree_centrality": 0.0289,
+      "downstream_targets": 403
+    },
+    "consensus_target": false,
+    "strategy": "Inhibiting WWTR1 (highest PageRank) would reduce TP53 regulation by 14.3% and affect 293 downstream genes",
+    "interpretation": "WWTR1 shows strong therapeutic potential for modulating TP53. High PageRank (0.473) indicates this regulator has high-quality connections in the network, typical of successful drug targets. As a hub regulator (293 targets), inhibiting this gene would have broad network effects. Consider validating with experimental perturbation studies."
+  },
+  "summary": "Analyzed 7 regulatory perturbations for TP53"
+}

@@ -1,0 +1,263 @@
+{
+  "gene": "CTNNB1",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "CTNNB1",
+    "ensembl_id": "ENSG00000168036",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "CTNNB1",
+      "gene_name": "CTNNB1",
+      "function": "The protein encoded by this gene is part of a complex of proteins that constitute adherens junctions (AJs). AJs are necessary for the creation and maintenance of epithelial cell layers by regulating cell growth and adhesion between cells. The encoded protein also anchors the actin cytoskeleton and may be responsible for transmitting the contact inhibition signal that causes cells to stop dividing once the epithelial sheet is complete. Finally, this protein binds to the product of the APC gene, which is mutated in adenomatous polyposis of the colon. Mutations in this gene are a cause of colorectal cancer (CRC), pilomatrixoma (PTR), medulloblastoma (MDB), and ovarian cancer. Alternative splicing results in multiple transcript variants. [provided by RefSeq, Aug 2016].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": true,
+    "is_regulator": true,
+    "regulatory_role": "hub_regulator",
+    "num_regulators": 18,
+    "num_targets": 310,
+    "regulators": [
+      "ENSG00000173575",
+      "ENSG00000168264",
+      "ENSG00000153922",
+      "ENSG00000100941",
+      "ENSG00000121068",
+      "ENSG00000146463",
+      "ENSG00000273611",
+      "ENSG00000129194",
+      "ENSG00000064490",
+      "ENSG00000086666"
+    ],
+    "targets": [
+      "ENSG00000277443",
+      "ENSG00000275832",
+      "ENSG00000275066",
+      "ENSG00000273611",
+      "ENSG00000267855",
+      "ENSG00000265972",
+      "ENSG00000255112",
+      "ENSG00000253719",
+      "ENSG00000244509",
+      "ENSG00000243927"
+    ],
+    "network_position": {
+      "in_degree": 18,
+      "out_degree": 310,
+      "role": "hub_regulator"
+    }
+  },
+  "llm_insights": {
+    "cancer_analysis": {
+      "llm_powered": true,
+      "summary": "CTNNB1 is a critical regulator of gene expression in cancer, with both oncogenic and tumor suppressor functions. Its druggability and potential as a prognostic biomarker make it a high-priority research target.",
+      "insights": {
+        "oncogenic_potential": "moderate",
+        "tumor_suppressor_likelihood": "high",
+        "therapeutic_target_score": 0.8,
+        "mutation_impact": "moderate"
+      },
+      "llm_rationale": {
+        "oncogenic": "CTNNB1 is a hub regulator with high in-degree and out-degree values, indicating its central role in gene regulatory networks. Mutations in this gene are associated with various cancers, including colorectal cancer.",
+        "tumor_suppressor": "As a key component of the Wnt/\u03b2-catenin signaling pathway, CTNNB1 mutations can lead to aberrant activation of oncogenic transcriptional programs, suggesting its tumor suppressor function.",
+        "therapeutic": "CTNNB1 is a druggable target due to its central role in cancer-related pathways and the availability of small molecule inhibitors targeting \u03b2-catenin signaling.",
+        "biomarker": "CTNNB1 expression levels may serve as a prognostic biomarker for cancer patients, with high expression associated with poor prognosis."
+      },
+      "cancer_pathways": [
+        "Regulation of MITF-M-dependent genes involved in cell cycle and proliferation",
+        "MITF-M-dependent gene expression"
+      ],
+      "biomarker_potential": "moderate"
+    },
+    "drug_analysis": {
+      "llm_powered": true,
+      "summary": "CTNNB1 is a promising target for the treatment of colorectal cancer and other diseases characterized by aberrant Wnt/\u03b2-catenin signaling, but its druggability requires further investigation.",
+      "insights": {
+        "druggability_score": 0.7,
+        "target_class": "other",
+        "intervention_strategy": "inhibition",
+        "development_complexity": "moderate"
+      },
+      "llm_rationale": {
+        "druggability": "CTNNB1's central role in gene regulatory networks and its involvement in multiple diseases make it a promising target for intervention.",
+        "intervention": "Inhibiting CTNNB1 could disrupt aberrant Wnt/\u03b2-catenin signaling pathways, which are implicated in various cancers and developmental disorders."
+      },
+      "cascade_effects": [
+        "disruption of epithelial cell layer formation",
+        "inhibition of cell growth"
+      ],
+      "clinical_trial_readiness": "needs_preclinical"
+    },
+    "clinical_analysis": {
+      "llm_powered": true,
+      "summary": "CTNNB1 mutations are a significant risk factor for multiple types of cancer, offering opportunities for early detection and personalized treatment planning.",
+      "insights": {
+        "disease_association_likelihood": "high",
+        "disease_rationale": "CTNNB1 mutations are a known cause of colorectal cancer, pilomatrixoma, medulloblastoma, and ovarian cancer due to its role in adherens junctions and cell adhesion.",
+        "biomarker_utility": "diagnostic|prognostic",
+        "biomarker_rationale": "CTNNB1 mutations can serve as a biomarker for early detection of colorectal cancer and potentially other cancers, with implications for prognosis and treatment planning.",
+        "clinical_actionability": "high",
+        "actionability_rationale": "Mutations in CTNNB1 have clear clinical implications for patients with these cancers, allowing for targeted therapies and improved patient outcomes."
+      },
+      "llm_rationale": "",
+      "tissue_specificity": [
+        "Broadly expressed across 8 cell types"
+      ],
+      "diagnostic_potential": "high"
+    },
+    "systems_analysis": {
+      "llm_powered": true,
+      "summary": "CTNNB1 is a hub regulator with a moderate information flow and important network vulnerability. Its disruption can have system-wide effects on gene expression and cellular behavior.",
+      "insights": {
+        "network_centrality": 0.0,
+        "centrality_rationale": "CTNNB1 has a low PageRank centrality score indicating it is not highly connected or central in the network.",
+        "regulatory_hierarchy": "hub_regulator",
+        "hierarchy_rationale": "As a hub regulator, CTNNB1 has a high number of upstream regulators and downstream targets, positioning it as a key node in the regulatory hierarchy.",
+        "information_flow": "moderate",
+        "flow_rationale": "CTNNB1's moderate information flow is due to its role in transmitting contact inhibition signals between cells, indicating a balance between signal transduction and regulation.",
+        "network_vulnerability": "important",
+        "vulnerability_rationale": "Mutations in CTNNB1 are associated with several cancers, suggesting that it plays a critical role in maintaining epithelial cell layers and its disruption can have significant network consequences."
+      },
+      "llm_rationale": "",
+      "network_effects": [
+        "Highly regulated node with 18 upstream controllers"
+      ],
+      "perturbation_impact": "system-wide"
+    }
+  },
+  "pathway_summary": {
+    "total_pathways": 7,
+    "significant_pathways": 7
+  },
+  "cross_cell_analysis": {
+    "gene": "CTNNB1",
+    "cell_type_analysis": {
+      "epithelial_cell": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 18,
+        "num_targets": 310,
+        "in_network": true
+      },
+      "cd14_monocytes": {
+        "regulatory_role": "regulator",
+        "num_regulators": 1,
+        "num_targets": 3,
+        "in_network": true
+      },
+      "cd16_monocytes": {
+        "regulatory_role": "regulator",
+        "num_regulators": 0,
+        "num_targets": 8,
+        "in_network": true
+      },
+      "cd20_b_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 0,
+        "num_targets": 2,
+        "in_network": true
+      },
+      "cd4_t_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd8_t_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 1,
+        "num_targets": 4,
+        "in_network": true
+      },
+      "erythrocytes": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 6,
+        "num_targets": 23,
+        "in_network": true
+      },
+      "nk_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 0,
+        "num_targets": 1,
+        "in_network": true
+      },
+      "nkt_cells": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 3,
+        "num_targets": 43,
+        "in_network": true
+      },
+      "monocyte-derived_dendritic_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "hepatocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cardiomyocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "neurons": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "fibroblasts": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "endothelial_cells": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      }
+    },
+    "summary": "Cross-cell analysis completed"
+  },
+  "key_insights": {
+    "regulatory_role": "hub_regulator",
+    "regulation_strength": "high",
+    "regulatory_influence": "high",
+    "cell_type_specificity": "high",
+    "cancer_relevance": "unknown",
+    "therapeutic_potential": 0,
+    "druggability": 0,
+    "drug_development_priority": "unknown",
+    "clinical_significance": "unknown",
+    "biomarker_potential": "unknown",
+    "network_importance": "unknown",
+    "systems_complexity": "unknown"
+  },
+  "workflow_metadata": {
+    "start_time": 1093743.484,
+    "steps_completed": [
+      "gene_network_analysis",
+      "regulators_analysis",
+      "targets_analysis",
+      "perturbation_analysis",
+      "pathway_analysis",
+      "cross_cell_analysis",
+      "cancer_domain_analysis",
+      "drug_domain_analysis",
+      "clinical_domain_analysis",
+      "systems_domain_analysis"
+    ],
+    "total_analysis_time": 18344.00000004098
+  }
+}

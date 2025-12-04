@@ -1,0 +1,196 @@
+{
+  "target_gene": "KRAS",
+  "cell_type": "epithelial_cell",
+  "baseline_regulators": 7,
+  "perturbation_results": [
+    {
+      "regulator": "GPBP1",
+      "regulator_ensembl_id": "ENSG00000062194",
+      "regulator_downstream_targets": 373,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "NBPF26",
+        "SRSF8",
+        "MAP1LC3B2",
+        "ATXN7L3B",
+        "LEFTY1"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0278,
+        "out_degree_centrality": 0.0255,
+        "pagerank": 0.6088
+      }
+    },
+    {
+      "regulator": "KDM2A",
+      "regulator_ensembl_id": "ENSG00000173120",
+      "regulator_downstream_targets": 459,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "ENSG00000275895",
+        "ARHGAP23",
+        "NDUFA7",
+        "DYNLL2",
+        "GAN"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.033,
+        "out_degree_centrality": 0.0314,
+        "pagerank": 0.5505
+      }
+    },
+    {
+      "regulator": "MORF4L2",
+      "regulator_ensembl_id": "ENSG00000123562",
+      "regulator_downstream_targets": 421,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "GGTA1",
+        "TSTD3",
+        "SLURP2",
+        "CWC25",
+        "TXNIP"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0304,
+        "out_degree_centrality": 0.0288,
+        "pagerank": 0.4852
+      }
+    },
+    {
+      "regulator": "ZFP36L1",
+      "regulator_ensembl_id": "ENSG00000185650",
+      "regulator_downstream_targets": 537,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "CCDC163",
+        "LHX1",
+        "FXYD1",
+        "TXNIP",
+        "CHCHD10"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0388,
+        "out_degree_centrality": 0.0367,
+        "pagerank": 0.4457
+      }
+    },
+    {
+      "regulator": "ASCC2",
+      "regulator_ensembl_id": "ENSG00000100325",
+      "regulator_downstream_targets": 236,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "MYO15B",
+        "CHMP4A",
+        "SMIM20",
+        "DECR2",
+        "PEDS1"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.017,
+        "out_degree_centrality": 0.0161,
+        "pagerank": 0.4313
+      }
+    },
+    {
+      "regulator": "ZMYND8",
+      "regulator_ensembl_id": "ENSG00000101040",
+      "regulator_downstream_targets": 138,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "ZBED6",
+        "SMIM3",
+        "CFB",
+        "MICAL3",
+        "ERV3-1"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.01,
+        "out_degree_centrality": 0.0094,
+        "pagerank": 0.3987
+      }
+    },
+    {
+      "regulator": "BZW1",
+      "regulator_ensembl_id": "ENSG00000082153",
+      "regulator_downstream_targets": 86,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "TXNIP",
+        "PLEKHM1",
+        "MT-ATP6",
+        "MT-ND1",
+        "ITSN2"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0059,
+        "out_degree_centrality": 0.0059,
+        "pagerank": 0.377
+      }
+    }
+  ],
+  "rankings": {
+    "by_pagerank": [
+      {
+        "regulator": "GPBP1",
+        "score": 0.6088
+      },
+      {
+        "regulator": "KDM2A",
+        "score": 0.5505
+      },
+      {
+        "regulator": "MORF4L2",
+        "score": 0.4852
+      },
+      {
+        "regulator": "ZFP36L1",
+        "score": 0.4457
+      },
+      {
+        "regulator": "ASCC2",
+        "score": 0.4313
+      }
+    ],
+    "by_degree": [
+      {
+        "regulator": "ZFP36L1",
+        "score": 0.0388
+      },
+      {
+        "regulator": "KDM2A",
+        "score": 0.033
+      },
+      {
+        "regulator": "MORF4L2",
+        "score": 0.0304
+      },
+      {
+        "regulator": "GPBP1",
+        "score": 0.0278
+      },
+      {
+        "regulator": "ASCC2",
+        "score": 0.017
+      }
+    ]
+  },
+  "therapeutic_insights": {
+    "summary": "Identified 7 potential therapeutic targets for KRAS",
+    "top_target_by_pagerank": {
+      "regulator": "GPBP1",
+      "pagerank": 0.6088,
+      "downstream_targets": 373
+    },
+    "top_target_by_degree": {
+      "regulator": "ZFP36L1",
+      "degree_centrality": 0.0388,
+      "downstream_targets": 537
+    },
+    "consensus_target": false,
+    "strategy": "Inhibiting GPBP1 (highest PageRank) would reduce KRAS regulation by 14.3% and affect 373 downstream genes",
+    "interpretation": "GPBP1 shows strong therapeutic potential for modulating KRAS. High PageRank (0.609) indicates this regulator has high-quality connections in the network, typical of successful drug targets. As a hub regulator (373 targets), inhibiting this gene would have broad network effects. Consider validating with experimental perturbation studies."
+  },
+  "summary": "Analyzed 7 regulatory perturbations for KRAS"
+}

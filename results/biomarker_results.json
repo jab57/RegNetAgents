@@ -1,0 +1,99 @@
+{
+  "execution_time_seconds": 45.74183797836304,
+  "genes_analyzed": [
+    "MYC",
+    "CTNNB1",
+    "CCND1",
+    "TP53",
+    "KRAS"
+  ],
+  "biomarker_results": [
+    {
+      "gene": "MYC",
+      "regulatory_role": "hub_regulator",
+      "num_targets": 427,
+      "num_regulators": 25,
+      "biomarker_type": "prognostic|predictive",
+      "oncogenic_potential": "high",
+      "therapeutic_score": 0.8,
+      "druggability_score": 0.8,
+      "clinical_actionability": "high",
+      "num_pathways": 58,
+      "llm_powered": [
+        "cancer",
+        "drug",
+        "clinical",
+        "systems"
+      ]
+    },
+    {
+      "gene": "CTNNB1",
+      "regulatory_role": "hub_regulator",
+      "num_targets": 310,
+      "num_regulators": 18,
+      "biomarker_type": "diagnostic|prognostic",
+      "oncogenic_potential": "moderate",
+      "therapeutic_score": 0.8,
+      "druggability_score": 0.7,
+      "clinical_actionability": "high",
+      "num_pathways": 7,
+      "llm_powered": [
+        "cancer",
+        "drug",
+        "clinical",
+        "systems"
+      ]
+    },
+    {
+      "gene": "CCND1",
+      "regulatory_role": "heavily_regulated",
+      "num_targets": 0,
+      "num_regulators": 42,
+      "biomarker_type": "prognostic|predictive",
+      "oncogenic_potential": "high",
+      "therapeutic_score": 0.8,
+      "druggability_score": 0,
+      "clinical_actionability": "high",
+      "num_pathways": 20,
+      "llm_powered": [
+        "cancer",
+        "clinical",
+        "systems"
+      ]
+    },
+    {
+      "gene": "TP53",
+      "regulatory_role": "hub_regulator",
+      "num_targets": 163,
+      "num_regulators": 7,
+      "biomarker_type": "prognostic|predictive",
+      "oncogenic_potential": "low",
+      "therapeutic_score": 0.8,
+      "druggability_score": 0.8,
+      "clinical_actionability": "high",
+      "num_pathways": 16,
+      "llm_powered": [
+        "cancer",
+        "drug",
+        "clinical",
+        "systems"
+      ]
+    },
+    {
+      "gene": "KRAS",
+      "regulatory_role": "weakly_regulated",
+      "num_targets": 0,
+      "num_regulators": 7,
+      "biomarker_type": "diagnostic|prognostic|predictive",
+      "oncogenic_potential": "unknown",
+      "therapeutic_score": 0,
+      "druggability_score": 0,
+      "clinical_actionability": "high",
+      "num_pathways": 141,
+      "llm_powered": [
+        "clinical",
+        "systems"
+      ]
+    }
+  ]
+}

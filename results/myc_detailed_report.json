@@ -1,0 +1,263 @@
+{
+  "gene": "MYC",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "MYC",
+    "ensembl_id": "ENSG00000136997",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "MYC",
+      "gene_name": "MYC",
+      "function": "This gene is a proto-oncogene and encodes a nuclear phosphoprotein that plays a role in cell cycle progression, apoptosis and cellular transformation. The encoded protein forms a heterodimer with the related transcription factor MAX. This complex binds to the E box DNA consensus sequence and regulates the transcription of specific target genes. Amplification of this gene is frequently observed in numerous human cancers. Translocations involving this gene are associated with Burkitt lymphoma and multiple myeloma in human patients. There is evidence to show that translation initiates both from an upstream, in-frame non-AUG (CUG) and a downstream AUG start site, resulting in the production of two isoforms with distinct N-termini. [provided by RefSeq, Aug 2017].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": true,
+    "is_regulator": true,
+    "regulatory_role": "hub_regulator",
+    "num_regulators": 25,
+    "num_targets": 427,
+    "regulators": [
+      "ENSG00000144802",
+      "ENSG00000173575",
+      "ENSG00000174306",
+      "ENSG00000164683",
+      "ENSG00000121068",
+      "ENSG00000126368",
+      "ENSG00000115415",
+      "ENSG00000126456",
+      "ENSG00000118058",
+      "ENSG00000119866"
+    ],
+    "targets": [
+      "ENSG00000275832",
+      "ENSG00000271425",
+      "ENSG00000271383",
+      "ENSG00000270629",
+      "ENSG00000265972",
+      "ENSG00000262655",
+      "ENSG00000258890",
+      "ENSG00000256060",
+      "ENSG00000250722",
+      "ENSG00000250479"
+    ],
+    "network_position": {
+      "in_degree": 25,
+      "out_degree": 427,
+      "role": "hub_regulator"
+    }
+  },
+  "llm_insights": {
+    "cancer_analysis": {
+      "llm_powered": true,
+      "summary": "The MYC gene is a critical oncogene involved in regulating transcriptional networks and contributing to various cancers. Its frequent amplification and central role in cancer-related pathways make it an attractive therapeutic target.",
+      "insights": {
+        "oncogenic_potential": "high",
+        "tumor_suppressor_likelihood": "low",
+        "therapeutic_target_score": 0.8,
+        "mutation_impact": "high"
+      },
+      "llm_rationale": {
+        "oncogenic": "As a hub regulator with high in-degree and out-degree, MYC plays a central role in regulating transcriptional networks, contributing to its oncogenic potential.",
+        "tumor_suppressor": "MYC's primary function is as an oncogene, amplification of which is frequently observed in human cancers, indicating it does not act as a tumor suppressor.",
+        "therapeutic": "Given its central role in cancer-related pathways and frequent amplification in various cancers, MYC represents a promising therapeutic target for cancer treatment.",
+        "biomarker": "MYC's expression levels can serve as a prognostic biomarker for cancer, with high levels often associated with poor prognosis."
+      },
+      "cancer_pathways": [
+        "NOTCH1 Intracellular Domain Regulates Transcription",
+        "Signaling by NOTCH1 HD+PEST Domain Mutants in Cancer"
+      ],
+      "biomarker_potential": "moderate"
+    },
+    "drug_analysis": {
+      "llm_powered": true,
+      "summary": "MYC is a promising target for cancer therapy due to its central role in transcriptional regulation and frequent amplification in cancers, but its druggability will require careful consideration of potential off-target effects.",
+      "insights": {
+        "druggability_score": 0.8,
+        "target_class": "transcription_factor",
+        "intervention_strategy": "inhibition",
+        "development_complexity": "high"
+      },
+      "llm_rationale": {
+        "druggability": "MYC's central role in transcriptional regulation and its frequent amplification in cancers make it a high-priority target for inhibition.",
+        "intervention": "Inhibiting MYC's transcriptional activity could disrupt oncogenic signaling pathways, making it an attractive strategy for cancer therapy."
+      },
+      "cascade_effects": [
+        "cell cycle progression",
+        "apoptosis regulation"
+      ],
+      "clinical_trial_readiness": "ready"
+    },
+    "clinical_analysis": {
+      "llm_powered": true,
+      "summary": "MYC's high disease association likelihood and prognostic/predictive biomarker utility make it an important target for cancer diagnosis, prognosis, and treatment monitoring.",
+      "insights": {
+        "disease_association_likelihood": "high",
+        "disease_rationale": "MYC's role as a proto-oncogene and frequent amplification in human cancers indicate its strong association with various diseases.",
+        "biomarker_utility": "prognostic|predictive",
+        "biomarker_rationale": "MYC expression levels can serve as prognostic indicators for cancer progression and predictive markers for treatment response due to its involvement in cell cycle regulation and apoptosis.",
+        "clinical_actionability": "high",
+        "actionability_rationale": "Targeting MYC or its downstream targets presents a promising therapeutic strategy, with potential applications in personalized medicine approaches."
+      },
+      "llm_rationale": "",
+      "tissue_specificity": [
+        "Broadly expressed across 7 cell types"
+      ],
+      "diagnostic_potential": "moderate"
+    },
+    "systems_analysis": {
+      "llm_powered": true,
+      "summary": "MYC is a critical hub regulator involved in processing information from upstream regulators and transmitting signals to downstream targets, making it a key node in the network. Its amplification or mutation has significant implications for cancer development.",
+      "insights": {
+        "network_centrality": 0.0,
+        "centrality_rationale": "MYC has a low PageRank centrality score indicating it is not highly central in the network.",
+        "regulatory_hierarchy": "hub_regulator",
+        "hierarchy_rationale": "As a hub regulator, MYC plays a key role in regulating many downstream targets and interacts with numerous upstream regulators.",
+        "information_flow": "high",
+        "flow_rationale": "MYC's high degree (452) suggests it is involved in processing a large amount of information from its upstream regulators and transmitting signals to its downstream targets.",
+        "network_vulnerability": "critical",
+        "vulnerability_rationale": "Amplification or mutation of MYC has been implicated in numerous human cancers, indicating that the network is highly vulnerable to perturbations affecting this gene."
+      },
+      "llm_rationale": "",
+      "network_effects": [
+        "Highly regulated node with 25 upstream controllers"
+      ],
+      "perturbation_impact": "system-wide"
+    }
+  },
+  "pathway_summary": {
+    "total_pathways": 58,
+    "significant_pathways": 58
+  },
+  "cross_cell_analysis": {
+    "gene": "MYC",
+    "cell_type_analysis": {
+      "epithelial_cell": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 25,
+        "num_targets": 427,
+        "in_network": true
+      },
+      "cd14_monocytes": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd16_monocytes": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd20_b_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 1,
+        "num_targets": 6,
+        "in_network": true
+      },
+      "cd4_t_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 0,
+        "num_targets": 9,
+        "in_network": true
+      },
+      "cd8_t_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 0,
+        "num_targets": 10,
+        "in_network": true
+      },
+      "erythrocytes": {
+        "regulatory_role": "hub_regulator",
+        "num_regulators": 3,
+        "num_targets": 87,
+        "in_network": true
+      },
+      "nk_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "nkt_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 0,
+        "num_targets": 1,
+        "in_network": true
+      },
+      "monocyte-derived_dendritic_cells": {
+        "regulatory_role": "regulator",
+        "num_regulators": 0,
+        "num_targets": 3,
+        "in_network": true
+      },
+      "hepatocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cardiomyocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "neurons": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "fibroblasts": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "endothelial_cells": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      }
+    },
+    "summary": "Cross-cell analysis completed"
+  },
+  "key_insights": {
+    "regulatory_role": "hub_regulator",
+    "regulation_strength": "high",
+    "regulatory_influence": "high",
+    "cell_type_specificity": "high",
+    "cancer_relevance": "unknown",
+    "therapeutic_potential": 0,
+    "druggability": 0,
+    "drug_development_priority": "unknown",
+    "clinical_significance": "unknown",
+    "biomarker_potential": "unknown",
+    "network_importance": "unknown",
+    "systems_complexity": "unknown"
+  },
+  "workflow_metadata": {
+    "start_time": 1093743.484,
+    "steps_completed": [
+      "gene_network_analysis",
+      "regulators_analysis",
+      "targets_analysis",
+      "perturbation_analysis",
+      "pathway_analysis",
+      "cross_cell_analysis",
+      "cancer_domain_analysis",
+      "drug_domain_analysis",
+      "clinical_domain_analysis",
+      "systems_domain_analysis"
+    ],
+    "total_analysis_time": 38937.000000150874
+  }
+}

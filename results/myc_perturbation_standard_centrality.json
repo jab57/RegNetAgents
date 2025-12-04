@@ -1,0 +1,520 @@
+{
+  "target_gene": "MYC",
+  "cell_type": "epithelial_cell",
+  "baseline_regulators": 25,
+  "perturbation_results": [
+    {
+      "regulator": "ID4",
+      "regulator_ensembl_id": "ENSG00000172201",
+      "regulator_downstream_targets": 496,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "DHRS11",
+        "NEFL",
+        "ENSG00000276256",
+        "H2AC15",
+        "CASTOR2"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0363,
+        "out_degree_centrality": 0.0339,
+        "pagerank": 0.6223
+      }
+    },
+    {
+      "regulator": "CHD2",
+      "regulator_ensembl_id": "ENSG00000173575",
+      "regulator_downstream_targets": 291,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "NR2E3",
+        "MARCKS",
+        "LHX1",
+        "RPL17",
+        "RHEX"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0224,
+        "out_degree_centrality": 0.0199,
+        "pagerank": 0.5299
+      }
+    },
+    {
+      "regulator": "STAT1",
+      "regulator_ensembl_id": "ENSG00000115415",
+      "regulator_downstream_targets": 499,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "POLR2J3",
+        "ACACA",
+        "TXNIP",
+        "PCDHGA9",
+        "SYNJ2BP-COX16"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0369,
+        "out_degree_centrality": 0.0341,
+        "pagerank": 0.5084
+      }
+    },
+    {
+      "regulator": "IRF3",
+      "regulator_ensembl_id": "ENSG00000126456",
+      "regulator_downstream_targets": 50,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "KMT2B",
+        "EFCAB2",
+        "YTHDF2",
+        "S100A6",
+        "H1-0"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0043,
+        "out_degree_centrality": 0.0034,
+        "pagerank": 0.4915
+      }
+    },
+    {
+      "regulator": "STAT3",
+      "regulator_ensembl_id": "ENSG00000168610",
+      "regulator_downstream_targets": 423,
+      "cascade_overlap": 3,
+      "affected_cascades": [
+        "POLR2J3",
+        "IQCJ-SCHIP1",
+        "MARCKS",
+        "ENSG00000276256",
+        "H2BC9"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0318,
+        "out_degree_centrality": 0.0289,
+        "pagerank": 0.4865
+      }
+    },
+    {
+      "regulator": "NFKBIZ",
+      "regulator_ensembl_id": "ENSG00000144802",
+      "regulator_downstream_targets": 462,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "MARCKS",
+        "SYNRG",
+        "PPP4R3B",
+        "CHURC1",
+        "CNPY2"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0342,
+        "out_degree_centrality": 0.0316,
+        "pagerank": 0.484
+      }
+    },
+    {
+      "regulator": "SOX4",
+      "regulator_ensembl_id": "ENSG00000124766",
+      "regulator_downstream_targets": 670,
+      "cascade_overlap": 2,
+      "affected_cascades": [
+        "PAGR1",
+        "H3C10",
+        "TXNIP",
+        "ERLN",
+        "FNTB"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0486,
+        "out_degree_centrality": 0.0458,
+        "pagerank": 0.4767
+      }
+    },
+    {
+      "regulator": "NR1D1",
+      "regulator_ensembl_id": "ENSG00000126368",
+      "regulator_downstream_targets": 291,
+      "cascade_overlap": 2,
+      "affected_cascades": [
+        "DDX52",
+        "NBPF19",
+        "TXNIP",
+        "CHMP1B",
+        "APOC2"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0213,
+        "out_degree_centrality": 0.0199,
+        "pagerank": 0.4642
+      }
+    },
+    {
+      "regulator": "EGR1",
+      "regulator_ensembl_id": "ENSG00000120738",
+      "regulator_downstream_targets": 421,
+      "cascade_overlap": 3,
+      "affected_cascades": [
+        "H2BC3",
+        "CWC25",
+        "PECAM1",
+        "CEP95",
+        "HCAR3"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.031,
+        "out_degree_centrality": 0.0288,
+        "pagerank": 0.4604
+      }
+    },
+    {
+      "regulator": "FOS",
+      "regulator_ensembl_id": "ENSG00000170345",
+      "regulator_downstream_targets": 529,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "CCL3",
+        "DUSP14",
+        "FCGBP",
+        "DOC2B",
+        "CD24"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0388,
+        "out_degree_centrality": 0.0362,
+        "pagerank": 0.4603
+      }
+    },
+    {
+      "regulator": "HMGN5",
+      "regulator_ensembl_id": "ENSG00000198157",
+      "regulator_downstream_targets": 276,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "DDX52",
+        "RTEL1",
+        "ZBED6",
+        "TMEM141",
+        "LEFTY1"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0203,
+        "out_degree_centrality": 0.0189,
+        "pagerank": 0.4558
+      }
+    },
+    {
+      "regulator": "TBX2",
+      "regulator_ensembl_id": "ENSG00000121068",
+      "regulator_downstream_targets": 223,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "HNF1B",
+        "FCGBP",
+        "TBC1D3K",
+        "UPK3BL1",
+        "RPL17"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0167,
+        "out_degree_centrality": 0.0152,
+        "pagerank": 0.4548
+      }
+    },
+    {
+      "regulator": "HEY1",
+      "regulator_ensembl_id": "ENSG00000164683",
+      "regulator_downstream_targets": 214,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "NEFL",
+        "SYNRG",
+        "CD24",
+        "MAGIX",
+        "SPON1"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0158,
+        "out_degree_centrality": 0.0146,
+        "pagerank": 0.4474
+      }
+    },
+    {
+      "regulator": "ZSWIM6",
+      "regulator_ensembl_id": "ENSG00000130449",
+      "regulator_downstream_targets": 232,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "H2AC14",
+        "RASSF5",
+        "TXNIP",
+        "PPIL3",
+        "RNF223"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0178,
+        "out_degree_centrality": 0.0159,
+        "pagerank": 0.4383
+      }
+    },
+    {
+      "regulator": "TGIF1",
+      "regulator_ensembl_id": "ENSG00000177426",
+      "regulator_downstream_targets": 244,
+      "cascade_overlap": 2,
+      "affected_cascades": [
+        "MARCKS",
+        "ARHGAP23",
+        "CD24",
+        "TXNIP",
+        "SMIM3"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0182,
+        "out_degree_centrality": 0.0167,
+        "pagerank": 0.4368
+      }
+    },
+    {
+      "regulator": "KMT2A",
+      "regulator_ensembl_id": "ENSG00000118058",
+      "regulator_downstream_targets": 307,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "MLLT6",
+        "CWC25",
+        "NBPF19",
+        "NOTCH2NLA",
+        "ARHGDIG"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0224,
+        "out_degree_centrality": 0.021,
+        "pagerank": 0.4352
+      }
+    },
+    {
+      "regulator": "TSC22D1",
+      "regulator_ensembl_id": "ENSG00000102804",
+      "regulator_downstream_targets": 442,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "IQCJ-SCHIP1",
+        "DDX52",
+        "CD24",
+        "TXNIP",
+        "CTXND1"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0321,
+        "out_degree_centrality": 0.0302,
+        "pagerank": 0.4349
+      }
+    },
+    {
+      "regulator": "CIR1",
+      "regulator_ensembl_id": "ENSG00000138433",
+      "regulator_downstream_targets": 120,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "N4BP2L2",
+        "MRPS18B",
+        "BAG6",
+        "BRD2",
+        "SPRR2E"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0094,
+        "out_degree_centrality": 0.0082,
+        "pagerank": 0.4315
+      }
+    },
+    {
+      "regulator": "ZHX3",
+      "regulator_ensembl_id": "ENSG00000174306",
+      "regulator_downstream_targets": 180,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "IQCJ-SCHIP1",
+        "OTUD7B",
+        "SLC5A8",
+        "PSMB9",
+        "MCIDAS"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0131,
+        "out_degree_centrality": 0.0123,
+        "pagerank": 0.4255
+      }
+    },
+    {
+      "regulator": "ZCCHC8",
+      "regulator_ensembl_id": "ENSG00000033030",
+      "regulator_downstream_targets": 218,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "SEC22B",
+        "ERLN",
+        "CEP95",
+        "SLC10A5",
+        "ERCC6"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0159,
+        "out_degree_centrality": 0.0149,
+        "pagerank": 0.4203
+      }
+    },
+    {
+      "regulator": "DMRT1",
+      "regulator_ensembl_id": "ENSG00000137090",
+      "regulator_downstream_targets": 20,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "CEBPD",
+        "FLRT2",
+        "ADIG",
+        "ZFP41",
+        "FOXS1"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0016,
+        "out_degree_centrality": 0.0014,
+        "pagerank": 0.4159
+      }
+    },
+    {
+      "regulator": "EGR2",
+      "regulator_ensembl_id": "ENSG00000122877",
+      "regulator_downstream_targets": 207,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "H3C7",
+        "TMEM185A",
+        "ZNF432",
+        "PDCD6",
+        "JMJD7"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0152,
+        "out_degree_centrality": 0.0142,
+        "pagerank": 0.4035
+      }
+    },
+    {
+      "regulator": "NFKB1",
+      "regulator_ensembl_id": "ENSG00000109320",
+      "regulator_downstream_targets": 206,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "ENSG00000276256",
+        "HBB",
+        "PEG10",
+        "FAM133B",
+        "ITGA1"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.015,
+        "out_degree_centrality": 0.0141,
+        "pagerank": 0.3995
+      }
+    },
+    {
+      "regulator": "SOX17",
+      "regulator_ensembl_id": "ENSG00000164736",
+      "regulator_downstream_targets": 138,
+      "cascade_overlap": 1,
+      "affected_cascades": [
+        "LHX1",
+        "SPON1",
+        "RPL36A",
+        "HBE1",
+        "DDAH2"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0101,
+        "out_degree_centrality": 0.0094,
+        "pagerank": 0.3959
+      }
+    },
+    {
+      "regulator": "BCL11A",
+      "regulator_ensembl_id": "ENSG00000119866",
+      "regulator_downstream_targets": 35,
+      "cascade_overlap": 0,
+      "affected_cascades": [
+        "FAM25C",
+        "CASTOR2",
+        "DENND11",
+        "HSBP1L1",
+        "SYCE1L"
+      ],
+      "centrality_metrics": {
+        "degree_centrality": 0.0027,
+        "out_degree_centrality": 0.0024,
+        "pagerank": 0.3829
+      }
+    }
+  ],
+  "rankings": {
+    "by_pagerank": [
+      {
+        "regulator": "ID4",
+        "score": 0.6223
+      },
+      {
+        "regulator": "CHD2",
+        "score": 0.5299
+      },
+      {
+        "regulator": "STAT1",
+        "score": 0.5084
+      },
+      {
+        "regulator": "IRF3",
+        "score": 0.4915
+      },
+      {
+        "regulator": "STAT3",
+        "score": 0.4865
+      }
+    ],
+    "by_degree": [
+      {
+        "regulator": "SOX4",
+        "score": 0.0486
+      },
+      {
+        "regulator": "FOS",
+        "score": 0.0388
+      },
+      {
+        "regulator": "STAT1",
+        "score": 0.0369
+      },
+      {
+        "regulator": "ID4",
+        "score": 0.0363
+      },
+      {
+        "regulator": "NFKBIZ",
+        "score": 0.0342
+      }
+    ]
+  },
+  "therapeutic_insights": {
+    "summary": "Identified 25 potential therapeutic targets for MYC",
+    "top_target_by_pagerank": {
+      "regulator": "ID4",
+      "pagerank": 0.6223,
+      "downstream_targets": 496
+    },
+    "top_target_by_degree": {
+      "regulator": "SOX4",
+      "degree_centrality": 0.0486,
+      "downstream_targets": 670
+    },
+    "consensus_target": false,
+    "strategy": "Inhibiting ID4 (highest PageRank) would reduce MYC regulation by 4.0% and affect 496 downstream genes",
+    "interpretation": "ID4 shows strong therapeutic potential for modulating MYC. High PageRank (0.622) indicates this regulator has high-quality connections in the network, typical of successful drug targets. As a hub regulator (496 targets), inhibiting this gene would have broad network effects. Consider validating with experimental perturbation studies."
+  },
+  "summary": "Analyzed 25 regulatory perturbations for MYC"
+}

@@ -1,0 +1,11 @@
+{
+  "rule_based": {
+    "single_focused_sec": 0.684,
+    "single_comprehensive_sec": 0.601,
+    "multi_5genes_sec": 15.49
+  },
+  "llm_powered": {
+    "single_comprehensive_sec": 14.943,
+    "multi_5genes_sec": 62.318
+  }
+}
