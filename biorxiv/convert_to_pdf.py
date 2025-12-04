@@ -38,6 +38,13 @@ def convert_to_docx():
             i += 1
             continue
 
+        # Handle HTML page break directive
+        if line.startswith('<div style="page-break-before: always"></div>'):
+            # Add page break in Word document
+            doc.add_page_break()
+            i += 1
+            continue
+
         # Check if this is a table (starts with |)
         if line.startswith('|'):
             # Collect all table lines
