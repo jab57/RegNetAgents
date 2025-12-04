@@ -1,6 +1,6 @@
 # SUPPLEMENTARY MATERIAL
 
-## RegNetAgents: A Validated Multi-Agent AI Framework for Automated Gene Regulatory Network Analysis and Therapeutic Target Prioritization
+## RegNetAgents: A Multi-Agent AI Framework for Automated Gene Regulatory Network Analysis and Therapeutic Target Prioritization
 
 **Authors:** Jose A. Bird, PhD
 

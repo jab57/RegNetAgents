@@ -1,4 +1,4 @@
-# RegNetAgents: A Validated Multi-Agent AI Framework for Automated Gene Regulatory Network Analysis and Therapeutic Target Prioritization
+# RegNetAgents: A Multi-Agent AI Framework for Automated Gene Regulatory Network Analysis and Therapeutic Target Prioritization
 
 **Running Title:** Multi-Agent Gene Regulatory Network Analysis
 
