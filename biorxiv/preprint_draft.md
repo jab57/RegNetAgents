@@ -427,6 +427,8 @@ RegNetAgents advances the field through four key innovations:
 
 To contextualize the efficiency gains, we compared RegNetAgents to representative manual workflows researchers currently perform. **Table 4** presents estimated time requirements for typical analysis tasks.
 
+<div style="page-break-before: always"></div>
+
 **Table 4. Performance Comparison: Automated vs Manual Workflows**
 
 | Analysis Task | Manual Workflow (Estimated) | RegNetAgents (Measured) | Speedup |
