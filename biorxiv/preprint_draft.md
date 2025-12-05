@@ -261,9 +261,7 @@ RegNetAgents achieves second-scale execution times for gene regulatory network a
 
 **LLM-powered mode** adds specialized domain analysis with scientific rationales from four parallel agents (cancer biology, drug discovery, clinical relevance, systems biology). Single gene comprehensive analysis with LLM insights averages ~15 seconds (4× slower than rule-based due to local LLM inference). Five-gene comprehensive analysis with parallel LLM execution completes in ~62 seconds, providing AI-generated rationales for all genes simultaneously. Cross-cell-type comparison of TP53 across all 10 cell types remains instant (<0.01 seconds) in both modes, leveraging pre-computed network indices.
 
-Performance breakdown: Network lookups from pre-computed indices are near-instantaneous (<1 ms), perturbation analysis of all regulators scales linearly with regulator count, Reactome API calls take 0.3-1.5 seconds per query, and LLM inference adds ~3-4 seconds per domain agent call. PageRank pre-computation in network cache enables instant perturbation analysis. Despite comprehensive regulator analysis and optional LLM insights, execution remains orders of magnitude faster than manual workflows, which typically involve sequential querying of network databases, pathway enrichment tools, and extensive literature curation.
-
-<div style="page-break-before: always"></div>
+Performance breakdown: Network lookups are near-instantaneous (<1 ms), Reactome API calls take 0.3-1.5 seconds, and LLM inference adds ~3-4 seconds per agent. PageRank pre-computation enables instant perturbation analysis.
 
 **Table 1. Performance Benchmarks**
 
@@ -303,8 +301,6 @@ To demonstrate framework capabilities and validate analytical outputs against es
 #### Multi-Gene Regulatory Network Analysis
 
 The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure 2). Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets, 7 regulators), MYC (427 targets, 25 regulators), and CTNNB1 (310 targets, 18 regulators), indicating central roles in signal amplification and oncogenic pathway activation. Two genes showed heavily regulated profiles with no identified downstream regulatory relationships in the epithelial network: CCND1 (0 targets, 42 regulators - extensively controlled) and KRAS (0 targets, 7 regulators), indicating they function as end-point effectors in signaling cascades.
-
-<div style="page-break-before: always"></div>
 
 **Table 2. Colorectal Cancer Biomarker Panel Analysis**
 
@@ -426,8 +422,6 @@ RegNetAgents advances the field through four key innovations:
 ### Performance Benchmarking Against Manual Workflows
 
 To contextualize the efficiency gains, we compared RegNetAgents to representative manual workflows researchers currently perform. **Table 4** presents estimated time requirements for typical analysis tasks.
-
-<div style="page-break-before: always"></div>
 
 **Table 4. Performance Comparison: Automated vs Manual Workflows**
 
