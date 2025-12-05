@@ -91,7 +91,7 @@ Regulatory roles are assigned algorithmically based on network topology:
 These exploratory thresholds prioritize hub status over heavily-regulated status when genes meet both criteria, ensuring genes with extensive downstream influence are classified as hubs regardless of their input complexity. Network position metrics include in-degree (number of regulators), out-degree (number of targets), and regulatory role classification.
 
 #### Perturbation Analysis Agent
-For genes with five or more upstream regulators, we perform automated perturbation analysis to identify potential therapeutic targets. This analysis simulates inhibiting each upstream regulator individually and evaluates therapeutic potential using standard network centrality metrics.
+For genes with five or more upstream regulators, we perform automated perturbation analysis to identify potential therapeutic targets. This analysis ranks upstream regulators as potential therapeutic targets using network centrality metrics computed from network topology.
 
 **Network Centrality Metrics for Therapeutic Target Ranking:**
 We calculate three core centrality measures for each regulator R using NetworkX (20) implementations:

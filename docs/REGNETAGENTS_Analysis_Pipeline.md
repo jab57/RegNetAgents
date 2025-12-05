@@ -83,9 +83,9 @@ Perturbation analysis automatically runs for genes with >5 regulators.
    - Regulators Analysis (if gene has >5 regulators)
    - Targets Analysis (if gene has >5 targets and is a regulator)
 5. **Perturbation Analysis** 🎯 (Therapeutic targeting)
-   - Simulates inhibiting each upstream regulator
-   - Calculates impact scores and cascade effects
-   - Ranks candidate regulators for experimental validation
+   - Ranks upstream regulators using network centrality metrics
+   - Calculates PageRank and cascade effects from network topology
+   - Prioritizes candidate regulators for experimental validation
    - Runs automatically for genes with >5 regulators
 6. **Secondary Analyses** (Context-based)
    - Pathway Analysis (Reactome enrichment with p-values and FDR)

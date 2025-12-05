@@ -32,7 +32,7 @@
 - **Integration**: 4 domain perspectives + pathways in one analysis
 - **Parallelization**: Multi-agent execution (4 domain agents run simultaneously)
 - **Graceful Fallback**: Automatic fallback to rule-based heuristics for reliability
-- **Perturbation Analysis**: Simulate regulator inhibition to prioritize candidate regulators for validation
+- **Perturbation Analysis**: Rank regulators by network centrality to prioritize candidate regulators for validation
 - **Scalability**: 10 cell types pre-computed (cross-cell queries instant)
 - **Accessibility**: Natural language interface via local MCP server for Claude Desktop
 
@@ -55,7 +55,7 @@
 3. **Graceful Degradation**: Robust fallback to rule-based heuristics ensures reliability without LLM dependency
 4. **Practical Impact**: Transforms labor-intensive manual workflows into seconds (orders of magnitude faster than manual review)
 5. **Parallel Multi-Agent System**: Simultaneous execution of 4 LLM-powered domain agents per gene
-6. **Perturbation Analysis**: Network-based simulation prioritizes candidate regulators using standard centrality rankings (PageRank, degree)
+6. **Perturbation Analysis**: Network-based ranking prioritizes candidate regulators using standard centrality metrics (PageRank, degree)
 7. **Modular Design**: Separation of workflow engine (LangGraph) from interface (MCP) enables reuse across CLI, API, notebook environments
 8. **Framework Demonstration**: Real clinical use case showing framework can recapitulate literature-confirmed patterns
 9. **Open Data**: Built on publicly accessible data sources (GREmLN team networks, CELLxGENE, Reactome)
@@ -485,10 +485,10 @@ Given the candidate genes, the system automatically:
 - Limited to human genes with Ensembl IDs (no cross-species support)
 
 **Recent Additions**:
-- ✅ **Perturbation Analysis**: Simulate regulator inhibition for therapeutic target identification
+- ✅ **Perturbation Analysis**: Network-based ranking of regulators for therapeutic target identification
   - Ranks upstream regulators using network centrality metrics (PageRank, out-degree centrality)
   - Calculates cascade effects and network connectivity
-  - Automated network-based perturbation simulation with dual ranking approaches
+  - Automated topology-based ranking with dual centrality metrics
 
 **Future Directions**:
 - Expand cell type coverage as additional networks become available

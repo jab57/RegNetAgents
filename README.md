@@ -388,7 +388,7 @@ pip install -r requirements.txt
 - **Enrichment**: Statistical test showing if certain pathways are over-represented
 - **p-value**: Probability the result happened by chance (lower = more confident)
 - **FDR (False Discovery Rate)**: Corrected p-value accounting for multiple tests (< 0.05 = statistically significant)
-- **Perturbation Analysis**: Simulation of what happens when you block/inhibit a gene regulator
+- **Perturbation Analysis**: Network-based ranking of regulators by centrality metrics (topology-based target prioritization, not dynamic expression simulation)
 
 **Network Centrality Metrics** (for ranking therapeutic targets):
 - **PageRank**: Google's algorithm adapted for biology - measures connection quality (best predictor of drug targets)
