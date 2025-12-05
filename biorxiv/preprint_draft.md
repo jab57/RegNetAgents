@@ -79,7 +79,7 @@ Gene-level annotations including full names and functional descriptions are retr
 ### Multi-Agent Workflow
 
 #### Network Analysis Agent
-The network modeling agent performs five core functions: (1) gene identifier resolution (symbol to Ensembl ID conversion with synonym matching), (2) network lookup to retrieve all regulatory edges involving the query gene, (3) regulator identification (genes with edges pointing to the query gene), (4) target identification (genes the query gene regulates), and (5) regulatory role classification based on network topology.
+The network modeling agent performs five core functions: (1) gene identifier resolution (symbol to Ensembl ID conversion via cached mappings), (2) network lookup to retrieve all regulatory edges involving the query gene, (3) regulator identification (genes with edges pointing to the query gene), (4) target identification (genes the query gene regulates), and (5) regulatory role classification based on network topology.
 
 Regulatory roles are assigned algorithmically based on network topology:
 - **Hub regulator**: >20 downstream targets (high regulatory influence)
