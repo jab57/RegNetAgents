@@ -268,7 +268,7 @@ Given the candidate genes, the system automatically:
 **Multi-Agent Analysis Summary**:
 - **Network Modeling**: Identified regulatory roles - 3 hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity, 2 heavily regulated genes (CCND1 with 42 regulators, KRAS with 7 regulators) as end-point effectors
 - **Pathway Enrichment**: 242 total significant pathways identified (FDR < 0.05) across 5 genes (MYC: 58, CTNNB1: 7, CCND1: 20, TP53: 16, KRAS: 141)
-- **Biomarker Classification**: 3 diagnostic, 1 prognostic, 1 predictive (based on regulatory architecture)
+- **Network Architecture Validation**: Regulatory architectures align with known biological roles (hub regulators as master regulators, heavily regulated genes as end-point effectors)
 - **Therapeutic Target Prioritization** (PageRank Rankings): All 5 genes qualify for therapeutic target prioritization (>5 regulators each)
   - MYC: 25 regulators, CTNNB1: 18 regulators, CCND1: 42 regulators, TP53: 7 regulators, KRAS: 7 regulators
   - Detailed TP53 regulator ranking results shown in Case Study 2 below (7 candidate regulators ranked by PageRank for validation)
