@@ -259,9 +259,9 @@ RegNetAgents achieves second-scale execution times for gene regulatory network a
 
 **Rule-based mode** provides rapid analysis without LLM dependencies. Single gene comprehensive analysis of TP53 in epithelial cells (network modeling, complete regulator ranking of all 7 upstream regulators, Reactome pathway enrichment) completed in 0.60 seconds. Multi-gene analysis of 5 genes (MYC, CTNNB1, CCND1, TP53, KRAS) including complete regulator ranking of all 99 upstream regulators completed in 15.49 seconds with parallel execution.
 
-**LLM-powered mode** adds specialized domain analysis with scientific rationales from four parallel agents (cancer biology, drug discovery, clinical relevance, systems biology). Single gene comprehensive analysis with LLM insights averages ~15 seconds (4× slower than rule-based due to local LLM inference). Five-gene comprehensive analysis with parallel LLM execution completes in ~62 seconds, providing AI-generated rationales for all genes simultaneously. Cross-cell-type comparison of TP53 across all 10 cell types remains instant (<0.01 seconds) in both modes, leveraging pre-computed network indices.
+**LLM-powered mode** adds specialized domain analysis with scientific rationales from four domain agents (cancer biology, drug discovery, clinical relevance, systems biology). Single gene comprehensive analysis with LLM insights averages ~15 seconds. Five-gene comprehensive analysis with parallel LLM execution completes in ~62 seconds, providing AI-generated rationales for all genes simultaneously. Cross-cell-type comparison of TP53 across all 10 cell types remains instant (<0.01 seconds) in both modes, leveraging pre-computed network indices.
 
-Performance breakdown: Network lookups are near-instantaneous (<1 ms), Reactome API calls take 0.3-1.5 seconds, and LLM inference adds ~3-4 seconds per agent. PageRank pre-computation enables instant regulator ranking.
+Performance breakdown: Network lookups are near-instantaneous (<1 ms), Reactome API calls take 0.3-1.5 seconds, and local LLM inference (Ollama/llama3.1:8b) adds overhead for domain agent analysis. PageRank pre-computation enables instant regulator ranking.
 
 **Table 1. Performance Benchmarks**
 
