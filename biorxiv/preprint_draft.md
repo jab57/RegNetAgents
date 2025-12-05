@@ -227,7 +227,7 @@ External API calls (Reactome v89 REST API, Ensembl REST API v111) use asynchrono
 
 ### Performance Benchmarking
 
-We measured end-to-end execution time for three analysis scenarios on a standard laptop (Intel i7, 16GB RAM, Windows 11):
+We measured end-to-end execution time for three analysis scenarios on a standard laptop (Intel i7-14700F, 64GB RAM, Windows 11):
 
 1. **Single gene comprehensive analysis**: TP53 in epithelial cells (all workflow steps)
 2. **Multi-gene analysis**: 5 genes (MYC, CTNNB1, CCND1, TP53, KRAS) in epithelial cells
