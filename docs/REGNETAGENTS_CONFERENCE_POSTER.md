@@ -258,7 +258,7 @@ Given the candidate genes, the system automatically:
 | **TP53** | Hub Regulator | 163 | 7 | Prognostic | **WWTR1** (0.473) |
 | **KRAS** | Heavily Regulated | 0 | 7 | Predictive | **GPBP1** (0.609) |
 
-*Therapeutic target prioritization performed for all 5 genes - all regulators analyzed (25, 18, 42, 7, 7 respectively). Top candidate regulator prioritized by PageRank (associated with drug target success per Mora & Donaldson 2021). Rankings serve as hypotheses for experimental validation. Full TP53 regulator ranking results shown in Case Study 2 (Table 3) with detailed rankings of all 7 regulators.*
+*Therapeutic target prioritization performed for all 5 genes - all regulators analyzed (25, 18, 42, 7, 7 respectively). Regulators ranked using pre-computed PageRank scores from full epithelial cell network (captures global network influence; associated with drug target success per Mora & Donaldson 2021). Rankings serve as hypotheses for experimental validation. Full TP53 regulator ranking results shown in Case Study 2 (Table 3) with detailed rankings of all 7 regulators.*
 
 **Biomarker Type Definitions**:
 - **Diagnostic**: Detects presence of disease (early detection, screening)

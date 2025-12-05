@@ -312,7 +312,7 @@ The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure
 | TP53 | Hub Regulator | 163 | 7 | Prognostic | **WWTR1 (0.473)** |
 | KRAS | Heavily Regulated | 0 | 7 | Predictive | GPBP1 (0.609) |
 
-*Therapeutic target prioritization performed for all five genes - all upstream regulators analyzed (25, 18, 42, 7, and 7 regulators respectively, total of 99 regulators). The system ranks candidate targets using network centrality: PageRank (primary ranking, best predictor of drug target success per Mora & Donaldson 2021) and out-degree centrality (secondary ranking). Top candidate shown for each gene. These rankings serve as hypotheses for experimental validation. Detailed TP53 regulator ranking results presented below (Table 3) as representative example with complete rankings of all 7 regulators.*
+*Therapeutic target prioritization performed for all five genes - all upstream regulators analyzed (25, 18, 42, 7, and 7 regulators respectively, total of 99 regulators). The system ranks regulators using pre-computed network centrality metrics from the full epithelial cell network: PageRank (primary ranking, calculated on entire network to capture global influence; best predictor of drug target success per Mora & Donaldson 2021) and out-degree centrality (secondary ranking, measures direct downstream targets). Top candidate shown for each gene. These rankings serve as hypotheses for experimental validation. Detailed TP53 regulator ranking results presented below (Table 3) as representative example with complete rankings of all 7 regulators.*
 
 #### Biomarker Classification and Validation
 
