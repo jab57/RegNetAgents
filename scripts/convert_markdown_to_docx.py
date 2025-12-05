@@ -79,6 +79,11 @@ def convert_markdown_to_docx(md_file, docx_file):
             set_keep_with_next(p)
             last_paragraph = p
         elif line.startswith('### '):
+            # Add page break before specific level-3 headings (Table 3 section)
+            heading_text = line[4:].strip()
+            if heading_text == 'Therapeutic Target Prioritization: TP53 Candidate Regulator Ranking':
+                p = doc.add_paragraph()  # Empty paragraph for page break
+                add_page_break_before(p)
             p = doc.add_heading(line[4:], level=3)
             set_keep_with_next(p)
             last_paragraph = p
