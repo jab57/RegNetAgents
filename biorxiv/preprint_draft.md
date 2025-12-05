@@ -17,7 +17,7 @@ Gene regulatory network analysis is essential for understanding disease mechanis
 
 Built on ARACNe networks from 500,000+ single cells across 10 cell types, the framework deploys four specialized agents executing in parallel with rule-based fallback for reliability. Automated therapeutic target prioritization ranks candidate targets using network centrality metrics (PageRank, degree centrality).
 
-In a demonstration study of five colorectal cancer biomarkers (MYC, CTNNB1, CCND1, TP53, KRAS), framework classifications showed complete concordance with published literature across this limited sample. Therapeutic target prioritization identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among the top-ranked network neighbors based on topology. Additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses prioritized for experimental validation.
+In a demonstration study of five colorectal cancer genes (MYC, CTNNB1, CCND1, TP53, KRAS), the framework characterized distinct regulatory architectures (hub regulators vs. heavily regulated genes) that align with known biological roles. Therapeutic target prioritization identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among the top-ranked network neighbors based on topology. Additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses prioritized for experimental validation.
 
 Complete analysis of 99 regulators across 5 genes completed in 15-62 seconds, representing orders of magnitude speedup over manual workflows. This demonstration on a limited five-gene panel establishes proof-of-concept for the framework's ability to recapitulate literature-confirmed patterns and generate testable hypotheses. RegNetAgents is designed as a hypothesis generation tool to prioritize candidates for experimental validation, not as a replacement for wet-lab experimentation. The framework transforms labor-intensive analysis into second-scale automated hypothesis generation accessible to experimental biologists.
 
@@ -252,7 +252,7 @@ Regulatory network data were obtained from the GREmLN foundation model (Zhang et
 ### Validation Summary
 
 Framework validation against established colorectal cancer biology demonstrated:
-- **Complete concordance** with published biomarker classifications across limited sample (5/5 genes classified consistently with literature)
+- **Network architecture alignment** with known biological roles (hub regulators: TP53, MYC, CTNNB1; end-point effectors: CCND1, KRAS)
 - **High-ranking identification** of literature-supported TP53 interactors from Hippo pathway (WWTR1, YAP1, CHD4) based on network topology
 - **Pathway coherence** between network topology and biological pathways (Hippo signaling enrichment, FDR = 0.020)
 - **Novel hypothesis generation** for experimental validation (RBPMS, PRRX2, THRA, IKZF2)
@@ -308,31 +308,25 @@ To demonstrate framework capabilities and validate analytical outputs against es
 
 The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure 2). Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets, 7 regulators), MYC (427 targets, 25 regulators), and CTNNB1 (310 targets, 18 regulators), indicating central roles in signal amplification and oncogenic pathway activation. Two genes showed heavily regulated profiles with no identified downstream regulatory relationships in the epithelial network: CCND1 (0 targets, 42 regulators - extensively controlled) and KRAS (0 targets, 7 regulators), indicating they function as end-point effectors in signaling cascades.
 
-The framework's LLM-powered mode classified genes with multiple biomarker utilities (e.g., MYC: prognostic|predictive, KRAS: diagnostic|prognostic|predictive), reflecting the reality that cancer genes often serve multiple clinical roles. Table 2 shows the primary biomarker classification for each gene based on published clinical literature for validation purposes.
-
 **Table 2. Colorectal Cancer Biomarker Panel Analysis**
 
-| Gene | Regulatory Role | Targets | Regulators | Biomarker Type | Top Candidate Regulator (PageRank) |
-|------|----------------|---------|------------|----------------|-----------------------------------|
-| MYC | Hub Regulator | 427 | 25 | Diagnostic | ID4 (0.622) |
-| CTNNB1 | Hub Regulator | 310 | 18 | Diagnostic | CHD2 (0.530) |
-| CCND1 | Heavily Regulated | 0 | 42 | Diagnostic | ZBTB20 (0.600) |
-| TP53 | Hub Regulator | 163 | 7 | Prognostic | **WWTR1 (0.473)** |
-| KRAS | Heavily Regulated | 0 | 7 | Predictive | GPBP1 (0.609) |
+| Gene | Regulatory Role | Targets | Regulators | Top Candidate Regulator (PageRank) |
+|------|----------------|---------|------------|-----------------------------------|
+| MYC | Hub Regulator | 427 | 25 | ID4 (0.622) |
+| CTNNB1 | Hub Regulator | 310 | 18 | CHD2 (0.530) |
+| CCND1 | Heavily Regulated | 0 | 42 | ZBTB20 (0.600) |
+| TP53 | Hub Regulator | 163 | 7 | **WWTR1 (0.473)** |
+| KRAS | Heavily Regulated | 0 | 7 | GPBP1 (0.609) |
 
-*Therapeutic target prioritization performed for all five genes - all upstream regulators analyzed (25, 18, 42, 7, and 7 regulators respectively, total of 99 regulators). Framework outputs multiple biomarker categories per gene; primary literature-validated classification shown. All framework-assigned categories aligned with documented clinical utilities. The system ranks regulators using pre-computed network centrality metrics from the full epithelial cell network: PageRank (primary ranking, calculated on entire network to capture global influence; best predictor of drug target success per Mora & Donaldson 2021) and out-degree centrality (secondary ranking, measures direct downstream targets). Top candidate shown for each gene. These rankings serve as hypotheses for experimental validation. Detailed TP53 regulator ranking results presented below (Table 3) as representative example with complete rankings of all 7 regulators.*
+*Therapeutic target prioritization performed for all five genes - all upstream regulators analyzed (25, 18, 42, 7, and 7 regulators respectively, total of 99 regulators). The system ranks regulators using pre-computed network centrality metrics from the full epithelial cell network: PageRank (primary ranking, calculated on entire network to capture global influence; best predictor of drug target success per Mora & Donaldson 2021) and out-degree centrality (secondary ranking, measures direct downstream targets). Top candidate shown for each gene. These rankings serve as hypotheses for experimental validation. Detailed TP53 regulator ranking results presented below (Table 3) as representative example with complete rankings of all 7 regulators.*
 
-#### Biomarker Classification and Validation
+#### Network Architecture and Literature Context
 
-RegNetAgents automatically classified biomarker types based on regulatory architecture and domain agent analysis:
+Network analysis revealed distinct regulatory architectures that align with known biological roles. Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets), MYC (427 targets), and CTNNB1 (310 targets), indicating signal amplification roles consistent with their documented functions as master regulatory hubs in tumor suppression and oncogenic signaling. Two genes showed heavily regulated profiles with no downstream regulation: CCND1 (42 regulators) and KRAS (7 regulators), consistent with their roles as end-point effectors in signaling cascades.
 
-**Diagnostic Biomarkers (MYC, CTNNB1, CCND1):** Genes with high regulatory input and pathway enrichment in proliferation/Wnt signaling pathways. MYC and CTNNB1 function as hub regulators that amplify oncogenic signals, while CCND1 acts as a terminal effector. These genes serve as indicators of disease presence, with expression levels reflecting oncogenic pathway activation. Literature validation: MYC amplification occurs in 15-20% of CRCs and correlates with poor prognosis (23,24); CTNNB1 mutations/dysregulation occur in 40-80% of CRCs via APC loss and Wnt activation (25,26); CCND1 overexpression occurs in 30-60% of CRCs and drives G1/S transition (27).
+These regulatory patterns align with established CRC biology. MYC amplification occurs in 15-20% of CRCs and correlates with poor prognosis (23,24). CTNNB1 mutations/dysregulation occur in 40-80% of CRCs via APC loss and Wnt pathway activation (25,26). CCND1 overexpression occurs in 30-60% of CRCs and drives G1/S cell cycle transition (27). TP53 mutations occur in 50-70% of CRCs and associate with advanced stage, metastasis, and poor survival (28,29). KRAS mutations occur in 40-45% of CRCs and confer resistance to anti-EGFR therapies (30,31).
 
-**Prognostic Biomarker (TP53):** Hub regulator with high network centrality and enrichment in TP53-regulation pathways. TP53 status predicts patient outcomes and treatment response. Literature validation: TP53 mutations occur in 50-70% of CRCs and associate with advanced stage, metastasis, and poor survival (28,29).
-
-**Predictive Biomarker (KRAS):** Target gene with moderate clinical actionability. KRAS status predicts response to specific therapies (anti-EGFR antibodies). Literature validation: KRAS mutations occur in 40-45% of CRCs and confer resistance to cetuximab/panitumumab (30,31).
-
-All five classifications aligned with published CRC biomarker literature, demonstrating 100% concordance with established clinical and research findings. Network analysis revealed distinct regulatory architectures: three hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163, 427, and 310 targets respectively) indicating signal amplification roles, and two heavily regulated genes (CCND1 with 42 regulators, KRAS with 7 regulators) with no downstream regulation but multiple upstream inputs. These connectivity patterns align with known biological roles - TP53, MYC, and CTNNB1 as master regulatory hubs in tumor suppression and oncogenic signaling, while CCND1 and KRAS function as end-point effectors.
+The framework's identification of distinct network architectures (hub regulators vs. heavily regulated genes) demonstrates its ability to characterize gene regulatory roles from network topology, providing context for interpretation of each gene's potential biological significance.
 
 ### Therapeutic Target Prioritization: TP53 Candidate Regulator Ranking
 
@@ -404,11 +398,11 @@ We developed RegNetAgents, a multi-agent AI framework that streamlines gene regu
 
 A critical question for any computational tool is whether it produces biologically meaningful results. Our colorectal cancer case study provides multiple lines of validation:
 
-**1. Biomarker classification accuracy:** Framework biomarker classifications aligned with published clinical literature across this limited sample (n=5), with multi-category outputs reflecting the multifaceted clinical roles documented for these genes (e.g., MYC serves both prognostic and predictive functions).
+**1. Known regulatory relationships:** TP53 therapeutic target prioritization ranked WWTR1 (TAZ) and YAP1 as top network neighbors (PageRank 0.473 and 0.402), both Hippo pathway effectors with documented functional interactions with TP53 in the literature. This ranking occurred purely from network topology analysis without pathway-specific knowledge. Note that ARACNe network edges represent statistical associations (mutual information) and do not necessarily indicate regulatory directionality; TP53 and Hippo pathway components exhibit bidirectional crosstalk in various contexts.
 
-**2. Known regulatory relationships:** TP53 therapeutic target prioritization ranked WWTR1 (TAZ) and YAP1 as top network neighbors (PageRank 0.473 and 0.402), both Hippo pathway effectors with documented functional interactions with TP53 in the literature. This ranking occurred purely from network topology analysis without pathway-specific knowledge. Note that ARACNe network edges represent statistical associations (mutual information) and do not necessarily indicate regulatory directionality; TP53 and Hippo pathway components exhibit bidirectional crosstalk in various contexts.
+**2. Pathway-network concordance:** Pathway enrichment independently identified Hippo signaling (FDR = 0.020), confirming biological coherence between network structure and pathway-level regulation.
 
-**3. Pathway-network concordance:** Pathway enrichment independently identified Hippo signaling (FDR = 0.020), confirming biological coherence between network structure and pathway-level regulation.
+**3. Network architecture alignment:** Identified regulatory architectures (hub regulators vs. heavily regulated genes) align with known biological roles - TP53, MYC, and CTNNB1 as master regulatory hubs in tumor suppression and oncogenic signaling, while CCND1 and KRAS function as end-point effectors.
 
 These validations demonstrate the framework recapitulates established biology while generating novel testable hypotheses (RBPMS, PRRX2, THRA, IKZF2). This positions RegNetAgents as a reliable hypothesis generation tool for experimental biologists.
 
