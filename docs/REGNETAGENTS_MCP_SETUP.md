@@ -170,7 +170,7 @@ Once installed, you can ask Claude Desktop natural language questions:
 2. **analyze_regulators**
    - Detailed upstream regulator analysis
    - Shows genes that control the target gene
-   - Includes perturbation analysis (simulates inhibiting each regulator)
+   - Includes perturbation analysis (ranks regulators by network centrality)
 
 3. **analyze_targets**
    - Detailed downstream target analysis
