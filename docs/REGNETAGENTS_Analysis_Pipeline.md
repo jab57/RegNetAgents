@@ -44,7 +44,7 @@ The RegNetAgents system uses a **single, advanced MCP server** with intelligent 
 Gene Analysis → Role Detection → Intelligent Sequential Execution
 ├── Step 1: Regulators Analysis (high priority for regulated genes)
 ├── Step 2: Targets Analysis (high priority for hub regulators)
-├── Step 3: Perturbation Analysis (candidate regulator prioritization) 🎯
+├── Step 3: Therapeutic Target Prioritization (candidate regulator prioritization) 🎯
 ├── Step 4: Pathway Analysis (biological context)
 ├── Step 5: Cross-cell Comparison (important genes only)
 ├── Step 6: Domain Analyses (comprehensive mode only) ⚡ ENABLED
@@ -82,7 +82,7 @@ Perturbation analysis automatically runs for genes with >5 regulators.
 4. **Core Analyses** (Priority-based)
    - Regulators Analysis (if gene has >5 regulators)
    - Targets Analysis (if gene has >5 targets and is a regulator)
-5. **Perturbation Analysis** 🎯 (Therapeutic targeting)
+5. **Therapeutic Target Prioritization** 🎯 (Therapeutic targeting)
    - Ranks upstream regulators using network centrality metrics
    - Calculates PageRank and cascade effects from network topology
    - Prioritizes candidate regulators for experimental validation
@@ -162,7 +162,7 @@ Perturbation analysis automatically runs for genes with >5 regulators.
 - `detailed` - Full analysis results
 - `scientific` - Publication-ready format
 
-## Perturbation Analysis 🎯
+## Therapeutic Target Prioritization 🎯
 
 ### **Candidate Regulator Prioritization**
 Ranks upstream regulators as candidates for experimental validation using standard network centrality metrics from computational biology literature.

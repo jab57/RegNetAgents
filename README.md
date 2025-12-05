@@ -339,13 +339,13 @@ pip install -r requirements.txt
 - **What you'll learn**: Downstream targets for potential drug interventions, pathway disruptions, druggable proteins
 - **Try it**: `comprehensive_gene_analysis` with gene="BRCA1", cell_type="epithelial_cell"
 
-### Perturbation Analysis
+### Therapeutic Target Prioritization
 **Question**: "What happens if I inhibit TP53 upstream regulators?"
 - **Why it matters**: Identifies which regulators have the biggest impact when targeted by drugs or therapies
 - **What you'll learn**: Top therapeutic targets ranked by network centrality metrics (PageRank, out-degree centrality), cascade effects, druggability assessment
 - **Network metrics**: Uses established centrality measures from computational biology literature (PageRank, degree centrality, out-degree centrality)
 - **Evidence-based ranking**: PageRank is the best predictor of successful drug targets according to Mora & Donaldson (2021)
-- **Try it**: `comprehensive_gene_analysis` with gene="TP53" - perturbation analysis runs automatically for genes with >5 regulators
+- **Try it**: `comprehensive_gene_analysis` with gene="TP53" - therapeutic target prioritization runs automatically for genes with >5 regulators
 - **Example output**: "WWTR1 (PageRank 0.47) would reduce TP53 regulation by 14.3% and affect 293 downstream genes"
 
 **Important Limitation**: Perturbation analysis is topology-based and ranks regulators for experimental investigation. It does **NOT** predict gene expression changes or model dynamic regulatory responses. Results prioritize candidates for validation, not expression predictions.
@@ -388,7 +388,7 @@ pip install -r requirements.txt
 - **Enrichment**: Statistical test showing if certain pathways are over-represented
 - **p-value**: Probability the result happened by chance (lower = more confident)
 - **FDR (False Discovery Rate)**: Corrected p-value accounting for multiple tests (< 0.05 = statistically significant)
-- **Perturbation Analysis**: Network-based ranking of regulators by centrality metrics (topology-based target prioritization, not dynamic expression simulation)
+- **Therapeutic Target Prioritization**: Network-based ranking of regulators by centrality metrics (topology-based target prioritization, not dynamic expression simulation)
 
 **Network Centrality Metrics** (for ranking therapeutic targets):
 - **PageRank**: Google's algorithm adapted for biology - measures connection quality (best predictor of drug targets)
@@ -411,7 +411,7 @@ pip install -r requirements.txt
 
 ### Current Capabilities
 - **Network Analysis**: Analyze gene positions in regulatory networks
-- **Perturbation Analysis**: Rank therapeutic targets using network centrality metrics (PageRank, out-degree centrality) from computational biology literature
+- **Therapeutic Target Prioritization**: Rank therapeutic targets using network centrality metrics (PageRank, out-degree centrality) from computational biology literature
 - **Cell-Type Specific**: Support for 10 cell types with pre-computed networks
 - **LLM-Powered Domain Analysis**: 4 specialized AI agents (cancer, drug development, clinical relevance, systems biology)
   - **Primary mode**: LLM-generated insights with scientific rationales (Ollama/llama3.1:8b)
@@ -561,7 +561,7 @@ See `docs/README.md` for a complete list of available documentation.
 **Measured via comprehensive timing tests (with pre-computed PageRank):**
 
 **Rule-Based Mode** (fast, deterministic):
-- **Focused single gene**: 0.68 sec (network, regulators, targets, complete perturbation analysis)
+- **Focused single gene**: 0.68 sec (network, regulators, targets, complete therapeutic target prioritization)
 - **Comprehensive single gene**: 0.60 sec (focused + Reactome pathway enrichment)
 - **Multi-gene (5 genes)**: 15.49 sec (parallel execution, complete perturbation of all 99 regulators)
 - **Cross-cell comparison**: <0.01 sec (instant lookups from pre-computed indices)
@@ -574,7 +574,7 @@ See `docs/README.md` for a complete list of available documentation.
 - **Reactome API**: 0.3-0.5 sec per query (depends on internet speed)
 - **Ollama LLM**: 3-4 sec per agent call (local inference, no API costs)
 
-**Optimization**: PageRank pre-computed in network cache (Version 2) provides instant perturbation analysis.
+**Optimization**: PageRank pre-computed in network cache (Version 2) provides instant therapeutic target prioritization.
 
 ## Dependencies
 

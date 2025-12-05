@@ -6,7 +6,7 @@
 
 ## ABSTRACT
 
-**RegNetAgents** is an LLM-powered multi-agent AI framework that automates gene regulatory network analysis through intelligent workflow orchestration, transforming labor-intensive manual processes into second-scale automated analysis. The system deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) using local language model inference to generate scientific insights with rationales, with graceful fallback to rule-based heuristics for reliability. Built on pre-computed regulatory networks from 500K+ single-cell RNA-seq profiles, the framework integrates network modeling, automated perturbation analysis using network centrality metrics (PageRank, degree centrality), pathway enrichment, and multi-domain interpretation into a conversational interface via Claude Desktop. **Framework demonstration** on colorectal cancer biomarkers showed complete concordance with published literature across a limited five-gene sample. Perturbation analysis identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among top-ranked candidates based on network topology; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses for experimental validation. Complete analysis of 99 regulators across 5 genes completed in 15-62 seconds, representing **orders of magnitude speedup** over traditional manual approaches. Natural language interface makes sophisticated gene analysis accessible without programming expertise.
+**RegNetAgents** is an LLM-powered multi-agent AI framework that automates gene regulatory network analysis through intelligent workflow orchestration, transforming labor-intensive manual processes into second-scale automated analysis. The system deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) using local language model inference to generate scientific insights with rationales, with graceful fallback to rule-based heuristics for reliability. Built on pre-computed regulatory networks from 500K+ single-cell RNA-seq profiles, the framework integrates network modeling, automated therapeutic target prioritization using network centrality metrics (PageRank, degree centrality), pathway enrichment, and multi-domain interpretation into a conversational interface via Claude Desktop. **Framework demonstration** on colorectal cancer biomarkers showed complete concordance with published literature across a limited five-gene sample. Perturbation analysis identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among top-ranked candidates based on network topology; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses for experimental validation. Complete analysis of 99 regulators across 5 genes completed in 15-62 seconds, representing **orders of magnitude speedup** over traditional manual approaches. Natural language interface makes sophisticated gene analysis accessible without programming expertise.
 
 
 ---
@@ -32,7 +32,7 @@
 - **Integration**: 4 domain perspectives + pathways in one analysis
 - **Parallelization**: Multi-agent execution (4 domain agents run simultaneously)
 - **Graceful Fallback**: Automatic fallback to rule-based heuristics for reliability
-- **Perturbation Analysis**: Rank regulators by network centrality to prioritize candidate regulators for validation
+- **Therapeutic Target Prioritization**: Rank regulators by network centrality to prioritize candidate regulators for validation
 - **Scalability**: 10 cell types pre-computed (cross-cell queries instant)
 - **Accessibility**: Natural language interface via local MCP server for Claude Desktop
 
@@ -55,7 +55,7 @@
 3. **Graceful Degradation**: Robust fallback to rule-based heuristics ensures reliability without LLM dependency
 4. **Practical Impact**: Transforms labor-intensive manual workflows into seconds (orders of magnitude faster than manual review)
 5. **Parallel Multi-Agent System**: Simultaneous execution of 4 LLM-powered domain agents per gene
-6. **Perturbation Analysis**: Network-based ranking prioritizes candidate regulators using standard centrality metrics (PageRank, degree)
+6. **Therapeutic Target Prioritization**: Network-based ranking prioritizes candidate regulators using standard centrality metrics (PageRank, degree)
 7. **Modular Design**: Separation of workflow engine (LangGraph) from interface (MCP) enables reuse across CLI, API, notebook environments
 8. **Framework Demonstration**: Real clinical use case showing framework can recapitulate literature-confirmed patterns
 9. **Open Data**: Built on publicly accessible data sources (GREmLN team networks, CELLxGENE, Reactome)
@@ -134,7 +134,7 @@ Multi-agent AI framework with:
 
 | Agent | Description | Key Insights Provided |
 |-------|-------------|--------|
-| **RegNetAgentsModelingAgent** | Analyzes gene regulatory networks to identify upstream regulators and downstream targets; determines regulatory role (hub/intermediate/terminal); performs cross-cell-type comparison; ranks upstream regulators to identify therapeutic targets using network centrality metrics (PageRank, out-degree centrality) | Gene position in regulatory hierarchy, regulatory strength, cell-type specificity; perturbation analysis with centrality-based rankings (PageRank primary, out-degree secondary), cascade effects, network connectivity assessment |
+| **RegNetAgentsModelingAgent** | Analyzes gene regulatory networks to identify upstream regulators and downstream targets; determines regulatory role (hub/intermediate/terminal); performs cross-cell-type comparison; ranks upstream regulators to identify therapeutic targets using network centrality metrics (PageRank, out-degree centrality) | Gene position in regulatory hierarchy, regulatory strength, cell-type specificity; therapeutic target prioritization with centrality-based rankings (PageRank primary, out-degree secondary), cascade effects, network connectivity assessment |
 | **PathwayEnricherAgent** | Statistical pathway enrichment via Reactome API; identifies significant biological pathways with FDR correction | Top enriched pathways with p-values and FDR scores; biological process context |
 | **Cancer Research Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference (llama3.1:8b); evaluates cancer biology relevance with scientific rationales; graceful fallback to rule-based heuristics if LLM unavailable | AI-generated oncogenic potential classification with rationale, tumor suppressor likelihood with explanation, therapeutic target classification with scientific justification; falls back to network connectivity-based heuristics for reliability |
 | **Drug Development Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference; analyzes therapeutic potential with scientific rationales for druggability assessments and intervention strategies | AI-generated druggability assessment with rationale, intervention strategy recommendations with explanation, development timeline estimates with justification; falls back to connectivity-based rules for reliability |
@@ -269,7 +269,7 @@ Given the candidate genes, the system automatically:
 - **Network Modeling**: Identified regulatory roles - 3 hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity, 2 heavily regulated genes (CCND1 with 42 regulators, KRAS with 7 regulators) as end-point effectors
 - **Pathway Enrichment**: 242 total significant pathways identified (FDR < 0.05) across 5 genes (MYC: 58, CTNNB1: 7, CCND1: 20, TP53: 16, KRAS: 141)
 - **Biomarker Classification**: 3 diagnostic, 1 prognostic, 1 predictive (based on regulatory architecture)
-- **Perturbation Analysis** (PageRank Rankings): All 5 genes qualify for perturbation analysis (>5 regulators each)
+- **Therapeutic Target Prioritization** (PageRank Rankings): All 5 genes qualify for therapeutic target prioritization (>5 regulators each)
   - MYC: 25 regulators, CTNNB1: 18 regulators, CCND1: 42 regulators, TP53: 7 regulators, KRAS: 7 regulators
   - Detailed TP53 perturbation results shown in Case Study 2 below (7 candidate regulators ranked by PageRank for validation)
 
@@ -287,7 +287,7 @@ Given the candidate genes, the system automatically:
 **User Prompt to Claude Desktop**:
 > *"Run a comprehensive analysis of TP53 in epithelial cells. I want to see what genes it regulates, what regulates it, its pathway involvement, and insights for cancer research, drug development, and clinical applications."*
 
-**System Execution**: Single-gene comprehensive analysis (network modeling, pathway enrichment, perturbation analysis) plus cross-cell-type comparison
+**System Execution**: Single-gene comprehensive analysis (network modeling, pathway enrichment, therapeutic target prioritization) plus cross-cell-type comparison
 
 **Execution Time**: 0.60 seconds (rule-based) or ~15 seconds (LLM-powered with scientific rationales)
 
@@ -296,7 +296,7 @@ Given the candidate genes, the system automatically:
 - Downstream Targets: 163 genes
 - Upstream Regulators: 7 genes
 
-**Perturbation Analysis** (Network Centrality Metrics):
+**Therapeutic Target Prioritization** (Network Centrality Metrics):
 - **Top Therapeutic Target by PageRank**: WWTR1 (PageRank: 0.473, out-degree centrality: 0.020)
 - **Top Target by Out-Degree**: RBPMS (out-degree centrality: 0.028, 403 downstream targets)
 - **Regulatory Input Loss**: Each regulator represents 14.3% (1 of 7 regulators)
@@ -305,7 +305,7 @@ Given the candidate genes, the system automatically:
 - **Evidence-Based**: Uses network centrality metrics (PageRank, degree centrality, out-degree centrality) from computational biology literature
 - **Literature Support**: ✓ WWTR1 and YAP1 (Hippo pathway) have documented functional interactions with TP53
 
-**Perturbation Analysis Methodology**:
+**Therapeutic Target Prioritization Methodology**:
 - **Metrics**: NetworkX centrality calculations (Mora & Donaldson 2021)
 - **Primary Ranking**: PageRank (best predictor of successful drug targets per literature)
 - **Secondary Ranking**: Out-degree centrality (measures direct downstream influence)
@@ -379,7 +379,7 @@ Given the candidate genes, the system automatically:
 
 - **Systems Agent**: Quantifies network centrality metrics to identify hub genes and predict perturbation cascades.
 
-### Perturbation Analysis: Dual Ranking Approach
+### Therapeutic Target Prioritization: Dual Ranking Approach
 
 **Network Centrality Metrics** (NetworkX implementation):
 - **Metrics Used**: PageRank, degree centrality, out-degree centrality
@@ -485,7 +485,7 @@ Given the candidate genes, the system automatically:
 - Limited to human genes with Ensembl IDs (no cross-species support)
 
 **Recent Additions**:
-- ✅ **Perturbation Analysis**: Network-based ranking of regulators for therapeutic target identification
+- ✅ **Therapeutic Target Prioritization**: Network-based ranking of regulators for therapeutic target identification
   - Ranks upstream regulators using network centrality metrics (PageRank, out-degree centrality)
   - Calculates cascade effects and network connectivity
   - Automated topology-based ranking with dual centrality metrics
@@ -496,7 +496,7 @@ Given the candidate genes, the system automatically:
 - Optimize batch processing for large gene panels
 - Enhance domain agent classification algorithms
 - Improve cross-cell comparison visualizations
-- Add combination perturbation analysis (inhibit multiple regulators simultaneously)
+- Add combination therapeutic target prioritization (inhibit multiple regulators simultaneously)
 
 ### Impact
 

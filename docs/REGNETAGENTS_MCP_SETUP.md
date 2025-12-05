@@ -123,7 +123,7 @@ Once installed, you can ask Claude Desktop natural language questions:
 #### **Example 1: Single Gene Analysis**
 > *"Analyze TP53 in epithelial cells - show me what it regulates, what regulates it, and its role in cancer pathways"*
 
-**Returns**: Network position, 163 targets, 7 regulators, perturbation analysis (candidate regulators), 16 pathways, **LLM-generated cancer/drug/clinical insights with rationales** (~4 seconds with Ollama, <1 second without)
+**Returns**: Network position, 163 targets, 7 regulators, therapeutic target prioritization (candidate regulators), 16 pathways, **LLM-generated cancer/drug/clinical insights with rationales** (~4 seconds with Ollama, <1 second without)
 
 #### **Example 2: Multi-Gene Characterization**
 > *"Characterize these candidate genes for CRC biomarker potential: MYC, CTNNB1, CCND1, TP53, KRAS"*
@@ -140,7 +140,7 @@ Once installed, you can ask Claude Desktop natural language questions:
 
 **Returns**: Reactome enrichment, DNA repair pathways, downstream cascade targets
 
-#### **Example 5: Perturbation Analysis**
+#### **Example 5: Therapeutic Target Prioritization**
 > *"What happens if I inhibit TP53 upstream regulators? Which would be the best candidate for experimental validation?"*
 
 **Returns**: Standard centrality rankings (PageRank, degree centrality) for each regulator, regulatory input loss percentages, network connectivity analysis, ranked candidates for experimental validation using dual ranking approaches
@@ -165,12 +165,12 @@ Once installed, you can ask Claude Desktop natural language questions:
    - **Fallback Mode**: Rule-based heuristics if LLM unavailable
    - Parameters: gene, cell_type, analysis_depth
    - Execution: ~4 seconds per gene (LLM mode), <1 second (rule-based mode)
-   - Includes perturbation analysis for genes with >5 regulators
+   - Includes therapeutic target prioritization for genes with >5 regulators
 
 2. **analyze_regulators**
    - Detailed upstream regulator analysis
    - Shows genes that control the target gene
-   - Includes perturbation analysis (ranks regulators by network centrality)
+   - Includes therapeutic target prioritization (ranks regulators by network centrality)
 
 3. **analyze_targets**
    - Detailed downstream target analysis
