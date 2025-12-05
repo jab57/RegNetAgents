@@ -70,9 +70,9 @@ def convert_markdown_to_docx(md_file, docx_file):
             set_keep_with_next(p)
             last_paragraph = p
         elif line.startswith('## '):
-            # Add page break before major sections (RESULTS, DISCUSSION, CONCLUSIONS)
+            # Add page break before major sections (DISCUSSION, CONCLUSIONS)
             heading_text = line[3:].strip()
-            if heading_text in ['RESULTS', 'DISCUSSION', 'CONCLUSIONS']:
+            if heading_text in ['DISCUSSION', 'CONCLUSIONS']:
                 p = doc.add_paragraph()  # Empty paragraph for page break
                 add_page_break_before(p)
             p = doc.add_heading(line[3:], level=2)
