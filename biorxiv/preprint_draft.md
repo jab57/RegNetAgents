@@ -233,7 +233,7 @@ We measured end-to-end execution time for three analysis scenarios on a standard
 2. **Multi-gene analysis**: 5 genes (MYC, CTNNB1, CCND1, TP53, KRAS) in epithelial cells
 3. **Cross-cell-type comparison**: TP53 across all 10 cell types
 
-Each scenario was executed 10 times with cold starts (server restarted between runs). Execution time includes all workflow steps from query initiation to final JSON output, including Reactome API calls.
+Execution time includes all workflow steps from query initiation to final JSON output, including Reactome API calls.
 
 ### Data Availability
 
