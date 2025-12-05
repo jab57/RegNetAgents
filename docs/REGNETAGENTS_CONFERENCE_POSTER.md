@@ -139,7 +139,7 @@ Multi-agent AI framework with:
 | **Cancer Research Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference (llama3.1:8b); evaluates cancer biology relevance with scientific rationales; graceful fallback to rule-based heuristics if LLM unavailable | AI-generated oncogenic potential classification with rationale, tumor suppressor likelihood with explanation, therapeutic target classification with scientific justification; falls back to network connectivity-based heuristics for reliability |
 | **Drug Development Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference; analyzes therapeutic potential with scientific rationales for druggability assessments and intervention strategies | AI-generated druggability assessment with rationale, intervention strategy recommendations with explanation, development timeline estimates with justification; falls back to connectivity-based rules for reliability |
 | **Clinical Relevance Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference; determines clinical utility with scientific rationales for biomarker classifications | AI-generated biomarker classification with rationale (diagnostic/prognostic/predictive), disease association likelihood with explanation, clinical actionability assessment with justification; falls back to network position analysis for reliability |
-| **Systems Biology Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference; quantifies network topology with scientific rationales for centrality interpretations | AI-generated network centrality interpretations with rationale, hub analysis with explanation, perturbation impact predictions with scientific justification; falls back to PageRank/degree centrality calculations for reliability |
+| **Systems Biology Agent (LLM-Powered)** | **LLM-generated insights** using local Ollama inference; quantifies network topology with scientific rationales for centrality interpretations | AI-generated network centrality interpretations with rationale, hub analysis with explanation, impact scope estimates with scientific justification; falls back to PageRank/degree centrality calculations for reliability |
 
 ### Data Sources
 
@@ -165,7 +165,7 @@ Multi-agent AI framework with:
 - **Error Handling**: Graceful degradation with partial results
 
 **Analysis Depth Modes**:
-- **Focused** (0.68s rule-based): Network analysis and complete perturbation (all regulators), no external API calls
+- **Focused** (0.68s rule-based): Network analysis and complete regulator ranking (all regulators), no external API calls
 - **Comprehensive** (0.60s rule-based / ~15s LLM): Focused + Reactome pathway enrichment via API + domain agents
 - **Cross-cell** (<0.01s): Compare gene across all cell types (instant lookups)
 
@@ -258,7 +258,7 @@ Given the candidate genes, the system automatically:
 | **TP53** | Hub Regulator | 163 | 7 | Prognostic | **WWTR1** (0.473) |
 | **KRAS** | Heavily Regulated | 0 | 7 | Predictive | **GPBP1** (0.609) |
 
-*Perturbation analysis performed for all 5 genes - all regulators analyzed (25, 18, 42, 7, 7 respectively). Top candidate regulator prioritized by PageRank (associated with drug target success per Mora & Donaldson 2021). Rankings serve as hypotheses for experimental validation. Full TP53 perturbation results shown in Case Study 2 (Table 3) with detailed rankings of all 7 regulators.*
+*Therapeutic target prioritization performed for all 5 genes - all regulators analyzed (25, 18, 42, 7, 7 respectively). Top candidate regulator prioritized by PageRank (associated with drug target success per Mora & Donaldson 2021). Rankings serve as hypotheses for experimental validation. Full TP53 regulator ranking results shown in Case Study 2 (Table 3) with detailed rankings of all 7 regulators.*
 
 **Biomarker Type Definitions**:
 - **Diagnostic**: Detects presence of disease (early detection, screening)
@@ -271,7 +271,7 @@ Given the candidate genes, the system automatically:
 - **Biomarker Classification**: 3 diagnostic, 1 prognostic, 1 predictive (based on regulatory architecture)
 - **Therapeutic Target Prioritization** (PageRank Rankings): All 5 genes qualify for therapeutic target prioritization (>5 regulators each)
   - MYC: 25 regulators, CTNNB1: 18 regulators, CCND1: 42 regulators, TP53: 7 regulators, KRAS: 7 regulators
-  - Detailed TP53 perturbation results shown in Case Study 2 below (7 candidate regulators ranked by PageRank for validation)
+  - Detailed TP53 regulator ranking results shown in Case Study 2 below (7 candidate regulators ranked by PageRank for validation)
 
 **Literature Validation** (Post-Analysis):
 - ✓ **MYC**: Validated CRC biomarker (Sansom et al., Cancer Cell 2007; overexpressed in 70% of CRC)
@@ -377,7 +377,7 @@ Given the candidate genes, the system automatically:
 
 - **Drug Agent**: Assesses therapeutic potential from network topology and connectivity patterns. Suggests intervention strategies based on upstream/downstream regulatory patterns.
 
-- **Systems Agent**: Quantifies network centrality metrics to identify hub genes and predict perturbation cascades.
+- **Systems Agent**: Quantifies network centrality metrics to identify hub genes and estimate impact scope.
 
 ### Therapeutic Target Prioritization: Dual Ranking Approach
 
