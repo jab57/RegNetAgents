@@ -15,9 +15,9 @@ jbird@birdaisolutions.com
 
 Gene regulatory network analysis is essential for understanding disease mechanisms, identifying biomarkers, and prioritizing therapeutic targets. However, traditional workflows require labor-intensive manual effort across multiple databases with limited scalability. We present RegNetAgents, an LLM-powered multi-agent framework that automates gene regulatory analysis through intelligent workflow orchestration. The system integrates network modeling, network-based target ranking, pathway enrichment, and multi-domain interpretation into a conversational interface accessible via Claude Desktop without programming expertise.
 
-Built on ARACNe networks from 500,000+ single cells across 10 cell types, the framework deploys four specialized agents executing in parallel with rule-based fallback for reliability. Automated perturbation analysis ranks candidate therapeutic targets using network centrality metrics (PageRank, degree centrality).
+Built on ARACNe networks from 500,000+ single cells across 10 cell types, the framework deploys four specialized agents executing in parallel with rule-based fallback for reliability. Automated therapeutic target prioritization ranks candidate targets using network centrality metrics (PageRank, degree centrality).
 
-In a demonstration study of five colorectal cancer biomarkers (MYC, CTNNB1, CCND1, TP53, KRAS), framework classifications showed complete concordance with published literature across this limited sample. Perturbation analysis identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among the top-ranked network neighbors based on topology. Additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses prioritized for experimental validation.
+In a demonstration study of five colorectal cancer biomarkers (MYC, CTNNB1, CCND1, TP53, KRAS), framework classifications showed complete concordance with published literature across this limited sample. Therapeutic target prioritization identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among the top-ranked network neighbors based on topology. Additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses prioritized for experimental validation.
 
 Complete analysis of 99 regulators across 5 genes completed in 15-62 seconds, representing orders of magnitude speedup over manual workflows. This demonstration on a limited five-gene panel establishes proof-of-concept for the framework's ability to recapitulate literature-confirmed patterns and generate testable hypotheses. RegNetAgents is designed as a hypothesis generation tool to prioritize candidates for experimental validation, not as a replacement for wet-lab experimentation. The framework transforms labor-intensive analysis into second-scale automated hypothesis generation accessible to experimental biologists.
 
@@ -90,8 +90,8 @@ Regulatory roles are assigned algorithmically based on network topology:
 
 These exploratory thresholds prioritize hub status over heavily-regulated status when genes meet both criteria, ensuring genes with extensive downstream influence are classified as hubs regardless of their input complexity. Network position metrics include in-degree (number of regulators), out-degree (number of targets), and regulatory role classification.
 
-#### Perturbation Analysis Agent
-For genes with five or more upstream regulators, we perform automated perturbation analysis to identify potential therapeutic targets. This analysis ranks upstream regulators as potential therapeutic targets using network centrality metrics computed from network topology.
+#### Therapeutic Target Prioritization Agent
+For genes with five or more upstream regulators, we perform automated therapeutic target prioritization to identify potential drug targets. This analysis ranks upstream regulators using network centrality metrics computed from network topology.
 
 **Network Centrality Metrics for Therapeutic Target Ranking:**
 We calculate three core centrality measures for each regulator R using NetworkX (20) implementations:
@@ -123,9 +123,9 @@ For each regulator, we report:
 **Therapeutic Interpretation:**
 High PageRank (>0.30) combined with hub regulator status (>200 targets) indicates strong therapeutic potential but requires consideration of potential off-target effects. All regulators of a given target gene contribute equally to direct regulatory input (1/num_regulators), so centrality metrics differentiate therapeutic potential based on network position and influence.
 
-**Perturbation Analysis Limitations:**
+**Therapeutic Target Prioritization Limitations:**
 
-Our perturbation analysis makes several simplifying assumptions that warrant consideration:
+Our therapeutic target prioritization makes several simplifying assumptions that warrant consideration:
 
 1. **Topology-based ranking**: Analysis ranks regulators based on network topology (connectivity, cascade overlap) rather than predicting quantitative gene expression changes. This approach identifies regulators for experimental validation but does not model dynamic regulatory responses or predict expression fold-changes.
 
@@ -135,7 +135,7 @@ Our perturbation analysis makes several simplifying assumptions that warrant con
 
 4. **Static network assumption**: Networks represent time-averaged regulatory relationships and do not capture dynamic rewiring during development, differentiation, or disease progression. Regulator importance may vary across cellular states not represented in the averaged network.
 
-Despite these limitations, topology-based perturbation analysis can identify literature-supported functional interactors (as demonstrated with TP53 Hippo pathway effectors) and provides a principled ranking for experimental prioritization. Results should be interpreted as hypotheses for validation, not predictions of molecular outcomes. Experimental validation remains essential to confirm regulatory relationships and quantify expression changes.
+Despite these limitations, topology-based therapeutic target prioritization can identify literature-supported functional interactors (as demonstrated with TP53 Hippo pathway effectors) and provides a principled ranking for experimental validation. Results should be interpreted as hypotheses for testing, not predictions of molecular outcomes. Experimental validation remains essential to confirm regulatory relationships and quantify expression changes.
 
 #### Pathway Enrichment Agent
 The pathway agent constructs a gene set consisting of the query gene, all upstream regulators, and a sample of downstream targets (up to 50 genes to optimize API performance). This gene set is submitted to Reactome's over-representation analysis endpoint, which performs hypergeometric tests against all curated pathways in the database.
@@ -193,7 +193,7 @@ Domain agents operate independently and can be extended or replaced without affe
 The integration agent synthesizes results from all upstream agents into a comprehensive analysis report. Output format is structured JSON containing:
 - Gene analysis summary (gene, cell type, regulatory role)
 - Network analysis (regulators, targets, network position)
-- Perturbation analysis results (if applicable, with ranked therapeutic targets)
+- Therapeutic target prioritization results (if applicable, with ranked regulators)
 - Pathway enrichment (significant pathways with FDR values)
 - Cross-cell-type comparison (regulatory role across all 10 cell types)
 - Domain-specific insights (cancer, drug, clinical, systems perspectives)
@@ -206,10 +206,10 @@ For multi-gene queries, the integration agent additionally generates comparative
 
 The RegNetAgents workflow is exposed via a Model Context Protocol (MCP) server, enabling conversational access through Claude Desktop. The MCP server implements eight tools:
 
-1. **comprehensive_gene_analysis**: Full workflow execution (network + regulators + targets + perturbation + pathways + domains)
+1. **comprehensive_gene_analysis**: Full workflow execution (network + regulators + targets + target prioritization + pathways + domains)
 2. **multi_gene_analysis**: Parallel processing of multiple genes with comparative analysis
 3. **pathway_focused_analysis**: Pathway enrichment for user-specified gene lists
-4. **analyze_regulators**: Detailed upstream regulator analysis with perturbation
+4. **analyze_regulators**: Detailed upstream regulator analysis with target prioritization
 5. **analyze_targets**: Detailed downstream target analysis with cascade effects
 6. **cross_cell_comparison**: Regulatory role comparison across all 10 cell types
 7. **workflow_status**: Real-time execution monitoring
@@ -257,24 +257,24 @@ These results demonstrate the framework produces biologically meaningful outputs
 
 RegNetAgents achieves second-scale execution times for gene regulatory network analysis (Table 1). The system supports two execution modes: (1) rule-based mode for fast, deterministic analysis, and (2) LLM-powered mode with AI-generated scientific insights via local language model inference (Ollama/llama3.1:8b).
 
-**Rule-based mode** provides rapid analysis without LLM dependencies. Single gene comprehensive analysis of TP53 in epithelial cells (network modeling, complete perturbation analysis of all 7 regulators, Reactome pathway enrichment) completed in 0.60 seconds. Multi-gene analysis of 5 genes (MYC, CTNNB1, CCND1, TP53, KRAS) including complete perturbation analysis of all 99 regulators completed in 15.49 seconds with parallel execution.
+**Rule-based mode** provides rapid analysis without LLM dependencies. Single gene comprehensive analysis of TP53 in epithelial cells (network modeling, complete regulator ranking of all 7 upstream regulators, Reactome pathway enrichment) completed in 0.60 seconds. Multi-gene analysis of 5 genes (MYC, CTNNB1, CCND1, TP53, KRAS) including complete regulator ranking of all 99 upstream regulators completed in 15.49 seconds with parallel execution.
 
 **LLM-powered mode** adds specialized domain analysis with scientific rationales from four parallel agents (cancer biology, drug discovery, clinical relevance, systems biology). Single gene comprehensive analysis with LLM insights averages ~15 seconds (4× slower than rule-based due to local LLM inference). Five-gene comprehensive analysis with parallel LLM execution completes in ~62 seconds, providing AI-generated rationales for all genes simultaneously. Cross-cell-type comparison of TP53 across all 10 cell types remains instant (<0.01 seconds) in both modes, leveraging pre-computed network indices.
 
-Performance breakdown: Network lookups are near-instantaneous (<1 ms), Reactome API calls take 0.3-1.5 seconds, and LLM inference adds ~3-4 seconds per agent. PageRank pre-computation enables instant perturbation analysis.
+Performance breakdown: Network lookups are near-instantaneous (<1 ms), Reactome API calls take 0.3-1.5 seconds, and LLM inference adds ~3-4 seconds per agent. PageRank pre-computation enables instant regulator ranking.
 
 **Table 1. Performance Benchmarks**
 
 | Analysis Type | Genes | Execution Time | Components |
 |--------------|-------|----------------|------------|
-| Focused (rule-based) | TP53 | 0.68 sec | Network lookup, regulators, targets, complete perturbation (all 7 regulators) |
+| Focused (rule-based) | TP53 | 0.68 sec | Network lookup, regulators, targets, complete regulator ranking (all 7 upstream regulators) |
 | Comprehensive (rule-based) | TP53 | 0.60 sec | Network analysis + Reactome pathway enrichment (16 pathways, FDR correction) |
-| Comprehensive (LLM-powered) | TP53 | ~15 sec | Network + perturbation + pathways + 4 LLM agents with scientific rationales |
-| Multi-gene (rule-based) | 5 genes | 15.49 sec | Network analysis, complete perturbation (all 99 regulators, parallel execution) |
-| Multi-gene (LLM-powered) | 5 genes | ~62 sec | Network + perturbation (99 regulators) + pathways + 4 parallel LLM agents |
+| Comprehensive (LLM-powered) | TP53 | ~15 sec | Network + regulator ranking + pathways + 4 LLM agents with scientific rationales |
+| Multi-gene (rule-based) | 5 genes | 15.49 sec | Network analysis, complete regulator ranking (all 99 regulators, parallel execution) |
+| Multi-gene (LLM-powered) | 5 genes | ~62 sec | Network + regulator ranking (99 regulators) + pathways + 4 parallel LLM agents |
 | Cross-cell comparison | TP53, 10 types | <0.01 sec | Regulatory role comparison across all cell types (pre-computed indices) |
 
-*Rule-based mode provides deterministic analysis without LLM dependencies. LLM-powered mode adds domain-specific insights via local Ollama inference (llama3.1:8b) with 4 parallel agents. PageRank pre-computation in network cache enables instant perturbation analysis. All measurements via Claude Desktop MCP integration on standard laptop (Intel i7, 16GB RAM) with stable internet connection and Ollama server running locally.*
+*Rule-based mode provides deterministic analysis without LLM dependencies. LLM-powered mode adds domain-specific insights via local Ollama inference (llama3.1:8b) with 4 parallel agents. PageRank pre-computation in network cache enables instant regulator ranking. All measurements via Claude Desktop MCP integration on standard laptop (Intel i7-14700F, 64GB RAM, Windows 11) with stable internet connection and Ollama server running locally.*
 
 ### Workflow Automation and Performance
 
@@ -326,11 +326,11 @@ RegNetAgents automatically classified biomarker types based on regulatory archit
 
 All five classifications aligned with published CRC biomarker literature, demonstrating 100% concordance with established clinical and research findings. Network analysis revealed distinct regulatory architectures: three hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163, 427, and 310 targets respectively) indicating signal amplification roles, and two heavily regulated genes (CCND1 with 42 regulators, KRAS with 7 regulators) with no downstream regulation but multiple upstream inputs. These connectivity patterns align with known biological roles - TP53, MYC, and CTNNB1 as master regulatory hubs in tumor suppression and oncogenic signaling, while CCND1 and KRAS function as end-point effectors.
 
-### Perturbation Analysis: TP53 Candidate Regulator Prioritization
+### Therapeutic Target Prioritization: TP53 Candidate Regulator Ranking
 
-To illustrate framework capabilities for hypothesis generation, we performed automated perturbation analysis on TP53, which has 7 upstream regulators in epithelial cells according to the ARACNe-inferred network. **Table 3 shows all 7 regulators** (complete perturbation analysis), not a filtered subset. The analysis ranks all regulators using network centrality metrics computed from network topology (Table 3, Figure 3). These rankings serve as hypotheses for experimental validation, not predictions of therapeutic efficacy.
+To illustrate framework capabilities for hypothesis generation, we performed automated therapeutic target prioritization on TP53, which has 7 upstream regulators in epithelial cells according to the ARACNe-inferred network. **Table 3 shows all 7 regulators** (complete ranking), not a filtered subset. The analysis ranks all regulators using network centrality metrics computed from network topology (Table 3, Figure 3). These rankings serve as hypotheses for experimental validation, not predictions of therapeutic efficacy.
 
-**Table 3. TP53 Perturbation Analysis Results - Comparison with Known Biology**
+**Table 3. TP53 Therapeutic Target Prioritization Results - Comparison with Known Biology**
 
 | Rank | Regulator | PageRank | Out-Degree Centrality | Downstream Targets | Literature Status |
 |------|-----------|----------|----------------------|-------------------|-------------------|
@@ -429,7 +429,7 @@ To contextualize the efficiency gains, we compared RegNetAgents to representativ
 |---------------|---------------------------|------------------------|---------|
 | Single gene network + regulators + targets | 15-30 min (STRING/BioGRID query + export) | 0.60 sec (rule-based) | ~1,500-3,000× |
 | Pathway enrichment (single gene) | 10-15 min (Enrichr/DAVID upload + results) | 1-3 sec (Reactome API) | ~200-900× |
-| Perturbation analysis (7 regulators) | 2-4 hours (literature curation per regulator) | 0.60 sec (automated) | ~12,000-24,000× |
+| Therapeutic target prioritization (7 regulators) | 2-4 hours (literature curation per regulator) | 0.60 sec (automated ranking) | ~12,000-24,000× |
 | Multi-domain interpretation (4 domains) | 1-2 hours (sequential literature review) | ~12 sec (4 parallel agents) | ~300-600× |
 | 5-gene comprehensive analysis | 8-16 hours (serial per-gene workflow) | 15.49 sec (rule-based) | ~1,900-3,700× |
 | Cross-cell-type comparison (10 types) | 4-8 hours (repeat workflow per type) | <0.01 sec (pre-indexed) | >1,000,000× |
@@ -608,7 +608,7 @@ Workflow schematic showing the directed acyclic graph of agent execution. User q
 **Figure 2. Colorectal Cancer Biomarker Panel Regulatory Architecture.**
 (A) Network diagram showing the five analyzed genes (MYC, CTNNB1, CCND1, TP53, KRAS) with regulators (upstream arrows) and targets (downstream arrows) in the epithelial cell network. Node size represents number of connections; node color indicates regulatory role classification (red = hub regulator, orange = heavily regulated, blue = weakly regulated). TP53, MYC, and CTNNB1 emerge as central hubs with extensive downstream connectivity. (B) Bar chart comparing number of regulators (left) and targets (right) for each gene. (C) Biomarker type classification showing diagnostic, prognostic, and predictive categories.
 
-**Figure 3. TP53 Perturbation Analysis and Therapeutic Target Ranking.**
+**Figure 3. TP53 Therapeutic Target Prioritization and Regulator Ranking.**
 (A) Network diagram showing TP53 (center) with 7 upstream regulators. All regulators contribute equal direct regulatory loss (14.3% = 1/7 regulators). Node size represents downstream target count (larger = more targets = potential off-target effects). Top 3 regulators by PageRank are highlighted with color. (B) Horizontal bar chart of PageRank centrality scores for all 7 regulators, ranked from highest (WWTR1, 0.473) to lowest (IKZF2, 0.399). PageRank differentiates therapeutic potential when regulatory loss is equal. Color intensity indicates network influence. (C) Alternative ranking by degree centrality showing downstream target count, with RBPMS highest (403 targets). Annotations indicate regulators with literature validation (WWTR1, YAP1 - Hippo pathway) vs. novel hypotheses (RBPMS).
 
 **Figure 4. Framework Value Demonstration: Workflow Automation and LLM Intelligence.**
