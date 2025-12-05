@@ -177,7 +177,7 @@ If LLM is unavailable or fails, agents use fast heuristic algorithms that classi
 
 **Drug Development Agent:** Identifies intervention strategies based on regulatory architecture (hub regulators = inhibition candidates, heavily regulated genes = activation candidates), estimates development complexity (high for hubs due to potential off-target effects, moderate for intermediate nodes, low for heavily regulated genes), and provides qualitative assessments of downstream cascade effects based on target counts.
 
-**Clinical Relevance Agent:** Classifies biomarker utility (diagnostic for heavily regulated genes with pathway involvement, prognostic for regulators with cancer pathway enrichment, predictive for regulators in druggable pathways), assesses tissue specificity from cross-cell-type regulatory patterns, and provides qualitative disease association estimates based on regulatory architecture.
+**Clinical Relevance Agent:** Classifies biomarker utility based on regulatory architecture: diagnostic for heavily regulated genes (>15 regulators, end-point effectors that reflect disease state), prognostic for hub regulators (>20 targets, master regulators that predict disease outcome), predictive for other regulatory roles. Assesses tissue specificity from cross-cell-type regulatory patterns and provides qualitative disease association estimates.
 
 **Systems Biology Agent:** Interprets network centrality metrics (PageRank, out-degree, in-degree), classifies regulatory hierarchy position (hub/intermediate/heavily-regulated), and estimates perturbation impact scope (system-wide for hubs, localized for heavily regulated genes) based on network topology.
 
