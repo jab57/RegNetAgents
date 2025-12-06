@@ -280,7 +280,7 @@ Performance breakdown: Network lookups are near-instantaneous (<1 ms), Reactome 
 | Multi-gene (LLM-powered) | 5 genes | ~62 sec | Network + regulator ranking (99 regulators) + pathways + 4 parallel LLM agents |
 | Cross-cell comparison | TP53, 10 types | <0.01 sec | Regulatory role comparison across all cell types (pre-computed indices) |
 
-*Rule-based mode provides deterministic analysis without LLM dependencies. LLM-powered mode adds domain-specific insights via local Ollama inference (llama3.1:8b) with 4 parallel agents. PageRank pre-computation in network cache enables instant regulator ranking. All measurements via Claude Desktop MCP integration on standard laptop (Intel i7-14700F, 64GB RAM, Windows 11) with stable internet connection and Ollama server running locally.*
+*Rule-based mode provides deterministic analysis without LLM dependencies. LLM-powered mode adds domain-specific insights via local Ollama inference (llama3.1:8b) with 4 parallel agents. "Focused" mode emphasizes pathway enrichment via Reactome API, while "Comprehensive" mode adds complete regulator ranking analysis, making it slightly slower despite both being rule-based. PageRank pre-computation in network cache enables instant regulator ranking. All measurements via Claude Desktop MCP integration on standard laptop (Intel i7-14700F, 64GB RAM, Windows 11) with stable internet connection and Ollama server running locally.*
 
 ### Workflow Automation and Performance
 
