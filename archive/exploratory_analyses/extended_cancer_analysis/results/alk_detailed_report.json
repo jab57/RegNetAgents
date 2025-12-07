@@ -1,0 +1,48 @@
+{
+  "gene": "ALK",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "ALK",
+    "ensembl_id": "ENSG_CACHED_ALK",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "ALK",
+      "gene_name": "ALK",
+      "function": "This gene encodes a receptor tyrosine kinase, which belongs to the insulin receptor superfamily. This protein comprises an extracellular domain, an hydrophobic stretch corresponding to a single pass transmembrane region, and an intracellular kinase domain. It plays an important role in the development of the brain and exerts its effects on specific neurons in the nervous system. This gene has been found to be rearranged, mutated, or amplified in a series of tumours including anaplastic large cell lymphomas, neuroblastoma, and non-small cell lung cancer. The chromosomal rearrangements are the most common genetic alterations in this gene, which result in creation of multiple fusion genes in tumourigenesis, including ALK (chromosome 2)/EML4 (chromosome 2), ALK/RANBP2 (chromosome 2), ALK/ATIC (chromosome 2), ALK/TFG (chromosome 3), ALK/NPM1 (chromosome 5), ALK/SQSTM1 (chromosome 5), ALK/KIF5B (chromosome 10), ALK/CLTC (chromosome 17), ALK/TPM4 (chromosome 19), and ALK/MSN (chromosome X).[provided by RefSeq, Jan 2011].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": false,
+    "is_regulator": false,
+    "regulatory_role": "weakly_regulated",
+    "num_regulators": 0,
+    "num_targets": 0,
+    "regulators": [],
+    "targets": [],
+    "network_position": {
+      "in_degree": 0,
+      "out_degree": 0,
+      "role": "weakly_regulated"
+    }
+  },
+  "llm_insights": {},
+  "pathway_summary": {},
+  "cross_cell_analysis": null,
+  "key_insights": {
+    "regulatory_role": "weakly_regulated",
+    "regulation_strength": "moderate",
+    "regulatory_influence": "low"
+  },
+  "workflow_metadata": {
+    "start_time": 37261.14,
+    "steps_completed": [
+      "gene_network_analysis"
+    ],
+    "total_analysis_time": 0.0
+  }
+}

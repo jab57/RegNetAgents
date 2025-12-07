@@ -1,0 +1,53 @@
+{
+  "gene": "CDKN2A",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "CDKN2A",
+    "ensembl_id": "ENSG00000147889",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "CDKN2A",
+      "gene_name": "CDKN2A",
+      "function": "This gene generates several transcript variants which differ in their first exons. At least three alternatively spliced variants encoding distinct proteins have been reported, two of which encode structurally related isoforms known to function as inhibitors of CDK4 kinase. The remaining transcript includes an alternate first exon located 20 Kb upstream of the remainder of the gene; this transcript contains an alternate open reading frame (ARF) that specifies a protein which is structurally unrelated to the products of the other variants. This ARF product functions as a stabilizer of the tumor suppressor protein p53 as it can interact with, and sequester, the E3 ubiquitin-protein ligase MDM2, a protein responsible for the degradation of p53. In spite of the structural and functional differences, the CDK inhibitor isoforms and the ARF product encoded by this gene, through the regulatory roles of CDK4 and p53 in cell cycle G1 progression, share a common functionality in cell cycle G1 control. This gene is frequently mutated or deleted in a wide variety of tumors, and is known to be an important tumor suppressor gene. [provided by RefSeq, Sep 2012].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": true,
+    "is_regulator": false,
+    "regulatory_role": "weakly_regulated",
+    "num_regulators": 4,
+    "num_targets": 0,
+    "regulators": [
+      "ENSG00000177606",
+      "ENSG00000179862",
+      "ENSG00000159200",
+      "ENSG00000124440"
+    ],
+    "targets": [],
+    "network_position": {
+      "in_degree": 4,
+      "out_degree": 0,
+      "role": "weakly_regulated"
+    }
+  },
+  "llm_insights": {},
+  "pathway_summary": {},
+  "cross_cell_analysis": null,
+  "key_insights": {
+    "regulatory_role": "weakly_regulated",
+    "regulation_strength": "moderate",
+    "regulatory_influence": "low"
+  },
+  "workflow_metadata": {
+    "start_time": 37261.14,
+    "steps_completed": [
+      "gene_network_analysis"
+    ],
+    "total_analysis_time": 0.0
+  }
+}

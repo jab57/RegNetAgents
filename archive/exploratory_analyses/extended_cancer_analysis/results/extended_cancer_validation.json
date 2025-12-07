@@ -1,0 +1,127 @@
+{
+  "execution_time_seconds": 23.821484327316284,
+  "genes_analyzed": [
+    "BRCA1",
+    "BRCA2",
+    "ERBB2",
+    "ESR1",
+    "EGFR",
+    "ALK",
+    "RET",
+    "AR",
+    "PTEN",
+    "CDKN2A"
+  ],
+  "cancer_types": {
+    "Breast Cancer": [
+      "BRCA1",
+      "BRCA2",
+      "ERBB2",
+      "ESR1"
+    ],
+    "Lung Cancer": [
+      "EGFR",
+      "ALK",
+      "RET"
+    ],
+    "Prostate Cancer": [
+      "AR",
+      "PTEN"
+    ],
+    "Pancreatic Cancer": [
+      "CDKN2A"
+    ]
+  },
+  "validation_results": [
+    {
+      "gene": "BRCA1",
+      "regulatory_role": "heavily_regulated",
+      "num_targets": 0,
+      "num_regulators": 23,
+      "top_regulator": "ZNF334",
+      "top_pagerank": 0.7227,
+      "status": "success"
+    },
+    {
+      "gene": "BRCA2",
+      "regulatory_role": "heavily_regulated",
+      "num_targets": 0,
+      "num_regulators": 20,
+      "top_regulator": "HMGB2",
+      "top_pagerank": 0.5103,
+      "status": "success"
+    },
+    {
+      "gene": "ERBB2",
+      "regulatory_role": "weakly_regulated",
+      "num_targets": 0,
+      "num_regulators": 0,
+      "top_regulator": "N/A",
+      "top_pagerank": 0.0,
+      "status": "success"
+    },
+    {
+      "gene": "ESR1",
+      "regulatory_role": "weakly_regulated",
+      "num_targets": 0,
+      "num_regulators": 0,
+      "top_regulator": "N/A",
+      "top_pagerank": 0.0,
+      "status": "success"
+    },
+    {
+      "gene": "EGFR",
+      "regulatory_role": "heavily_regulated",
+      "num_targets": 0,
+      "num_regulators": 37,
+      "top_regulator": "HMGB2",
+      "top_pagerank": 0.5103,
+      "status": "success"
+    },
+    {
+      "gene": "ALK",
+      "regulatory_role": "weakly_regulated",
+      "num_targets": 0,
+      "num_regulators": 0,
+      "top_regulator": "N/A",
+      "top_pagerank": 0.0,
+      "status": "success"
+    },
+    {
+      "gene": "RET",
+      "regulatory_role": "weakly_regulated",
+      "num_targets": 0,
+      "num_regulators": 0,
+      "top_regulator": "N/A",
+      "top_pagerank": 0.0,
+      "status": "success"
+    },
+    {
+      "gene": "AR",
+      "regulatory_role": "weakly_regulated",
+      "num_targets": 0,
+      "num_regulators": 0,
+      "top_regulator": "N/A",
+      "top_pagerank": 0.0,
+      "status": "success"
+    },
+    {
+      "gene": "PTEN",
+      "regulatory_role": "weakly_regulated",
+      "num_targets": 0,
+      "num_regulators": 4,
+      "top_regulator": "N/A",
+      "top_pagerank": 0.0,
+      "status": "success"
+    },
+    {
+      "gene": "CDKN2A",
+      "regulatory_role": "weakly_regulated",
+      "num_targets": 0,
+      "num_regulators": 4,
+      "top_regulator": "N/A",
+      "top_pagerank": 0.0,
+      "status": "success"
+    }
+  ]
+}

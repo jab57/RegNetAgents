@@ -1,0 +1,53 @@
+{
+  "gene": "PTEN",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "PTEN",
+    "ensembl_id": "ENSG00000171862",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "PTEN",
+      "gene_name": "PTEN",
+      "function": "This gene was identified as a tumor suppressor that is mutated in a large number of cancers at high frequency. The protein encoded by this gene is a phosphatidylinositol-3,4,5-trisphosphate 3-phosphatase. It contains a tensin like domain as well as a catalytic domain similar to that of the dual specificity protein tyrosine phosphatases. Unlike most of the protein tyrosine phosphatases, this protein preferentially dephosphorylates phosphoinositide substrates. It negatively regulates intracellular levels of phosphatidylinositol-3,4,5-trisphosphate in cells and functions as a tumor suppressor by negatively regulating AKT/PKB signaling pathway. The use of a non-canonical (CUG) upstream initiation site produces a longer isoform that initiates translation with a leucine, and is thought to be preferentially associated with the mitochondrial inner membrane. This longer isoform may help regulate energy metabolism in the mitochondria. A pseudogene of this gene is found on chromosome 9. Alternative splicing and the use of multiple translation start codons results in multiple transcript variants encoding different isoforms. [provided by RefSeq, Feb 2015].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": true,
+    "is_regulator": false,
+    "regulatory_role": "weakly_regulated",
+    "num_regulators": 4,
+    "num_targets": 0,
+    "regulators": [
+      "ENSG00000128272",
+      "ENSG00000119725",
+      "ENSG00000187079",
+      "ENSG00000178913"
+    ],
+    "targets": [],
+    "network_position": {
+      "in_degree": 4,
+      "out_degree": 0,
+      "role": "weakly_regulated"
+    }
+  },
+  "llm_insights": {},
+  "pathway_summary": {},
+  "cross_cell_analysis": null,
+  "key_insights": {
+    "regulatory_role": "weakly_regulated",
+    "regulation_strength": "moderate",
+    "regulatory_influence": "low"
+  },
+  "workflow_metadata": {
+    "start_time": 37261.14,
+    "steps_completed": [
+      "gene_network_analysis"
+    ],
+    "total_analysis_time": 0.0
+  }
+}

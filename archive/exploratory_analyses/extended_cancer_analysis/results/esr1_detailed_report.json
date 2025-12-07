@@ -1,0 +1,48 @@
+{
+  "gene": "ESR1",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "ESR1",
+    "ensembl_id": "ENSG_CACHED_ESR1",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "ESR1",
+      "gene_name": "ESR1",
+      "function": "This gene encodes an estrogen receptor and ligand-activated transcription factor. The canonical protein contains an N-terminal ligand-independent transactivation domain, a central DNA binding domain, a hinge domain, and a C-terminal ligand-dependent transactivation domain. The protein localizes to the nucleus where it may form either a homodimer or a heterodimer with estrogen receptor 2. The protein encoded by this gene regulates the transcription of many estrogen-inducible genes that play a role in growth, metabolism, sexual development, gestation, and other reproductive functions and is expressed in many non-reproductive tissues. The receptor encoded by this gene plays a key role in breast cancer, endometrial cancer, and osteoporosis. This gene is reported to have dozens of transcript variants due to the use of alternate promoters and alternative splicing, however, the full-length nature of many of these variants remain uncertain. [provided by RefSeq, Jul 2020].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": false,
+    "is_regulator": false,
+    "regulatory_role": "weakly_regulated",
+    "num_regulators": 0,
+    "num_targets": 0,
+    "regulators": [],
+    "targets": [],
+    "network_position": {
+      "in_degree": 0,
+      "out_degree": 0,
+      "role": "weakly_regulated"
+    }
+  },
+  "llm_insights": {},
+  "pathway_summary": {},
+  "cross_cell_analysis": null,
+  "key_insights": {
+    "regulatory_role": "weakly_regulated",
+    "regulation_strength": "moderate",
+    "regulatory_influence": "low"
+  },
+  "workflow_metadata": {
+    "start_time": 37261.14,
+    "steps_completed": [
+      "gene_network_analysis"
+    ],
+    "total_analysis_time": 0.0
+  }
+}

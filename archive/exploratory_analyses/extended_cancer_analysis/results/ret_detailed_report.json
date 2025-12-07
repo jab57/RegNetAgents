@@ -1,0 +1,48 @@
+{
+  "gene": "RET",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "RET",
+    "ensembl_id": "ENSG_CACHED_RET",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "RET",
+      "gene_name": "RET",
+      "function": "This gene encodes a transmembrane receptor and member of the tyrosine protein kinase family of proteins. Binding of ligands such as GDNF (glial cell-line derived neurotrophic factor) and other related proteins to the encoded receptor stimulates receptor dimerization and activation of downstream signaling pathways that play a role in cell differentiation, growth, migration and survival. The encoded receptor is important in development of the nervous system, and the development of organs and tissues derived from the neural crest. This proto-oncogene can undergo oncogenic activation through both cytogenetic rearrangement and activating point mutations. Mutations in this gene are associated with Hirschsprung disease and central hypoventilation syndrome and have been identified in patients with renal agenesis. [provided by RefSeq, Sep 2017].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": false,
+    "is_regulator": false,
+    "regulatory_role": "weakly_regulated",
+    "num_regulators": 0,
+    "num_targets": 0,
+    "regulators": [],
+    "targets": [],
+    "network_position": {
+      "in_degree": 0,
+      "out_degree": 0,
+      "role": "weakly_regulated"
+    }
+  },
+  "llm_insights": {},
+  "pathway_summary": {},
+  "cross_cell_analysis": null,
+  "key_insights": {
+    "regulatory_role": "weakly_regulated",
+    "regulation_strength": "moderate",
+    "regulatory_influence": "low"
+  },
+  "workflow_metadata": {
+    "start_time": 37261.14,
+    "steps_completed": [
+      "gene_network_analysis"
+    ],
+    "total_analysis_time": 0.0
+  }
+}

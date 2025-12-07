@@ -1,0 +1,230 @@
+{
+  "gene": "BRCA1",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "BRCA1",
+    "ensembl_id": "ENSG00000012048",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "BRCA1",
+      "gene_name": "BRCA1",
+      "function": "This gene encodes a 190 kD nuclear phosphoprotein that plays a role in maintaining genomic stability, and it also acts as a tumor suppressor. The BRCA1 gene contains 22 exons spanning about 110 kb of DNA. The encoded protein combines with other tumor suppressors, DNA damage sensors, and signal transducers to form a large multi-subunit protein complex known as the BRCA1-associated genome surveillance complex (BASC). This gene product associates with RNA polymerase II, and through the C-terminal domain, also interacts with histone deacetylase complexes. This protein thus plays a role in transcription, DNA repair of double-stranded breaks, and recombination. Mutations in this gene are responsible for approximately 40% of inherited breast cancers and more than 80% of inherited breast and ovarian cancers. Alternative splicing plays a role in modulating the subcellular localization and physiological function of this gene. Many alternatively spliced transcript variants, some of which are disease-associated mutations, have been described for this gene, but the full-length natures of only some of these variants has been described. A related pseudogene, which is also located on chromosome 17, has been identified. [provided by RefSeq, May 2020].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": true,
+    "is_regulator": false,
+    "regulatory_role": "heavily_regulated",
+    "num_regulators": 23,
+    "num_targets": 0,
+    "regulators": [
+      "ENSG00000123219",
+      "ENSG00000105011",
+      "ENSG00000148840",
+      "ENSG00000135547",
+      "ENSG00000104738",
+      "ENSG00000115548",
+      "ENSG00000102908",
+      "ENSG00000198185",
+      "ENSG00000137709",
+      "ENSG00000101057"
+    ],
+    "targets": [],
+    "network_position": {
+      "in_degree": 23,
+      "out_degree": 0,
+      "role": "heavily_regulated"
+    }
+  },
+  "llm_insights": {
+    "cancer_analysis": {
+      "llm_powered": true,
+      "summary": "BRCA1 is a critical tumor suppressor gene involved in DNA repair and transcription, with high potential as a therapeutic target and biomarker for breast and ovarian cancer.",
+      "insights": {
+        "oncogenic_potential": "low",
+        "tumor_suppressor_likelihood": "high",
+        "therapeutic_target_score": 0.8,
+        "mutation_impact": "moderate"
+      },
+      "llm_rationale": {
+        "oncogenic": "BRCA1 is a heavily regulated gene with high in-degree and low out-degree, indicating its critical role as a tumor suppressor rather than an oncogene.",
+        "tumor_suppressor": "Its involvement in DNA repair, transcription, and genomic stability makes it a crucial component of the genome surveillance complex, which is often disrupted in cancer cells.",
+        "therapeutic": "BRCA1's role as a tumor suppressor and its high degree of regulation make it an attractive target for therapeutic intervention, particularly in cancers with BRCA1 mutations.",
+        "biomarker": "BRCA1 mutations are a well-established risk factor for breast and ovarian cancer, making it a valuable biomarker for these cancers."
+      },
+      "cancer_pathways": [
+        "RNA Polymerase II Transcription",
+        "Cell Cycle"
+      ],
+      "biomarker_potential": "high"
+    },
+    "clinical_analysis": {
+      "llm_powered": true,
+      "summary": "BRCA1 is a critical tumor suppressor gene with high disease association potential, enabling diagnostic and prognostic biomarker utility in personalized medicine.",
+      "insights": {
+        "disease_association_likelihood": "high",
+        "disease_rationale": "BRCA1 mutations are responsible for approximately 40% of inherited breast cancers and more than 80% of inherited breast and ovarian cancers.",
+        "biomarker_utility": "diagnostic|prognostic",
+        "biomarker_rationale": "BRCA1 can serve as a biomarker for identifying individuals with increased risk of developing breast and ovarian cancer, enabling early intervention and personalized prevention strategies.",
+        "clinical_actionability": "high",
+        "actionability_rationale": "Genetic testing for BRCA1 mutations is already established in clinical practice, allowing for targeted interventions such as prophylactic mastectomy or salpingo-oophorectomy."
+      },
+      "llm_rationale": "",
+      "tissue_specificity": [
+        "Tissue-specific expression in 1 cell types"
+      ],
+      "diagnostic_potential": "high"
+    },
+    "systems_analysis": {
+      "llm_powered": true,
+      "summary": "BRCA1 is a central regulator of genomic stability and DNA repair, playing a critical role in tumor suppression and exhibiting high information flow and vulnerability to perturbation.",
+      "insights": {
+        "network_centrality": 0.0,
+        "centrality_rationale": "BRCA1 has a low PageRank centrality score, indicating it is not highly connected in the regulatory network.",
+        "regulatory_hierarchy": "hub",
+        "hierarchy_rationale": "As a tumor suppressor and key component of the BASC complex, BRCA1 plays a central role in regulating genomic stability and DNA repair.",
+        "information_flow": "high",
+        "flow_rationale": "BRCA1 is heavily regulated by upstream regulators (23) and has a high degree of connectivity, suggesting it is involved in rapid signal transduction pathways.",
+        "network_vulnerability": "critical",
+        "vulnerability_rationale": "Mutations in BRCA1 are associated with significant increases in breast and ovarian cancer risk, indicating its critical role in maintaining genomic stability."
+      },
+      "llm_rationale": "",
+      "network_effects": [
+        "Highly regulated node with 23 upstream controllers"
+      ],
+      "perturbation_impact": "system-wide"
+    }
+  },
+  "pathway_summary": {
+    "total_pathways": 31,
+    "significant_pathways": 31
+  },
+  "cross_cell_analysis": {
+    "gene": "BRCA1",
+    "cell_type_analysis": {
+      "epithelial_cell": {
+        "regulatory_role": "heavily_regulated",
+        "num_regulators": 23,
+        "num_targets": 0,
+        "in_network": true
+      },
+      "cd14_monocytes": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd16_monocytes": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd20_b_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd4_t_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cd8_t_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "erythrocytes": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "nk_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "nkt_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "monocyte-derived_dendritic_cells": {
+        "regulatory_role": "weakly_regulated",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "hepatocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "cardiomyocytes": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "neurons": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "fibroblasts": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      },
+      "endothelial_cells": {
+        "regulatory_role": "unknown",
+        "num_regulators": 0,
+        "num_targets": 0,
+        "in_network": false
+      }
+    },
+    "summary": "Cross-cell analysis completed"
+  },
+  "key_insights": {
+    "regulatory_role": "heavily_regulated",
+    "regulation_strength": "high",
+    "regulatory_influence": "low",
+    "cell_type_specificity": "low",
+    "cancer_relevance": "unknown",
+    "therapeutic_potential": 0,
+    "clinical_significance": "unknown",
+    "biomarker_potential": "unknown",
+    "network_importance": "unknown",
+    "systems_complexity": "unknown"
+  },
+  "workflow_metadata": {
+    "start_time": 37261.14,
+    "steps_completed": [
+      "gene_network_analysis",
+      "regulators_analysis",
+      "perturbation_analysis",
+      "pathway_analysis",
+      "cross_cell_analysis",
+      "cancer_domain_analysis",
+      "clinical_domain_analysis",
+      "systems_domain_analysis",
+      "drug_domain_analysis"
+    ],
+    "total_analysis_time": 22796.99999999866
+  }
+}

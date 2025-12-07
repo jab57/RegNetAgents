@@ -1,0 +1,48 @@
+{
+  "gene": "AR",
+  "cell_type": "epithelial_cell",
+  "network_analysis": {
+    "gene": "AR",
+    "ensembl_id": "ENSG_CACHED_AR",
+    "cell_type": "epithelial_cell",
+    "gene_info": {
+      "gene_id": "AR",
+      "gene_name": "AR",
+      "function": "The androgen receptor gene is more than 90 kb long and codes for a protein that has 3 major functional domains: the N-terminal domain, DNA-binding domain, and androgen-binding domain. The protein functions as a steroid-hormone activated transcription factor. Upon binding the hormone ligand, the receptor dissociates from accessory proteins, translocates into the nucleus, dimerizes, and then stimulates transcription of androgen responsive genes. This gene contains 2 polymorphic trinucleotide repeat segments that encode polyglutamine and polyglycine tracts in the N-terminal transactivation domain of its protein. Expansion of the polyglutamine tract from the normal 9-34 repeats to the pathogenic 38-62 repeats causes spinal bulbar muscular atrophy (SBMA, also known as Kennedy's disease). Mutations in this gene are also associated with complete androgen insensitivity (CAIS). Alternative splicing results in multiple transcript variants encoding different isoforms. [provided by RefSeq, Jan 2017].",
+      "pathways": [
+        "UniProt annotation"
+      ],
+      "cell_types": [
+        "all"
+      ]
+    },
+    "network_available": true,
+    "in_network": false,
+    "is_regulator": false,
+    "regulatory_role": "weakly_regulated",
+    "num_regulators": 0,
+    "num_targets": 0,
+    "regulators": [],
+    "targets": [],
+    "network_position": {
+      "in_degree": 0,
+      "out_degree": 0,
+      "role": "weakly_regulated"
+    }
+  },
+  "llm_insights": {},
+  "pathway_summary": {},
+  "cross_cell_analysis": null,
+  "key_insights": {
+    "regulatory_role": "weakly_regulated",
+    "regulation_strength": "moderate",
+    "regulatory_influence": "low"
+  },
+  "workflow_metadata": {
+    "start_time": 37261.14,
+    "steps_completed": [
+      "gene_network_analysis"
+    ],
+    "total_analysis_time": 0.0
+  }
+}
