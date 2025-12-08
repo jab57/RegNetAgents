@@ -42,6 +42,45 @@ def convert_to_docx():
             i += 1
             continue
 
+        # Handle tables
+        if line.startswith('|') and line.endswith('|'):
+            # Collect all table lines
+            table_lines = []
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                table_lines.append(lines[i].strip())
+                i += 1
+
+            # Parse and create table
+            if len(table_lines) >= 2:  # At least header and separator
+                # Parse header
+                header = [cell.strip() for cell in table_lines[0].split('|')[1:-1]]
+
+                # Skip separator line (the one with ----)
+                data_lines = [line for line in table_lines[2:] if line and not line.startswith('|---')]
+
+                # Create table in Word
+                table = doc.add_table(rows=1 + len(data_lines), cols=len(header))
+                table.style = 'Light Grid Accent 1'
+
+                # Add header
+                for col_idx, header_text in enumerate(header):
+                    cell = table.rows[0].cells[col_idx]
+                    cell.text = header_text
+                    # Bold header
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            run.bold = True
+
+                # Add data rows
+                for row_idx, data_line in enumerate(data_lines):
+                    cells = [cell.strip() for cell in data_line.split('|')[1:-1]]
+                    for col_idx, cell_text in enumerate(cells):
+                        if col_idx < len(header):
+                            table.rows[row_idx + 1].cells[col_idx].text = cell_text
+
+            doc.add_paragraph()  # Space after table
+            continue
+
         # Title (# )
         if line.startswith('# '):
             doc.add_heading(line.replace('# ', ''), level=0)
