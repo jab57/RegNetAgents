@@ -208,15 +208,15 @@ All 7 genes were successfully analyzed using the same comprehensive workflow (ne
 
 This cervical cancer validation demonstrates that RegNetAgents generates scientifically coherent results across cancer types, with regulatory network patterns aligning with established biological knowledge. The analysis required no modification to the framework or workflow, highlighting the system's generalizability for hypothesis generation across diverse disease contexts.
 
-| Gene | Regulatory Role | Regulators | Targets | Top Therapeutic Target | PageRank |
-|------|----------------|------------|---------|----------------------|----------|
-| TP53 | Hub Regulator | 7 | 163 | WWTR1 | 0.473 |
-| MYC | Hub Regulator | 25 | 427 | ID4 | 0.622 |
-| BRCA1 | Heavily Regulated | 23 | 0 | ZNF334 | 0.723 |
-| BRCA2 | Heavily Regulated | 20 | 0 | HMGB2 | 0.510 |
-| EGFR | Heavily Regulated | 37 | 0 | HMGB2 | 0.510 |
-| CCND1 | Heavily Regulated | 42 | 0 | ZBTB20 | 0.600 |
-| KRAS | Weakly Regulated | 7 | 0 | GPBP1 | 0.609 |
+| Gene | Regulatory Role | Targets | Regulators | Top Candidate Regulator (PageRank) |
+|------|----------------|---------|------------|-----------------------------------|
+| TP53 | Hub Regulator | 163 | 7 | WWTR1 (0.473) |
+| MYC | Hub Regulator | 427 | 25 | ID4 (0.622) |
+| BRCA1 | Heavily Regulated | 0 | 23 | ZNF334 (0.723) |
+| BRCA2 | Heavily Regulated | 0 | 20 | HMGB2 (0.510) |
+| EGFR | Heavily Regulated | 0 | 37 | HMGB2 (0.510) |
+| CCND1 | Heavily Regulated | 0 | 42 | ZBTB20 (0.600) |
+| KRAS | Weakly Regulated | 0 | 7 | GPBP1 (0.609) |
 
 **Table S2.** Cervical cancer gene validation results. Seven cervical cancer-associated genes were analyzed in epithelial cells to demonstrate framework generalizability. Regulatory roles were automatically classified based on network topology. Top therapeutic target candidates were identified through PageRank-based ranking of upstream regulators. Analysis execution time: 103 seconds for all 7 genes.
 
