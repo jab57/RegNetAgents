@@ -16,6 +16,7 @@
   - [S1.3 Clinical Medicine Agent](#s13-clinical-medicine-agent)
   - [S1.4 Systems Biology Agent](#s14-systems-biology-agent)
 - [Notes on Prompt Engineering](#notes-on-prompt-engineering)
+- [Table S2: Cervical Cancer Gene Validation](#table-s2-cervical-cancer-gene-validation)
 - [Reproducibility Notes](#reproducibility-notes)
 
 ---
@@ -196,6 +197,28 @@ Each analysis result includes an `llm_powered: true/false` flag for transparency
 
 **Temperature Selection:**
 Temperature = 0.3 balances determinism (reproducibility) with linguistic variety (natural rationale text). Lower temperatures (0.0-0.2) produced overly repetitive text; higher temperatures (0.5-1.0) increased inconsistency across runs.
+
+---
+
+## Table S2: Cervical Cancer Gene Validation
+
+To demonstrate framework generalizability beyond the colorectal cancer validation presented in the main manuscript, we analyzed 7 cervical cancer-associated genes with confirmed regulatory network coverage in epithelial cells (all genes with ≥5 regulators). This analysis serves as independent validation that the framework produces biologically meaningful results across different cancer contexts.
+
+All 7 genes were successfully analyzed using the same comprehensive workflow (network modeling, therapeutic target prioritization, pathway enrichment) in 103 seconds. The analysis recapitulated expected regulatory architectures: TP53 and MYC emerged as hub regulators with extensive downstream connectivity (163 and 427 targets respectively), while BRCA1, BRCA2, EGFR, and CCND1 exhibited heavily regulated profiles consistent with their roles as downstream effectors in oncogenic signaling cascades. Therapeutic target prioritization identified high-confidence regulatory candidates for each gene, including WWTR1 (TAZ) as the top-ranked TP53 regulator - consistent with documented Hippo pathway regulation of p53 activity.
+
+This cervical cancer validation demonstrates that RegNetAgents generates scientifically coherent results across cancer types, with regulatory network patterns aligning with established biological knowledge. The analysis required no modification to the framework or workflow, highlighting the system's generalizability for hypothesis generation across diverse disease contexts.
+
+| Gene | Regulatory Role | Regulators | Targets | Top Therapeutic Target | PageRank |
+|------|----------------|------------|---------|----------------------|----------|
+| TP53 | Hub Regulator | 7 | 163 | WWTR1 | 0.473 |
+| MYC | Hub Regulator | 25 | 427 | ID4 | 0.622 |
+| BRCA1 | Heavily Regulated | 23 | 0 | ZNF334 | 0.723 |
+| BRCA2 | Heavily Regulated | 20 | 0 | HMGB2 | 0.510 |
+| EGFR | Heavily Regulated | 37 | 0 | HMGB2 | 0.510 |
+| CCND1 | Heavily Regulated | 42 | 0 | ZBTB20 | 0.600 |
+| KRAS | Weakly Regulated | 7 | 0 | GPBP1 | 0.609 |
+
+**Table S2.** Cervical cancer gene validation results. Seven cervical cancer-associated genes were analyzed in epithelial cells to demonstrate framework generalizability. Regulatory roles were automatically classified based on network topology. Top therapeutic target candidates were identified through PageRank-based ranking of upstream regulators. Analysis execution time: 103 seconds for all 7 genes.
 
 ---
 
