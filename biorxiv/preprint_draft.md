@@ -127,7 +127,7 @@ High PageRank (>0.30) combined with hub regulator status (>200 targets) indicate
 
 Our therapeutic target prioritization makes several simplifying assumptions that warrant consideration:
 
-1. **Topology-based ranking**: Analysis ranks regulators based on network topology (connectivity, cascade overlap) rather than predicting quantitative gene expression changes. This approach identifies regulators for experimental validation but does not model dynamic regulatory responses or predict expression fold-changes.
+1. **Topology-based ranking**: Analysis ranks regulators based on network centrality metrics (PageRank, degree centrality) rather than predicting quantitative gene expression changes. This approach identifies regulators for experimental validation but does not model dynamic regulatory responses or predict expression fold-changes. Cascade overlap (shared downstream targets) is reported as supplementary information but does not contribute to ranking.
 
 2. **Additive regulatory effects**: The analysis assumes regulators contribute independently to target gene regulation (equal contribution = 1/num_regulators for each regulator). In reality, regulatory effects may be synergistic, antagonistic, or context-dependent. Combinatorial regulatory logic (e.g., AND/OR gates, feed-forward loops) is not explicitly modeled.
 
@@ -288,7 +288,7 @@ Traditional gene regulatory analysis requires manual querying of multiple databa
 
 RegNetAgents automates this entire workflow into a single natural language query ("Analyze TP53 in epithelial cells") via Claude Desktop. The multi-agent framework executes all steps in parallel: network modeling retrieves regulators/targets from pre-computed indices (<1ms), pathway enrichment queries Reactome API (0.3-0.5s), and four specialized LLM agents generate domain insights concurrently (cancer, drug, clinical, systems biology; 3-4s per agent in parallel). Total execution time: 0.6 seconds (rule-based mode) or ~15 seconds (LLM-powered mode), representing orders of magnitude speedup compared to manual workflows (Figure 4C).
 
-This acceleration enables exploratory analyses previously impractical due to time constraints. For example, analyzing a 5-gene biomarker panel with complete perturbation analysis (99 total regulators) requires 15.49 seconds (rule-based) or ~62 seconds (LLM-powered), versus an estimated 10-20 hours of manual effort (2-4 hours per gene × 5 genes). The framework transforms gene regulatory analysis from a multi-hour undertaking into an interactive, conversational experience accessible to experimental biologists without computational expertise.
+This acceleration enables exploratory analyses previously impractical due to time constraints. For example, analyzing a 5-gene biomarker panel with therapeutic target prioritization for all regulators (99 total regulators across 5 genes) requires 15.49 seconds (rule-based) or ~62 seconds (LLM-powered), versus an estimated 10-20 hours of manual effort (2-4 hours per gene × 5 genes). The framework transforms gene regulatory analysis from a multi-hour undertaking into an interactive, conversational experience accessible to experimental biologists without computational expertise.
 
 ### LLM-Powered Domain Analysis Adds Scientific Context
 
