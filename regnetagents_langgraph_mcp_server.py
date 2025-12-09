@@ -347,6 +347,59 @@ async def handle_list_tools() -> list[Tool]:
                 },
                 "required": ["gene"]
             }
+        ),
+        Tool(
+            name="load_gene_results",
+            description="""
+            Load previously saved analysis results for a gene.
+
+            Reads JSON result files from the results/ directory. Perfect for
+            post-analysis visualization, comparison, or exploration without
+            re-running the analysis.
+
+            Great for:
+            - Creating custom visualizations of existing results
+            - Comparing results across multiple genes
+            - Extracting specific data for further analysis
+            - Quick data exploration after batch analyses
+
+            Example: "Load the TP53 analysis results and show me the top 3 regulators"
+            """,
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "gene": {
+                        "type": "string",
+                        "description": "Gene symbol (e.g., TP53, BRCA1)"
+                    },
+                    "analysis_type": {
+                        "type": "string",
+                        "enum": ["comprehensive", "cervical", "biomarker"],
+                        "description": "Type of analysis results to load",
+                        "default": "comprehensive"
+                    }
+                },
+                "required": ["gene"]
+            }
+        ),
+        Tool(
+            name="list_available_results",
+            description="""
+            List all available analysis result files.
+
+            Shows what gene analyses have been saved in the results/ directory.
+            Useful for discovering what data is available for visualization or comparison.
+
+            Returns a list of genes with saved results and what types of analyses
+            are available for each gene.
+
+            Example: "What gene analyses do I have available?"
+            """,
+            inputSchema={
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
         )
     ]
 
@@ -520,6 +573,110 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             }
 
             return [TextContent(type="text", text=json.dumps(report, indent=2))]
+
+        elif name == "load_gene_results":
+            gene = arguments["gene"].upper()
+            analysis_type = arguments.get("analysis_type", "comprehensive")
+
+            logger.info(f"Loading results for {gene} ({analysis_type})")
+
+            # Build potential file paths
+            result_patterns = [
+                f"results/{gene.lower()}_analysis.json",
+                f"results/{gene.lower()}_detailed_report.json",
+                f"results/cervical_{gene.lower()}_analysis.json",
+                f"results/biomarker_results.json"
+            ]
+
+            # Try to find and load the result file
+            result_data = None
+            loaded_file = None
+
+            for file_path in result_patterns:
+                if os.path.exists(file_path):
+                    try:
+                        with open(file_path, 'r') as f:
+                            data = json.load(f)
+
+                            # Check if it's a multi-gene file (like biomarker_results.json)
+                            if isinstance(data, dict) and gene in data:
+                                result_data = data[gene]
+                                loaded_file = file_path
+                                break
+                            elif isinstance(data, dict):
+                                result_data = data
+                                loaded_file = file_path
+                                break
+                    except json.JSONDecodeError as e:
+                        logger.warning(f"Could not parse {file_path}: {e}")
+                        continue
+
+            if result_data:
+                response = {
+                    "gene": gene,
+                    "loaded_from": loaded_file,
+                    "analysis_type": analysis_type,
+                    "data": result_data
+                }
+                return [TextContent(type="text", text=json.dumps(response, indent=2))]
+            else:
+                error_response = {
+                    "error": f"No results found for {gene}",
+                    "searched_locations": result_patterns,
+                    "suggestion": f"Run comprehensive_gene_analysis for {gene} first, or check if the gene symbol is correct"
+                }
+                return [TextContent(type="text", text=json.dumps(error_response, indent=2))]
+
+        elif name == "list_available_results":
+            logger.info("Listing available analysis results")
+
+            results_dir = "results"
+            available_results = {}
+
+            if os.path.exists(results_dir):
+                for filename in os.listdir(results_dir):
+                    if filename.endswith('.json'):
+                        file_path = os.path.join(results_dir, filename)
+                        try:
+                            # Extract gene name from filename
+                            if filename.startswith('cervical_'):
+                                gene = filename.replace('cervical_', '').replace('_analysis.json', '').upper()
+                                analysis_type = 'cervical'
+                            elif filename.endswith('_detailed_report.json'):
+                                gene = filename.replace('_detailed_report.json', '').upper()
+                                analysis_type = 'detailed'
+                            elif filename.endswith('_analysis.json'):
+                                gene = filename.replace('_analysis.json', '').upper()
+                                analysis_type = 'comprehensive'
+                            elif filename == 'biomarker_results.json':
+                                # Special handling for multi-gene file
+                                with open(file_path, 'r') as f:
+                                    data = json.load(f)
+                                    for gene_key in data.keys():
+                                        if gene_key.isupper() and len(gene_key) < 10:  # Likely a gene symbol
+                                            if gene_key not in available_results:
+                                                available_results[gene_key] = []
+                                            available_results[gene_key].append('biomarker')
+                                continue
+                            else:
+                                continue
+
+                            if gene not in available_results:
+                                available_results[gene] = []
+                            available_results[gene].append(analysis_type)
+
+                        except Exception as e:
+                            logger.warning(f"Could not process {filename}: {e}")
+
+            response = {
+                "results_directory": results_dir,
+                "available_genes": list(available_results.keys()),
+                "total_genes": len(available_results),
+                "details": available_results,
+                "note": "Use load_gene_results to load specific gene data"
+            }
+
+            return [TextContent(type="text", text=json.dumps(response, indent=2))]
 
         else:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]
