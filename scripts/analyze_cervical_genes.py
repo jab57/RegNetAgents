@@ -62,7 +62,7 @@ async def main():
             continue
 
         network = result.get("network_analysis", {})
-        perturbation = result.get("perturbation_analysis", {})
+        perturbation = result.get("therapeutic_target_prioritization", {})
         pathways = result.get("pathway_enrichment", {})
 
         print(f"\n{gene}:")

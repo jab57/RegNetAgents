@@ -210,18 +210,19 @@ For multi-gene queries, the integration agent additionally generates comparative
 
 ### Model Context Protocol Integration
 
-The RegNetAgents workflow is exposed via a Model Context Protocol (MCP) server, enabling conversational access through Claude Desktop. The MCP server implements eight tools:
+The RegNetAgents workflow is exposed via a Model Context Protocol (MCP) server, enabling conversational access through Claude Desktop. The MCP server implements nine tools:
 
 1. **comprehensive_gene_analysis**: Full workflow execution (network + regulators + targets + target prioritization + pathways + domains)
 2. **multi_gene_analysis**: Parallel processing of multiple genes with comparative analysis
 3. **pathway_focused_analysis**: Pathway enrichment for user-specified gene lists
-4. **analyze_regulators**: Detailed upstream regulator analysis with target prioritization
-5. **analyze_targets**: Detailed downstream target analysis with cascade effects
-6. **cross_cell_comparison**: Regulatory role comparison across all 10 cell types
-7. **workflow_status**: Real-time execution monitoring
-8. **workflow_insights**: Performance analytics and routing decisions
+4. **cross_cell_comparison**: Regulatory role comparison across all 10 cell types
+5. **workflow_status**: Real-time execution monitoring
+6. **workflow_insights**: Performance analytics and routing decisions
+7. **create_analysis_report**: Generate formatted analysis summaries
+8. **load_gene_results**: Load previously saved analysis results
+9. **list_available_results**: Browse available gene analysis files
 
-Each MCP tool accepts structured parameters (gene symbols, cell types, analysis depth) and returns JSON-formatted results. The LangGraph workflow engine operates independently of the MCP layer, enabling the same analytical pipeline to be deployed via command-line interfaces, REST APIs, or computational notebooks.
+Each MCP tool accepts structured parameters (gene symbols, cell types, analysis depth) and returns JSON-formatted results. The LangGraph workflow engine operates independently of the MCP layer, enabling the same analytical pipeline to be deployed via command-line interfaces, REST APIs, or computational notebooks. Claude Desktop can additionally access visualization templates via code execution for creating custom plots and comparative analyses.
 
 ### Implementation Details
 
@@ -268,6 +269,8 @@ RegNetAgents achieves second-scale execution times for gene regulatory network a
 **LLM-powered mode** adds specialized domain analysis with scientific rationales from four domain agents (cancer biology, drug discovery, clinical relevance, systems biology). Single gene comprehensive analysis with LLM insights averages ~15 seconds. Five-gene comprehensive analysis with parallel LLM execution completes in ~62 seconds, providing AI-generated rationales for all genes simultaneously. Cross-cell-type comparison of TP53 across all 10 cell types remains instant (<0.01 seconds) in both modes, leveraging pre-computed network indices.
 
 Performance breakdown: Network lookups are near-instantaneous (<1 ms), Reactome API calls take 0.3-1.5 seconds, and local LLM inference (Ollama/llama3.1:8b) adds overhead for domain agent analysis. PageRank pre-computation enables instant regulator ranking.
+
+<div style="page-break-before: always"></div>
 
 **Table 1. Performance Benchmarks**
 
@@ -436,6 +439,8 @@ RegNetAgents advances the field through four key innovations:
 ### Performance Benchmarking Against Manual Workflows
 
 To contextualize the efficiency gains, we compared RegNetAgents to representative manual workflows researchers currently perform. **Table 4** presents estimated time requirements for typical analysis tasks.
+
+<div style="page-break-before: always"></div>
 
 **Table 4. Performance Comparison: Automated vs Manual Workflows**
 
@@ -614,6 +619,8 @@ The authors declare no competing interests.
 
 ---
 
+<div style="page-break-before: always"></div>
+
 ## FIGURE LEGENDS
 
 **Figure 1. RegNetAgents Multi-Agent Architecture.**
@@ -643,6 +650,8 @@ Raw analysis outputs (JSON format) for the case study analyses presented in this
 
 ---
 
+<div style="page-break-before: always"></div>
+
 ## CODE AVAILABILITY
 
 The RegNetAgents software implementation is publicly available at https://github.com/jab57/RegNetAgents under the MIT License.
@@ -653,28 +662,35 @@ Installation requires Python 3.8+ and takes approximately 5-10 minutes. Network 
 **Example JSON Output:** The framework returns structured JSON responses. Example for TP53 analysis (abbreviated):
 ```json
 {
-  "gene_symbol": "TP53",
-  "cell_type": "epithelial",
+  "gene_analysis_summary": {
+    "gene": "TP53",
+    "cell_type": "epithelial_cell",
+    "regulatory_role": "hub_regulator"
+  },
   "network_analysis": {
     "num_regulators": 7,
     "num_targets": 163,
-    "regulatory_role": "Hub Regulator"
+    "regulatory_role": "hub_regulator"
   },
   "therapeutic_target_prioritization": {
-    "regulators": [
-      {"gene": "WWTR1", "pagerank": 0.473, "out_degree_centrality": 0.020, "targets": 293},
-      {"gene": "RBPMS", "pagerank": 0.469, "out_degree_centrality": 0.028, "targets": 403}
+    "perturbation_results": [
+      {
+        "regulator": "WWTR1",
+        "regulator_downstream_targets": 293,
+        "centrality_metrics": {"pagerank": 0.4734}
+      }
     ]
   },
-  "pathway_enrichment": [
-    {"pathway": "TP53 Regulation", "fdr": 0.001, "entities_found": 12}
-  ]
+  "pathway_enrichment": {
+    "enriched_pathways": [
+      {
+        "pathway_name": "Regulation of TP53 Expression",
+        "fdr": 0.0033,
+        "genes_found": 2
+      }
+    ]
+  }
 }
 ```
 
 **Data and License Information:** Network data are publicly available through the GREmLIN Quickstart Tutorial (https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart, provided by the GREmLIN team under CC0 public domain dedication). Underlying single-cell RNA-seq data originate from CELLxGENE Data Portal (CC-BY-4.0 and CC0 licenses depending on dataset). Reactome pathway annotations are freely available via the Reactome API (https://reactome.org/AnalysisService/, Creative Commons Attribution 4.0 International License). All dependencies (NetworkX, LangGraph, pandas) are open-source with permissive licenses (BSD-3-Clause for NetworkX, MIT for LangGraph).
-Network data used in this study are publicly available through the GREmLN Quickstart Tutorial (https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart). Pathway enrichment was performed using the publicly accessible Reactome API (https://reactome.org/AnalysisService/).
-
----
-
-**END OF MANUSCRIPT**

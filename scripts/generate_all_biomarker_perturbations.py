@@ -31,7 +31,7 @@ async def analyze_gene_perturbations(gene, cell_type='epithelial_cell'):
             return None
 
         # Extract perturbation results
-        perturbation_results = result.get('perturbation_analysis')
+        perturbation_results = result.get('therapeutic_target_prioritization')
 
         if perturbation_results:
             num_regulators = len(perturbation_results.get('perturbation_results', []))

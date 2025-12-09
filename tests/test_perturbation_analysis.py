@@ -8,7 +8,7 @@ import asyncio
 import json
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 
-async def test_perturbation_analysis():
+async def test_therapeutic_target_prioritization():
     """Test perturbation analysis with TP53"""
     print("=" * 80)
     print("Testing Perturbation Analysis Feature")
@@ -26,7 +26,7 @@ async def test_perturbation_analysis():
     )
 
     # Extract perturbation analysis
-    perturbation = result.get('perturbation_analysis', {})
+    perturbation = result.get('therapeutic_target_prioritization', {})
 
     if perturbation and perturbation.get('status') != 'skipped':
         print("\n[SUCCESS] Perturbation analysis completed successfully!")
@@ -87,4 +87,4 @@ async def test_perturbation_analysis():
     print("=" * 80)
 
 if __name__ == "__main__":
-    asyncio.run(test_perturbation_analysis())
+    asyncio.run(test_therapeutic_target_prioritization())

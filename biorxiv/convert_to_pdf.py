@@ -26,6 +26,28 @@ def convert_to_docx():
     # Create Word document
     doc = Document()
 
+    # Add page numbers to footer
+    section = doc.sections[0]
+    footer = section.footer
+    footer_para = footer.paragraphs[0]
+    footer_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Add page number field
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+
+    run = footer_para.add_run()
+    fldChar1 = OxmlElement('w:fldChar')
+    fldChar1.set(qn('w:fldCharType'), 'begin')
+    instrText = OxmlElement('w:instrText')
+    instrText.set(qn('xml:space'), 'preserve')
+    instrText.text = "PAGE"
+    fldChar2 = OxmlElement('w:fldChar')
+    fldChar2.set(qn('w:fldCharType'), 'end')
+    run._r.append(fldChar1)
+    run._r.append(instrText)
+    run._r.append(fldChar2)
+
     # Parse markdown line by line
     lines = content.split('\n')
     i = 0
@@ -36,6 +58,27 @@ def convert_to_docx():
         # Skip empty lines and separators
         if not line or line == '---':
             i += 1
+            continue
+
+        # Handle code blocks (convert to indented monospace text)
+        if line.startswith('```'):
+            i += 1  # Skip opening ```
+            code_lines = []
+            # Collect code block content
+            while i < len(lines) and not lines[i].strip().startswith('```'):
+                code_lines.append(lines[i])
+                i += 1
+            if i < len(lines):
+                i += 1  # Skip closing ```
+
+            # Add code block as indented paragraph with monospace font
+            if code_lines:
+                code_text = '\n'.join(code_lines)
+                p = doc.add_paragraph(code_text)
+                p.paragraph_format.left_indent = Inches(0.5)
+                for run in p.runs:
+                    run.font.name = 'Courier New'
+                    run.font.size = Pt(9)
             continue
 
         # Handle HTML page break directive

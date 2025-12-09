@@ -332,7 +332,7 @@ class GeneAnalysisState(TypedDict):
     gene_info: Optional[Dict]
     regulators_analysis: Optional[Dict]
     targets_analysis: Optional[Dict]
-    perturbation_analysis: Optional[Dict]
+    therapeutic_target_prioritization: Optional[Dict]
     pathway_analysis: Optional[Dict]
     cross_cell_analysis: Optional[Dict]
 
@@ -376,7 +376,7 @@ def _route_next_action(state):
 
     # Perturbation analysis (candidate regulator prioritization)
     if 'regulators_analysis' in completed_steps \
-       and 'perturbation_analysis' not in completed_steps \
+       and 'therapeutic_target_prioritization' not in completed_steps \
        and num_regulators > 5:
         return "perturbations"  # Simulate regulator inhibition for drug targeting
 

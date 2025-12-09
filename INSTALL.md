@@ -250,7 +250,7 @@ python regnetagents_langgraph_mcp_server.py
 **Expected output:**
 ```
 MCP server initialized
-Registered tools: ['query_gene_network', 'perturbation_analysis', ...]
+Registered tools: ['query_gene_network', 'therapeutic_target_prioritization', ...]
 Server running on stdio...
 ```
 

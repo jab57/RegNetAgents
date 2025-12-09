@@ -1388,7 +1388,7 @@ class GeneAnalysisState(TypedDict):
     targets_analysis: Optional[Dict]
     pathway_analysis: Optional[Dict]
     cross_cell_analysis: Optional[Dict]
-    perturbation_analysis: Optional[Dict]
+    therapeutic_target_prioritization: Optional[Dict]
 
     # Domain-specific analysis results
     cancer_analysis: Optional[Dict]
@@ -1661,7 +1661,7 @@ class RegNetAgentsWorkflow:
 
         # Perturbation analysis after regulators (therapeutic potential)
         if ('regulators_analysis' in completed_steps
-            and 'perturbation_analysis' not in completed_steps
+            and 'therapeutic_target_prioritization' not in completed_steps
             and num_regulators > 5):  # Only for genes with meaningful regulators
             logger.info(f"Routing to perturbation analysis ({num_regulators} regulators to test)")
             return "perturbations"
@@ -2039,14 +2039,14 @@ class RegNetAgentsWorkflow:
         logger.info(f"Analyzing perturbation effects for {state['gene']}")
 
         try:
-            state['current_step'] = 'perturbation_analysis'
+            state['current_step'] = 'therapeutic_target_prioritization'
 
             cell_type = CellType(state['cell_type'])
             regulators_analysis = state.get('regulators_analysis', {})
 
             if not regulators_analysis:
                 logger.warning("No regulators analysis available for perturbation")
-                state['perturbation_analysis'] = {
+                state['therapeutic_target_prioritization'] = {
                     "status": "skipped",
                     "reason": "No regulators to perturb"
                 }
@@ -2059,17 +2059,17 @@ class RegNetAgentsWorkflow:
                     max_regulators=100
                 )
 
-                state['perturbation_analysis'] = result
+                state['therapeutic_target_prioritization'] = result
                 top_target = result.get('perturbation_results', [{}])[0].get('regulator', 'N/A') if result.get('perturbation_results') else 'N/A'
                 logger.info(f"Perturbation analysis complete. Top therapeutic target: {top_target}")
 
-            state['analysis_metadata']['steps_completed'].append('perturbation_analysis')
+            state['analysis_metadata']['steps_completed'].append('therapeutic_target_prioritization')
             return state
 
         except Exception as e:
             logger.warning(f"Perturbation analysis failed (optional): {str(e)}")
-            state['perturbation_analysis'] = {"error": str(e), "analysis_skipped": True}
-            state['analysis_metadata']['steps_completed'].append('perturbation_analysis')
+            state['therapeutic_target_prioritization'] = {"error": str(e), "analysis_skipped": True}
+            state['analysis_metadata']['steps_completed'].append('therapeutic_target_prioritization')
             return state
 
     async def _analyze_cancer_domain(self, state: GeneAnalysisState) -> GeneAnalysisState:
@@ -2205,7 +2205,7 @@ class RegNetAgentsWorkflow:
                 "regulatory_analysis": state.get('regulators_analysis'),
                 "target_analysis": state.get('targets_analysis'),
                 "pathway_enrichment": state.get('pathway_analysis'),
-                "perturbation_analysis": state.get('perturbation_analysis'),
+                "therapeutic_target_prioritization": state.get('therapeutic_target_prioritization'),
                 "cross_cell_comparison": state.get('cross_cell_analysis'),
                 "similarity_analysis": state.get('similarity_analysis'),
                 "domain_analysis": {
@@ -2318,7 +2318,7 @@ class RegNetAgentsWorkflow:
             regulators_analysis=None,
             targets_analysis=None,
             pathway_analysis=None,
-            perturbation_analysis=None,
+            therapeutic_target_prioritization=None,
             cross_cell_analysis=None,
             cancer_analysis=None,
             drug_analysis=None,

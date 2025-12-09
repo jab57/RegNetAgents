@@ -136,7 +136,7 @@ async def main():
         drug_info = domain_analysis.get("drug_analysis", {})
         systems_info = domain_analysis.get("systems_analysis", {})
         pathway_info = result.get("pathway_enrichment", {})
-        perturbation_data = result.get("perturbation_analysis", {})
+        perturbation_data = result.get("therapeutic_target_prioritization", {})
 
         print(f"\n{gene}:")
         print(f"  Regulatory Role: {network.get('regulatory_role', 'unknown')}")

@@ -38,11 +38,11 @@ def load_gene_results(gene: str, results_dir: str = "results") -> Dict:
     """
     gene_lower = gene.lower()
 
-    # Try different file patterns
+    # Try different file patterns (prioritize cervical files)
     patterns = [
+        f"{results_dir}/cervical_{gene_lower}_analysis.json",
         f"{results_dir}/{gene_lower}_analysis.json",
-        f"{results_dir}/{gene_lower}_detailed_report.json",
-        f"{results_dir}/cervical_{gene_lower}_analysis.json"
+        f"{results_dir}/{gene_lower}_detailed_report.json"
     ]
 
     for file_path in patterns:
@@ -80,8 +80,8 @@ def plot_regulator_rankings(
     data = load_gene_results(gene, results_dir)
 
     # Extract regulator data
-    if 'perturbation_analysis' in data:
-        regulators = data['perturbation_analysis'].get('regulators', [])
+    if 'therapeutic_target_prioritization' in data:
+        regulators = data['therapeutic_target_prioritization'].get('regulators', [])
     elif 'network_analysis' in data and 'regulators' in data['network_analysis']:
         regulators = data['network_analysis']['regulators']
     else:
@@ -364,9 +364,9 @@ def plot_network_overview(
     # 3. Top Regulators (bottom, spans both columns)
     ax3 = fig.add_subplot(gs[1, :])
 
-    if 'perturbation_analysis' in data or 'network_analysis' in data:
-        if 'perturbation_analysis' in data:
-            regulators = data['perturbation_analysis'].get('regulators', [])
+    if 'therapeutic_target_prioritization' in data or 'network_analysis' in data:
+        if 'therapeutic_target_prioritization' in data:
+            regulators = data['therapeutic_target_prioritization'].get('regulators', [])
         else:
             regulators = data['network_analysis'].get('regulators', [])
 
