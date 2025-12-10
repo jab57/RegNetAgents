@@ -6,8 +6,6 @@
 
 **Affiliation:** Bird AI Solutions
 
----
-
 ## Table of Contents
 
 - [Table S1: Domain Agent LLM Prompt Templates](#table-s1-domain-agent-llm-prompt-templates)
@@ -18,8 +16,6 @@
 - [Notes on Prompt Engineering](#notes-on-prompt-engineering)
 - [Table S2: Cervical Cancer Gene Validation](#table-s2-cervical-cancer-gene-validation)
 - [Reproducibility Notes](#reproducibility-notes)
-
----
 
 ## Table S1: Domain Agent LLM Prompt Templates
 
@@ -39,8 +35,6 @@ RegNetAgents employs four specialized domain agents that use structured LLM prom
 - `{regulator_count}`, `{target_count}`: Cascade analysis results
 - `{tissue_context}`: Cross-cell-type activity
 - `{pagerank}`: PageRank centrality score
-
----
 
 ### S1.1 Cancer Biology Agent
 
@@ -76,7 +70,7 @@ RegNetAgents employs four specialized domain agents that use structured LLM prom
 
 *{ "oncogenic_potential": "high", "oncogenic_rationale": "TP53 acts as a hub regulator with 163 downstream targets, indicating strong regulatory influence characteristic of oncogenes when dysregulated.", "tumor_suppressor_likelihood": "high", "tumor_suppressor_rationale": "Heavily regulated by 7 upstream factors, consistent with checkpoint function.", "therapeutic_target_score": 0.8, "llm_powered": true }*
 
----
+<div style="page-break-before: always"></div>
 
 ### S1.2 Drug Development Agent
 
@@ -107,8 +101,6 @@ RegNetAgents employs four specialized domain agents that use structured LLM prom
 
 *Provide only the JSON, no additional text.*
 
----
-
 ### S1.3 Clinical Medicine Agent
 
 **System Prompt:**
@@ -137,8 +129,6 @@ RegNetAgents employs four specialized domain agents that use structured LLM prom
 
 *Provide only the JSON, no additional text.*
 
----
-
 ### S1.4 Systems Biology Agent
 
 **System Prompt:**
@@ -156,6 +146,8 @@ RegNetAgents employs four specialized domain agents that use structured LLM prom
 - *PageRank Centrality: {pagerank}*
 - *Total Network Degree: {num_regulators + num_targets}*
 
+<div style="page-break-before: always"></div>
+
 *Provide a systems biology analysis in this EXACT JSON format:*
 
 *{ "network_centrality": 0.0-1.0, "centrality_rationale": "brief explanation of network position", "regulatory_hierarchy": "master|hub|intermediate|peripheral", "hierarchy_rationale": "brief explanation of hierarchical position", "information_flow": "high|moderate|low", "flow_rationale": "brief explanation of information processing", "network_vulnerability": "critical|important|moderate|minimal", "vulnerability_rationale": "brief explanation of network impact", "perturbation_impact": "system-wide|modular|localized|minimal", "perturbation_rationale": "brief explanation of knockout/perturbation effects", "evolutionary_conservation": "high|moderate|low", "conservation_rationale": "brief inference about evolutionary importance", "summary": "1-2 sentence systems biology summary" }*
@@ -168,8 +160,6 @@ RegNetAgents employs four specialized domain agents that use structured LLM prom
 - *Evolutionary conservation inferred from network position*
 
 *Provide only the JSON, no additional text.*
-
----
 
 ## Notes on Prompt Engineering
 
@@ -198,8 +188,6 @@ Each analysis result includes an `llm_powered: true/false` flag for transparency
 **Temperature Selection:**
 Temperature = 0.3 balances determinism (reproducibility) with linguistic variety (natural rationale text). Lower temperatures (0.0-0.2) produced overly repetitive text; higher temperatures (0.5-1.0) increased inconsistency across runs.
 
----
-
 ## Table S2: Cervical Cancer Gene Validation
 
 To demonstrate framework generalizability beyond the colorectal cancer validation presented in the main manuscript, we analyzed 7 cervical cancer-associated genes with confirmed regulatory network coverage in epithelial cells (all genes with ≥5 regulators). This analysis serves as independent validation that the framework produces biologically meaningful results across different cancer contexts.
@@ -207,6 +195,10 @@ To demonstrate framework generalizability beyond the colorectal cancer validatio
 All 7 genes were successfully analyzed using the same comprehensive workflow (network modeling, therapeutic target prioritization, pathway enrichment) in 103 seconds. The analysis recapitulated expected regulatory architectures: TP53 and MYC emerged as hub regulators with extensive downstream connectivity (163 and 427 targets respectively), while BRCA1, BRCA2, EGFR, and CCND1 exhibited heavily regulated profiles consistent with their roles as downstream effectors in oncogenic signaling cascades. Therapeutic target prioritization identified high-confidence regulatory candidates for each gene, including WWTR1 (TAZ) as the top-ranked TP53 regulator - consistent with documented Hippo pathway regulation of p53 activity. LLM-powered domain analysis correctly classified TP53 and MYC as tumor suppressors with high therapeutic potential, while BRCA1/BRCA2 were identified as high-priority targets for DNA repair pathway intervention, consistent with established cancer biology. Pathway enrichment analysis further validated these findings: WWTR1 (TAZ) appears in TP53's most significantly enriched pathways (YAP1/WWTR1-stimulated gene expression, Hippo signaling), while BRCA1/BRCA2 showed enrichment for TP53-mediated DNA repair pathways, confirming the mechanistic coherence of the regulatory network predictions.
 
 This cervical cancer validation demonstrates that RegNetAgents generates scientifically coherent results across cancer types, with regulatory network patterns aligning with established biological knowledge. The analysis required no modification to the framework or workflow, highlighting the system's generalizability for hypothesis generation across diverse disease contexts.
+
+<div style="page-break-before: always"></div>
+
+**Table S2. Cervical Cancer Gene Validation Results**
 
 | Gene | Regulatory Role | Targets | Regulators | Top Candidate Regulator (PageRank) |
 |------|----------------|---------|------------|-----------------------------------|
@@ -218,9 +210,7 @@ This cervical cancer validation demonstrates that RegNetAgents generates scienti
 | CCND1 | Heavily Regulated | 0 | 42 | ZBTB20 (0.600) |
 | KRAS | Weakly Regulated | 0 | 7 | GPBP1 (0.609) |
 
-**Table S2.** Cervical cancer gene validation results. Seven cervical cancer-associated genes were analyzed in epithelial cells to demonstrate framework generalizability. Regulatory roles were automatically classified based on network topology. Top therapeutic target candidates were identified through PageRank-based ranking of upstream regulators. Analysis execution time: 103 seconds for all 7 genes.
-
----
+*Seven cervical cancer-associated genes were analyzed in epithelial cells to demonstrate framework generalizability. Regulatory roles were automatically classified based on network topology. Top therapeutic target candidates were identified through PageRank-based ranking of upstream regulators. Analysis execution time: 103 seconds for all 7 genes.*
 
 ## Reproducibility Notes
 
@@ -236,11 +226,7 @@ This cervical cancer validation demonstrates that RegNetAgents generates scienti
 4. Run analysis via MCP server or Python API
 
 **LLM output variability:**
-Due to temperature-based sampling, exact wording of rationales will vary across runs. However, core classifications (high/moderate/low, diagnostic/prognostic) remain consistent. For deterministic analysis, use rule-based mode (`USE_LLM_AGENTS=false`).
-
-**Network metrics (PageRank, degree centrality) are deterministic** and fully reproducible across all runs.
-
----
+Due to temperature-based sampling, exact wording of rationales will vary across runs. However, core classifications (high/moderate/low, diagnostic/prognostic) remain consistent. For deterministic analysis, use rule-based mode (`USE_LLM_AGENTS=false`). **Network metrics (PageRank, degree centrality) are deterministic** and fully reproducible across all runs.
 
 **Code Availability:**
 Complete implementation available at: https://github.com/jab57/RegNetAgents
