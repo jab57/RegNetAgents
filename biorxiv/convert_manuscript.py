@@ -29,6 +29,39 @@ def set_keep_together(paragraph):
     keepLines = OxmlElement('w:keepLines')
     pPr.append(keepLines)
 
+def add_page_numbers(doc):
+    """Add page numbers to the footer of all sections"""
+    for section in doc.sections:
+        footer = section.footer
+        # Clear existing footer content
+        footer.paragraphs[0].text = ""
+
+        # Add centered paragraph for page number
+        paragraph = footer.paragraphs[0]
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        # Add page number field
+        run = paragraph.add_run()
+
+        # Create the page number field code
+        fldChar1 = OxmlElement('w:fldChar')
+        fldChar1.set(qn('w:fldCharType'), 'begin')
+
+        instrText = OxmlElement('w:instrText')
+        instrText.set(qn('xml:space'), 'preserve')
+        instrText.text = "PAGE"
+
+        fldChar2 = OxmlElement('w:fldChar')
+        fldChar2.set(qn('w:fldCharType'), 'end')
+
+        # Add field elements to run
+        run._r.append(fldChar1)
+        run._r.append(instrText)
+        run._r.append(fldChar2)
+
+        # Format the page number
+        run.font.size = Pt(10)
+
 def convert_markdown_to_docx(md_file, docx_file):
     """Convert markdown file to formatted DOCX"""
 
@@ -179,6 +212,9 @@ def convert_markdown_to_docx(md_file, docx_file):
             else:
                 if not in_table:
                     doc.add_paragraph()
+
+    # Add page numbers to footer
+    add_page_numbers(doc)
 
     # Save document
     doc.save(docx_file)
