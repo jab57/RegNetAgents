@@ -17,7 +17,7 @@ Gene regulatory network analysis is essential for understanding disease mechanis
 
 Built on ARACNe networks from 500,000+ single cells across 10 cell types, the framework deploys four specialized agents in parallel with rule-based fallback. Therapeutic target prioritization ranks candidates using network centrality metrics (PageRank, degree centrality).
 
-In a five-gene colorectal cancer case study (MYC, CTNNB1, CCND1, TP53, KRAS), the framework characterized regulatory architectures (hub regulators vs. heavily regulated genes) that align with known biological roles. For TP53, top-ranked network neighbors included literature-supported interactors (WWTR1, YAP1, CHD4) based on topology, while additional high-ranking candidates (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses for experimental validation.
+In a five-gene colorectal cancer case study (MYC, CTNNB1, CCND1, TP53, KRAS), the framework characterized regulatory architectures (hub regulators vs. heavily regulated genes) that align with known biological roles. For TP53, top-ranked upstream regulators included literature-supported interactors (WWTR1, YAP1, CHD4) identified by network topology, while additional high-ranking candidates (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses for experimental validation.
 
 Analysis of 99 regulators across 5 genes completed in 15-62 seconds (vs. 2-4 hours manual workflows), representing orders of magnitude speedup. This five-gene demonstration establishes proof-of-concept for recapitulating literature-confirmed patterns and generating testable hypotheses. RegNetAgents transforms labor-intensive analysis into second-scale automated workflows accessible to experimental biologists.
 
