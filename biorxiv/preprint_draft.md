@@ -37,9 +37,9 @@ These workflow bottlenecks—manual integration, limited scalability, and access
 
 ### Regulatory Network Data Sources
 
-Cell-type-specific regulatory networks were obtained as pre-computed ARACNe networks prepared and released by the GREmLN team (14). GREmLN (Gene Regulatory Embedding-based Large Neural model) is a foundation model that embeds gene regulatory network structure directly within its attention mechanism, trained on 11 million scRNA-seq profiles across 162 cell types. The GREmLN team processed single-cell RNA-seq data from the CELLxGENE Data Portal (15) using the ARACNe (Algorithm for the Reconstruction of Accurate Cellular Networks) algorithm (16,17) and publicly released these pre-computed networks. Our RegNetAgents framework leverages the GREmLN team's pre-computed ARACNe networks as input data for multi-agent analysis; we do not use the GREmLN foundation model itself.
+Cell-type-specific regulatory networks were obtained as pre-computed ARACNe networks prepared and released by the GREmLN team (14). GREmLN (Gene Regulatory Embedding-based Large Neural model) is a foundation model that embeds gene regulatory network structure directly within its attention mechanism, trained on 11 million scRNA-seq profiles across 162 cell types. The GREmLN team processed single-cell RNA-seq data from the CELLxGENE Data Portal (15) using the ARACNe (Algorithm for the Reconstruction of Accurate Cellular Networks) algorithm (16,17) and publicly released these pre-computed networks. RegNetAgents leverages the GREmLN team's pre-computed ARACNe networks as input data for multi-agent analysis, but does not employ the GREmLN foundation model for prediction or inference tasks.
 
-**ARACNe Network Inference**: ARACNe-AP (Adaptive Partitioning) uses mutual information to identify direct regulatory interactions while eliminating indirect associations through data processing inequality. The algorithm computes pairwise mutual information scores between genes, applies statistical significance testing (p-value threshold: 1e-8), and removes indirect edges using DPI to produce high-confidence transcription factor-target relationships. Networks were generated from metacell-aggregated expression matrices (5 cells per metacell) using the top 1,024 highly variable genes per cell type. The resulting networks are provided as tab-separated value files with columns for regulator gene ID, target gene ID, mutual information score, Spearman correlation coefficient, bootstrap count, and log-transformed p-values.
+**ARACNe Network Inference**: ARACNe-AP (Adaptive Partitioning) uses mutual information to identify direct regulatory interactions while eliminating indirect associations through data processing inequality (DPI). The algorithm computes pairwise mutual information scores between genes, applies statistical significance testing (p-value threshold: 1e-8), and removes indirect edges using DPI to produce high-confidence transcription factor-target relationships. Networks were generated from metacell-aggregated expression matrices (5 cells per metacell) using the top 1,024 highly variable genes per cell type. The resulting networks are provided as tab-separated value files with columns for regulator gene ID, target gene ID, mutual information score, Spearman correlation coefficient, bootstrap count, and log-transformed p-values.
 
 **Network Processing**: We obtained pre-computed ARACNe networks (network.tsv format) from the GREmLN Quickstart Tutorial and converted them to optimized NetworkX-compatible pickle caches (network_index.pkl) for subsecond loading. We utilized 10 cell types spanning immune cells (CD14 monocytes, CD16 monocytes, CD20 B cells, CD4 T cells, CD8 T cells, NK cells, NKT cells, monocyte-derived dendritic cells), blood cells (erythrocytes), and epithelial tissue, representing over 500,000 single cells with networks containing up to 183,247 regulatory edges for epithelial cells.
 
@@ -86,13 +86,15 @@ Regulatory roles are assigned algorithmically based on network topology:
 - **Hub regulator**: >20 downstream targets (high regulatory influence)
 - **Heavily regulated**: >15 upstream regulators and ≤20 targets (complex regulatory control)
 - **Intermediate node**: >5 targets AND >5 regulators (balanced regulatory role)
-- **Regulator**: >0 targets but ≤5 regulators (modest regulatory activity)
+- **Regulator**: 1-20 targets not meeting hub or intermediate criteria (modest regulatory activity)
 - **Weakly regulated**: 0 targets and ≤15 regulators (simple endpoint)
 
 These exploratory thresholds prioritize hub status over heavily-regulated status when genes meet both criteria, ensuring genes with extensive downstream influence are classified as hubs regardless of their input complexity. Network position metrics include in-degree (number of regulators), out-degree (number of targets), and regulatory role classification.
 
 #### Therapeutic Target Prioritization Agent
 For genes with five or more upstream regulators, we perform automated therapeutic target prioritization to identify potential drug targets. This analysis ranks upstream regulators using network centrality metrics computed from network topology.
+
+<div style="page-break-before: always"></div>
 
 **Network Centrality Metrics for Therapeutic Target Ranking:**
 We calculate three core centrality measures for each regulator R using NetworkX (20) implementations:
@@ -112,8 +114,6 @@ PR(R) = (1-α)/N + α × Σ[PR(v) / L(v)] for all v in M(R)
 
 Where M(R) is the set of nodes with edges pointing to R, L(v) is the out-degree of node v (number of outbound edges), α = 0.85 is the damping factor, and N is the total number of nodes in the network. **Directionality**: In our regulatory networks, edges represent regulator → target relationships inferred by ARACNe. For a given target gene, M(R) comprises its upstream regulators—genes with regulatory edges directed toward R. PageRank then measures each regulator's importance by considering not only direct connectivity but also the PageRank scores of nodes that point to that regulator, capturing influence propagation through the regulatory hierarchy. PageRank values are normalized by dividing by the maximum PageRank in the network to ensure cross-network interpretability (range: 0-1). This is Google's algorithm adapted for biological networks, measuring connection quality rather than quantity (21).
 
-<div style="page-break-before: always"></div>
-
 **Ranking and Interpretation:**
 Regulators are ranked by PageRank (primary), as this metric was identified as the best predictor of successful drug targets in protein interaction networks (22). We also provide alternative rankings by out-degree centrality for comparison. PageRank differentiates therapeutic potential even when regulators contribute equally to target gene regulation. According to Mora & Donaldson (2021), approved drug targets show significantly higher PageRank and degree centrality compared to non-targets (22).
 
@@ -124,7 +124,7 @@ For each regulator, we report:
 - Top 5 affected cascades (genes regulated by both the inhibited regulator and the target gene)
 
 **Therapeutic Interpretation:**
-High PageRank (>0.30, exploratory threshold) combined with hub regulator status (>200 targets) indicates strong therapeutic potential but requires consideration of potential off-target effects. All regulators of a given target gene contribute equally to direct regulatory input (1/num_regulators), so centrality metrics differentiate therapeutic potential based on network position and influence.
+High PageRank (>0.30, exploratory threshold) combined with hub regulator status (>200 targets) indicates strong therapeutic potential but requires consideration of potential off-target effects. Assuming equal direct regulatory input, each of N regulators would contribute 1/N to target gene regulation; centrality metrics (PageRank, degree centrality) differentiate therapeutic potential by weighting regulators based on network position and influence beyond this baseline assumption.
 
 **Therapeutic Target Prioritization Limitations:**
 
@@ -132,7 +132,7 @@ Our therapeutic target prioritization makes several simplifying assumptions that
 
 1. **Topology-based ranking**: Analysis ranks regulators based on network centrality metrics (PageRank, degree centrality) rather than predicting quantitative gene expression changes. This approach identifies regulators for experimental validation but does not model dynamic regulatory responses or predict expression fold-changes. Cascade overlap (shared downstream targets) is reported as supplementary information but does not contribute to ranking.
 
-2. **Additive regulatory effects**: The analysis assumes regulators contribute independently to target gene regulation (equal contribution = 1/num_regulators for each regulator). In reality, regulatory effects may be synergistic, antagonistic, or context-dependent. Combinatorial regulatory logic (e.g., AND/OR gates, feed-forward loops) is not explicitly modeled.
+2. **Additive regulatory effects**: The analysis assumes regulators contribute independently to target gene regulation (equal contribution = `1/num_regulators` for each regulator). In reality, regulatory effects may be synergistic, antagonistic, or context-dependent. Combinatorial regulatory logic (e.g., AND/OR gates, feed-forward loops) is not explicitly modeled.
 
 3. **Chromatin context**: ARACNe networks capture steady-state correlation patterns but do not incorporate chromatin accessibility, histone modifications, or DNA methylation states. Regulatory potential predicted from network topology may differ from regulatory activity in specific chromatin contexts or differentiation states.
 
@@ -143,7 +143,7 @@ Despite these limitations, topology-based therapeutic target prioritization can 
 <div style="page-break-before: always"></div>
 
 #### Pathway Enrichment Agent
-The pathway agent constructs a gene set consisting of the query gene, all upstream regulators, and a sample of downstream targets (up to 50 genes to optimize API performance). This gene set is submitted to Reactome's over-representation analysis endpoint, which performs hypergeometric tests against all curated pathways in the database.
+The pathway agent constructs a gene set consisting of the query gene, its top 10 upstream regulators (ranked by network centrality), and its top 10 downstream targets (approximately 21 genes total). This focused gene set is submitted to Reactome's over-representation analysis endpoint, which performs hypergeometric tests against all curated pathways in the database.
 
 Reactome returns enriched pathways ranked by statistical significance, including:
 - Pathway ID and name
@@ -170,7 +170,6 @@ Complete prompt templates for all four domain agents are provided in **Supplemen
 Agents return JSON-structured insights with:
 - Domain-specific classifications (e.g., oncogenic potential: high/moderate/low, intervention strategy: inhibition/activation)
 - Scientific rationales explaining each classification
-- Network topology metrics (PageRank, degree centrality)
 - 1-2 sentence summaries for integration
 
 LLM prompts request specific JSON formats with predefined keys. Response parsing includes validation, missing key detection with placeholder insertion, and classification verification. Retry logic (2 attempts) handles transient failures.
@@ -190,7 +189,7 @@ If LLM is unavailable or fails, agents automatically switch to fast deterministi
 
 **Rule-Based Mode** uses fixed network topology thresholds (applies ONLY to rule-based mode, NOT LLM mode): **Cancer Biology Agent:** Oncogenic potential (>20 targets = high, >5 = moderate, ≤5 = low), tumor suppressor likelihood (>15 regulators = high, >5 = moderate, ≤5 = low). **Drug Development Agent:** Intervention strategy (>15 targets = inhibition candidate, >10 regulators = activation candidate), development complexity (>20 targets = high off-target risk, >5 = moderate, ≤5 = low). **Clinical Relevance Agent:** Biomarker utility (heavily_regulated role = diagnostic, hub_regulator role = prognostic, other roles = predictive); disease association likelihood (>15 regulators = high, >5 = moderate, ≤5 = low), clinical actionability (>10 regulators + hub/heavily-regulated role = high). These thresholds are exploratory heuristics chosen for demonstration purposes and have not been systematically validated against benchmark datasets (e.g., COSMIC Cancer Gene Census, DGIdb).
 
-**LLM-Powered Mode** does not use these fixed thresholds. Instead, classifications are generated by the language model (llama3.1:8b via Ollama) based on gene function descriptions (from NCBI/UniProt), network topology context (regulatory_role, num_regulators, num_targets), and tissue distribution patterns. The LLM can provide nuanced classifications with scientific rationales that go beyond simple threshold rules, including category options not available in rule-based mode (e.g., "therapeutic" biomarker classification).
+**LLM-Powered Mode** does not use these fixed thresholds. Instead, classifications are generated by the language model (llama3.1:8b via Ollama) based on gene function descriptions (from NCBI/UniProt), network topology context (`regulatory_role`, `num_regulators`, `num_targets`), and tissue distribution patterns. The LLM can provide nuanced classifications with scientific rationales that go beyond simple threshold rules, including category options not available in rule-based mode (e.g., "therapeutic" biomarker classification).
 
 Network centrality metrics (PageRank, degree centrality) are computed identically in both modes using deterministic algorithms and remain the primary validated quantitative outputs, with regulator rankings confirmed against experimental literature.
 

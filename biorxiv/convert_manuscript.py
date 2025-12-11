@@ -222,6 +222,13 @@ def convert_markdown_to_docx(md_file, docx_file):
 
 def clean_markdown_text(text):
     """Remove markdown formatting from text"""
+    # First, extract and protect inline code (backticks) to preserve underscores
+    code_segments = []
+    def save_code(match):
+        code_segments.append(match.group(1))
+        return f"XCODEX{len(code_segments)-1}XCODEX"
+    text = re.sub(r'`([^`]+)`', save_code, text)
+
     # Bold and italic
     text = re.sub(r'\*\*\*(.+?)\*\*\*', r'\1', text)  # Bold italic
     text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)      # Bold
@@ -232,8 +239,9 @@ def clean_markdown_text(text):
     # Links
     text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
 
-    # Inline code
-    text = re.sub(r'`([^`]+)`', r'\1', text)
+    # Restore inline code content (now protected from underscore removal)
+    for i, code in enumerate(code_segments):
+        text = text.replace(f"XCODEX{i}XCODEX", code)
 
     return text
 
