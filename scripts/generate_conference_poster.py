@@ -708,14 +708,14 @@ def create_poster(sections):
     p.font.italic = True
     p.space_after = Pt(10)
 
-    # Add Figure 4: Framework Value image (readable size, after Discussion ends)
-    figure4_y = Inches(14.3)
-    figure4_path = os.path.join(project_root, 'biorxiv', 'figure4_framework_value.png')
+    # Add Figure 2: Framework Value image (readable size, after Discussion ends)
+    figure2_y = Inches(14.3)
+    figure2_path = os.path.join(project_root, 'biorxiv', 'figure2_framework_value.png')
 
-    if os.path.exists(figure4_path):
+    if os.path.exists(figure2_path):
         try:
             # Add caption above figure
-            fig_caption_box = slide.shapes.add_textbox(col4_x, figure4_y, col4_width, Inches(0.45))
+            fig_caption_box = slide.shapes.add_textbox(col4_x, figure2_y, col4_width, Inches(0.45))
             fig_caption_frame = fig_caption_box.text_frame
             p = fig_caption_frame.add_paragraph()
             p.text = "Figure 4: Framework Performance (orders of magnitude speedup)"
@@ -725,11 +725,11 @@ def create_poster(sections):
             p.alignment = PP_ALIGN.CENTER
 
             # Add figure image (full column width for maximum readability)
-            fig_pic = slide.shapes.add_picture(figure4_path, col4_x + Inches(0.2), figure4_y + Inches(0.3),
+            fig_pic = slide.shapes.add_picture(figure2_path, col4_x + Inches(0.2), figure2_y + Inches(0.3),
                                                width=col4_width - Inches(0.4))
 
             # Adjust conclusions header position to be below figure
-            conclusions_y = figure4_y + Inches(0.3) + fig_pic.height + Inches(0.15)
+            conclusions_y = figure2_y + Inches(0.3) + fig_pic.height + Inches(0.15)
         except Exception as e:
             print(f"   [WARNING] Could not add Figure 4: {e}")
             conclusions_y = Inches(16)

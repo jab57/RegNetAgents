@@ -25,7 +25,7 @@ with open(os.path.join(results_dir, 'biomarker_results.json'), 'r') as f:
     biomarker_data = json.load(f)
 
 # Use the standard centrality version with PageRank, degree, etc.
-with open(os.path.join(results_dir, 'tp53_perturbation_standard_centrality.json'), 'r') as f:
+with open(os.path.join(results_dir, 'cervical_tp53_analysis.json'), 'r') as f:
     tp53_data = json.load(f)
 
 #############################################################################
@@ -206,8 +206,8 @@ def create_figure1():
 # FIGURE 2: Biomarker Panel Analysis
 #############################################################################
 
-def create_figure2():
-    """Create Figure 2: Colorectal Cancer Biomarker Panel Analysis"""
+def create_figure3():
+    """Create Figure 3: Colorectal Cancer Biomarker Panel Analysis"""
 
     fig = plt.figure(figsize=(12, 8))
 
@@ -274,9 +274,15 @@ def create_figure2():
     # C) Biomarker type classification
     ax3 = plt.subplot(2, 2, 3)
     biomarker_type_map = {'diagnostic': 'Diagnostic', 'prognostic': 'Prognostic',
-                          'predictive': 'Predictive'}
+                          'predictive': 'Predictive',
+                          'prognostic|predictive': 'Prog/Pred',
+                          'diagnostic|prognostic': 'Diag/Prog',
+                          'diagnostic|prognostic|predictive': 'Diag/Prog/Pred'}
     type_colors = {'diagnostic': '#3498db', 'prognostic': '#e74c3c',
-                   'predictive': '#f39c12'}
+                   'predictive': '#f39c12',
+                   'prognostic|predictive': '#9b59b6',
+                   'diagnostic|prognostic': '#16a085',
+                   'diagnostic|prognostic|predictive': '#27ae60'}
 
     for i, (gene, btype) in enumerate(zip(genes, biomarker_types)):
         color = type_colors[btype]
@@ -311,22 +317,22 @@ def create_figure2():
 
     plt.tight_layout()
     # Save to biorxiv folder
-    plt.savefig(os.path.join(output_dir, 'figure2_biomarker_panel.png'), dpi=300, bbox_inches='tight')
-    plt.savefig(os.path.join(output_dir, 'figure2_biomarker_panel.pdf'), bbox_inches='tight')
-    print(f"[OK] Figure 2 saved: {output_dir}/figure2_biomarker_panel.png and .pdf")
+    plt.savefig(os.path.join(output_dir, 'figure3_biomarker_panel.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir, 'figure3_biomarker_panel.pdf'), bbox_inches='tight')
+    print(f"[OK] Figure 3 saved: {output_dir}/figure3_biomarker_panel.png and .pdf")
     plt.close()
 
 #############################################################################
 # FIGURE 3: TP53 Perturbation Analysis
 #############################################################################
 
-def create_figure3():
-    """Create Figure 3: TP53 Perturbation Analysis and Therapeutic Target Ranking"""
+def create_figure4():
+    """Create Figure 4: TP53 Perturbation Analysis and Therapeutic Target Ranking"""
 
     fig = plt.figure(figsize=(14, 6))
 
     # Extract perturbation data (updated format - removed redundant metrics)
-    perturbations = tp53_data['perturbation_results']
+    perturbations = tp53_data['therapeutic_target_prioritization']['perturbation_results']
     regulators = [p['regulator'] for p in perturbations]
     # Use PageRank as primary ranking metric (standard centrality)
     pagerank_scores = [p['centrality_metrics']['pagerank'] for p in perturbations]
@@ -453,17 +459,17 @@ def create_figure3():
 
     plt.tight_layout()
     # Save to biorxiv folder
-    plt.savefig(os.path.join(output_dir, 'figure3_tp53_perturbation.png'), dpi=300, bbox_inches='tight')
-    plt.savefig(os.path.join(output_dir, 'figure3_tp53_perturbation.pdf'), bbox_inches='tight')
-    print(f"[OK] Figure 3 saved: {output_dir}/figure3_tp53_perturbation.png and .pdf")
+    plt.savefig(os.path.join(output_dir, 'figure4_tp53_perturbation.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir, 'figure4_tp53_perturbation.pdf'), bbox_inches='tight')
+    print(f"[OK] Figure 4 saved: {output_dir}/figure4_tp53_perturbation.png and .pdf")
     plt.close()
 
 #############################################################################
 # FIGURE 4: Framework Value Demonstration (Workflow + LLM Comparison)
 #############################################################################
 
-def create_figure4():
-    """Create Figure 4: Framework Value Demonstration"""
+def create_figure2():
+    """Create Figure 2: Framework Value Demonstration"""
 
     # Load timing data
     with open(os.path.join(results_dir, 'comprehensive_timing_results.json'), 'r') as f:
@@ -674,9 +680,9 @@ def create_figure4():
     plt.tight_layout(pad=2.0)
 
     # Save
-    plt.savefig(os.path.join(output_dir, 'figure4_framework_value.png'), dpi=300, bbox_inches='tight')
-    plt.savefig(os.path.join(output_dir, 'figure4_framework_value.pdf'), bbox_inches='tight')
-    print(f"[OK] Figure 4 saved: {output_dir}/figure4_framework_value.png and .pdf")
+    plt.savefig(os.path.join(output_dir, 'figure2_framework_value.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir, 'figure2_framework_value.pdf'), bbox_inches='tight')
+    print(f"[OK] Figure 2 saved: {output_dir}/figure2_framework_value.png and .pdf")
     plt.close()
 
 #############################################################################
@@ -710,7 +716,7 @@ def create_table2():
 def create_table3():
     """Create Table 3 as CSV - Updated to remove redundant metrics"""
 
-    perturbations = tp53_data['perturbation_results']
+    perturbations = tp53_data['therapeutic_target_prioritization']['perturbation_results']
 
     # Validation status based on literature review
     # WWTR1, CHD4, YAP1 are experimentally validated TP53 regulators (Hippo pathway)
@@ -759,13 +765,13 @@ if __name__ == "__main__":
     print("Creating Figure 1: Multi-Agent Architecture...")
     create_figure1()
 
-    print("\nCreating Figure 2: Biomarker Panel Analysis...")
+    print("\nCreating Figure 2: Framework Value Demonstration...")
     create_figure2()
 
-    print("\nCreating Figure 3: TP53 Perturbation Analysis...")
+    print("\nCreating Figure 3: Biomarker Panel Analysis...")
     create_figure3()
 
-    print("\nCreating Figure 4: Framework Value Demonstration...")
+    print("\nCreating Figure 4: TP53 Perturbation Analysis...")
     create_figure4()
 
     print("\nCreating Table 2: Biomarker Results...")
@@ -779,9 +785,9 @@ if __name__ == "__main__":
     print("="*60)
     print("\nGenerated files in biorxiv/ folder:")
     print("  - figure1_architecture.png (and .pdf)")
-    print("  - figure2_biomarker_panel.png (and .pdf)")
-    print("  - figure3_tp53_perturbation.png (and .pdf)")
-    print("  - figure4_framework_value.png (and .pdf)")
+    print("  - figure2_framework_value.png (and .pdf)")
+    print("  - figure3_biomarker_panel.png (and .pdf)")
+    print("  - figure4_tp53_perturbation.png (and .pdf)")
     print("  - table2_biomarker_results.csv (and .txt)")
     print("  - table3_tp53_perturbation.csv (and .txt)")
     print("\nReady for your bioRxiv submission!")
