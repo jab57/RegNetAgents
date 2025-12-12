@@ -649,6 +649,8 @@ Workflow schematic showing the directed acyclic graph of agent execution. User q
 **Figure 4. TP53 Therapeutic Target Prioritization and Regulator Ranking.**
 (A) Network diagram showing TP53 (center) with 7 upstream regulators. All regulators contribute equal direct regulatory loss (14.3% = 1/7 regulators). Node size represents downstream target count (larger = more targets = potential off-target effects). Top 3 regulators by PageRank are highlighted with color. (B) Horizontal bar chart of PageRank centrality scores for all 7 regulators, ranked from highest (WWTR1, 0.473) to lowest (IKZF2, 0.399). PageRank differentiates therapeutic potential when regulatory loss is equal. Color intensity indicates network influence. (C) Alternative ranking by degree centrality showing downstream target count, with RBPMS highest (403 targets). Annotations indicate regulators with literature validation (WWTR1, YAP1 - Hippo pathway) vs. novel hypotheses (RBPMS).
 
+<div style="page-break-before: always"></div>
+
 ## DATA AVAILABILITY
 
 All data and results needed to evaluate the conclusions in the paper are present in the paper and/or the figures.
@@ -658,8 +660,6 @@ Regulatory network data were obtained as pre-computed ARACNe networks prepared b
 Raw analysis outputs (JSON format) for the case study analyses presented in this manuscript are available from the corresponding author upon reasonable request.
 
 **Supplementary Material:** Complete LLM prompt templates for all four domain agents, prompt engineering notes, and reproducibility instructions are provided in Supplementary Material (Table S1).
-
-<div style="page-break-before: always"></div>
 
 ## CODE AVAILABILITY
 
