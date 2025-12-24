@@ -1,0 +1,222 @@
+# Repository Sync Guide - RegNetAgents
+
+**Reference for syncing backup and public repositories.**
+
+---
+
+## Two Repository Setup
+
+**Backup Repository (RegNetAgents-Backup):**
+- Remote name: `backup`
+- URL: `https://github.com/jab57/RegNetAgents-Backup.git`
+- Purpose: Complete backup of ALL local content
+- Visibility: Private
+- What goes here: EVERYTHING (code, manuscript, planning docs, all files)
+
+**Public Repository (RegNetAgents):**
+- Remote name: `origin`
+- URL: `https://github.com/jab57/RegNetAgents.git`
+- Purpose: Publication-ready content for bioRxiv/sharing
+- Visibility: Public
+- What goes here: Only safe/public files (code, manuscript, docs - NO planning)
+
+---
+
+## Sync Workflow
+
+### Step 1: Check what changed
+```bash
+git status
+```
+
+Review the list of changed files.
+
+### Step 2: Commit changes
+```bash
+git add -A
+git commit -m "Clear description of changes"
+```
+
+### Step 3: Always push to backup
+```bash
+git push backup main
+```
+**This happens EVERY time, no exceptions.**
+
+### Step 4: Decide about public repo
+
+**IF changes include ONLY these types of files:**
+- Code files (*.py)
+- README.md, requirements.txt
+- Documentation (docs/*.md, except docs/archive/)
+- Manuscript (biorxiv/preprint_draft.md)
+- Figures (biorxiv/*.png, *.pdf)
+- Supplementary materials (biorxiv/supplementary_material.md, SUPPLEMENTARY_MATERIALS.md)
+- Tests (tests/*.py)
+- Scripts (scripts/*.py)
+
+**THEN also push to public:**
+```bash
+git push origin main
+```
+
+**IF changes include ANY of these files:**
+- biorxiv/submission_guide.md
+- biorxiv/journal_submission_plan_REVISED.md
+- biorxiv/email_template.md
+- biorxiv/PROOFREAD_REPORT.md
+- biorxiv/SCIENTIFIC_INTEGRITY_VERIFICATION.md
+- biorxiv/timing_verification_protocol.md
+- biorxiv/week2_execution_plan.md
+- biorxiv/one_page_summary.md
+- docs/archive/* (any files)
+- Any marketing plans
+- Any strategy/planning documents
+
+**THEN do NOT push to public** (backup only).
+
+---
+
+## File Classification
+
+### ✅ PUBLIC-SAFE (can go to both repos)
+
+**Code:**
+- `*.py` (all Python files)
+- `requirements.txt`
+- `.env.example`
+
+**Documentation:**
+- `README.md`
+- `docs/DATA_SOURCES.md`
+- `docs/REGNETAGENTS_MCP_SETUP.md`
+- `docs/ADDING_NEW_CELL_TYPES.md`
+- `docs/CLAUDE_DESKTOP_USAGE.md`
+- `docs/END_TO_END_DATA_PIPELINE.md`
+- `docs/GENE_MAPPING_ARCHITECTURE.md`
+- `docs/REACTOME_INTEGRATION_SUMMARY.md`
+- `docs/REGNETAGENTS_Analysis_Pipeline.md`
+- `docs/REGNETAGENTS_CONFERENCE_POSTER.md`
+
+**Manuscript & Publication:**
+- `biorxiv/preprint_draft.md`
+- `biorxiv/supplementary_material.md`
+- `biorxiv/SUPPLEMENTARY_MATERIALS.md`
+- `biorxiv/*.png` (all figure images)
+- `biorxiv/*.pdf` (all figure PDFs)
+- `biorxiv/table*.csv` (data tables)
+- `biorxiv/table*.txt` (data tables)
+- `biorxiv/CONVERSION_README.md`
+- `biorxiv/create_figure1.py`
+- `biorxiv/convert_manuscript.py`
+- `biorxiv/regnetagents_preprint.docx`
+- `biorxiv/regnetagents_preprint.pdf`
+
+**Data:**
+- `models/networks/*` (network cache files)
+- `cache/gene_id_cache.pkl`
+
+**Tests:**
+- `tests/*.py`
+- `scripts/*.py`
+
+### ❌ PRIVATE (backup only, NOT public)
+
+**Planning Documents:**
+- `biorxiv/submission_guide.md`
+- `biorxiv/journal_submission_plan_REVISED.md`
+- `biorxiv/email_template.md`
+- `biorxiv/week2_execution_plan.md`
+- `biorxiv/one_page_summary.md`
+
+**Internal Reviews:**
+- `biorxiv/PROOFREAD_REPORT.md`
+- `biorxiv/SCIENTIFIC_INTEGRITY_VERIFICATION.md`
+- `biorxiv/timing_verification_protocol.md`
+
+**Internal Assessments:**
+- `docs/archive/*` (all files in archive)
+
+**Strategy/Marketing:**
+- Any marketing plans
+- Any strategy documents
+- Any internal business planning
+
+---
+
+## Decision Tree
+
+```
+Changed files?
+    │
+    ├─ ONLY public-safe files?
+    │   └─ YES → Push to backup AND origin
+    │
+    └─ Includes ANY private files?
+        └─ YES → Push to backup ONLY (not origin)
+```
+
+---
+
+## Commands Reference
+
+**Check status:**
+```bash
+git status
+```
+
+**Commit changes:**
+```bash
+git add -A
+git commit -m "Description of changes"
+```
+
+**Push to backup (always):**
+```bash
+git push backup main
+```
+
+**Push to public (conditional):**
+```bash
+git push origin main
+```
+
+**Push to both (when safe):**
+```bash
+git push backup main && git push origin main
+```
+
+---
+
+## Current State Check
+
+**See what's in each repo:**
+```bash
+# Public repo commits
+git log origin/main --oneline -5
+
+# Backup repo commits
+git log backup/main --oneline -5
+
+# Commits in backup but not public
+git log origin/main..backup/main --oneline
+```
+
+---
+
+## Notes
+
+- Documentation already points to public repo (github.com/jab57/RegNetAgents)
+- Backup repo contains complete backup (cannot rely on OneDrive/external drives)
+- Some planning docs may contain marketing/strategy info (keep private)
+- When in doubt, push to backup only (safer to be conservative)
+
+---
+
+## Summary
+
+1. **Check** what files changed
+2. **Commit** with clear message
+3. **Always** push to backup
+4. **Conditionally** push to public (only if all files are public-safe)
+5. **When uncertain** → backup only
