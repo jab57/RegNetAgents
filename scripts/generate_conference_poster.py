@@ -198,10 +198,10 @@ def parse_tp53_case(text):
     if network_match:
         case['network'] = extract_bullets(network_match.group(1))
 
-    # Extract perturbation analysis
-    perturbation_match = re.search(r'\*\*Perturbation Analysis\*\*:\n(.+?)(?=\n\n\*\*)', text, re.DOTALL)
-    if perturbation_match:
-        case['perturbation'] = extract_bullets(perturbation_match.group(1))
+    # Extract therapeutic target prioritization
+    target_match = re.search(r'\*\*Therapeutic Target Prioritization\*\*:\n(.+?)(?=\n\n\*\*)', text, re.DOTALL)
+    if target_match:
+        case['therapeutic_targets'] = extract_bullets(target_match.group(1))
 
     # Extract pathway enrichment
     pathway_match = re.search(r'\*\*Pathway Enrichment\*\* \(PathwayEnricherAgent\):\n(.+?)(?=\n\n\*\*)', text, re.DOTALL)
@@ -403,7 +403,7 @@ def create_poster(sections):
         ("Validate Inputs & Setup", LIGHT_BLUE, WHITE),
         ("RegNetAgentsModelingAgent:\nNetwork Analysis", GREEN, WHITE),
         ("RegNetAgentsModelingAgent:\nRegulators + Targets", GREEN, WHITE),
-        ("RegNetAgentsModelingAgent:\nPerturbation Analysis", GREEN, WHITE),
+        ("RegNetAgentsModelingAgent:\nTherapeutic Target Prioritization", GREEN, WHITE),
         ("PathwayEnricherAgent:\nReactome Enrichment", PURPLE, WHITE),
     ]
 
@@ -602,18 +602,18 @@ def create_poster(sections):
             for finding in case['findings'][:4]:  # Limit to 4 findings to save space
                 add_bullet(findings_frame, finding, bold=True)
 
-    # TP53 Case Study - CONDENSED VERSION showing perturbation analysis
+    # TP53 Case Study - CONDENSED VERSION showing therapeutic target prioritization
     if 'tp53_case' in sections:
         tp53 = sections['tp53_case']
         tp53_y = Inches(24.5)  # Moved up to utilize available space
-        tp53_header = add_section_header(slide, col3_x, tp53_y, col3_width, "CASE 2: TP53 Perturbation Analysis", PURPLE)
+        tp53_header = add_section_header(slide, col3_x, tp53_y, col3_width, "CASE 2: TP53 Therapeutic Target Prioritization", PURPLE)
 
         # Plenty of room now: 36" - 25.5" = 10.5" available
         tp53_box = slide.shapes.add_textbox(col3_x, tp53_y + Inches(1), col3_width, Inches(6.5))
         tp53_frame = tp53_box.text_frame
         tp53_frame.word_wrap = True
 
-        # Condensed version highlighting perturbation analysis
+        # Condensed version highlighting therapeutic target prioritization
         p = tp53_frame.add_paragraph()
         p.text = "User Query: Comprehensive TP53 analysis with therapeutic target identification"
         p.font.size = Pt(20)
@@ -628,8 +628,8 @@ def create_poster(sections):
         p.font.color.rgb = BLACK
         p.space_after = Pt(8)
 
-        # Perturbation analysis - the key differentiator
-        add_subheader(tp53_frame, "Automated Perturbation Analysis")
+        # Therapeutic target prioritization - the key differentiator
+        add_subheader(tp53_frame, "Automated Therapeutic Target Prioritization")
 
         p = tp53_frame.add_paragraph()
         p.text = "System simulated inhibition of all 7 upstream regulators and ranked therapeutic targets using standard network centrality metrics (PageRank, out-degree centrality):"

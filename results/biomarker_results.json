@@ -1,5 +1,5 @@
 {
-  "execution_time_seconds": 45.74183797836304,
+  "execution_time_seconds": 70.2842161655426,
   "genes_analyzed": [
     "MYC",
     "CTNNB1",
@@ -34,9 +34,9 @@
       "biomarker_type": "diagnostic|prognostic",
       "oncogenic_potential": "moderate",
       "therapeutic_score": 0.8,
-      "druggability_score": 0.7,
+      "druggability_score": 0.6,
       "clinical_actionability": "high",
-      "num_pathways": 7,
+      "num_pathways": 2,
       "llm_powered": [
         "cancer",
         "drug",
@@ -54,7 +54,7 @@
       "therapeutic_score": 0.8,
       "druggability_score": 0,
       "clinical_actionability": "high",
-      "num_pathways": 20,
+      "num_pathways": 66,
       "llm_powered": [
         "cancer",
         "clinical",
@@ -84,7 +84,7 @@
       "regulatory_role": "weakly_regulated",
       "num_targets": 0,
       "num_regulators": 7,
-      "biomarker_type": "diagnostic|prognostic|predictive",
+      "biomarker_type": "prognostic|predictive",
       "oncogenic_potential": "unknown",
       "therapeutic_score": 0,
       "druggability_score": 0,

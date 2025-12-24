@@ -438,7 +438,7 @@ cache_data = {
 ### PageRank Pre-computation
 
 **Why pre-compute PageRank?**
-- Used for perturbation analysis (ranking candidate regulators for validation)
+- Used for therapeutic target prioritization (ranking candidate regulators for validation)
 - Expensive to calculate on-demand (2-5 seconds per query)
 - Pre-computing provides 23% speedup
 - Cache Version 2 includes pre-computed scores

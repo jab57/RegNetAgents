@@ -80,15 +80,15 @@ ax.add_patch(diamond)
 ax.text(5, 9.5, '>5\nregulators?', ha='center', va='center',
         fontsize=9, fontweight='bold')
 
-# Conditional arrow to perturbation (dashed, right)
+# Conditional arrow to therapeutic target prioritization (dashed, right)
 ax.text(6.2, 9.5, 'Yes', fontsize=8, style='italic')
 create_arrow(ax, 5.7, 9.5, 7.2, 9.5, style='dashed', color='red', linewidth=2)
 
-# 5. Perturbation Analysis (right side, conditional)
-create_box(ax, 8.2, 9.5, 1.6, 1.2, 'Perturbation\nAnalysis\n• PageRank\n• Centrality\n• Target\nRanking',
+# 5. Therapeutic Target Prioritization (right side, conditional)
+create_box(ax, 8.2, 9.5, 1.6, 1.2, 'Therapeutic Target\nPrioritization\n• PageRank\n• Centrality\n• Target\nRanking',
            color_core, fontsize=8, fontweight='bold')
 
-# Arrow from perturbation back to main flow
+# Arrow from therapeutic target prioritization back to main flow
 create_arrow(ax, 8.2, 8.9, 8.2, 7.5, style='dashed', color='red')
 create_arrow(ax, 8.2, 7.5, 5.5, 7.5, style='dashed', color='red')
 

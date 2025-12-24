@@ -348,7 +348,7 @@ pip install -r requirements.txt
 - **Try it**: `comprehensive_gene_analysis` with gene="TP53" - therapeutic target prioritization runs automatically for genes with >5 regulators
 - **Example output**: "WWTR1 (PageRank 0.47) would reduce TP53 regulation by 14.3% and affect 293 downstream genes"
 
-**Important Limitation**: Perturbation analysis is topology-based and ranks regulators for experimental investigation. It does **NOT** predict gene expression changes or model dynamic regulatory responses. Results prioritize candidates for validation, not expression predictions.
+**Important Limitation**: Therapeutic target prioritization is topology-based and ranks regulators for experimental investigation. It does **NOT** predict gene expression changes or model dynamic regulatory responses. Results prioritize candidates for validation, not expression predictions.
 
 ### Understanding Disease Mechanisms
 **Question**: "How does TP53 behave differently across cell types?"
@@ -497,7 +497,7 @@ RegNetAgents/
 │
 ├── results/                                   # Analysis outputs
 │   ├── biomarker_results.json                # Example results
-│   └── tp53_perturbation_results.json
+│   └── tp53_therapeutic_targets.json
 │
 ├── tests/                                     # Test suite
 │   ├── test_langgraph_workflow.py
@@ -534,7 +534,7 @@ RegNetAgents/
 
 ✅ **Production Ready**
 - ✅ LangGraph workflow implementation complete
-- ✅ **Perturbation analysis** - rank therapeutic targets using network centrality metrics (PageRank, out-degree centrality)
+- ✅ **Therapeutic target prioritization** - rank therapeutic targets using network centrality metrics (PageRank, out-degree centrality)
 - ✅ Domain analysis enabled (cancer, drug, clinical, systems)
 - ✅ Fast execution (0.60-15 sec rule-based, ~15-62 sec LLM-powered for comprehensive analysis)
 - ✅ Pre-computed network indices for 10 cell types
@@ -563,7 +563,7 @@ See `docs/README.md` for a complete list of available documentation.
 **Rule-Based Mode** (fast, deterministic):
 - **Focused single gene**: 0.68 sec (network, regulators, targets, complete therapeutic target prioritization)
 - **Comprehensive single gene**: 0.60 sec (focused + Reactome pathway enrichment)
-- **Multi-gene (5 genes)**: 15.49 sec (parallel execution, complete perturbation of all 99 regulators)
+- **Multi-gene (5 genes)**: 15.49 sec (parallel execution, complete therapeutic target prioritization of all 99 regulators)
 - **Cross-cell comparison**: <0.01 sec (instant lookups from pre-computed indices)
 
 **LLM-Powered Mode** (AI-generated insights with rationales using Ollama/llama3.1:8b):

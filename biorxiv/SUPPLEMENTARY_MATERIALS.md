@@ -225,8 +225,8 @@ Provide a systems biology analysis in this EXACT JSON format:
   "flow_rationale": "brief explanation of information processing",
   "network_vulnerability": "critical|important|moderate|minimal",
   "vulnerability_rationale": "brief explanation of network impact",
-  "perturbation_impact": "system-wide|modular|localized|minimal",
-  "perturbation_rationale": "brief explanation of knockout/perturbation
+  "therapeutic_impact": "system-wide|modular|localized|minimal",
+  "therapeutic_rationale": "brief explanation of knockout/intervention
                              effects",
   "evolutionary_conservation": "high|moderate|low",
   "conservation_rationale": "brief inference about evolutionary importance",
@@ -238,7 +238,7 @@ Focus on:
   implications)
 - Hierarchical position and regulatory control
 - Information flow and signal transduction
-- Network robustness and vulnerability to perturbation
+- Network robustness and vulnerability to therapeutic intervention
 - Evolutionary conservation inferred from network position
 
 Provide only the JSON, no additional text.

@@ -56,7 +56,7 @@
     "llm_insights": {
       "cancer_analysis": {
         "llm_powered": true,
-        "summary": "The MYC gene is a critical oncogene involved in regulating transcriptional networks and contributing to various cancers. Its frequent amplification and central role in cancer-related pathways make it an attractive therapeutic target.",
+        "summary": "The MYC gene is a critical oncogene involved in numerous cancer-related pathways, making it an attractive target for therapy and a potential prognostic biomarker.",
         "insights": {
           "oncogenic_potential": "high",
           "tumor_suppressor_likelihood": "low",
@@ -64,10 +64,10 @@
           "mutation_impact": "high"
         },
         "llm_rationale": {
-          "oncogenic": "As a hub regulator with high in-degree and out-degree, MYC plays a central role in regulating transcriptional networks, contributing to its oncogenic potential.",
-          "tumor_suppressor": "MYC's primary function is as an oncogene, amplification of which is frequently observed in human cancers, indicating it does not act as a tumor suppressor.",
-          "therapeutic": "Given its central role in cancer-related pathways and frequent amplification in various cancers, MYC represents a promising therapeutic target for cancer treatment.",
-          "biomarker": "MYC's expression levels can serve as a prognostic biomarker for cancer, with high levels often associated with poor prognosis."
+          "oncogenic": "MYC is a proto-oncogene with high network centrality as a hub regulator and involvement in numerous cancer-related pathways.",
+          "tumor_suppressor": "MYC's role in promoting cell cycle progression, apoptosis evasion, and cellular transformation indicates it acts primarily as an oncogene rather than a tumor suppressor.",
+          "therapeutic": "MYC's druggability is high due to its central role in cancer-related pathways and its amplification in various cancers, making it an attractive target for therapy.",
+          "biomarker": "MYC's expression levels can serve as a prognostic biomarker for cancer aggressiveness and patient outcomes."
         },
         "cancer_pathways": [
           "NOTCH1 Intracellular Domain Regulates Transcription",
@@ -77,7 +77,7 @@
       },
       "drug_analysis": {
         "llm_powered": true,
-        "summary": "MYC is a promising target for cancer therapy due to its central role in transcriptional regulation and frequent amplification in cancers, but its druggability will require careful consideration of potential off-target effects.",
+        "summary": "MYC's druggability is high due to its central role in transcriptional regulation, but development complexity is high due to its multiple isoforms and regulatory mechanisms.",
         "insights": {
           "druggability_score": 0.8,
           "target_class": "transcription_factor",
@@ -85,25 +85,25 @@
           "development_complexity": "high"
         },
         "llm_rationale": {
-          "druggability": "MYC's central role in transcriptional regulation and its frequent amplification in cancers make it a high-priority target for inhibition.",
-          "intervention": "Inhibiting MYC's transcriptional activity could disrupt oncogenic signaling pathways, making it an attractive strategy for cancer therapy."
+          "druggability": "MYC's central role in transcriptional regulation and its frequent amplification in cancers make it a promising target for intervention.",
+          "intervention": "Inhibiting MYC would disrupt its ability to drive oncogenic transcription, potentially leading to tumor regression."
         },
         "cascade_effects": [
-          "cell cycle progression",
-          "apoptosis regulation"
+          "cell cycle arrest",
+          "apoptosis induction"
         ],
-        "clinical_trial_readiness": "ready"
+        "clinical_trial_readiness": "needs_preclinical"
       },
       "clinical_analysis": {
         "llm_powered": true,
-        "summary": "MYC's high disease association likelihood and prognostic/predictive biomarker utility make it an important target for cancer diagnosis, prognosis, and treatment monitoring.",
+        "summary": "MYC is a key oncogene with high disease association likelihood and potential for biomarker utility in cancer diagnosis and prognosis.",
         "insights": {
           "disease_association_likelihood": "high",
-          "disease_rationale": "MYC's role as a proto-oncogene and frequent amplification in human cancers indicate its strong association with various diseases.",
+          "disease_rationale": "Amplification of MYC is frequently observed in numerous human cancers, including Burkitt lymphoma and multiple myeloma.",
           "biomarker_utility": "prognostic|predictive",
-          "biomarker_rationale": "MYC expression levels can serve as prognostic indicators for cancer progression and predictive markers for treatment response due to its involvement in cell cycle regulation and apoptosis.",
+          "biomarker_rationale": "MYC expression levels can serve as a prognostic indicator for cancer patients and predict response to therapy.",
           "clinical_actionability": "high",
-          "actionability_rationale": "Targeting MYC or its downstream targets presents a promising therapeutic strategy, with potential applications in personalized medicine approaches."
+          "actionability_rationale": "Targeted therapies against MYC are being explored, offering potential clinical utility in personalized medicine approaches."
         },
         "llm_rationale": "",
         "tissue_specificity": [
@@ -113,22 +113,22 @@
       },
       "systems_analysis": {
         "llm_powered": true,
-        "summary": "MYC is a critical hub regulator involved in processing information from upstream regulators and transmitting signals to downstream targets, making it a key node in the network. Its amplification or mutation has significant implications for cancer development.",
+        "summary": "The MYC gene is a critical hub regulator involved in cell cycle progression and apoptosis, with high information flow through the network. Its amplification in human cancers highlights its importance as a potential therapeutic target.",
         "insights": {
           "network_centrality": 0.0,
-          "centrality_rationale": "MYC has a low PageRank centrality score indicating it is not highly central in the network.",
+          "centrality_rationale": "MYC has a low PageRank centrality score, indicating it is not highly connected in the network.",
           "regulatory_hierarchy": "hub_regulator",
-          "hierarchy_rationale": "As a hub regulator, MYC plays a key role in regulating many downstream targets and interacts with numerous upstream regulators.",
+          "hierarchy_rationale": "As a hub regulator, MYC plays a central role in regulating downstream targets and interacting with multiple upstream regulators.",
           "information_flow": "high",
-          "flow_rationale": "MYC's high degree (452) suggests it is involved in processing a large amount of information from its upstream regulators and transmitting signals to its downstream targets.",
+          "flow_rationale": "MYC is involved in cell cycle progression, apoptosis, and cellular transformation, indicating high information flow through the network.",
           "network_vulnerability": "critical",
-          "vulnerability_rationale": "Amplification or mutation of MYC has been implicated in numerous human cancers, indicating that the network is highly vulnerable to perturbations affecting this gene."
+          "vulnerability_rationale": "Amplification of MYC is frequently observed in human cancers, suggesting that it plays a critical role in cancer development and progression."
         },
         "llm_rationale": "",
         "network_effects": [
           "Highly regulated node with 25 upstream controllers"
         ],
-        "perturbation_impact": "system-wide"
+        "therapeutic_impact": "system-wide"
       }
     },
     "pathway_summary": {
@@ -246,12 +246,12 @@
       "systems_complexity": "unknown"
     },
     "workflow_metadata": {
-      "start_time": 1093743.484,
+      "start_time": 17951.031,
       "steps_completed": [
         "gene_network_analysis",
         "regulators_analysis",
         "targets_analysis",
-        "perturbation_analysis",
+        "therapeutic_target_prioritization",
         "pathway_analysis",
         "cross_cell_analysis",
         "cancer_domain_analysis",
@@ -259,7 +259,7 @@
         "clinical_domain_analysis",
         "systems_domain_analysis"
       ],
-      "total_analysis_time": 38937.000000150874
+      "total_analysis_time": 60594.00000000096
     }
   },
   "CTNNB1": {
@@ -319,7 +319,7 @@
     "llm_insights": {
       "cancer_analysis": {
         "llm_powered": true,
-        "summary": "CTNNB1 is a critical regulator of gene expression in cancer, with both oncogenic and tumor suppressor functions. Its druggability and potential as a prognostic biomarker make it a high-priority research target.",
+        "summary": "CTNNB1 is a critical regulator of cell adhesion and proliferation pathways, with both oncogenic and tumor suppressor potential. Its dysregulation contributes to various cancers, making it an attractive therapeutic target and biomarker.",
         "insights": {
           "oncogenic_potential": "moderate",
           "tumor_suppressor_likelihood": "high",
@@ -327,46 +327,46 @@
           "mutation_impact": "moderate"
         },
         "llm_rationale": {
-          "oncogenic": "CTNNB1 is a hub regulator with high in-degree and out-degree values, indicating its central role in gene regulatory networks. Mutations in this gene are associated with various cancers, including colorectal cancer.",
-          "tumor_suppressor": "As a key component of the Wnt/\u03b2-catenin signaling pathway, CTNNB1 mutations can lead to aberrant activation of oncogenic transcriptional programs, suggesting its tumor suppressor function.",
-          "therapeutic": "CTNNB1 is a druggable target due to its central role in cancer-related pathways and the availability of small molecule inhibitors targeting \u03b2-catenin signaling.",
-          "biomarker": "CTNNB1 expression levels may serve as a prognostic biomarker for cancer patients, with high expression associated with poor prognosis."
+          "oncogenic": "CTNNB1 is a hub regulator with high connectivity to downstream targets, suggesting its dysregulation could contribute to oncogenesis. However, its role in adherens junctions and cell adhesion suggests it may also function as a tumor suppressor.",
+          "tumor_suppressor": "CTNNB1's involvement in maintaining epithelial integrity and contact inhibition implies that loss of function could lead to uncontrolled cell growth, characteristic of cancer.",
+          "therapeutic": "Given its central role in regulating cell adhesion and proliferation pathways, CTNNB1 is a promising therapeutic target for cancer treatment.",
+          "biomarker": "CTNNB1's dysregulation is associated with various cancers, suggesting its expression levels or mutations could serve as a biomarker for cancer prognosis and treatment response."
         },
         "cancer_pathways": [
           "Regulation of MITF-M-dependent genes involved in cell cycle and proliferation",
-          "MITF-M-dependent gene expression"
+          "Formation of definitive endoderm"
         ],
-        "biomarker_potential": "moderate"
+        "biomarker_potential": "high"
       },
       "drug_analysis": {
         "llm_powered": true,
-        "summary": "CTNNB1 is a promising target for the treatment of colorectal cancer and other diseases characterized by aberrant Wnt/\u03b2-catenin signaling, but its druggability requires further investigation.",
+        "summary": "CTNNB1 is a promising target for cancer therapy, with potential to disrupt key signaling pathways; however, its druggability score suggests moderate complexity and requires preclinical validation.",
         "insights": {
-          "druggability_score": 0.7,
+          "druggability_score": 0.6,
           "target_class": "other",
           "intervention_strategy": "inhibition",
           "development_complexity": "moderate"
         },
         "llm_rationale": {
-          "druggability": "CTNNB1's central role in gene regulatory networks and its involvement in multiple diseases make it a promising target for intervention.",
-          "intervention": "Inhibiting CTNNB1 could disrupt aberrant Wnt/\u03b2-catenin signaling pathways, which are implicated in various cancers and developmental disorders."
+          "druggability": "CTNNB1 is a hub regulator with broad downstream effects and regulatory control, suggesting potential for targeted intervention.",
+          "intervention": "Inhibiting CTNNB1 could disrupt aberrant Wnt/\u03b2-catenin signaling pathways implicated in various cancers."
         },
         "cascade_effects": [
-          "disruption of epithelial cell layer formation",
-          "inhibition of cell growth"
+          "cell adhesion disruption",
+          "epithelial sheet maintenance failure"
         ],
         "clinical_trial_readiness": "needs_preclinical"
       },
       "clinical_analysis": {
         "llm_powered": true,
-        "summary": "CTNNB1 mutations are a significant risk factor for multiple types of cancer, offering opportunities for early detection and personalized treatment planning.",
+        "summary": "CTNNB1 is a high-priority gene for clinical analysis due to its established role in cancer development and potential utility as a diagnostic and prognostic biomarker.",
         "insights": {
           "disease_association_likelihood": "high",
           "disease_rationale": "CTNNB1 mutations are a known cause of colorectal cancer, pilomatrixoma, medulloblastoma, and ovarian cancer due to its role in adherens junctions and cell adhesion.",
           "biomarker_utility": "diagnostic|prognostic",
-          "biomarker_rationale": "CTNNB1 mutations can serve as a biomarker for early detection of colorectal cancer and potentially other cancers, with implications for prognosis and treatment planning.",
+          "biomarker_rationale": "CTNNB1 mutations can serve as a diagnostic biomarker for CRC and other cancers, while its expression levels may also provide prognostic information on cancer aggressiveness.",
           "clinical_actionability": "high",
-          "actionability_rationale": "Mutations in CTNNB1 have clear clinical implications for patients with these cancers, allowing for targeted therapies and improved patient outcomes."
+          "actionability_rationale": "Identifying CTNNB1 mutations or altered expression in patient samples can inform personalized treatment decisions, such as targeted therapy or more aggressive surveillance."
         },
         "llm_rationale": "",
         "tissue_specificity": [
@@ -376,27 +376,27 @@
       },
       "systems_analysis": {
         "llm_powered": true,
-        "summary": "CTNNB1 is a hub regulator with a moderate information flow and important network vulnerability. Its disruption can have system-wide effects on gene expression and cellular behavior.",
+        "summary": "CTNNB1 is a critical hub regulator involved in processing and transmitting information across the network, with mutations leading to several cancers. Its system-wide therapeutic impact makes it an attractive target for intervention.",
         "insights": {
           "network_centrality": 0.0,
-          "centrality_rationale": "CTNNB1 has a low PageRank centrality score indicating it is not highly connected or central in the network.",
+          "centrality_rationale": "CTNNB1 has low PageRank centrality indicating it is not a central node in the network.",
           "regulatory_hierarchy": "hub_regulator",
-          "hierarchy_rationale": "As a hub regulator, CTNNB1 has a high number of upstream regulators and downstream targets, positioning it as a key node in the regulatory hierarchy.",
-          "information_flow": "moderate",
-          "flow_rationale": "CTNNB1's moderate information flow is due to its role in transmitting contact inhibition signals between cells, indicating a balance between signal transduction and regulation.",
-          "network_vulnerability": "important",
-          "vulnerability_rationale": "Mutations in CTNNB1 are associated with several cancers, suggesting that it plays a critical role in maintaining epithelial cell layers and its disruption can have significant network consequences."
+          "hierarchy_rationale": "As a hub regulator, CTNNB1 plays a key role in regulating multiple downstream targets and upstream regulators.",
+          "information_flow": "high",
+          "flow_rationale": "CTNNB1's high degree (328) suggests it is involved in processing and transmitting information across the network.",
+          "network_vulnerability": "critical",
+          "vulnerability_rationale": "Mutations in CTNNB1 have been implicated in several cancers, indicating its critical role in maintaining network integrity."
         },
         "llm_rationale": "",
         "network_effects": [
           "Highly regulated node with 18 upstream controllers"
         ],
-        "perturbation_impact": "system-wide"
+        "therapeutic_impact": "system-wide"
       }
     },
     "pathway_summary": {
-      "total_pathways": 7,
-      "significant_pathways": 7
+      "total_pathways": 2,
+      "significant_pathways": 2
     },
     "cross_cell_analysis": {
       "gene": "CTNNB1",
@@ -509,12 +509,12 @@
       "systems_complexity": "unknown"
     },
     "workflow_metadata": {
-      "start_time": 1093743.484,
+      "start_time": 17951.031,
       "steps_completed": [
         "gene_network_analysis",
         "regulators_analysis",
         "targets_analysis",
-        "perturbation_analysis",
+        "therapeutic_target_prioritization",
         "pathway_analysis",
         "cross_cell_analysis",
         "cancer_domain_analysis",
@@ -522,7 +522,7 @@
         "clinical_domain_analysis",
         "systems_domain_analysis"
       ],
-      "total_analysis_time": 18344.00000004098
+      "total_analysis_time": 57297.0000000023
     }
   },
   "CCND1": {
@@ -571,7 +571,7 @@
     "llm_insights": {
       "cancer_analysis": {
         "llm_powered": true,
-        "summary": "CCND1 is a critical regulator of cell cycle progression and is frequently altered in cancer, making it an important therapeutic target and potential biomarker.",
+        "summary": "CCND1 is a critical regulator of cell cycle progression and a potential therapeutic target in various cancers.",
         "insights": {
           "oncogenic_potential": "high",
           "tumor_suppressor_likelihood": "low",
@@ -579,10 +579,10 @@
           "mutation_impact": "high"
         },
         "llm_rationale": {
-          "oncogenic": "CCND1 is heavily regulated and forms a complex with CDK4/6 to promote cell cycle progression, which is frequently altered in cancer.",
-          "tumor_suppressor": "The expression of CCND1 is positively regulated by the tumor suppressor protein Rb, suggesting it may not be a tumor suppressor itself.",
-          "therapeutic": "CCND1's role in promoting cell cycle progression and its frequent alteration in cancer make it an attractive therapeutic target for cancer treatment.",
-          "biomarker": "CCND1 overexpression may serve as a prognostic marker for cancer, indicating a more aggressive disease course."
+          "oncogenic": "CCND1 is a key regulator of cell cycle progression and forms complexes with CDK4/6, which are frequently amplified or overexpressed in various cancers.",
+          "tumor_suppressor": "The expression of CCND1 is positively regulated by Rb, a tumor suppressor protein, suggesting it may not function as a tumor suppressor itself.",
+          "therapeutic": "CCND1's role in cell cycle regulation and frequent overexpression in cancers make it an attractive target for therapeutic intervention.",
+          "biomarker": "CCND1 expression levels could serve as a prognostic marker for cancer patients, with high levels indicating poor prognosis."
         },
         "cancer_pathways": [
           "Nuclear events stimulated by ALK signaling in cancer",
@@ -592,14 +592,14 @@
       },
       "clinical_analysis": {
         "llm_powered": true,
-        "summary": "CCND1 is a critical gene involved in cell cycle regulation and cancer development, offering opportunities for prognostic and predictive biomarker applications, as well as therapeutic targeting.",
+        "summary": "CCND1 is a key regulator of the cell cycle and has significant implications for cancer diagnosis, prognosis, and treatment. Its broad expression across various tissues makes it a promising biomarker for personalized medicine.",
         "insights": {
           "disease_association_likelihood": "high",
-          "disease_rationale": "CCND1's role in cell cycle progression and frequent mutations in various cancers indicate a strong association with disease.",
+          "disease_rationale": "CCND1's role in cell cycle regulation and frequent mutations/amplification in various cancers indicate a strong association with cancer development.",
           "biomarker_utility": "prognostic|predictive",
-          "biomarker_rationale": "Overexpression of CCND1 can serve as an indicator for aggressive tumor behavior, while its amplification or mutation may predict treatment response.",
+          "biomarker_rationale": "Overexpression of CCND1 can serve as a biomarker for predicting cancer progression and response to therapy, while its mutation status may predict treatment efficacy.",
           "clinical_actionability": "high",
-          "actionability_rationale": "CCND1's involvement in cancer development and progression makes it a valuable target for therapeutic interventions, such as targeted therapies or immunotherapies."
+          "actionability_rationale": "CCND1's role in cell cycle regulation makes it a valuable target for therapeutic intervention, with potential applications in targeted therapies and immunotherapies."
         },
         "llm_rationale": "",
         "tissue_specificity": [
@@ -609,27 +609,27 @@
       },
       "systems_analysis": {
         "llm_powered": true,
-        "summary": "The CCND1 gene plays a key regulatory role in the cell cycle network as an intermediate node with moderate information flow. Its disruption would have significant system-wide effects due to its critical position in G1/S transition.",
+        "summary": "CCND1 is a peripheral node with high regulatory degree, moderate information flow, and critical network vulnerability. Its inhibition could have system-wide therapeutic effects.",
         "insights": {
           "network_centrality": 0.0,
           "centrality_rationale": "CCND1 has a low PageRank centrality score, indicating it is not a central node in the network.",
-          "regulatory_hierarchy": "intermediate",
-          "hierarchy_rationale": "As an intermediate regulator with 42 upstream regulators and no downstream targets, CCND1 plays a key role in signal transduction but does not have direct control over other genes.",
+          "regulatory_hierarchy": "peripheral",
+          "hierarchy_rationale": "As a heavily regulated gene with few downstream targets and no upstream regulators directly connected to it, CCND1 appears to be at the periphery of the regulatory hierarchy.",
           "information_flow": "moderate",
-          "flow_rationale": "CCND1's moderate information flow is due to its position as an intermediate regulator, receiving signals from many upstream regulators and passing them on to downstream targets indirectly.",
+          "flow_rationale": "CCND1 is involved in cell cycle progression, which is a critical process for cellular survival. Its moderate information flow suggests that it plays a role in transmitting signals within this process.",
           "network_vulnerability": "critical",
-          "vulnerability_rationale": "Given its critical role in cell cycle progression and frequent mutations in human cancers, CCND1's disruption would have significant network-wide effects."
+          "vulnerability_rationale": "The high degree of CCND1 (42) and its involvement in cancer-related processes make it a critical node in the network, suggesting that its inhibition could have significant effects on cellular behavior."
         },
         "llm_rationale": "",
         "network_effects": [
           "Highly regulated node with 42 upstream controllers"
         ],
-        "perturbation_impact": "system-wide"
+        "therapeutic_impact": "system-wide"
       }
     },
     "pathway_summary": {
-      "total_pathways": 20,
-      "significant_pathways": 20
+      "total_pathways": 66,
+      "significant_pathways": 66
     },
     "cross_cell_analysis": {
       "gene": "CCND1",
@@ -740,11 +740,11 @@
       "systems_complexity": "unknown"
     },
     "workflow_metadata": {
-      "start_time": 1093743.484,
+      "start_time": 17951.031,
       "steps_completed": [
         "gene_network_analysis",
         "regulators_analysis",
-        "perturbation_analysis",
+        "therapeutic_target_prioritization",
         "pathway_analysis",
         "cross_cell_analysis",
         "cancer_domain_analysis",
@@ -752,7 +752,7 @@
         "systems_domain_analysis",
         "drug_domain_analysis"
       ],
-      "total_analysis_time": 26937.000000150874
+      "total_analysis_time": 45437.00000000172
     }
   },
   "TP53": {
@@ -809,7 +809,7 @@
     "llm_insights": {
       "cancer_analysis": {
         "llm_powered": true,
-        "summary": "TP53 is a critical tumor suppressor protein that regulates cellular responses to stress. Its high therapeutic target score and biomarker potential make it an important area of research in cancer biology.",
+        "summary": "TP53 is a critical tumor suppressor gene that regulates various cellular processes, making it a high-priority target for cancer research and therapy.",
         "insights": {
           "oncogenic_potential": "low",
           "tumor_suppressor_likelihood": "high",
@@ -817,20 +817,20 @@
           "mutation_impact": "moderate"
         },
         "llm_rationale": {
-          "oncogenic": "TP53 is a hub regulator with high in-degree and out-degree, indicating its critical role in regulating downstream targets and interacting with upstream regulators. Its tumor suppressor function is well-established, making it less likely to contribute to oncogenesis.",
-          "tumor_suppressor": "TP53's ability to induce cell cycle arrest, apoptosis, senescence, DNA repair, and changes in metabolism makes it a key tumor suppressor protein. Mutations in TP53 are associated with various human cancers.",
-          "therapeutic": "Given its critical role in regulating cellular responses to stress, TP53 is an attractive target for cancer therapy. Small molecule inhibitors targeting TP53's acetylation or other regulatory mechanisms could potentially restore tumor suppressor function.",
-          "biomarker": "TP53 mutations are associated with various human cancers, making it a potential biomarker for cancer diagnosis and prognosis."
+          "oncogenic": "TP53 is a hub regulator with high in-degree and out-degree, indicating its central role in regulating gene expression. Its tumor suppressor function is critical for preventing cancer.",
+          "tumor_suppressor": "Mutations in TP53 are associated with various human cancers, including Li-Fraumeni syndrome, and it regulates cell cycle arrest, apoptosis, senescence, DNA repair, or changes in metabolism.",
+          "therapeutic": "TP53 is a druggable target due to its critical role in cancer biology, and therapies targeting TP53 have shown promise in preclinical studies.",
+          "biomarker": "TP53 mutations are associated with cancer prognosis and can serve as a predictive biomarker for response to therapy."
         },
         "cancer_pathways": [
           "Regulation of TP53 Expression",
-          "Signaling by Hippo"
+          "Loss of Function of TP53 in Cancer"
         ],
         "biomarker_potential": "high"
       },
       "drug_analysis": {
         "llm_powered": true,
-        "summary": "TP53's central role in regulating cell cycle and apoptosis makes it a promising target for cancer therapy, but its druggability is complicated by the need to balance between inhibiting or activating its function.",
+        "summary": "TP53 is a challenging but potentially valuable target for cancer therapy, requiring careful consideration of its regulatory control and cascade effects.",
         "insights": {
           "druggability_score": 0.8,
           "target_class": "transcription_factor",
@@ -838,26 +838,27 @@
           "development_complexity": "high"
         },
         "llm_rationale": {
-          "druggability": "TP53's central role in regulating cell cycle and apoptosis makes it a hub gene with broad effects, increasing its druggability.",
-          "intervention": "Inhibiting TP53 could prevent cancer cells from undergoing apoptosis, while activating it could enhance tumor suppression. Both strategies are appropriate given the gene's role in regulating cell cycle and metabolism."
+          "druggability": "TP53 is a hub regulator with broad regulatory control and significant cascade effects on downstream targets.",
+          "intervention": "Inhibiting TP53 could disrupt tumor suppressor function, while activating it could enhance its role in cell cycle arrest and apoptosis."
         },
         "cascade_effects": [
           "cell cycle arrest",
           "apoptosis",
-          "senescence"
+          "senescence",
+          "DNA repair"
         ],
         "clinical_trial_readiness": "needs_preclinical"
       },
       "clinical_analysis": {
         "llm_powered": true,
-        "summary": "The TP53 gene is a critical tumor suppressor with high potential for disease association and clinical actionability in cancer diagnosis, prognosis, and treatment.",
+        "summary": "The TP53 gene is a key regulator of cellular stress responses and has significant implications for cancer diagnosis, prognosis, and treatment. Its widespread expression across various tissues underscores its potential as a broadly applicable biomarker.",
         "insights": {
           "disease_association_likelihood": "high",
-          "disease_rationale": "TP53's central role as a tumor suppressor and its involvement in Li-Fraumeni syndrome highlight its critical function in cancer development.",
+          "disease_rationale": "TP53's central role as a tumor suppressor with regulatory influence on numerous downstream targets suggests its involvement in various cancers.",
           "biomarker_utility": "prognostic|predictive",
-          "biomarker_rationale": "Alterations in TP53 expression or mutation status can serve as indicators of cancer risk, prognosis, and response to therapy.",
+          "biomarker_rationale": "Alterations in TP53 expression or function can serve as indicators of cancer risk and potential response to therapy, enabling personalized treatment strategies.",
           "clinical_actionability": "high",
-          "actionability_rationale": "TP53's role in cancer development and progression makes it a valuable target for personalized medicine strategies, including targeted therapies and predictive biomarkers."
+          "actionability_rationale": "TP53's critical role in regulating cell cycle arrest, apoptosis, and DNA repair makes it a valuable target for therapeutic intervention and monitoring."
         },
         "llm_rationale": "",
         "tissue_specificity": [
@@ -867,20 +868,20 @@
       },
       "systems_analysis": {
         "llm_powered": true,
-        "summary": "TP53 is a critical hub regulator with high information flow, playing a key role in regulating gene expression and maintaining genome stability. Its loss or dysregulation has system-wide consequences for cellular behavior.",
+        "summary": "TP53 is a key regulatory hub with high information flow, critical network vulnerability, and system-wide therapeutic impact.",
         "insights": {
           "network_centrality": 0.0,
-          "centrality_rationale": "TP53 has a low PageRank Centrality score, indicating that it is not highly central in the network.",
+          "centrality_rationale": "TP53 has a low PageRank Centrality score indicating it is not highly central in the network.",
           "regulatory_hierarchy": "hub_regulator",
-          "hierarchy_rationale": "As a hub regulator, TP53 has a high number of upstream regulators and downstream targets, suggesting a key role in regulating gene expression.",
+          "hierarchy_rationale": "As a hub regulator, TP53 has many downstream targets and upstream regulators, positioning it as a key regulatory node in the network.",
           "information_flow": "high",
-          "flow_rationale": "TP53's regulatory control over many genes implies significant information flow through this node.",
+          "flow_rationale": "TP53 is involved in regulating expression of target genes in response to cellular stresses, indicating high information flow through this gene.",
           "network_vulnerability": "critical",
-          "vulnerability_rationale": "Mutations in TP53 are associated with various human cancers, indicating that its loss or dysregulation has critical consequences for the network."
+          "vulnerability_rationale": "Mutations in TP53 are associated with human cancers, suggesting that disrupting its regulatory function has significant network-wide consequences."
         },
         "llm_rationale": "",
         "network_effects": [],
-        "perturbation_impact": "system-wide"
+        "therapeutic_impact": "system-wide"
       }
     },
     "pathway_summary": {
@@ -998,12 +999,12 @@
       "systems_complexity": "unknown"
     },
     "workflow_metadata": {
-      "start_time": 1093743.484,
+      "start_time": 17951.031,
       "steps_completed": [
         "gene_network_analysis",
         "targets_analysis",
         "regulators_analysis",
-        "perturbation_analysis",
+        "therapeutic_target_prioritization",
         "pathway_analysis",
         "cross_cell_analysis",
         "cancer_domain_analysis",
@@ -1011,7 +1012,7 @@
         "clinical_domain_analysis",
         "systems_domain_analysis"
       ],
-      "total_analysis_time": 45734.00000017136
+      "total_analysis_time": 69139.99999999942
     }
   },
   "KRAS": {
@@ -1057,35 +1058,35 @@
     "llm_insights": {
       "clinical_analysis": {
         "llm_powered": true,
-        "summary": "KRAS mutations have high disease association potential and biomarker utility for cancer diagnosis, prognosis, and therapeutic monitoring.",
+        "summary": "KRAS is a high-priority target for precision medicine due to its role in multiple cancers and potential as a biomarker for therapy selection.",
         "insights": {
           "disease_association_likelihood": "high",
-          "disease_rationale": "KRAS mutations are implicated in various malignancies, including lung adenocarcinoma and colorectal carcinoma.",
-          "biomarker_utility": "diagnostic|prognostic|predictive",
-          "biomarker_rationale": "KRAS mutations can serve as a biomarker for diagnosis, prognosis, and therapeutic monitoring of cancer patients.",
+          "disease_rationale": "KRAS is implicated in various malignancies, including lung adenocarcinoma, mucinous adenoma, ductal carcinoma of the pancreas and colorectal carcinoma.",
+          "biomarker_utility": "prognostic|predictive",
+          "biomarker_rationale": "Mutations in KRAS can serve as a biomarker for identifying patients at risk of disease progression or response to targeted therapies.",
           "clinical_actionability": "high",
-          "actionability_rationale": "KRAS mutation status is actionable in clinical practice, guiding treatment decisions such as targeted therapy with EGFR inhibitors or BRAF/MEK inhibitors."
+          "actionability_rationale": "KRAS mutations are actionable targets for therapies such as BRAF/MEK inhibitors, which have shown clinical benefit in patients with mutant KRAS tumors."
         },
         "llm_rationale": "",
         "tissue_specificity": [],
-        "diagnostic_potential": "high"
+        "diagnostic_potential": "moderate"
       },
       "systems_analysis": {
         "llm_powered": true,
-        "summary": "KRAS occupies a peripheral regulatory position and has moderate information flow, but is critical to network function due to its involvement in malignancies. Disrupting this gene would have system-wide effects.",
+        "summary": "KRAS occupies a peripheral position in the regulatory hierarchy with limited information flow, but inhibiting it could have system-wide therapeutic effects.",
         "insights": {
           "network_centrality": 0.0,
           "centrality_rationale": "KRAS has a low PageRank centrality score indicating it is not highly connected in the network.",
           "regulatory_hierarchy": "peripheral",
           "hierarchy_rationale": "As KRAS has only 7 upstream regulators and no downstream targets, it occupies a peripheral position in the regulatory hierarchy.",
-          "information_flow": "moderate",
-          "flow_rationale": "KRAS is involved in signal transduction pathways, but its moderate information flow suggests it is not a primary hub for processing signals.",
-          "network_vulnerability": "critical",
-          "vulnerability_rationale": "As KRAS mutations are implicated in various malignancies, disrupting this gene would have significant effects on the network, making it critical to network function."
+          "information_flow": "low",
+          "flow_rationale": "KRAS's low degree (7) suggests limited information flow through this node.",
+          "network_vulnerability": "moderate",
+          "vulnerability_rationale": "Inhibiting KRAS could have moderate effects on the network due to its peripheral position and relatively few connections."
         },
         "llm_rationale": "",
         "network_effects": [],
-        "perturbation_impact": "system-wide"
+        "therapeutic_impact": "system-wide"
       }
     },
     "pathway_summary": {
@@ -1103,18 +1104,18 @@
       "systems_complexity": "unknown"
     },
     "workflow_metadata": {
-      "start_time": 1093743.484,
+      "start_time": 17951.031,
       "steps_completed": [
         "gene_network_analysis",
         "regulators_analysis",
-        "perturbation_analysis",
+        "therapeutic_target_prioritization",
         "pathway_analysis",
         "clinical_domain_analysis",
         "systems_domain_analysis",
         "cancer_domain_analysis",
         "drug_domain_analysis"
       ],
-      "total_analysis_time": 31359.000000171363
+      "total_analysis_time": 70264.99999999942
     }
   }
 }

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Generate perturbation analysis results for all 5 biomarker genes
+Generate therapeutic target prioritization results for all 5 biomarker genes
 Uses the existing RegNetAgents workflow to analyze MYC, CTNNB1, CCND1, TP53, KRAS
-and save their perturbation results to JSON files.
+and save their therapeutic target prioritization results to JSON files.
 """
 
 import asyncio
@@ -11,8 +11,8 @@ import os
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 
 
-async def analyze_gene_perturbations(gene, cell_type='epithelial_cell'):
-    """Run comprehensive analysis for a gene and extract perturbation results"""
+async def analyze_gene_therapeutic_targets(gene, cell_type='epithelial_cell'):
+    """Run comprehensive analysis for a gene and extract therapeutic target prioritization results"""
     print(f"\n{'='*60}")
     print(f"Analyzing {gene}")
     print(f"{'='*60}")
@@ -23,28 +23,28 @@ async def analyze_gene_perturbations(gene, cell_type='epithelial_cell'):
         result = await workflow.run_analysis(
             gene=gene,
             cell_type=cell_type,
-            analysis_depth='focused'  # Focused includes perturbation without Reactome delay
+            analysis_depth='focused'  # Focused includes target prioritization without Reactome delay
         )
 
         if result.get('status') == 'error':
             print(f"  ❌ Error: {result.get('error', 'Unknown error')}")
             return None
 
-        # Extract perturbation results
-        perturbation_results = result.get('therapeutic_target_prioritization')
+        # Extract therapeutic target prioritization results
+        target_prioritization = result.get('therapeutic_target_prioritization')
 
-        if perturbation_results:
-            num_regulators = len(perturbation_results.get('perturbation_results', []))
+        if target_prioritization:
+            num_regulators = len(target_prioritization.get('ranked_regulators', []))
             print(f"  ✓ Found {num_regulators} regulators")
 
             # Get top regulator by PageRank
-            if perturbation_results.get('rankings', {}).get('by_pagerank'):
-                top = perturbation_results['rankings']['by_pagerank'][0]
+            if target_prioritization.get('rankings', {}).get('by_pagerank'):
+                top = target_prioritization['rankings']['by_pagerank'][0]
                 print(f"  ✓ Top by PageRank: {top['regulator']} ({top['score']:.4f})")
 
-            return perturbation_results
+            return target_prioritization
         else:
-            print(f"  ⚠ No perturbation results (may have <5 regulators)")
+            print(f"  ⚠ No therapeutic target results (may have <5 regulators)")
             return None
 
     except Exception as e:
@@ -53,20 +53,20 @@ async def analyze_gene_perturbations(gene, cell_type='epithelial_cell'):
 
 
 async def main():
-    """Generate perturbation results for all 5 biomarker genes"""
+    """Generate therapeutic target prioritization results for all 5 biomarker genes"""
     print("="*60)
-    print("RegNetAgents Biomarker Perturbation Analysis Generator")
+    print("RegNetAgents Biomarker Therapeutic Target Prioritization Generator")
     print("="*60)
-    print("\nGenerating perturbation analysis for CRC biomarker panel:")
+    print("\nGenerating therapeutic target prioritization for CRC biomarker panel:")
     print("  MYC, CTNNB1, CCND1, TP53, KRAS")
 
     genes = ['MYC', 'CTNNB1', 'CCND1', 'TP53', 'KRAS']
     results = {}
 
     for gene in genes:
-        perturbation_data = await analyze_gene_perturbations(gene)
-        if perturbation_data:
-            results[gene] = perturbation_data
+        target_data = await analyze_gene_therapeutic_targets(gene)
+        if target_data:
+            results[gene] = target_data
 
     # Save individual results
     print(f"\n{'='*60}")
@@ -77,7 +77,7 @@ async def main():
     os.makedirs(results_dir, exist_ok=True)
 
     for gene, data in results.items():
-        filename = f"{gene.lower()}_perturbation_standard_centrality.json"
+        filename = f"{gene.lower()}_therapeutic_targets_standard_centrality.json"
         filepath = os.path.join(results_dir, filename)
 
         with open(filepath, 'w', encoding='utf-8') as f:
@@ -95,7 +95,7 @@ async def main():
     for gene in genes:
         if gene in results:
             data = results[gene]
-            num_reg = len(data.get('perturbation_results', []))
+            num_reg = len(data.get('ranked_regulators', []))
 
             if data.get('rankings', {}).get('by_pagerank'):
                 top = data['rankings']['by_pagerank'][0]
@@ -108,11 +108,11 @@ async def main():
             print(f"{gene:<10} {'ERROR':<12} {'N/A':<20} {'N/A':<10}")
 
     print(f"\n{'='*60}")
-    print(f"SUCCESS! Generated {len(results)}/5 perturbation analyses")
+    print(f"SUCCESS! Generated {len(results)}/5 therapeutic target prioritization analyses")
     print(f"{'='*60}")
     print(f"\nResults saved to: {results_dir}/")
     print("Next steps:")
-    print("  1. Review the perturbation results")
+    print("  1. Review the therapeutic target prioritization results")
     print("  2. Update publication tables with top PageRank regulators")
     print("  3. Regenerate figures and poster")
 

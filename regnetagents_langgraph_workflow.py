@@ -253,7 +253,7 @@ class RegNetAgentsModelingAgent:
             "summary": "Cross-cell analysis completed"
         }
 
-    async def analyze_perturbation_effects(
+    async def prioritize_therapeutic_targets(
         self,
         target_gene: str,
         cell_type: CellType,
@@ -302,7 +302,7 @@ class RegNetAgentsModelingAgent:
             regulators = reg_analysis.get('hub_regulators', [])
 
         # For each regulator, simulate its inhibition
-        perturbation_effects = []
+        target_effects = []
 
         for regulator in regulators[:max_regulators]:
             effect = await self._simulate_regulator_inhibition(
@@ -312,14 +312,14 @@ class RegNetAgentsModelingAgent:
                 cell_type=cell_type,
                 baseline=baseline
             )
-            perturbation_effects.append(effect)
+            target_effects.append(effect)
 
         # Rank by different centrality metrics (standard approach from literature)
         # Per Mora & Donaldson (2021): Drug targets show high degree, betweenness, closeness, PageRank
 
         # Provide multiple rankings for interpretation
-        by_degree = sorted(perturbation_effects, key=lambda x: x['centrality_metrics']['degree_centrality'], reverse=True)
-        by_pagerank = sorted(perturbation_effects, key=lambda x: x['centrality_metrics']['pagerank'], reverse=True)
+        by_degree = sorted(target_effects, key=lambda x: x['centrality_metrics']['degree_centrality'], reverse=True)
+        by_pagerank = sorted(target_effects, key=lambda x: x['centrality_metrics']['pagerank'], reverse=True)
 
         # Primary ranking: PageRank (best predictor per Mora & Donaldson 2021)
         ranked_targets = by_pagerank
@@ -454,7 +454,7 @@ class RegNetAgentsModelingAgent:
 
     def _extract_therapeutic_insights(self, ranked_targets: list, target_gene: str, by_degree: list) -> dict:
         """
-        Extract key therapeutic insights from perturbation results using network centrality metrics.
+        Extract key therapeutic insights from target prioritization results using network centrality metrics.
 
         Interpretation based on Mora & Donaldson (2021) BMC Bioinformatics:
         - Approved drug targets show significantly higher degree and PageRank
@@ -518,7 +518,7 @@ class RegNetAgentsModelingAgent:
         if consensus:
             interpretation += "This target ranks highly across multiple centrality metrics, strengthening the therapeutic recommendation."
         else:
-            interpretation += "Consider validating with experimental perturbation studies."
+            interpretation += "Consider validating with experimental studies."
 
         return interpretation
 
@@ -1271,8 +1271,8 @@ Provide a systems biology analysis in this EXACT JSON format:
   "flow_rationale": "brief explanation of information processing",
   "network_vulnerability": "critical|important|moderate|minimal",
   "vulnerability_rationale": "brief explanation of network impact",
-  "perturbation_impact": "system-wide|modular|localized|minimal",
-  "perturbation_rationale": "brief explanation of knockout/perturbation effects",
+  "therapeutic_impact": "system-wide|modular|localized|minimal",
+  "therapeutic_rationale": "brief explanation of knockout/inhibition effects",
   "evolutionary_conservation": "high|moderate|low",
   "conservation_rationale": "brief inference about evolutionary importance",
   "summary": "1-2 sentence systems biology summary"
@@ -1282,7 +1282,7 @@ Focus on:
 - Network topology and centrality (degree, betweenness, PageRank implications)
 - Hierarchical position and regulatory control
 - Information flow and signal transduction
-- Network robustness and vulnerability to perturbation
+- Network robustness and vulnerability to inhibition
 - Evolutionary conservation inferred from network position
 
 Provide only the JSON, no additional text."""
@@ -1297,7 +1297,7 @@ Provide only the JSON, no additional text."""
             "regulatory_hierarchy", "hierarchy_rationale",
             "information_flow", "flow_rationale",
             "network_vulnerability", "vulnerability_rationale",
-            "perturbation_impact", "perturbation_rationale",
+            "therapeutic_impact", "therapeutic_rationale",
             "evolutionary_conservation", "conservation_rationale",
             "summary"
         ]
@@ -1325,7 +1325,7 @@ Provide only the JSON, no additional text."""
                 "vulnerability_rationale": insights.get("vulnerability_rationale", "N/A")
             },
             "network_effects": network_effects,
-            "perturbation_impact": insights.get("perturbation_impact", "unknown"),
+            "therapeutic_impact": insights.get("therapeutic_impact", "unknown"),
             "evolutionary_conservation": insights.get("evolutionary_conservation", "moderate"),
             "summary": insights.get("summary", f"{gene} systems biology analysis completed"),
             "llm_powered": True
@@ -1364,7 +1364,7 @@ Provide only the JSON, no additional text."""
             "domain": "systems_biology",
             "insights": systems_insights,
             "network_effects": network_effects,
-            "perturbation_impact": "system-wide" if systems_insights["network_vulnerability"] == "critical" else "localized",
+            "therapeutic_impact": "system-wide" if systems_insights["network_vulnerability"] == "critical" else "localized",
             "evolutionary_conservation": "high" if network_centrality > 0.5 else "moderate",
             "summary": f"{gene} has {systems_insights['network_centrality']:.1%} network centrality with {systems_insights['network_vulnerability']} vulnerability level",
             "llm_powered": False
@@ -1497,7 +1497,7 @@ class RegNetAgentsWorkflow:
         workflow.add_node("analyze_regulators", self._analyze_regulators)
         workflow.add_node("analyze_targets", self._analyze_targets)
         workflow.add_node("analyze_pathways", self._analyze_pathways)
-        workflow.add_node("analyze_perturbations", self._analyze_perturbations)
+        workflow.add_node("prioritize_targets", self._prioritize_therapeutic_targets)
         workflow.add_node("cross_cell_comparison", self._cross_cell_comparison)
 
         # Add domain analysis nodes
@@ -1527,7 +1527,7 @@ class RegNetAgentsWorkflow:
                 "regulators": "analyze_regulators",
                 "targets": "analyze_targets",
                 "pathways": "analyze_pathways",
-                "perturbations": "analyze_perturbations",
+                "prioritize_targets": "prioritize_targets",
                 "cross_cell": "cross_cell_comparison",
                 "cancer_domain": "analyze_cancer_domain",
                 "drug_domain": "analyze_drug_domain",
@@ -1547,7 +1547,7 @@ class RegNetAgentsWorkflow:
         workflow.add_edge("analyze_regulators", "decide_next_steps")
         workflow.add_edge("analyze_targets", "decide_next_steps")
         workflow.add_edge("analyze_pathways", "decide_next_steps")
-        workflow.add_edge("analyze_perturbations", "decide_next_steps")
+        workflow.add_edge("prioritize_targets", "decide_next_steps")
         workflow.add_edge("cross_cell_comparison", "decide_next_steps")
 
         # Domain analysis flows back to decision point
@@ -1664,7 +1664,7 @@ class RegNetAgentsWorkflow:
             and 'therapeutic_target_prioritization' not in completed_steps
             and num_regulators > 5):  # Only for genes with meaningful regulators
             logger.info(f"Routing to therapeutic target prioritization ({num_regulators} regulators to analyze)")
-            return "perturbations"
+            return "prioritize_targets"
 
         # Pathway analysis if we have regulator or target data (comprehensive mode only)
         if (state['analysis_depth'] == 'comprehensive'
@@ -2034,9 +2034,9 @@ class RegNetAgentsWorkflow:
             state['current_step'] = 'error'
             return state
 
-    async def _analyze_perturbations(self, state: GeneAnalysisState) -> GeneAnalysisState:
-        """Analyze perturbation effects of inhibiting upstream regulators"""
-        logger.info(f"Analyzing perturbation effects for {state['gene']}")
+    async def _prioritize_therapeutic_targets(self, state: GeneAnalysisState) -> GeneAnalysisState:
+        """Prioritize therapeutic targets by analyzing effects of inhibiting upstream regulators"""
+        logger.info(f"Prioritizing therapeutic targets for {state['gene']}")
 
         try:
             state['current_step'] = 'therapeutic_target_prioritization'
@@ -2045,14 +2045,14 @@ class RegNetAgentsWorkflow:
             regulators_analysis = state.get('regulators_analysis', {})
 
             if not regulators_analysis:
-                logger.warning("No regulators analysis available for perturbation")
+                logger.warning("No regulators analysis available for target prioritization")
                 state['therapeutic_target_prioritization'] = {
                     "status": "skipped",
-                    "reason": "No regulators to perturb"
+                    "reason": "No regulators to analyze"
                 }
             else:
                 # Run therapeutic target prioritization (analyze all regulators, not just top 10)
-                result = await self.modeling_agent.analyze_perturbation_effects(
+                result = await self.modeling_agent.prioritize_therapeutic_targets(
                     target_gene=state['gene'],
                     cell_type=cell_type,
                     regulators=regulators_analysis.get('hub_regulators', []),

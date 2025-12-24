@@ -6,7 +6,7 @@
 
 ## ABSTRACT
 
-**RegNetAgents** is an LLM-powered multi-agent AI framework that automates gene regulatory network analysis through intelligent workflow orchestration, transforming labor-intensive manual processes into second-scale automated analysis. The system deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) using local language model inference to generate scientific insights with rationales, with graceful fallback to rule-based heuristics for reliability. Built on pre-computed regulatory networks from 500K+ single-cell RNA-seq profiles, the framework integrates network modeling, automated therapeutic target prioritization using network centrality metrics (PageRank, degree centrality), pathway enrichment, and multi-domain interpretation into a conversational interface via Claude Desktop. **Framework demonstration** on colorectal cancer biomarkers showed complete concordance with published literature across a limited five-gene sample. Perturbation analysis identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among top-ranked candidates based on network topology; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses for experimental validation. Complete analysis of 99 regulators across 5 genes completed in 15-62 seconds, representing **orders of magnitude speedup** over traditional manual approaches. Natural language interface makes sophisticated gene analysis accessible without programming expertise.
+**RegNetAgents** is an LLM-powered multi-agent AI framework that automates gene regulatory network analysis through intelligent workflow orchestration, transforming labor-intensive manual processes into second-scale automated analysis. The system deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) using local language model inference to generate scientific insights with rationales, with graceful fallback to rule-based heuristics for reliability. Built on pre-computed regulatory networks from 500K+ single-cell RNA-seq profiles, the framework integrates network modeling, automated therapeutic target prioritization using network centrality metrics (PageRank, degree centrality), pathway enrichment, and multi-domain interpretation into a conversational interface via Claude Desktop. **Framework demonstration** on colorectal cancer biomarkers showed complete concordance with published literature across a limited five-gene sample. Therapeutic target prioritization identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among top-ranked candidates based on network topology; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses for experimental validation. Complete analysis of 99 regulators across 5 genes completed in 15-62 seconds, representing **orders of magnitude speedup** over traditional manual approaches. Natural language interface makes sophisticated gene analysis accessible without programming expertise.
 
 
 ---
@@ -431,7 +431,7 @@ Given the candidate genes, the system automatically:
 - ✗ Novel hypotheses (untested genes require experimental validation)
 - ✗ Network centrality rankings as experimentally verified drug targets
 - ✗ Biomarker classifications as FDA-approved diagnostics
-- ✗ Gene expression changes from perturbation (topology-based only)
+- ✗ Gene expression changes from interventions (topology-based only)
 
 ### Appropriate Use Cases
 

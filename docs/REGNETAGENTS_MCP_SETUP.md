@@ -160,7 +160,7 @@ Once installed, you can ask Claude Desktop natural language questions:
 ### Core Analysis Tools
 
 1. **comprehensive_gene_analysis**
-   - Full multi-agent analysis (network + regulators + targets + perturbation + pathways + 4 LLM-powered domain agents)
+   - Full multi-agent analysis (network + regulators + targets + therapeutic target prioritization + pathways + 4 LLM-powered domain agents)
    - **LLM Mode**: AI-generated insights with scientific rationales (Ollama/llama3.1:8b)
    - **Fallback Mode**: Rule-based heuristics if LLM unavailable
    - Parameters: gene, cell_type, analysis_depth

@@ -62,7 +62,7 @@ async def main():
             continue
 
         network = result.get("network_analysis", {})
-        perturbation = result.get("therapeutic_target_prioritization", {})
+        target_prioritization = result.get("therapeutic_target_prioritization", {})
         pathways = result.get("pathway_enrichment", {})
 
         print(f"\n{gene}:")
@@ -73,8 +73,8 @@ async def main():
         # Get top regulator
         top_regulator = "N/A"
         top_pagerank = 0.0
-        if perturbation and perturbation.get('rankings', {}).get('by_pagerank'):
-            top = perturbation['rankings']['by_pagerank'][0]
+        if target_prioritization and target_prioritization.get('rankings', {}).get('by_pagerank'):
+            top = target_prioritization['rankings']['by_pagerank'][0]
             top_regulator = top['regulator']
             top_pagerank = top['score']
             print(f"  Top Regulator: {top_regulator} (PageRank: {top_pagerank:.3f})")

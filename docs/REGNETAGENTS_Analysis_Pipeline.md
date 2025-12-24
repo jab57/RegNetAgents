@@ -51,12 +51,12 @@ Gene Analysis → Role Detection → Intelligent Sequential Execution
 │   ├── Cancer Research Context (network-based assessment, candidate regulators)
 │   ├── Drug Development Context (connectivity analysis, intervention strategies)
 │   ├── Clinical Relevance (biomarker utility, disease associations)
-│   └── Systems Biology (network centrality metrics, perturbation impact)
+│   └── Systems Biology (network centrality metrics, therapeutic impact)
 └── Step 7: Final Report Generation
 
 Note: Similarity analysis has been removed for optimal performance.
 Domain analyses are enabled in comprehensive mode (fast execution, <1ms total).
-Perturbation analysis automatically runs for genes with >5 regulators.
+Therapeutic target prioritization automatically runs for genes with >5 regulators.
 ```
 
 **Performance Optimizations:**
@@ -258,7 +258,7 @@ For each regulator tested:
 **Interpretation**: WWTR1 ranked #1 by PageRank, indicating superior connection quality in the network. The 14.3% regulatory loss is equal across all 7 regulators (1/7), so centrality metrics differentiate therapeutic potential. Experimental validation confirmed WWTR1/YAP1 (Hippo pathway) as validated TP53 regulators.
 
 ### **Automatic Activation**
-Perturbation analysis runs automatically when:
+Therapeutic target prioritization runs automatically when:
 - Gene has **>5 upstream regulators**
 - Using `comprehensive_gene_analysis` tool
 - Regulator analysis completes successfully
@@ -374,11 +374,11 @@ def _route_next_action(state):
     if is_regulator and num_targets > 5 and 'targets_analysis' not in completed_steps:
         return "targets"
 
-    # Perturbation analysis (candidate regulator prioritization)
+    # Therapeutic target prioritization (candidate regulator prioritization)
     if 'regulators_analysis' in completed_steps \
        and 'therapeutic_target_prioritization' not in completed_steps \
        and num_regulators > 5:
-        return "perturbations"  # Simulate regulator inhibition for drug targeting
+        return "prioritize_targets"  # Simulate regulator inhibition for drug targeting
 
     # Pathway analysis using Reactome (requires core data)
     if ('regulators_analysis' in completed_steps or 'targets_analysis' in completed_steps) \

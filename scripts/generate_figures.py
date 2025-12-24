@@ -106,15 +106,15 @@ def create_figure1():
     ax.text(5, 9.5, '>5\nregulators?', ha='center', va='center',
             fontsize=9, fontweight='bold')
 
-    # Conditional arrow to perturbation (dashed, right)
+    # Conditional arrow to therapeutic target prioritization (dashed, right)
     ax.text(6.2, 9.5, 'Yes', fontsize=8, style='italic')
     create_arrow(ax, 5.7, 9.5, 7.2, 9.5, style='dashed', color='red', linewidth=2)
 
-    # 5. Perturbation Analysis (right side, conditional)
-    create_box(ax, 8.2, 9.5, 1.6, 1.2, 'Perturbation\nAnalysis\n• PageRank\n• Centrality\n• Target\nRanking',
+    # 5. Therapeutic Target Prioritization (right side, conditional)
+    create_box(ax, 8.2, 9.5, 1.6, 1.2, 'Therapeutic Target\nPrioritization\n• PageRank\n• Centrality\n• Target\nRanking',
                color_core, fontsize=8, fontweight='bold')
 
-    # Arrow from perturbation back to main flow
+    # Arrow from therapeutic target prioritization back to main flow
     create_arrow(ax, 8.2, 8.9, 8.2, 7.5, style='dashed', color='red')
     create_arrow(ax, 8.2, 7.5, 5.5, 7.5, style='dashed', color='red')
 
@@ -323,20 +323,20 @@ def create_figure3():
     plt.close()
 
 #############################################################################
-# FIGURE 3: TP53 Perturbation Analysis
+# FIGURE 3: TP53 Therapeutic Target Prioritization
 #############################################################################
 
 def create_figure4():
-    """Create Figure 4: TP53 Perturbation Analysis and Therapeutic Target Ranking"""
+    """Create Figure 4: TP53 Therapeutic Target Prioritization and Ranking"""
 
     fig = plt.figure(figsize=(14, 6))
 
-    # Extract perturbation data (updated format - removed redundant metrics)
-    perturbations = tp53_data['therapeutic_target_prioritization']['perturbation_results']
-    regulators = [p['regulator'] for p in perturbations]
+    # Extract therapeutic target data (updated format - removed redundant metrics)
+    therapeutic_targets = tp53_data['therapeutic_target_prioritization']['ranked_regulators']
+    regulators = [p['regulator'] for p in therapeutic_targets]
     # Use PageRank as primary ranking metric (standard centrality)
-    pagerank_scores = [p['centrality_metrics']['pagerank'] for p in perturbations]
-    downstream_targets = [p['regulator_downstream_targets'] for p in perturbations]
+    pagerank_scores = [p['centrality_metrics']['pagerank'] for p in therapeutic_targets]
+    downstream_targets = [p['regulator_downstream_targets'] for p in therapeutic_targets]
 
     # Sort by PageRank (descending) - primary ranking metric
     sorted_data = sorted(zip(regulators, pagerank_scores, downstream_targets),
@@ -459,9 +459,9 @@ def create_figure4():
 
     plt.tight_layout()
     # Save to biorxiv folder
-    plt.savefig(os.path.join(output_dir, 'figure4_tp53_perturbation.png'), dpi=300, bbox_inches='tight')
-    plt.savefig(os.path.join(output_dir, 'figure4_tp53_perturbation.pdf'), bbox_inches='tight')
-    print(f"[OK] Figure 4 saved: {output_dir}/figure4_tp53_perturbation.png and .pdf")
+    plt.savefig(os.path.join(output_dir, 'figure4_tp53_therapeutic_targets.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir, 'figure4_tp53_therapeutic_targets.pdf'), bbox_inches='tight')
+    print(f"[OK] Figure 4 saved: {output_dir}/figure4_tp53_therapeutic_targets.png and .pdf")
     plt.close()
 
 #############################################################################
@@ -545,7 +545,7 @@ def create_figure2():
     # Agent components (smaller boxes inside)
     agents = [
         ("Network\nModeling", 2, 7.6),
-        ("Perturbation\nAnalysis", 4, 7.6),
+        ("Therapeutic Target\nPrioritization", 4, 7.6),
         ("Pathway\nEnrichment", 6, 7.6),
         ("Domain\nAgents (4)", 8, 7.6)
     ]
@@ -710,13 +710,13 @@ def create_table2():
     print(f"[OK] Table 2 saved: {output_dir}/table2_biomarker_results.txt")
 
 #############################################################################
-# TABLE 3: TP53 Perturbation Results (CSV for inclusion)
+# TABLE 3: TP53 Therapeutic Target Prioritization Results (CSV for inclusion)
 #############################################################################
 
 def create_table3():
     """Create Table 3 as CSV - Updated to remove redundant metrics"""
 
-    perturbations = tp53_data['therapeutic_target_prioritization']['perturbation_results']
+    therapeutic_targets = tp53_data['therapeutic_target_prioritization']['ranked_regulators']
 
     # Validation status based on literature review
     # WWTR1, CHD4, YAP1 are experimentally validated TP53 regulators (Hippo pathway)
@@ -732,12 +732,12 @@ def create_table3():
     }
 
     df = pd.DataFrame({
-        'Rank': range(1, len(perturbations) + 1),
-        'Regulator': [p['regulator'] for p in perturbations],
-        'PageRank': [p['centrality_metrics']['pagerank'] for p in perturbations],
-        'Out-Degree Centrality': [p['centrality_metrics']['out_degree_centrality'] for p in perturbations],
-        'Downstream Targets': [p['regulator_downstream_targets'] for p in perturbations],
-        'Validation Status': [validation_map.get(p['regulator'], 'Novel') for p in perturbations]
+        'Rank': range(1, len(therapeutic_targets) + 1),
+        'Regulator': [p['regulator'] for p in therapeutic_targets],
+        'PageRank': [p['centrality_metrics']['pagerank'] for p in therapeutic_targets],
+        'Out-Degree Centrality': [p['centrality_metrics']['out_degree_centrality'] for p in therapeutic_targets],
+        'Downstream Targets': [p['regulator_downstream_targets'] for p in therapeutic_targets],
+        'Validation Status': [validation_map.get(p['regulator'], 'Novel') for p in therapeutic_targets]
     })
 
     # Sort by PageRank (primary ranking metric)
@@ -745,13 +745,13 @@ def create_table3():
     df['Rank'] = range(1, len(df) + 1)
 
     # Save to biorxiv folder
-    df.to_csv(os.path.join(output_dir, 'table3_tp53_perturbation.csv'), index=False)
-    print(f"[OK] Table 3 saved: {output_dir}/table3_tp53_perturbation.csv")
+    df.to_csv(os.path.join(output_dir, 'table3_tp53_therapeutic_targets.csv'), index=False)
+    print(f"[OK] Table 3 saved: {output_dir}/table3_tp53_therapeutic_targets.csv")
 
     # Also create formatted text version (UTF-8 for checkmark symbols)
-    with open(os.path.join(output_dir, 'table3_tp53_perturbation.txt'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(output_dir, 'table3_tp53_therapeutic_targets.txt'), 'w', encoding='utf-8') as f:
         f.write(df.to_string(index=False))
-    print(f"[OK] Table 3 saved: {output_dir}/table3_tp53_perturbation.txt")
+    print(f"[OK] Table 3 saved: {output_dir}/table3_tp53_therapeutic_targets.txt")
 
 #############################################################################
 # Main execution
@@ -771,13 +771,13 @@ if __name__ == "__main__":
     print("\nCreating Figure 3: Biomarker Panel Analysis...")
     create_figure3()
 
-    print("\nCreating Figure 4: TP53 Perturbation Analysis...")
+    print("\nCreating Figure 4: TP53 Therapeutic Target Prioritization...")
     create_figure4()
 
     print("\nCreating Table 2: Biomarker Results...")
     create_table2()
 
-    print("\nCreating Table 3: TP53 Perturbation Results...")
+    print("\nCreating Table 3: TP53 Therapeutic Target Results...")
     create_table3()
 
     print("\n" + "="*60)
@@ -787,7 +787,7 @@ if __name__ == "__main__":
     print("  - figure1_architecture.png (and .pdf)")
     print("  - figure2_framework_value.png (and .pdf)")
     print("  - figure3_biomarker_panel.png (and .pdf)")
-    print("  - figure4_tp53_perturbation.png (and .pdf)")
+    print("  - figure4_tp53_therapeutic_targets.png (and .pdf)")
     print("  - table2_biomarker_results.csv (and .txt)")
-    print("  - table3_tp53_perturbation.csv (and .txt)")
+    print("  - table3_tp53_therapeutic_targets.csv (and .txt)")
     print("\nReady for your bioRxiv submission!")

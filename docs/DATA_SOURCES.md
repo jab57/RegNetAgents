@@ -455,7 +455,7 @@ for _, row in edges.iterrows():
         log_p=row['log.p.values']
     )
 
-# Pre-compute PageRank for fast perturbation analysis
+# Pre-compute PageRank for fast therapeutic target prioritization
 pagerank = nx.pagerank(G, alpha=0.85)
 for node in G.nodes():
     G.nodes[node]['pagerank'] = pagerank.get(node, 0)

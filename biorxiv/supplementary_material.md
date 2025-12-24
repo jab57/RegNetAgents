@@ -150,13 +150,13 @@ RegNetAgents employs four specialized domain agents that use structured LLM prom
 
 *Provide a systems biology analysis in this EXACT JSON format:*
 
-*{ "network_centrality": 0.0-1.0, "centrality_rationale": "brief explanation of network position", "regulatory_hierarchy": "master|hub|intermediate|peripheral", "hierarchy_rationale": "brief explanation of hierarchical position", "information_flow": "high|moderate|low", "flow_rationale": "brief explanation of information processing", "network_vulnerability": "critical|important|moderate|minimal", "vulnerability_rationale": "brief explanation of network impact", "perturbation_impact": "system-wide|modular|localized|minimal", "perturbation_rationale": "brief explanation of knockout/perturbation effects", "evolutionary_conservation": "high|moderate|low", "conservation_rationale": "brief inference about evolutionary importance", "summary": "1-2 sentence systems biology summary" }*
+*{ "network_centrality": 0.0-1.0, "centrality_rationale": "brief explanation of network position", "regulatory_hierarchy": "master|hub|intermediate|peripheral", "hierarchy_rationale": "brief explanation of hierarchical position", "information_flow": "high|moderate|low", "flow_rationale": "brief explanation of information processing", "network_vulnerability": "critical|important|moderate|minimal", "vulnerability_rationale": "brief explanation of network impact", "therapeutic_impact": "system-wide|modular|localized|minimal", "therapeutic_rationale": "brief explanation of knockout/intervention effects", "evolutionary_conservation": "high|moderate|low", "conservation_rationale": "brief inference about evolutionary importance", "summary": "1-2 sentence systems biology summary" }*
 
 *Focus on:*
 - *Network topology and centrality (degree, betweenness, PageRank implications)*
 - *Hierarchical position and regulatory control*
 - *Information flow and signal transduction*
-- *Network robustness and vulnerability to perturbation*
+- *Network robustness and vulnerability to therapeutic intervention*
 - *Evolutionary conservation inferred from network position*
 
 *Provide only the JSON, no additional text.*

@@ -43,7 +43,7 @@ def extract_llm_insights(domain_analysis):
             domain_insights['diagnostic_potential'] = data.get('diagnostic_potential', {})
         elif domain == 'systems_analysis':
             domain_insights['network_effects'] = data.get('network_effects', {})
-            domain_insights['perturbation_impact'] = data.get('perturbation_impact', {})
+            domain_insights['therapeutic_impact'] = data.get('therapeutic_impact', {})
 
         llm_insights[domain] = domain_insights
 
@@ -121,7 +121,7 @@ async def main():
     print("=" * 80)
 
     biomarker_summary = []
-    perturbation_results = {}
+    target_prioritization_results = {}
     detailed_insights = {}
 
     for gene, result in zip(genes, results):
@@ -136,7 +136,7 @@ async def main():
         drug_info = domain_analysis.get("drug_analysis", {})
         systems_info = domain_analysis.get("systems_analysis", {})
         pathway_info = result.get("pathway_enrichment", {})
-        perturbation_data = result.get("therapeutic_target_prioritization", {})
+        target_data = result.get("therapeutic_target_prioritization", {})
 
         print(f"\n{gene}:")
         print(f"  Regulatory Role: {network.get('regulatory_role', 'unknown')}")
@@ -161,18 +161,18 @@ async def main():
                 llm_status.append(domain.replace('_analysis', ''))
         print(f"  LLM-Powered Domains: {', '.join(llm_status) if llm_status else 'None'}")
 
-        # Extract perturbation analysis if available
-        if perturbation_data:
-            num_perturbations = len(perturbation_data.get('perturbation_results', []))
-            print(f"  Perturbation Analysis: {num_perturbations} regulators analyzed")
+        # Extract therapeutic target prioritization if available
+        if target_data:
+            num_targets = len(target_data.get('ranked_regulators', []))
+            print(f"  Therapeutic Target Prioritization: {num_targets} regulators analyzed")
 
             # Get top regulator by PageRank
-            if perturbation_data.get('rankings', {}).get('by_pagerank'):
-                top = perturbation_data['rankings']['by_pagerank'][0]
+            if target_data.get('rankings', {}).get('by_pagerank'):
+                top = target_data['rankings']['by_pagerank'][0]
                 print(f"  Top Regulator (PageRank): {top['regulator']} ({top['score']:.4f})")
-                perturbation_results[gene] = perturbation_data
+                target_prioritization_results[gene] = target_data
         else:
-            print(f"  Perturbation Analysis: Not available (insufficient regulators)")
+            print(f"  Therapeutic Target Prioritization: Not available (insufficient regulators)")
 
         # Extract LLM insights
         llm_insights = extract_llm_insights(domain_analysis)
@@ -247,20 +247,20 @@ async def main():
     print(f"  [OK] {gene_reports_saved} individual gene reports")
 
     print("\n" + "=" * 80)
-    print("SAVING PERTURBATION RESULTS")
+    print("SAVING THERAPEUTIC TARGET PRIORITIZATION RESULTS")
     print("=" * 80)
 
-    # Save individual perturbation results
-    perturbation_files = []
-    for gene, perturb_data in perturbation_results.items():
-        filename = f"{gene.lower()}_perturbation_standard_centrality.json"
+    # Save individual therapeutic target prioritization results
+    target_files = []
+    for gene, target_data in target_prioritization_results.items():
+        filename = f"{gene.lower()}_therapeutic_targets_standard_centrality.json"
         filepath = os.path.join("results", filename)
 
         with open(filepath, "w", encoding='utf-8') as f:
-            json.dump(perturb_data, f, indent=2)
+            json.dump(target_data, f, indent=2)
 
         print(f"  [OK] {filename}")
-        perturbation_files.append(filename)
+        target_files.append(filename)
 
     print("\n" + "=" * 80)
     print("SUMMARY")
@@ -271,7 +271,7 @@ async def main():
     print(f"  1. {summary_file} - Summary metrics")
     print(f"  2. {insights_file} - Detailed LLM insights")
     print(f"  3. {gene_reports_saved} individual gene reports")
-    print(f"  4. {len(perturbation_files)} perturbation analyses")
+    print(f"  4. {len(target_files)} therapeutic target prioritization analyses")
     print("=" * 80)
 
 if __name__ == "__main__":
