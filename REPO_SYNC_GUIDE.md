@@ -33,31 +33,78 @@
 2. **When ready to save** - Tell Claude to commit and backup
 
 3. **Claude checks what changed** - Looks at which files you modified
+   ```bash
+   $ git status
 
-4. **Everything goes to backup** - ALL changes get pushed to the private backup repo (RegNetAgents-Backup)
+   # Example output:
+   modified:   regnetagents_langgraph_workflow.py
+   modified:   biorxiv/preprint_draft.md
+   modified:   biorxiv/submission_guide.md
+   ```
+
+4. **Claude commits the changes**
+   ```bash
+   $ git add -A
+   $ git commit -m "Fix workflow bug and update docs"
+
+   # Creates a commit with all changes
+   ```
+
+5. **Everything goes to backup** - ALL changes get pushed to the private backup repo (RegNetAgents-Backup)
+   ```bash
+   $ git push backup main
+
+   # ✅ Complete backup of your work
+   ```
    - This happens EVERY time, no exceptions
-   - Complete backup of your work ✅
 
-5. **Claude decides about public** - Checks if changed files are safe to share publicly:
-   - **If ALL files are public-safe** (code, manuscript, docs, figures):
-     - Also push to public repo (RegNetAgents)
-     - Public repo gets updated ✅
+6. **Claude decides about public** - Checks if changed files are safe to share publicly:
 
-   - **If ANY file is private** (planning docs, assessments, marketing):
-     - Skip the public repo
-     - Only backup has these changes 🔒
+   **If ALL files are public-safe** (code, manuscript, docs, figures):
+   ```bash
+   $ git push origin main
 
-6. **Result:**
+   # ✅ Public repo also gets updated
+   ```
+
+   **If ANY file is private** (planning docs, assessments, marketing):
+   ```bash
+   # ⏸️ Skip pushing to public
+   # Only backup has these changes 🔒
+
+   Output: "NOT pushing to public (contains private files)"
+   ```
+
+7. **Result:**
    - Backup repo = Complete backup of everything
    - Public repo = Only publication-ready content
    - Private files never leak to public ✅
 
 **Special Situation - When Public is Behind:**
 
-If previous commits had private files, the public repo falls behind. When you later want to update public with safe changes, Claude uses "cherry-picking" to:
-- Select only the safe commits (skip private ones)
-- Apply them to public repo
-- Private commits stay in backup only
+If previous commits had private files, the public repo falls behind. When you later want to update public with safe changes, Claude uses "cherry-picking":
+
+```bash
+# Step 1: Check which commits are ahead
+$ git log origin/main..main --oneline
+
+# Example output:
+5b737ca Enhance REPO_SYNC_GUIDE (safe) ✅
+4ea2ed7 Add REPO_SYNC_GUIDE (safe) ✅
+0ae4cc5 Add planning documents (PRIVATE) ❌
+
+# Step 2: Cherry-pick only safe commits
+$ git cherry-pick 4ea2ed7
+$ git cherry-pick 5b737ca
+
+# Step 3: Push to public
+$ git push origin main
+
+# Result:
+# ✅ Backup has: 0ae4cc5, 4ea2ed7, 5b737ca (everything)
+# ✅ Public has: 4ea2ed7, 5b737ca (safe commits only)
+# 🔒 Commit 0ae4cc5 never reaches public
+```
 
 **You never need to think about this** - just tell Claude to update repos, and the guide ensures everything goes to the right place.
 

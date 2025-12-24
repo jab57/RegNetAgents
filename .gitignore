@@ -38,6 +38,3 @@ results/*.json
 # Git/GitHub specific
 .git/
 .gitattributes
-
-# Internal assessments and planning (private only)
-docs/archive/
