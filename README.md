@@ -26,7 +26,7 @@ RegNetAgents is an AI-powered multi-agent framework that provides comprehensive 
 
 **📖 Detailed Documentation:**
 - **[DATA_SOURCES.md](docs/DATA_SOURCES.md)** - Complete information about the 10 current cell types from RegNetAgents, their sources, and citations
-- **[RegNetAgents GitHub](https://github.com/czi-ai/RegNetAgents)** - Original foundation model source code and documentation
+- **[GREmLN GitHub](https://github.com/czi-ai/GREmLN)** - Original foundation model source code and documentation
 
 **What "RegNetAgents" means:**
 - This framework focuses on **Regulatory Network** analysis using AI **Agents**

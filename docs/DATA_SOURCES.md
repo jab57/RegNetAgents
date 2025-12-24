@@ -664,8 +664,8 @@ When using RegNetAgents, please acknowledge:
 
 1. **RegNetAgents Foundation Model**
    - Citation: Zhang, M., Swamy, V., Cassius, R., Dupire, L., Karaletsos, T., & Califano, A. (2025). "RegNetAgents: A Cellular Regulatory Network-Aware Transcriptomics Foundation Model." *bioRxiv*. doi:10.1101/2025.07.03.663009
-   - GitHub: https://github.com/czi-ai/RegNetAgents
-   - Virtual Cells Platform: https://virtualcellmodels.cziscience.com/model/regnetagents
+   - GitHub: https://github.com/czi-ai/GREmLN
+   - Virtual Cells Platform: https://virtualcellmodels.cziscience.com/model/gremln
 
 2. **CellxGene Data Portal**
    - Citation: Megill, C., et al. (2021). "cellxgene: a performant, scalable exploration platform for high dimensional sparse matrices." *bioRxiv*. doi:10.1101/2021.04.05.438318
