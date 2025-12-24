@@ -11,7 +11,7 @@ to perform comprehensive gene regulatory network analysis. The framework integra
 
 - Network modeling (regulatory relationships from ARACNe networks)
 - Pathway enrichment (Reactome API integration)
-- Perturbation analysis (therapeutic target ranking via network centrality)
+- Therapeutic target prioritization (regulator ranking via network centrality)
 - Domain-specific insights (LLM-powered cancer, drug, clinical, systems biology agents)
 - Cross-cell type comparison
 
@@ -27,7 +27,7 @@ Architecture:
 Performance:
     - Rule-based mode: 0.6-15 seconds for comprehensive analysis
     - LLM-powered mode: 15-62 seconds with scientific rationales
-    - Perturbation analysis: Pre-computed PageRank enables instant ranking
+    - Therapeutic target prioritization: Pre-computed PageRank enables instant ranking
 
 Author: Jose A. Bird, PhD
 License: MIT
@@ -263,7 +263,7 @@ class RegNetAgentsModelingAgent:
         """
         Analyze therapeutic target potential by simulating regulator inhibition.
 
-        Performs network perturbation analysis to rank upstream regulators as potential
+        Performs therapeutic target prioritization to rank upstream regulators as potential
         therapeutic targets. Uses pre-computed PageRank centrality scores to measure
         each regulator's importance in the network, providing instant ranking without
         expensive recomputation.
@@ -284,12 +284,12 @@ class RegNetAgentsModelingAgent:
             max_regulators: Maximum number of regulators to analyze (default 100)
 
         Returns:
-            dict: Perturbation analysis results containing:
+            dict: Therapeutic target prioritization results containing:
                 - ranked_regulators: List sorted by PageRank (best targets first)
                 - summary: Analysis metadata (total regulators, ranking metric)
                 - Each regulator includes: symbol, PageRank, regulatory_loss, centrality scores
         """
-        logger.info(f"Starting perturbation analysis for {target_gene}")
+        logger.info(f"Starting therapeutic target prioritization for {target_gene}")
 
         # Get baseline network state
         baseline = await self.analyze_gene_network_context(target_gene, cell_type)
@@ -333,13 +333,13 @@ class RegNetAgentsModelingAgent:
             "target_gene": target_gene,
             "cell_type": cell_type.value,
             "baseline_regulators": len(regulators),
-            "perturbation_results": ranked_targets,  # All regulators ranked by PageRank
+            "ranked_regulators": ranked_targets,  # All regulators ranked by PageRank
             "rankings": {
                 "by_pagerank": [{"regulator": t['regulator'], "score": t['centrality_metrics']['pagerank']} for t in by_pagerank[:5]],
                 "by_degree": [{"regulator": t['regulator'], "score": t['centrality_metrics']['degree_centrality']} for t in by_degree[:5]]
             },
             "therapeutic_insights": therapeutic_insights,
-            "summary": f"Analyzed {len(perturbation_effects)} regulatory perturbations for {target_gene}"
+            "summary": f"Analyzed {len(ranked_targets)} regulators for therapeutic target prioritization of {target_gene}"
         }
 
     async def _simulate_regulator_inhibition(
@@ -1422,7 +1422,7 @@ class RegNetAgentsWorkflow:
     Key Features:
         - Multi-agent coordination with specialized domain expertise
         - Parallel execution of independent analysis tasks
-        - Automatic perturbation analysis for genes with >5 regulators
+        - Automatic therapeutic target prioritization for genes with >5 regulators
         - LLM-powered insights with rule-based fallback
         - Cross-cell type comparison capabilities
 
@@ -1659,11 +1659,11 @@ class RegNetAgentsWorkflow:
             logger.info(f"Routing to targets analysis (medium priority: {num_targets} targets)")
             return "targets"
 
-        # Perturbation analysis after regulators (therapeutic potential)
+        # Therapeutic target prioritization after regulators
         if ('regulators_analysis' in completed_steps
             and 'therapeutic_target_prioritization' not in completed_steps
             and num_regulators > 5):  # Only for genes with meaningful regulators
-            logger.info(f"Routing to perturbation analysis ({num_regulators} regulators to test)")
+            logger.info(f"Routing to therapeutic target prioritization ({num_regulators} regulators to analyze)")
             return "perturbations"
 
         # Pathway analysis if we have regulator or target data (comprehensive mode only)
@@ -2051,7 +2051,7 @@ class RegNetAgentsWorkflow:
                     "reason": "No regulators to perturb"
                 }
             else:
-                # Run perturbation analysis (analyze all regulators, not just top 10)
+                # Run therapeutic target prioritization (analyze all regulators, not just top 10)
                 result = await self.modeling_agent.analyze_perturbation_effects(
                     target_gene=state['gene'],
                     cell_type=cell_type,
@@ -2060,14 +2060,14 @@ class RegNetAgentsWorkflow:
                 )
 
                 state['therapeutic_target_prioritization'] = result
-                top_target = result.get('perturbation_results', [{}])[0].get('regulator', 'N/A') if result.get('perturbation_results') else 'N/A'
-                logger.info(f"Perturbation analysis complete. Top therapeutic target: {top_target}")
+                top_target = result.get('ranked_regulators', [{}])[0].get('regulator', 'N/A') if result.get('ranked_regulators') else 'N/A'
+                logger.info(f"Therapeutic target prioritization complete. Top ranked regulator: {top_target}")
 
             state['analysis_metadata']['steps_completed'].append('therapeutic_target_prioritization')
             return state
 
         except Exception as e:
-            logger.warning(f"Perturbation analysis failed (optional): {str(e)}")
+            logger.warning(f"Therapeutic target prioritization failed (optional): {str(e)}")
             state['therapeutic_target_prioritization'] = {"error": str(e), "analysis_skipped": True}
             state['analysis_metadata']['steps_completed'].append('therapeutic_target_prioritization')
             return state
