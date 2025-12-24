@@ -22,6 +22,144 @@
 
 ---
 
+## How It Works (Plain English)
+
+**The Goal:** Keep all your work backed up in one repo, while only sharing safe/public content in another repo.
+
+**The Process:**
+
+1. **You work normally** - Edit any files (code, manuscript, planning docs, anything)
+
+2. **When ready to save** - Tell Claude to commit and backup
+
+3. **Claude checks what changed** - Looks at which files you modified
+
+4. **Everything goes to backup** - ALL changes get pushed to the private backup repo (RegNetAgents-Backup)
+   - This happens EVERY time, no exceptions
+   - Complete backup of your work ✅
+
+5. **Claude decides about public** - Checks if changed files are safe to share publicly:
+   - **If ALL files are public-safe** (code, manuscript, docs, figures):
+     - Also push to public repo (RegNetAgents)
+     - Public repo gets updated ✅
+
+   - **If ANY file is private** (planning docs, assessments, marketing):
+     - Skip the public repo
+     - Only backup has these changes 🔒
+
+6. **Result:**
+   - Backup repo = Complete backup of everything
+   - Public repo = Only publication-ready content
+   - Private files never leak to public ✅
+
+**Special Situation - When Public is Behind:**
+
+If previous commits had private files, the public repo falls behind. When you later want to update public with safe changes, Claude uses "cherry-picking" to:
+- Select only the safe commits (skip private ones)
+- Apply them to public repo
+- Private commits stay in backup only
+
+**You never need to think about this** - just tell Claude to update repos, and the guide ensures everything goes to the right place.
+
+---
+
+## Workflow Schematic
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  LOCAL REPOSITORY (C:\Dev\RegNetAgents)                     │
+│  Branch: main                                                │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                    User makes changes
+                    (edit any files)
+                            │
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  STEP 1: Check what changed                                 │
+│  $ git status                                                │
+│                                                               │
+│  Example output:                                             │
+│  modified:   regnetagents_langgraph_workflow.py  ← Code     │
+│  modified:   biorxiv/preprint_draft.md           ← Manuscript│
+│  modified:   biorxiv/submission_guide.md         ← Planning │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  STEP 2: Commit changes                                     │
+│  $ git add -A                                                │
+│  $ git commit -m "Fix bug and update docs"                  │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  STEP 3: ALWAYS push to backup (no exceptions)              │
+│  $ git push backup main                                      │
+│                                                               │
+│  ✅ Everything backed up to RegNetAgents-Backup             │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ↓
+              ┌─────────────┴─────────────┐
+              │  STEP 4: Classify files   │
+              └─────────────┬─────────────┘
+                            │
+              ┌─────────────┴─────────────┐
+              │                           │
+              ↓                           ↓
+    ┌─────────────────┐         ┌─────────────────┐
+    │ ALL files are   │         │ ANY file is     │
+    │ PUBLIC-SAFE?    │         │ PRIVATE?        │
+    │                 │         │                 │
+    │ ✅ Code         │         │ ❌ Planning docs│
+    │ ✅ Manuscript   │         │ ❌ Assessments  │
+    │ ✅ Docs         │         │ ❌ Marketing    │
+    │ ✅ Figures      │         │ ❌ Strategy     │
+    └────────┬────────┘         └────────┬────────┘
+             │                           │
+             ↓                           ↓
+    ┌─────────────────┐         ┌─────────────────┐
+    │ PUSH TO PUBLIC  │         │ SKIP PUBLIC     │
+    │ $ git push      │         │ (backup only)   │
+    │   origin main   │         │                 │
+    └────────┬────────┘         └────────┬────────┘
+             │                           │
+             ↓                           ↓
+┌────────────────────────────┐  ┌────────────────────────────┐
+│  BACKUP REPO (Private)     │  │  BACKUP REPO (Private)     │
+│  ✅ Has everything         │  │  ✅ Has everything         │
+│                            │  │                            │
+│  PUBLIC REPO (Public)      │  │  PUBLIC REPO (Public)      │
+│  ✅ Also updated           │  │  ⏸️  Not updated          │
+│  📢 Visible to all         │  │  🔒 Private files safe    │
+└────────────────────────────┘  └────────────────────────────┘
+
+
+SPECIAL CASE: Cherry-Picking (when public is behind)
+═══════════════════════════════════════════════════════════════
+
+If public repo is behind due to previous private commits:
+
+Local commits:
+├─ Commit A: Add planning docs (PRIVATE) ❌
+├─ Commit B: Fix workflow bug (PUBLIC) ✅
+└─ Commit C: Update manuscript (PUBLIC) ✅
+
+Solution: Cherry-pick only public commits
+$ git log origin/main..main --oneline    ← See all commits
+$ git cherry-pick <commit-B-hash>        ← Pick safe ones
+$ git cherry-pick <commit-C-hash>
+$ git push origin main                   ← Update public
+
+Result:
+- Backup has: A, B, C (everything)
+- Public has: B, C only (safe commits)
+- Commit A never reaches public ✅
+```
+
+---
+
 ## Sync Workflow
 
 ### Step 1: Check what changed
