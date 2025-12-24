@@ -288,7 +288,7 @@ representing a orders of magnitude speedup compared to manual workflows.
 
 This acceleration enables exploratory analyses previously impractical
 due to time constraints. For example, analyzing a 5-gene biomarker panel
-with complete perturbation analysis (99 total regulators) requires
+with complete therapeutic target prioritization (99 total regulators) requires
 15.49 seconds (rule-based) or ~62 seconds (LLM-powered), versus an
 estimated 10-20 hours of manual effort (2-4 hours per gene × 5 genes).
 The framework transforms gene regulatory analysis from a multi-hour
@@ -387,7 +387,7 @@ ensuring reliability.
    - Both PDF and PNG versions
 
 3. **Create supplementary materials**
-   - Supplementary Table S1: All perturbation results (5 genes)
+   - Supplementary Table S1: All therapeutic target results (5 genes)
    - Supplementary Methods: Extended workflow details
    - Keep it minimal - you're demonstrating software, not validating biology
 
@@ -683,7 +683,7 @@ This integrated approach maximizes both citation impact AND real-world usage.
 - [ ] Final proofread (check all references, figures, tables)
 - [ ] Regenerate all figures at 300 DPI
 - [ ] Create supplementary materials:
-  - Supp Table S1: All perturbation results (5 genes)
+  - Supp Table S1: All therapeutic target results (5 genes)
   - Supp Methods: Extended workflow details
   - Supp Figure S1: Cross-cell-type comparison
 
@@ -794,7 +794,7 @@ I can:
 - ✅ Updated Methods section to remove scoring formulas
 - ✅ Updated Results sections to use "classification" language
 - ✅ Updated Figure 4 legend for consistency
-- ✅ Emphasized validated metrics (PageRank, centrality, perturbation rankings)
+- ✅ Emphasized validated metrics (PageRank, centrality, therapeutic target rankings)
 
 **Documentation Updates:**
 - ✅ Updated `docs/REGNETAGENTS_CONFERENCE_POSTER.md` with "classification" language (6 instances)

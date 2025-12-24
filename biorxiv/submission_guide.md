@@ -27,11 +27,11 @@ The following materials are ready in `C:\Dev\RegNetAgents\biorxiv\`:
 **Figures (3 complete sets)**:
 - ✅ `figure1_architecture.png` and `.pdf`
 - ✅ `figure2_biomarker_panel.png` and `.pdf`
-- ✅ `figure3_tp53_perturbation.png` and `.pdf`
+- ✅ `figure4_tp53_therapeutic_targets.png` and `.pdf`
 
 **Tables (2 complete sets)**:
 - ✅ `table2_biomarker_results.csv` and `.txt`
-- ✅ `table3_tp53_perturbation.csv` and `.txt`
+- ✅ `table3_tp53_therapeutic_targets.csv` and `.txt`
 
 **Manuscript**:
 - ✅ `preprint_draft.md` - Updated with author information
@@ -147,7 +147,7 @@ Look for "Supplementary Files" or "Additional Files" section. Upload files in th
 **2. Figures:**
 - `figure1_architecture.pdf` → Label: "Figure 1"
 - `figure2_biomarker_panel.pdf` → Label: "Figure 2"
-- `figure3_tp53_perturbation.pdf` → Label: "Figure 3"
+- `figure4_tp53_therapeutic_targets.pdf` → Label: "Figure 3"
 
 **Total supplementary files:** 4 (1 supplementary material + 3 figures)
 
@@ -165,7 +165,7 @@ Multi-Agent Gene Regulatory Network Analysis
 
 **Abstract** (copy from the updated preprint draft):
 ```
-Gene regulatory network analysis is essential for understanding disease mechanisms, identifying biomarkers, and prioritizing therapeutic targets. However, traditional workflows require hours of manual effort across multiple databases and tools, with sequential processing limiting scalability. We present RegNetAgents, an LLM-powered multi-agent framework that streamlines gene regulatory analysis through intelligent workflow orchestration and conversational interfaces. The system integrates network modeling, network-based target ranking, pathway enrichment, and multi-domain interpretation (cancer, drug development, clinical relevance, systems biology) into a unified accessible platform. Leveraging pre-computed ARACNe networks from 500,000+ single cells across 10 cell types (GREmLN team), the framework enables rapid hypothesis generation and experimental prioritization. Four specialized domain agents execute in parallel using local language models to generate scientific insights, with rule-based fallback for reliability. Automated perturbation analysis ranks regulators by network centrality and ranks candidate therapeutic targets using network centrality metrics (PageRank, degree centrality). To demonstrate framework capabilities, we analyzed a colorectal cancer biomarker panel (MYC, CTNNB1, CCND1, TP53, KRAS) with complete perturbation analysis (99 regulators) completing in 15-62 seconds depending on mode. Framework demonstration on colorectal cancer biomarkers showed complete concordance with published literature across this limited five-gene sample, and perturbation analysis identified literature-supported TP53 interactors (WWTR1, YAP1 from Hippo pathway) alongside novel testable hypotheses. A conversational interface via Model Context Protocol enables natural language queries through Claude Desktop without programming expertise. RegNetAgents transforms multi-hour manual workflows into second-scale automated analysis, making sophisticated network analysis accessible to experimental biologists and providing a reusable framework for diverse biological questions.
+Gene regulatory network analysis is essential for understanding disease mechanisms, identifying biomarkers, and prioritizing therapeutic targets. However, traditional workflows require hours of manual effort across multiple databases and tools, with sequential processing limiting scalability. We present RegNetAgents, an LLM-powered multi-agent framework that streamlines gene regulatory analysis through intelligent workflow orchestration and conversational interfaces. The system integrates network modeling, network-based target ranking, pathway enrichment, and multi-domain interpretation (cancer, drug development, clinical relevance, systems biology) into a unified accessible platform. Leveraging pre-computed ARACNe networks from 500,000+ single cells across 10 cell types (GREmLN team), the framework enables rapid hypothesis generation and experimental prioritization. Four specialized domain agents execute in parallel using local language models to generate scientific insights, with rule-based fallback for reliability. Automated therapeutic target prioritization ranks regulators by network centrality and ranks candidate therapeutic targets using network centrality metrics (PageRank, degree centrality). To demonstrate framework capabilities, we analyzed a colorectal cancer biomarker panel (MYC, CTNNB1, CCND1, TP53, KRAS) with complete therapeutic target prioritization (99 regulators) completing in 15-62 seconds depending on mode. Framework demonstration on colorectal cancer biomarkers showed complete concordance with published literature across this limited five-gene sample, and therapeutic target prioritization identified literature-supported TP53 interactors (WWTR1, YAP1 from Hippo pathway) alongside novel testable hypotheses. A conversational interface via Model Context Protocol enables natural language queries through Claude Desktop without programming expertise. RegNetAgents transforms multi-hour manual workflows into second-scale automated analysis, making sophisticated network analysis accessible to experimental biologists and providing a reusable framework for diverse biological questions.
 ```
 
 **Keywords**:

@@ -33,7 +33,7 @@ Gene regulatory network analysis currently requires:
    - Execute in parallel for integrated analysis
    - Graceful fallback to rule-based heuristics for reliability
 
-3. **🎯 Perturbation Analysis**
+3. **🎯 Therapeutic Target Prioritization**
    - Simulates inhibiting upstream regulators (topology-based, not expression prediction)
    - Ranks therapeutic targets using PageRank and out-degree centrality for experimental validation
    - Identifies novel drug targets through network analysis
@@ -52,12 +52,12 @@ Gene regulatory network analysis currently requires:
 **Results**:
 - ✅ **Framework demonstration** - Complete concordance with published literature across limited 5-gene sample (proof-of-concept)
 - ✅ **Automated classification** - diagnostic, prognostic, predictive biomarkers
-- ✅ **Perturbation analysis** - all 99 regulators analyzed across 5 genes
-- ✅ **Literature-supported identification** - perturbation analysis identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among top-ranked candidates based on network topology; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses
-- ✅ **15.49 seconds** - complete network and perturbation analysis (all 99 regulators, rule-based)
+- ✅ **Therapeutic target prioritization** - all 99 regulators analyzed across 5 genes
+- ✅ **Literature-supported identification** - therapeutic target prioritization identified literature-supported TP53 interactors (WWTR1, YAP1, CHD4) among top-ranked candidates based on network topology; additional high-ranking regulators (RBPMS, PRRX2, THRA, IKZF2) represent novel hypotheses
+- ✅ **15.49 seconds** - complete network and therapeutic target prioritization (all 99 regulators, rule-based)
 - ✅ **~62 seconds** - comprehensive analysis with LLM-powered domain insights
 
-### TP53 Perturbation Analysis Example
+### TP53 Therapeutic Target Prioritization Example
 
 **Prioritized 7 candidate regulators** for experimental validation:
 - **WWTR1**: Top-ranked by PageRank (0.473) - Literature confirms TP53 interaction ✓ (Hippo pathway)
@@ -67,7 +67,7 @@ Gene regulatory network analysis currently requires:
 
 All candidates ranked by PageRank (primary) and out-degree centrality (secondary) for experimental validation prioritization.
 
-**Note**: Perturbation analysis uses network topology to prioritize regulators for experimental validation. It does not predict gene expression levels or dynamic responses. Framework designed for hypothesis generation, not therapeutic claims.
+**Note**: Therapeutic target prioritization uses network topology to prioritize regulators for experimental validation. It does not predict gene expression levels or dynamic responses. Framework designed for hypothesis generation, not therapeutic claims.
 
 ---
 
@@ -91,7 +91,7 @@ All candidates ranked by PageRank (primary) and out-degree centrality (secondary
 | **Domains** | Siloed | 4 LLM-powered parallel agents |
 | **Insights** | Manual literature | AI-generated with rationales |
 | **Interface** | Web forms | Conversational |
-| **Perturbation** | Manual | Automated |
+| **Target Prioritization** | Manual | Automated |
 | **Cell types** | Repeat workflow | Instant (<0.01 sec) |
 
 ---
@@ -143,7 +143,7 @@ jbird@birdaisolutions.com
 - Multi-agent framework with LLM-powered domain analysis
 - Local inference (Ollama) with graceful fallback to rules
 - AI-generated scientific rationales for all domain insights
-- Automated perturbation analysis for candidate regulator prioritization
+- Automated therapeutic target prioritization for candidate regulator prioritization
 - Conversational interface making network biology accessible via Model Context Protocol
 - Hypothesis generation tool for experimental prioritization
 

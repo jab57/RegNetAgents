@@ -21,7 +21,7 @@
 
 2. **`generate_figures.py`** (located in: `../scripts/generate_figures.py`)
    - Python script to create figures from your data
-   - Generates Figure 2 (biomarker panel) and Figure 3 (TP53 perturbation)
+   - Generates Figure 2 (biomarker panel) and Figure 4 (TP53 therapeutic targets)
    - Also creates Tables 2 and 3 as CSV files
    - **ACTION**: Run with `python scripts/generate_figures.py`
 
@@ -123,7 +123,7 @@ When you run `generate_figures.py`, you'll create:
   - 4 panels: Regulatory architecture, therapeutic scores, biomarker types, roles
   - Based on your 5-gene CRC analysis
 
-- `figure3_tp53_perturbation.png` and `.pdf`
+- `figure4_tp53_therapeutic_targets.png` and `.pdf`
   - 3 panels: Network diagram, PageRank ranking, degree centrality ranking
   - Shows 7 TP53 regulators with two alternative rankings (PageRank primary, degree secondary)
 
@@ -132,8 +132,8 @@ When you run `generate_figures.py`, you'll create:
   - Summary of 5-gene analysis
   - Ready to copy into manuscript
 
-- `table3_tp53_perturbation.csv` and `.txt`
-  - TP53 perturbation results
+- `table3_tp53_therapeutic_targets.csv` and `.txt`
+  - TP53 therapeutic target results
   - 7 regulators with impact scores
 
 ---
@@ -233,7 +233,7 @@ RegNetAgents/
 │
 ├── results/ (analysis outputs)
 │   ├── biomarker_results.json
-│   └── tp53_perturbation_results.json
+│   └── tp53_ranked_regulators.json
 │
 ├── docs/ (documentation)
 ├── tests/ (test files)

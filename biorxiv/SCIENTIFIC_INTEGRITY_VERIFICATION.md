@@ -83,21 +83,21 @@ This report cross-references every table, figure, and quantitative claim in the 
 | TP53 | 163 | 163 | 7 | 7 | ✅ VERIFIED |
 | KRAS | 0 | 0 | 7 | 7 | ✅ VERIFIED |
 
-**Top Therapeutic Targets (PageRank)** (from perturbation analysis files)
+**Top Therapeutic Targets (PageRank)** (from therapeutic target prioritization files)
 
 | Gene | Manuscript: Top Target | Manuscript: PageRank | Actual: PageRank | Source File | Status |
 |------|----------------------|---------------------|-----------------|-------------|--------|
-| MYC | ID4 | 0.622 | 0.6223 | myc_perturbation_standard_centrality.json | ✅ VERIFIED |
-| CTNNB1 | CHD2 | 0.530 | 0.5299 | ctnnb1_perturbation_standard_centrality.json | ✅ VERIFIED |
-| CCND1 | ZBTB20 | 0.600 | 0.6004 | ccnd1_perturbation_standard_centrality.json | ✅ VERIFIED |
-| TP53 | WWTR1 | 0.473 | 0.4734 | tp53_perturbation_standard_centrality.json | ✅ VERIFIED |
-| KRAS | GPBP1 | 0.609 | 0.6088 | kras_perturbation_standard_centrality.json | ✅ VERIFIED |
+| MYC | ID4 | 0.622 | 0.6223 | myc_therapeutic_targets_standard_centrality.json | ✅ VERIFIED |
+| CTNNB1 | CHD2 | 0.530 | 0.5299 | ctnnb1_therapeutic_targets_standard_centrality.json | ✅ VERIFIED |
+| CCND1 | ZBTB20 | 0.600 | 0.6004 | ccnd1_therapeutic_targets_standard_centrality.json | ✅ VERIFIED |
+| TP53 | WWTR1 | 0.473 | 0.4734 | tp53_therapeutic_targets_standard_centrality.json | ✅ VERIFIED |
+| KRAS | GPBP1 | 0.609 | 0.6088 | kras_therapeutic_targets_standard_centrality.json | ✅ VERIFIED |
 
 ---
 
-### Table 3: TP53 Perturbation Analysis Results
+### Table 3: TP53 Therapeutic Target Prioritization Results
 
-**Complete Verification** (`tp53_perturbation_standard_centrality.json`)
+**Complete Verification** (`tp53_therapeutic_targets_standard_centrality.json`)
 
 | Rank | Regulator | Manuscript: PageRank | Actual: PageRank | Manuscript: Out-Degree | Actual: Out-Degree | Manuscript: Targets | Actual: Targets | Status |
 |------|-----------|---------------------|-----------------|----------------------|-------------------|--------------------|--------------------|--------|
@@ -113,43 +113,43 @@ This report cross-references every table, figure, and quantitative claim in the 
 
 ---
 
-## Detailed Perturbation Analysis Verification
+## Detailed Therapeutic Target Prioritization Verification
 
 ### MYC Regulators
 - **Baseline regulators:** Manuscript claims 25 → Actual: 25 ✅
 - **Top target ID4:** PageRank 0.622 → Actual: 0.6223 ✅
 - **ID4 downstream targets:** Manuscript claims 496 → Actual: 496 ✅
-- **Source:** `myc_perturbation_standard_centrality.json`
+- **Source:** `myc_therapeutic_targets_standard_centrality.json`
 
 ### CTNNB1 Regulators
 - **Baseline regulators:** Manuscript claims 18 → Actual: 18 ✅
 - **Top target CHD2:** PageRank 0.530 → Actual: 0.5299 ✅
 - **CHD2 downstream targets:** Manuscript claims 291 → Actual: 291 ✅
-- **Source:** `ctnnb1_perturbation_standard_centrality.json`
+- **Source:** `ctnnb1_therapeutic_targets_standard_centrality.json`
 
 ### CCND1 Regulators
 - **Baseline regulators:** Manuscript claims 42 → Actual: 42 ✅
 - **Top target ZBTB20:** PageRank 0.600 → Actual: 0.6004 ✅
 - **ZBTB20 downstream targets:** Manuscript claims 426 → Actual: 426 ✅
-- **Source:** `ccnd1_perturbation_standard_centrality.json`
+- **Source:** `ccnd1_therapeutic_targets_standard_centrality.json`
 
 ### TP53 Regulators
 - **Baseline regulators:** Manuscript claims 7 → Actual: 7 ✅
 - **Top target WWTR1:** PageRank 0.473 → Actual: 0.4734 ✅
 - **WWTR1 downstream targets:** Manuscript claims 293 → Actual: 293 ✅
-- **Source:** `tp53_perturbation_standard_centrality.json`
+- **Source:** `tp53_therapeutic_targets_standard_centrality.json`
 
 ### KRAS Regulators
 - **Baseline regulators:** Manuscript claims 7 → Actual: 7 ✅
 - **Top target GPBP1:** PageRank 0.609 → Actual: 0.6088 ✅
 - **GPBP1 downstream targets:** Manuscript claims 373 → Actual: 373 ✅
-- **Source:** `kras_perturbation_standard_centrality.json`
+- **Source:** `kras_therapeutic_targets_standard_centrality.json`
 
 ---
 
 ## Total Regulators Analyzed
 
-**Manuscript claim (line 245):** "Multi-gene analysis of 5 genes... complete perturbation analysis of all 99 regulators"
+**Manuscript claim (line 245):** "Multi-gene analysis of 5 genes... complete therapeutic target prioritization of all 99 regulators"
 
 **Verification:**
 - MYC: 25 regulators
@@ -183,11 +183,11 @@ This report cross-references every table, figure, and quantitative claim in the 
 - **Regulatory roles shown:** Match actual data with updated terminology ✅
 - **Status:** ✅ VERIFIED against biomarker_results.json
 
-### Figure 3: TP53 Perturbation Analysis
-- **Data source:** `tp53_perturbation_standard_centrality.json`
+### Figure 3: TP53 Therapeutic Target Prioritization
+- **Data source:** `tp53_therapeutic_targets_standard_centrality.json`
 - **Rankings shown:** Top 7 regulators by PageRank
 - **Values shown:** Match actual data ✅
-- **Status:** ✅ VERIFIED against tp53_perturbation_standard_centrality.json
+- **Status:** ✅ VERIFIED against tp53_therapeutic_targets_standard_centrality.json
 
 ---
 
@@ -204,7 +204,7 @@ This report cross-references every table, figure, and quantitative claim in the 
 ### What is AI Interpretation (Clearly Labeled):
 - Literature validation statements (e.g., "Literature validation: MYC amplification occurs in 15-20% of CRCs...")
 - Domain agent insights (cancer biology, drug target assessment, clinical actionability)
-- Therapeutic strategy recommendations (e.g., "Consider validating with experimental perturbation studies")
+- Therapeutic strategy recommendations (e.g., "Consider validating with experimental studies")
 - Biomarker type classifications (diagnostic, prognostic, predictive) - **NOTE:** These come from the MCP server's domain agent analysis
 
 **Important:** The manuscript clearly distinguishes between:
@@ -241,14 +241,14 @@ All result files used in this verification are stored in `results/` directory:
 
 1. `biomarker_results.json` - Multi-gene biomarker panel analysis
 2. `comprehensive_timing_results.json` - Performance benchmarks
-3. `tp53_perturbation_standard_centrality.json` - TP53 perturbation analysis
-4. `myc_perturbation_standard_centrality.json` - MYC perturbation analysis
-5. `ctnnb1_perturbation_standard_centrality.json` - CTNNB1 perturbation analysis
-6. `ccnd1_perturbation_standard_centrality.json` - CCND1 perturbation analysis
-7. `kras_perturbation_standard_centrality.json` - KRAS perturbation analysis
+3. `tp53_therapeutic_targets_standard_centrality.json` - TP53 therapeutic target prioritization
+4. `myc_therapeutic_targets_standard_centrality.json` - MYC therapeutic target prioritization
+5. `ctnnb1_therapeutic_targets_standard_centrality.json` - CTNNB1 therapeutic target prioritization
+6. `ccnd1_therapeutic_targets_standard_centrality.json` - CCND1 therapeutic target prioritization
+7. `kras_therapeutic_targets_standard_centrality.json` - KRAS therapeutic target prioritization
 
 **Total storage size:** ~68 KB of actual experimental data
-**Total data points analyzed:** 99 complete perturbation analyses across 5 genes
+**Total data points analyzed:** 99 complete therapeutic target prioritization analyses across 5 genes
 
 ---
 

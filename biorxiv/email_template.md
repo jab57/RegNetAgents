@@ -32,7 +32,7 @@ The system automates labor-intensive manual workflows across
 multiple databases (STRING, BioGRID, Enrichr, etc.) into subsecond analysis.
 In a limited five-gene demonstration using colorectal cancer biomarkers, framework
 classifications showed complete concordance with published literature, and the
-perturbation analysis identified both literature-supported (CHD4, YAP1) and novel (RBPMS)
+therapeutic target prioritization identified both literature-supported (CHD4, YAP1) and novel (RBPMS)
 candidates for TP53 experimental validation.
 
 Preprint: [bioRxiv URL - add after submission]
@@ -111,7 +111,7 @@ concordance with published literature across this limited sample.
 ### Example 3: TP53 Researcher
 ```
 Since you've studied TP53 regulation, I thought you might be interested
-in our perturbation analysis that ranked CHD4 and YAP1 as top
+in our therapeutic target prioritization that ranked CHD4 and YAP1 as top
 candidates (both have documented interactions with TP53) along with RBPMS as a
 novel hypothesis for experimental validation.
 ```
@@ -119,7 +119,7 @@ novel hypothesis for experimental validation.
 ### Example 4: Hippo Pathway Researcher
 ```
 Since you work on YAP1 and Hippo signaling, I thought you'd find it
-interesting that our automated perturbation analysis independently
+interesting that our automated therapeutic target prioritization independently
 identified YAP1 and WWTR1 as top-ranking regulators of TP53, supported by
 pathway enrichment showing Hippo signaling genes.
 ```

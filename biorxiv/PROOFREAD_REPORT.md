@@ -146,9 +146,9 @@ Now that automated checks are done, please manually review these items:
 
 - [ ] **Open figure1_architecture.png** - Does it match Figure 1 description (line 505)?
 - [ ] **Open figure2_biomarker_panel.png** - Does it show all 5 genes correctly?
-- [ ] **Open figure3_tp53_perturbation.png** - Are the 7 regulators clearly shown?
+- [ ] **Open figure4_tp53_therapeutic_targets.png** - Are the 7 regulators clearly shown?
 - [ ] **Open table2_biomarker_results.txt** - Do numbers match manuscript Table 2?
-- [ ] **Open table3_tp53_perturbation.txt** - Do numbers match manuscript Table 3?
+- [ ] **Open table3_tp53_therapeutic_targets.txt** - Do numbers match manuscript Table 3?
 
 ### Writing Quality (20 minutes)
 
