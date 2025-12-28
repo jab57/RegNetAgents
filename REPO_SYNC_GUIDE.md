@@ -246,6 +246,7 @@ git push origin main
 ```
 
 **IF changes include ANY of these files:**
+- biorxiv/README.md (internal submission guide)
 - biorxiv/submission_guide.md
 - biorxiv/journal_submission_plan_REVISED.md
 - biorxiv/email_template.md
@@ -373,6 +374,7 @@ git reset --soft HEAD~1
 ### ❌ PRIVATE (backup only, NOT public)
 
 **Planning Documents:**
+- `biorxiv/README.md` (internal submission guide)
 - `biorxiv/submission_guide.md`
 - `biorxiv/journal_submission_plan_REVISED.md`
 - `biorxiv/email_template.md`
