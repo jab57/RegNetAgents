@@ -262,6 +262,71 @@ git push origin main
 
 ---
 
+## ⚠️ IMPORTANT: Handling Mixed Changes
+
+**What if you have BOTH public-safe AND private files changed?**
+
+❌ **DO NOT commit them together in one commit!**
+
+✅ **Instead, create TWO separate commits:**
+
+### Step-by-Step for Mixed Changes:
+
+1. **Check what changed:**
+   ```bash
+   git status
+   ```
+
+2. **Identify which files are public vs private** using the File Classification section below
+
+3. **Create TWO commits:**
+
+   **First commit (Public-safe files only):**
+   ```bash
+   # Stage ONLY public-safe files
+   git add README.md biorxiv/preprint_draft.md
+
+   # Commit with clear message
+   git commit -m "Fix terminology in manuscript and README"
+
+   # Push to BOTH repos
+   git push backup main
+   git push origin main
+   ```
+
+   **Second commit (Private files only):**
+   ```bash
+   # Stage ONLY private files
+   git add biorxiv/PROOFREAD_REPORT.md biorxiv/one_page_summary.md
+
+   # Commit with clear message
+   git commit -m "Update internal review documents"
+
+   # Push to BACKUP ONLY
+   git push backup main
+   # (Do NOT push to origin)
+   ```
+
+4. **Result:**
+   - ✅ Public repo gets manuscript updates
+   - ✅ Backup repo gets everything
+   - 🔒 Private files stay private
+
+### What if you already committed them together?
+
+If you accidentally created one mixed commit, you need to split it:
+
+```bash
+# Reset the commit but keep changes
+git reset --soft HEAD~1
+
+# Now follow steps 3-4 above to create two separate commits
+```
+
+**Key Rule:** One commit = one type (all public OR all private, never mixed)
+
+---
+
 ## File Classification
 
 ### ✅ PUBLIC-SAFE (can go to both repos)
