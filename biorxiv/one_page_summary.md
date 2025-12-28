@@ -73,7 +73,7 @@ All candidates ranked by PageRank (primary) and out-degree centrality (secondary
 
 ## Technology
 
-**Network Data**: Pre-computed regulatory networks from GREmLN foundation model (11M scRNA-seq profiles, 162 cell types)
+**Network Data**: Pre-computed regulatory networks from the GREmLN team (11M scRNA-seq profiles, 162 cell types)
 **Network Inference**: ARACNe algorithm via GREmLN team preprocessing (statistical mutual information method)
 **Architecture**: LangGraph workflow orchestration + Model Context Protocol
 **LLM Engine**: Ollama (local inference, llama3.1:8b) with graceful fallback

@@ -23,7 +23,7 @@ The MCP Server provides:
 - Multi-Domain AI Interpretation (4 LLM-powered domain agents)
 - Gene Annotation and ID mapping (0ms cached)
 
-Network Data: 10 cell types from GREmLN foundation model
+Network Data: 10 cell types from the GREmLN team
 - Epithelial cells: 183,247 edges
 - CD8 T cells: 3,154 edges
 - Others: 404-5,317 edges
