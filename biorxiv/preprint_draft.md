@@ -250,7 +250,7 @@ Execution time includes all workflow steps from query initiation to final JSON o
 
 ### Data Availability
 
-Regulatory network data were obtained from the GREmLN foundation model (Zhang et al. 2025, bioRxiv 2025.07.03.663009). Preprocessed ARACNe networks for 10 cell types (CD14 monocytes, CD16 monocytes, CD20 B cells, CD4 T cells, CD8 T cells, NK cells, NKT cells, monocyte-derived dendritic cells, erythrocytes, and epithelial cells) are publicly available through the GREmLN Quickstart Tutorial at https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart. Networks are provided as TSV files downloaded via Google Drive in the tutorial materials. The underlying scRNA-seq data (11 million profiles across 162 cell types) were sourced from the CZ CELLxGENE Data Portal (Census release: 2024-07-01). Pathway annotations use the publicly accessible Reactome API (https://reactome.org/AnalysisService/). Gene-level annotations use local NCBI and UniProt databases. Gene identifier conversion uses the Ensembl REST API (https://rest.ensembl.org).
+Regulatory network data were obtained from the GREmLN team (Zhang et al. 2025, bioRxiv 2025.07.03.663009). Preprocessed ARACNe networks for 10 cell types (CD14 monocytes, CD16 monocytes, CD20 B cells, CD4 T cells, CD8 T cells, NK cells, NKT cells, monocyte-derived dendritic cells, erythrocytes, and epithelial cells) are publicly available through the GREmLN Quickstart Tutorial at https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart. Networks are provided as TSV files downloaded via Google Drive in the tutorial materials. The underlying scRNA-seq data (11 million profiles across 162 cell types) were sourced from the CZ CELLxGENE Data Portal (Census release: 2024-07-01). Pathway annotations use the publicly accessible Reactome API (https://reactome.org/AnalysisService/). Gene-level annotations use local NCBI and UniProt databases. Gene identifier conversion uses the Ensembl REST API (https://rest.ensembl.org).
 
 ## RESULTS
 
@@ -665,7 +665,7 @@ Raw analysis outputs (JSON format) for the case study analyses presented in this
 
 The RegNetAgents software implementation is publicly available at https://github.com/jab57/RegNetAgents under the MIT License.
 
-Installation requires Python 3.8+ and takes approximately 5-10 minutes. Network data files (pre-computed ARACNe networks from GREmLN) are downloaded from the GREmLN Quickstart Tutorial as documented in the repository README. All analytical methods and workflow orchestration code are provided to facilitate independent use and extension by the research community.
+Installation requires Python 3.8+ and takes approximately 5-10 minutes. Network data files (pre-computed ARACNe networks from the GREmLN team) are downloaded from the GREmLN Quickstart Tutorial as documented in the repository README. All analytical methods and workflow orchestration code are provided to facilitate independent use and extension by the research community.
 
 <div style="page-break-before: always"></div>
 
