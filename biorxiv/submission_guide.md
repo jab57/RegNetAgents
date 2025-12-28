@@ -24,9 +24,10 @@ Most prep work is already complete! You just need to:
 
 The following materials are ready in `C:\Dev\RegNetAgents\biorxiv\`:
 
-**Figures (3 complete sets)**:
+**Figures (4 complete sets)**:
 - ✅ `figure1_architecture.png` and `.pdf`
-- ✅ `figure2_biomarker_panel.png` and `.pdf`
+- ✅ `figure2_framework_value.png` and `.pdf`
+- ✅ `figure3_biomarker_panel.png` and `.pdf`
 - ✅ `figure4_tp53_therapeutic_targets.png` and `.pdf`
 
 **Tables (2 complete sets)**:
@@ -146,10 +147,11 @@ Look for "Supplementary Files" or "Additional Files" section. Upload files in th
 
 **2. Figures:**
 - `figure1_architecture.pdf` → Label: "Figure 1"
-- `figure2_biomarker_panel.pdf` → Label: "Figure 2"
-- `figure4_tp53_therapeutic_targets.pdf` → Label: "Figure 3"
+- `figure2_framework_value.pdf` → Label: "Figure 2"
+- `figure3_biomarker_panel.pdf` → Label: "Figure 3"
+- `figure4_tp53_therapeutic_targets.pdf` → Label: "Figure 4"
 
-**Total supplementary files:** 4 (1 supplementary material + 3 figures)
+**Total supplementary files:** 5 (1 supplementary material + 4 figures)
 
 #### Part 4: Manuscript Information
 
@@ -323,7 +325,7 @@ Once you get your DOI and bioRxiv URL:
 
 **Already Complete** ✅:
 - [x] Edited author names and affiliations in draft
-- [x] Generated all 3 figures (PDF and PNG versions)
+- [x] Generated all 4 figures (PDF and PNG versions)
 - [x] Generated all 2 tables (CSV and TXT versions)
 - [x] Created Word document with updated author info
 - [x] Moved appendix to supplementary material
