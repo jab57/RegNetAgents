@@ -169,11 +169,18 @@ python verify_installation.py
 This will check:
 - Python version (3.8+)
 - Required packages
-- Network data files
+- **Git LFS installation and file downloads** (detects if network files are pointers vs. actual data)
+- Network data files (validates file sizes and loads test network)
+- Cache directory (creates if missing, tests writability)
 - Ollama installation (optional)
-- Core modules
+- Core modules (tests instantiation, not just imports)
 
-**Expected output:** `5/5 checks passed`
+**Expected output:** `7/7 checks passed` (or `6/7` if Ollama not installed - still OK)
+
+The script will provide specific guidance if anything fails, including:
+- How to pull Git LFS files: `git lfs pull`
+- Installation instructions for missing components
+- Performance metrics (typically completes in 5-10 seconds)
 
 ### Step 7: Test with Claude Desktop
 

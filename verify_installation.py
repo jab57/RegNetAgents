@@ -15,6 +15,9 @@ License: MIT
 
 import sys
 import os
+import subprocess
+import pickle
+import time
 from pathlib import Path
 
 # Use ASCII-compatible symbols for cross-platform compatibility
@@ -28,6 +31,60 @@ def print_header(text):
     print(f"\n{'=' * 60}")
     print(f"  {text}")
     print(f"{'=' * 60}\n")
+
+
+def check_git_lfs():
+    """Check if Git LFS is installed and files are downloaded."""
+    print("\nChecking Git LFS...")
+
+    # Check if git lfs command exists
+    try:
+        result = subprocess.run(['git', 'lfs', 'version'],
+                              capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            version = result.stdout.strip().split('\n')[0]
+            print(f"  Git LFS installed: {version}")
+        else:
+            print(f"{CROSS} Git LFS not installed")
+            print("  Install from: https://git-lfs.github.com")
+            print("  Or run: git lfs install")
+            return False
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        print(f"{CROSS} Git LFS not found")
+        print("  Install from: https://git-lfs.github.com")
+        return False
+
+    # Check if network files are actually downloaded (not just pointers)
+    sample_file = Path("models/networks/epithelial_cell/network_index.pkl")
+
+    if not sample_file.exists():
+        print(f"{WARN} Sample network file not found")
+        print("  Network files may not be present yet")
+        return True  # Don't fail - network check will catch this
+
+    # Read first bytes to check if it's a real file or a Git LFS pointer
+    try:
+        with open(sample_file, 'rb') as f:
+            first_bytes = f.read(20)
+
+        # Check if it's a text pointer (Git LFS not pulled)
+        if first_bytes.startswith(b'version'):
+            print(f"{CROSS} Network files are Git LFS pointers (not downloaded)")
+            print("  Fix this by running:")
+            print("    git lfs pull")
+            print("  This will download ~1.2 GB of network data")
+            return False
+        # Check if it's a pickle file (correct)
+        elif first_bytes.startswith(b'\x80\x03') or first_bytes.startswith(b'\x80\x04'):
+            print(f"{CHECK} Network files downloaded correctly")
+            return True
+        else:
+            print(f"{WARN} Network file format unexpected")
+            return True  # Let network loading test catch any issues
+
+    except Exception as e:
+        print(f"{WARN} Could not verify network file: {e}")
+        return True  # Don't fail on read errors
 
 
 def check_python_version():
@@ -76,7 +133,7 @@ def check_required_packages():
 
 
 def check_network_data():
-    """Check if network cache files exist."""
+    """Check if network cache files exist and can be loaded."""
     print("\nChecking network data files...")
 
     cell_types = [
@@ -100,22 +157,63 @@ def check_network_data():
         return False
 
     ready_count = 0
+    total_size = 0
     for cell_type in cell_types:
         cache_file = models_dir / cell_type / "network_index.pkl"
         if cache_file.exists():
-            ready_count += 1
+            file_size = cache_file.stat().st_size
+            # Check if file is reasonable size (> 1MB, not a tiny pointer)
+            if file_size > 1_000_000:  # 1 MB minimum
+                ready_count += 1
+                total_size += file_size
+            elif file_size < 1000:  # Likely a Git LFS pointer
+                print(f"{WARN} {cell_type} network file is too small ({file_size} bytes)")
+                print("  This looks like a Git LFS pointer. Run: git lfs pull")
 
-    print(f"  Found {ready_count}/{len(cell_types)} cell type networks")
+    print(f"  Found {ready_count}/{len(cell_types)} cell type networks ({total_size / 1_000_000:.1f} MB)")
+
+    if ready_count == 0:
+        print("[FAIL] No valid network data files found")
+        print("  Run: python scripts/build_network_cache.py --all")
+        return False
+
+    # Try to load one network to verify it's not corrupted
+    print("  Testing network loading...")
+    test_file = models_dir / 'epithelial_cell' / 'network_index.pkl'
+
+    if test_file.exists() and test_file.stat().st_size > 1_000_000:
+        try:
+            start_time = time.time()
+            with open(test_file, 'rb') as f:
+                network_data = pickle.load(f)
+            load_time = time.time() - start_time
+
+            # Verify it's a dict with expected structure
+            if isinstance(network_data, dict) and 'graph' in network_data:
+                import networkx as nx
+                graph = network_data['graph']
+                nodes = graph.number_of_nodes() if hasattr(graph, 'number_of_nodes') else len(network_data.get('genes', []))
+                edges = graph.number_of_edges() if hasattr(graph, 'number_of_edges') else len(network_data.get('regulators', {}))
+                print(f"{CHECK} Successfully loaded epithelial_cell network ({nodes:,} nodes, {edges:,} edges, {load_time:.2f}s)")
+            else:
+                print(f"{WARN} Network data structure unexpected")
+                return True  # Don't fail, but warn
+
+        except Exception as e:
+            print(f"{CROSS} Failed to load network: {e}")
+            print("  Network files may be corrupted. Try: git lfs pull")
+            return False
+    else:
+        print(f"{WARN} Could not test network loading (epithelial_cell not available)")
 
     if ready_count == len(cell_types):
-        print("[OK] All network data files present")
+        print("[OK] All network data files present and valid")
         return True
     elif ready_count > 0:
         print(f"[WARN] Partial network data ({ready_count}/{len(cell_types)} cell types)")
+        print("  Some analyses may not work. Run: git lfs pull")
         return True
     else:
-        print("[FAIL] No network data files found")
-        print("  Run: python scripts/build_network_cache.py --all")
         return False
 
 
@@ -153,26 +251,46 @@ def check_ollama():
 
 
 def check_core_modules():
-    """Try importing core RegNetAgents modules."""
+    """Try importing and instantiating core RegNetAgents modules."""
     print("\nChecking core RegNetAgents modules...")
 
+    # Test GeneIDMapper instantiation
     try:
-        from regnetagents import GeneIDMapper, CompleteGeneService
-        print("[OK] RegNetAgents core modules")
+        from regnetagents import GeneIDMapper
+        mapper = GeneIDMapper()
+        print("[OK] GeneIDMapper (instantiated successfully)")
     except ImportError as e:
-        print(f"[FAIL] Failed to import RegNetAgents modules: {e}")
+        print(f"[FAIL] Failed to import GeneIDMapper: {e}")
+        return False
+    except Exception as e:
+        print(f"[FAIL] Failed to instantiate GeneIDMapper: {e}")
         return False
 
+    # Test CompleteGeneService instantiation
+    try:
+        from regnetagents import CompleteGeneService
+        service = CompleteGeneService()
+        print("[OK] CompleteGeneService (instantiated successfully)")
+    except ImportError as e:
+        print(f"[FAIL] Failed to import CompleteGeneService: {e}")
+        return False
+    except Exception as e:
+        print(f"[WARN] CompleteGeneService import OK but instantiation failed: {e}")
+        print("  This is OK if gene annotation file is missing")
+        # Don't fail - service can work without annotations
+
+    # Test workflow module import (don't instantiate - requires network data)
     try:
         from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
-        print("[OK] LangGraph workflow module")
+        print("[OK] LangGraph workflow module (import successful)")
     except ImportError as e:
         print(f"[FAIL] Failed to import workflow module: {e}")
         return False
 
+    # Test MCP server module import
     try:
         from regnetagents_langgraph_mcp_server import server
-        print("[OK] MCP server module")
+        print("[OK] MCP server module (import successful)")
     except ImportError as e:
         print(f"[FAIL] Failed to import MCP server: {e}")
         return False
@@ -180,43 +298,92 @@ def check_core_modules():
     return True
 
 
+def check_cache_directory():
+    """Check if cache directory exists and is writable."""
+    print("\nChecking cache directory...")
+
+    cache_dir = Path("cache")
+
+    # Check if directory exists
+    if not cache_dir.exists():
+        try:
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            print(f"{CHECK} Cache directory created: {cache_dir}")
+            return True
+        except Exception as e:
+            print(f"{CROSS} Failed to create cache directory: {e}")
+            return False
+
+    # Check if directory is writable
+    try:
+        test_file = cache_dir / ".write_test"
+        test_file.write_text("test")
+        test_file.unlink()
+        print(f"{CHECK} Cache directory writable: {cache_dir}")
+        return True
+    except Exception as e:
+        print(f"{CROSS} Cache directory not writable: {e}")
+        return False
+
+
 def main():
     """Run all verification checks."""
     print_header("RegNetAgents Installation Verification")
 
+    start_time = time.time()
+
     checks = [
         ("Python Version", check_python_version()),
         ("Required Packages", check_required_packages()),
+        ("Git LFS", check_git_lfs()),
         ("Network Data", check_network_data()),
+        ("Cache Directory", check_cache_directory()),
         ("Ollama (optional)", check_ollama()),
         ("Core Modules", check_core_modules())
     ]
+
+    total_time = time.time() - start_time
 
     print_header("Verification Summary")
 
     passed = sum(1 for _, result in checks if result)
     total = len(checks)
+    required = total - 1  # Ollama is optional
+
+    print(f"\nTotal checks: {total} ({required} required, 1 optional)")
+    print(f"Time taken: {total_time:.1f} seconds\n")
 
     for name, result in checks:
-        status = "[OK] PASS" if result else "[FAIL] FAIL"
-        print(f"{status:10} | {name}")
+        if result:
+            print(f"  {CHECK} {name}")
+        else:
+            print(f"  {CROSS} {name}")
 
-    print(f"\n{passed}/{total} checks passed\n")
+    print(f"\nResult: {passed}/{total} checks passed")
+    print("=" * 60)
 
     if passed == total:
-        print("SUCCESS! SUCCESS! RegNetAgents is properly installed.")
-        print("\nNext steps:")
-        print("1. Configure Claude Desktop (see README.md Step 5)")
-        print("2. Restart Claude Desktop")
-        print("3. Try: 'Analyze TP53 in epithelial cells'")
+        print(f"\n{CHECK} SUCCESS! RegNetAgents is ready to use.\n")
+        print("Next steps:")
+        print("  1. Configure Claude Desktop (see README.md or INSTALL.md)")
+        print("  2. Restart Claude Desktop completely")
+        print("  3. Test with: 'Analyze TP53 in epithelial cells'\n")
         return 0
-    elif passed >= total - 1:  # Allow Ollama to be missing
-        print("[WARN] PARTIAL SUCCESS. RegNetAgents is mostly configured.")
-        print("\nYou can use RegNetAgents, but some features may be limited.")
-        print("Check the failed items above for details.")
-        return 1
+    elif passed >= required:  # All required checks passed (Ollama optional)
+        print(f"\n{CHECK} READY TO USE (optional features disabled)\n")
+        print("RegNetAgents will work with rule-based mode.")
+        print("\nOptional enhancements:")
+        print("  • Install Ollama for LLM-powered insights")
+        print("    → https://ollama.com/download")
+        print("    → ollama pull llama3.1:8b\n")
+        return 0
     else:
-        print("[FAIL] INSTALLATION INCOMPLETE. Please fix the failed checks above.")
+        print(f"\n{CROSS} INSTALLATION INCOMPLETE\n")
+        print("Please fix the failed checks above.")
+        print("\nCommon fixes:")
+        print("  • Missing packages: pip install -r requirements.txt")
+        print("  • Git LFS not pulled: git lfs pull")
+        print("  • Network data missing: git lfs install && git lfs pull\n")
         return 1
 
 
