@@ -132,7 +132,7 @@ Our therapeutic target prioritization makes several simplifying assumptions that
 
 1. **Topology-based ranking**: Analysis ranks regulators based on network centrality metrics (PageRank, degree centrality) rather than predicting quantitative gene expression changes. This approach identifies regulators for experimental validation but does not model dynamic regulatory responses or predict expression fold-changes. Cascade overlap (shared downstream targets) is reported as supplementary information but does not contribute to ranking.
 
-2. **Additive regulatory effects**: The analysis assumes regulators contribute independently to target gene regulation (equal contribution = `1/num_regulators` for each regulator). In reality, regulatory effects may be synergistic, antagonistic, or context-dependent. Combinatorial regulatory logic (e.g., AND/OR gates, feed-forward loops) is not explicitly modeled.
+2. **Additive regulatory effects**: The analysis assumes regulators contribute independently to target gene regulation (equal contribution = 1/num_regulators for each regulator). In reality, regulatory effects may be synergistic, antagonistic, or context-dependent. Combinatorial regulatory logic (e.g., AND/OR gates, feed-forward loops) is not explicitly modeled.
 
 3. **Chromatin context**: ARACNe networks capture steady-state correlation patterns but do not incorporate chromatin accessibility, histone modifications, or DNA methylation states. Regulatory potential predicted from network topology may differ from regulatory activity in specific chromatin contexts or differentiation states.
 
