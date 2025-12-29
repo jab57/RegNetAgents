@@ -177,7 +177,7 @@ LLM prompts request specific JSON formats with predefined keys. Response parsing
 **Rule-Based Fallback (Guaranteed Reliability):**
 If LLM is unavailable or fails, agents automatically switch to fast deterministic heuristic algorithms that classify genes based on network topology. This fallback mode ensures 100% uptime and consistent results across repeated runs, providing fully deterministic classifications without external dependencies:
 
-**Cancer Biology Agent:** Classifies oncogenic potential based on network centrality (>50 targets = high, >20 = moderate, <20 = low), tumor suppressor likelihood (heavily regulated genes with >10 regulators = high), and biomarker potential (diagnostic for heavily regulated genes, prognostic for hub regulators, predictive based on regulatory architecture). Classifications are heuristics derived from network position and regulatory role.
+**Cancer Biology Agent:** Classifies oncogenic potential based on network centrality (>20 targets = high, >5 = moderate, ≤5 = low), tumor suppressor likelihood (>15 regulators = high, >5 = moderate, ≤5 = low), and biomarker potential (diagnostic for heavily regulated genes, prognostic for hub regulators, predictive based on regulatory architecture). Classifications are heuristics derived from network position and regulatory role.
 
 **Drug Development Agent:** Identifies intervention strategies based on regulatory architecture (hub regulators = inhibition candidates, heavily regulated genes = activation candidates), estimates development complexity (high for hubs due to potential off-target effects, moderate for intermediate nodes, low for heavily regulated genes), and provides qualitative assessments of downstream cascade effects based on target counts.
 
