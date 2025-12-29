@@ -452,7 +452,7 @@ def create_figure4():
         ax3.text(targets + 10, i, f'{targets}', va='center', fontsize=8)
 
     # Add validation notes (bottom right corner for clarity)
-    validation_text = "Green = Top 3 by PageRank\n[V] WWTR1/YAP1: Validated\n[?] RBPMS: Novel"
+    validation_text = "Green = Top 3 by PageRank\n[V] WWTR1: Validated\n[?] RBPMS: Novel"
     ax3.text(0.98, 0.05, validation_text, transform=ax3.transAxes,
             ha='right', va='bottom', fontsize=8, style='italic',
             bbox=dict(boxstyle='round', facecolor='#f39c12', alpha=0.3))
