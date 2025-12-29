@@ -241,7 +241,9 @@ def clean_markdown_text(text):
     text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)      # Bold
     text = re.sub(r'\*(.+?)\*', r'\1', text)          # Italic
     text = re.sub(r'__(.+?)__', r'\1', text)          # Bold
-    text = re.sub(r'_(.+?)_', r'\1', text)            # Italic
+    # Only remove underscores used for markdown italic (word boundaries, not in variable names)
+    # Don't touch underscores that are part of identifiers like C_out(R) or deg_out(R)
+    text = re.sub(r'(?<!\w)_([a-zA-Z][a-zA-Z\s]+?)_(?!\w)', r'\1', text)  # Italic (words only)
 
     # Links
     text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
