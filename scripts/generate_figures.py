@@ -207,19 +207,18 @@ def create_figure1():
 #############################################################################
 
 def create_figure3():
-    """Create Figure 3: Colorectal Cancer Biomarker Panel Analysis"""
+    """Create Figure 3: Colorectal Cancer Biomarker Panel Analysis (3 panels)"""
 
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure(figsize=(15, 5))
 
     # Extract data
     genes = [r['gene'] for r in biomarker_data['biomarker_results']]
     num_targets = [r['num_targets'] for r in biomarker_data['biomarker_results']]
     num_regulators = [r['num_regulators'] for r in biomarker_data['biomarker_results']]
-    biomarker_types = [r['biomarker_type'] for r in biomarker_data['biomarker_results']]
     regulatory_roles = [r['regulatory_role'] for r in biomarker_data['biomarker_results']]
 
     # A) Bar chart: Regulators and Targets
-    ax1 = plt.subplot(2, 2, 1)
+    ax1 = plt.subplot(1, 3, 1)
     x = np.arange(len(genes))
     width = 0.35
 
@@ -250,7 +249,7 @@ def create_figure3():
                     f'{int(height)}', ha='center', va='bottom', fontsize=8)
 
     # B) Regulatory role classification
-    ax2 = plt.subplot(2, 2, 2)
+    ax2 = plt.subplot(1, 3, 2)
     role_map = {'hub_regulator': 'Hub Regulator', 'heavily_regulated': 'Heavily Regulated',
                 'weakly_regulated': 'Weakly Regulated', 'master_regulator': 'Master Regulator'}
     role_colors = {'hub_regulator': '#e74c3c', 'heavily_regulated': '#f39c12',
@@ -271,49 +270,21 @@ def create_figure3():
     ax2.spines['right'].set_visible(False)
     ax2.spines['bottom'].set_visible(False)
 
-    # C) Biomarker type classification
-    ax3 = plt.subplot(2, 2, 3)
-    biomarker_type_map = {'diagnostic': 'Diagnostic', 'prognostic': 'Prognostic',
-                          'predictive': 'Predictive',
-                          'prognostic|predictive': 'Prog/Pred',
-                          'diagnostic|prognostic': 'Diag/Prog',
-                          'diagnostic|prognostic|predictive': 'Diag/Prog/Pred'}
-    type_colors = {'diagnostic': '#3498db', 'prognostic': '#e74c3c',
-                   'predictive': '#f39c12',
-                   'prognostic|predictive': '#9b59b6',
-                   'diagnostic|prognostic': '#16a085',
-                   'diagnostic|prognostic|predictive': '#27ae60'}
-
-    for i, (gene, btype) in enumerate(zip(genes, biomarker_types)):
-        color = type_colors[btype]
-        ax3.barh(i, 1, color=color, alpha=0.8)
-        ax3.text(0.5, i, biomarker_type_map[btype], ha='center', va='center',
-                fontweight='bold', fontsize=10, color='white')
-
-    ax3.set_yticks(range(len(genes)))
-    ax3.set_yticklabels(genes, fontweight='bold')
-    ax3.set_xlim(0, 1)
-    ax3.set_xticks([])
-    ax3.set_title('C) Biomarker Classification', fontweight='bold', fontsize=12)
-    ax3.spines['top'].set_visible(False)
-    ax3.spines['right'].set_visible(False)
-    ax3.spines['bottom'].set_visible(False)
-
-    # D) Pathway enrichment summary
-    ax4 = plt.subplot(2, 2, 4)
+    # C) Pathway enrichment summary (was Panel D)
+    ax3 = plt.subplot(1, 3, 3)
 
     # Extract real pathway counts from results
     pathway_counts = [r['num_pathways'] for r in biomarker_data['biomarker_results']]
 
-    bars = ax4.barh(genes, pathway_counts, color='#9b59b6', alpha=0.8)
-    ax4.set_xlabel('Number of Significant Pathways', fontweight='bold')
-    ax4.set_title('D) Pathway Enrichment (FDR<0.05)', fontweight='bold', fontsize=12)
-    ax4.set_xlim(0, max(pathway_counts) * 1.15)
-    ax4.grid(axis='x', alpha=0.3)
+    bars = ax3.barh(genes, pathway_counts, color='#9b59b6', alpha=0.8)
+    ax3.set_xlabel('Number of Significant Pathways', fontweight='bold')
+    ax3.set_title('C) Pathway Enrichment (FDR<0.05)', fontweight='bold', fontsize=12)
+    ax3.set_xlim(0, max(pathway_counts) * 1.15)
+    ax3.grid(axis='x', alpha=0.3)
 
     # Add value labels
     for i, (bar, count) in enumerate(zip(bars, pathway_counts)):
-        ax4.text(count + 0.5, i, f'{count}', va='center', fontsize=9)
+        ax3.text(count + 0.5, i, f'{count}', va='center', fontsize=9)
 
     plt.tight_layout()
     # Save to biorxiv folder
