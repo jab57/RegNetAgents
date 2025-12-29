@@ -437,7 +437,7 @@ RegNetAgents advances the field through four key innovations:
 
 **1. Multi-Agent Parallelization:** Four domain-specific agents (cancer, drug, clinical, systems) execute simultaneously, providing integrated biological perspectives in a single query. This contrasts with sequential manual workflows where researchers must separately consider each domain.
 
-**2. Automated Therapeutic Target Prioritization:** Network topology-based ranking identifies therapeutic target candidates by quantifying regulator centrality and connectivity. While gene expression prediction tools exist (e.g., cell2cell for cell-cell communication modeling (42)), our approach prioritizes regulators for experimental validation based on network architecture rather than attempting to predict expression changes, which require dynamic models and time-series experimental data currently unavailable at single-cell resolution across cell types.
+**2. Automated Therapeutic Target Prioritization:** Network topology-based ranking identifies therapeutic target candidates by quantifying regulator centrality and connectivity. While gene expression prediction tools exist, our approach prioritizes regulators for experimental validation based on network architecture rather than attempting to predict expression changes, which require dynamic models and time-series experimental data currently unavailable at single-cell resolution across cell types.
 
 **3. Conversational Interface:** Model Context Protocol integration enables natural language queries ("Analyze TP53 in epithelial cells for cancer pathways") rather than programming or web form interactions. This democratizes access to sophisticated network analysis for experimental biologists without computational training.
 
@@ -628,8 +628,6 @@ The authors declare no competing interests.
 40. Zhou G, Soufan O, Ewald J, Hancock REW, Basu N, Xia J. NetworkAnalyst 3.0: a visual analytics platform for comprehensive gene expression profiling and meta-analysis. Nucleic Acids Res. 2019;47(W1):W234-W241.
 
 41. Liu A, Trairatphisan P, Gjerga E, et al. From expression footprints to causal pathways: contextualizing large signaling networks with CARNIVAL. NPJ Syst Biol Appl. 2019;5:40.
-
-42. Shao DD, Xue W, Krall EB, et al. KRAS and YAP1 converge to regulate EMT and tumor survival. Cell. 2014;158(1):171-184.
 
 
 
