@@ -1,0 +1,115 @@
+INFO:numexpr.utils:Note: NumExpr detected 28 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+INFO:numexpr.utils:NumExpr defaulting to 8 threads.
+WARNING:regnetagents_langgraph_workflow:Network file missing: models/networks\hepatocytes\network_index.pkl
+WARNING:regnetagents_langgraph_workflow:Network file missing: models/networks\cardiomyocytes\network_index.pkl
+WARNING:regnetagents_langgraph_workflow:Network file missing: models/networks\neurons\network_index.pkl
+WARNING:regnetagents_langgraph_workflow:Network file missing: models/networks\fibroblasts\network_index.pkl
+WARNING:regnetagents_langgraph_workflow:Network file missing: models/networks\endothelial_cells\network_index.pkl
+INFO:regnetagents_langgraph_workflow:PathwayEnricherAgent initialized with Reactome API
+INFO:regnetagents_langgraph_workflow:PathwayEnricherAgent initialized with Reactome API
+INFO:regnetagents_langgraph_workflow:PathwayEnricherAgent initialized with Reactome API
+INFO:regnetagents_langgraph_workflow:PathwayEnricherAgent initialized with Reactome API
+INFO:regnetagents_langgraph_workflow:PathwayEnricherAgent initialized with Reactome API
+
+============================================================
+PATHWAY ENRICHMENT VERIFICATION
+Running Reactome API queries for 5-gene CRC panel
+============================================================
+Initializing network cache...
+Loaded HIGH-QUALITY UniProt gene database: 15347 genes
+  - Source: NCBI+UniProt annotations
+  - Quality: Professional curation
+  - Coverage: Comprehensive
+Loaded HIGH-QUALITY UniProt gene database: 15347 genes
+  - Source: NCBI+UniProt annotations
+  - Quality: Professional curation
+  - Coverage: Comprehensive
+All genes already cached
+Fast gene mapping initialized: 15356 genes cached
+
+============================================================
+Analyzing MYC...
+============================================================
+  Regulators: 25
+  Targets: 427
+  Gene list size: 21 genes
+  Gene list: MYC, NFKBIZ, CHD2, ZHX3, HEY1, TBX2, NR1D1, STAT1, IRF3, KMT2A, BCL11A, ARHGAP23, NBPF10, NBPF19, NBPF14...
+  Querying Reactome API...
+  [OK] Significant pathways (FDR < 0.05): 0
+Loaded HIGH-QUALITY UniProt gene database: 15347 genes
+  - Source: NCBI+UniProt annotations
+  - Quality: Professional curation
+  - Coverage: Comprehensive
+All genes already cached
+Fast gene mapping initialized: 15356 genes cached
+
+============================================================
+Analyzing CTNNB1...
+============================================================
+  Regulators: 18
+  Targets: 310
+  Gene list size: 21 genes
+  Gene list: CTNNB1, CHD2, IRF2BP2, CHD1, PNN, TBX2, ZMYM4, ZNHIT3, SOX15, RFXANK, ZFAND6, MARCKS, ARHGAP23, SYNRG, ZNHIT3...
+  Querying Reactome API...
+  [OK] Significant pathways (FDR < 0.05): 0
+Loaded HIGH-QUALITY UniProt gene database: 15347 genes
+  - Source: NCBI+UniProt annotations
+  - Quality: Professional curation
+  - Coverage: Comprehensive
+All genes already cached
+Fast gene mapping initialized: 15356 genes cached
+
+============================================================
+Analyzing CCND1...
+============================================================
+  Regulators: 42
+  Targets: 0
+  Gene list size: 11 genes
+  Gene list: CCND1, TERF2IP, TGS1, EID1, CAVIN1, BASP1, RPL7L1, AGO2, DNMT1, NR4A3, ZRANB2
+  Querying Reactome API...
+  [OK] Significant pathways (FDR < 0.05): 0
+Loaded HIGH-QUALITY UniProt gene database: 15347 genes
+  - Source: NCBI+UniProt annotations
+  - Quality: Professional curation
+  - Coverage: Comprehensive
+All genes already cached
+Fast gene mapping initialized: 15356 genes cached
+
+============================================================
+Analyzing TP53...
+============================================================
+  Regulators: 7
+  Targets: 163
+  Gene list size: 18 genes
+  Gene list: TP53, RBPMS, CHD4, PRRX2, IKZF2, THRA, YAP1, WWTR1, EEF1AKMT4, NOL12, HBB, C12ORF75, FNIP1, GOLGA8B, SMIM30...
+  Querying Reactome API...
+  [OK] Significant pathways (FDR < 0.05): 0
+Loaded HIGH-QUALITY UniProt gene database: 15347 genes
+  - Source: NCBI+UniProt annotations
+  - Quality: Professional curation
+  - Coverage: Comprehensive
+All genes already cached
+Fast gene mapping initialized: 15356 genes cached
+
+============================================================
+Analyzing KRAS...
+============================================================
+  Regulators: 7
+  Targets: 0
+  Gene list size: 8 genes
+  Gene list: KRAS, ASCC2, BZW1, KDM2A, ZMYND8, MORF4L2, GPBP1, ZFP36L1
+  Querying Reactome API...
+  [OK] Significant pathways (FDR < 0.05): 0
+
+============================================================
+SUMMARY
+============================================================
+Gene       Regs   Tgts   List   Pathways  
+------------------------------------------------------------
+MYC        25     427    21     0         
+CTNNB1     18     310    21     0         
+CCND1      42     0      11     0         
+TP53       7      163    18     0         
+KRAS       7      0      8      0         
+
+[OK] Results saved to results/pathway_verification.json
