@@ -210,7 +210,7 @@ This cervical cancer validation demonstrates that RegNetAgents generates scienti
 | CCND1 | Heavily Regulated | 0 | 42 | ZBTB20 (0.600) |
 | KRAS | Weakly Regulated | 0 | 7 | GPBP1 (0.609) |
 
-*Seven cervical cancer-associated genes were analyzed in epithelial cells to demonstrate framework generalizability. Regulatory roles were automatically classified based on network topology. Top therapeutic target candidates were identified through PageRank-based ranking of upstream regulators. Analysis execution time: 103 seconds for all 7 genes.*
+*Seven cervical cancer-associated genes were analyzed in epithelial cells to demonstrate framework generalizability. Regulatory roles were automatically classified based on network topology. Top therapeutic target candidates were identified through PageRank-based ranking of upstream regulators. Analysis execution time: 69 seconds for all 7 genes.*
 
 ## Reproducibility Notes
 
