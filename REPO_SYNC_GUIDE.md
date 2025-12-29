@@ -22,6 +22,158 @@
 
 ---
 
+## For Claude AI: Sync Execution Protocol
+
+**When user asks to sync/commit/update repos, follow these exact steps:**
+
+### Step 1: Check Status
+```bash
+git status
+```
+
+### Step 2: Classify Files
+Check modified files against the **File Classification** section (lines 331-396):
+- **ALL files public-safe?** → Proceed to Step 3a
+- **ANY file private?** → Proceed to Step 3b
+
+### Step 3a: Public-Safe Files Only
+
+```bash
+# Commit changes
+git add <files>
+git commit -m "Clear description"
+
+# Push to backup (ALWAYS)
+git push backup main
+
+# Try pushing to public
+git push origin main
+```
+
+**If push succeeds:** ✅ Done!
+
+**If push fails with "non-fast-forward" or "branches have diverged":**
+→ Go to **Scenario: Diverged Branches** below
+
+### Step 3b: Private Files Included
+
+```bash
+# Commit changes
+git add <files>
+git commit -m "Clear description"
+
+# Push to backup ONLY
+git push backup main
+
+# DO NOT push to origin
+```
+
+Output to user: "Pushed to backup only (contains private files: <list files>)"
+
+---
+
+### Scenario: Diverged Branches
+
+**Detection:** `git push origin main` fails with:
+```
+! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs
+```
+
+**Solution - Cherry-pick the commit:**
+
+```bash
+# Step 1: Get the commit hash of what you just committed
+COMMIT_HASH=$(git rev-parse HEAD)
+
+# Step 2: Checkout origin/main
+git checkout origin/main
+
+# Step 3: Cherry-pick the commit
+git cherry-pick $COMMIT_HASH
+
+# Step 4: Push to origin
+git push origin HEAD:main
+
+# Step 5: Return to main branch
+git checkout main
+```
+
+**If cherry-pick succeeds:** ✅ Done! Commit is now in both repos.
+
+**If cherry-pick fails with conflicts:**
+```
+error: could not apply <hash>... <message>
+hint: after resolving the conflicts, mark the corrected paths
+hint: with 'git add <paths>' or 'git rm <paths>'
+```
+
+→ **STOP and ask user:** "Cherry-pick has conflicts. How would you like to proceed?"
+→ **DO NOT attempt to resolve automatically**
+
+---
+
+### Scenario: Mixed Public/Private Files
+
+**Detection:** User modified BOTH public-safe AND private files in same working directory
+
+**Solution - Create TWO commits:**
+
+```bash
+# Step 1: Stage ONLY public-safe files
+git add <public-file-1> <public-file-2>
+
+# Step 2: Commit public files
+git commit -m "Description of public changes"
+
+# Step 3: Push to both repos
+git push backup main
+git push origin main  # (handle divergence if needed - see above)
+
+# Step 4: Stage ONLY private files
+git add <private-file-1> <private-file-2>
+
+# Step 5: Commit private files
+git commit -m "Description of private changes"
+
+# Step 6: Push to backup ONLY
+git push backup main
+```
+
+---
+
+### Quick Decision Matrix
+
+| Situation | Files Changed | Action |
+|-----------|---------------|--------|
+| Normal sync | All public-safe | Push to `backup` AND `origin` |
+| Private content | Any private files | Push to `backup` ONLY |
+| Push rejected | Diverged branches | Cherry-pick to origin (see above) |
+| Mixed changes | Public + private | Split into TWO commits (see above) |
+| Cherry-pick conflict | Merge conflict | ASK USER (don't force) |
+| Unsure about file | Can't classify | ASK USER or default to backup-only (safer) |
+
+---
+
+### Error Handling
+
+**If unsure which files are public vs private:**
+1. Check the **File Classification** section (lines 331-396)
+2. If still unsure, ask user: "Is <filename> public-safe or private?"
+3. Default to backup-only (safer)
+
+**If git command fails:**
+1. Show user the exact error
+2. Explain what it means
+3. Ask how to proceed (don't guess)
+
+**If push to backup fails:**
+1. STOP immediately
+2. Alert user - backup is critical
+3. Don't proceed with origin push
+
+---
+
 ## How It Works (Plain English)
 
 **The Goal:** Keep all your work backed up in one repo, while only sharing safe/public content in another repo.
