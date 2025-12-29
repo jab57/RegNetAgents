@@ -100,19 +100,19 @@ For genes with five or more upstream regulators, we perform automated therapeuti
 We calculate three core centrality measures for each regulator R using NetworkX (20) implementations:
 
 **Degree Centrality:**
-$C_D(R) = \frac{deg(R)}{N - 1}$
+C_D(R) = deg(R) / (N - 1)
 
-Where $deg(R)$ is the total number of connections (in-degree + out-degree) and $N$ is the total number of nodes in the network. Measures overall network connectivity.
+Where deg(R) is the total number of connections (in-degree + out-degree) and N is the total number of nodes in the network. Measures overall network connectivity.
 
 **Out-Degree Centrality (Primary Hub Metric):**
-$C_{out}(R) = \frac{deg_{out}(R)}{N - 1}$
+C_out(R) = deg_out(R) / (N - 1)
 
-Where $deg_{out}(R)$ is the number of downstream targets regulated by R. This metric identifies hub regulators with broad downstream effects and estimates potential off-target impacts of therapeutic intervention.
+Where deg_out(R) is the number of downstream targets regulated by R. This metric identifies hub regulators with broad downstream effects and estimates potential off-target impacts of therapeutic intervention.
 
 **PageRank (Primary Ranking Metric):**
-$PR(R) = \frac{(1-\alpha)}{N} + \alpha \times \sum_{v \in M(R)} \frac{PR(v)}{L(v)}$
+PR(R) = (1-α)/N + α × Σ[PR(v) / L(v)] for all v in M(R)
 
-Where $M(R)$ is the set of nodes with edges pointing to R, $L(v)$ is the out-degree of node v (number of outbound edges), $\alpha = 0.85$ is the damping factor, and $N$ is the total number of nodes in the network. **Directionality**: In our regulatory networks, edges represent regulator → target relationships inferred by ARACNe. For a given target gene, $M(R)$ comprises its upstream regulators—genes with regulatory edges directed toward R. PageRank then measures each regulator's importance by considering not only direct connectivity but also the PageRank scores of nodes that point to that regulator, capturing influence propagation through the regulatory hierarchy. PageRank values are normalized by dividing by the maximum PageRank in the network to ensure cross-network interpretability (range: 0-1). This is Google's algorithm adapted for biological networks, measuring connection quality rather than quantity (21).
+Where M(R) is the set of nodes with edges pointing to R, L(v) is the out-degree of node v (number of outbound edges), α = 0.85 is the damping factor, and N is the total number of nodes in the network. **Directionality**: In our regulatory networks, edges represent regulator → target relationships inferred by ARACNe. For a given target gene, M(R) comprises its upstream regulators—genes with regulatory edges directed toward R. PageRank then measures each regulator's importance by considering not only direct connectivity but also the PageRank scores of nodes that point to that regulator, capturing influence propagation through the regulatory hierarchy. PageRank values are normalized by dividing by the maximum PageRank in the network to ensure cross-network interpretability (range: 0-1). This is Google's algorithm adapted for biological networks, measuring connection quality rather than quantity (21).
 
 **Ranking and Interpretation:**
 Regulators are ranked by PageRank (primary), as this metric was identified as the best predictor of successful drug targets in protein interaction networks (22). We also provide alternative rankings by out-degree centrality for comparison. PageRank differentiates therapeutic potential even when regulators contribute equally to target gene regulation. According to Mora & Donaldson (2021), approved drug targets show significantly higher PageRank and degree centrality compared to non-targets (22).
@@ -124,7 +124,7 @@ For each regulator, we report:
 - Top 5 affected cascades (genes regulated by both the inhibited regulator and the target gene)
 
 **Therapeutic Interpretation:**
-High PageRank (>0.30, exploratory threshold) combined with hub regulator status (>200 targets) indicates strong therapeutic potential but requires consideration of potential off-target effects. Assuming equal direct regulatory input, each of $N$ regulators would contribute $1/N$ to target gene regulation; centrality metrics (PageRank, degree centrality) differentiate therapeutic potential by weighting regulators based on network position and influence beyond this baseline assumption.
+High PageRank (>0.30, exploratory threshold) combined with hub regulator status (>200 targets) indicates strong therapeutic potential but requires consideration of potential off-target effects. Assuming equal direct regulatory input, each of N regulators would contribute 1/N to target gene regulation; centrality metrics (PageRank, degree centrality) differentiate therapeutic potential by weighting regulators based on network position and influence beyond this baseline assumption.
 
 **Therapeutic Target Prioritization Limitations:**
 

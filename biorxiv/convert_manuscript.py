@@ -222,12 +222,19 @@ def convert_markdown_to_docx(md_file, docx_file):
 
 def clean_markdown_text(text):
     """Remove markdown formatting from text"""
-    # First, extract and protect inline code (backticks) to preserve underscores
-    code_segments = []
-    def save_code(match):
-        code_segments.append(match.group(1))
-        return f"XCODEX{len(code_segments)-1}XCODEX"
-    text = re.sub(r'`([^`]+)`', save_code, text)
+    # First, extract and protect inline code (backticks) and LaTeX math to preserve underscores
+    protected_segments = []
+
+    def save_segment(match):
+        protected_segments.append(match.group(0))
+        return f"XPROTECTEDX{len(protected_segments)-1}XPROTECTEDX"
+
+    # Protect inline code (backticks)
+    text = re.sub(r'`([^`]+)`', save_segment, text)
+
+    # Protect LaTeX math blocks (single and double dollar signs)
+    text = re.sub(r'\$\$[^\$]+\$\$', save_segment, text)  # Display math $$...$$
+    text = re.sub(r'\$[^\$]+\$', save_segment, text)       # Inline math $...$
 
     # Bold and italic
     text = re.sub(r'\*\*\*(.+?)\*\*\*', r'\1', text)  # Bold italic
@@ -239,9 +246,9 @@ def clean_markdown_text(text):
     # Links
     text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
 
-    # Restore inline code content (now protected from underscore removal)
-    for i, code in enumerate(code_segments):
-        text = text.replace(f"XCODEX{i}XCODEX", code)
+    # Restore protected content (code and LaTeX math - now protected from underscore removal)
+    for i, segment in enumerate(protected_segments):
+        text = text.replace(f"XPROTECTEDX{i}XPROTECTEDX", segment)
 
     return text
 
