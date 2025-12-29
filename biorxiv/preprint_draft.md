@@ -240,7 +240,7 @@ External API calls (Reactome v89 REST API, Ensembl REST API v111) use asynchrono
 
 ### Performance Benchmarking
 
-We measured end-to-end execution time for three analysis scenarios on a standard laptop (Intel i7-14700F, 64GB RAM, Windows 11):
+We measured end-to-end execution time for three analysis scenarios on a standard desktop (Intel i7-14700F, 64GB RAM, Windows 11):
 
 1. **Single gene comprehensive analysis**: TP53 in epithelial cells (all workflow steps)
 2. **Multi-gene analysis**: 5 genes (MYC, CTNNB1, CCND1, TP53, KRAS) in epithelial cells
@@ -461,7 +461,7 @@ To contextualize the efficiency gains, we compared RegNetAgents to representativ
 | 5-gene comprehensive analysis | 8-16 hours (serial per-gene workflow) | 15.49 sec (rule-based) | ~1,900-3,700× |
 | Cross-cell-type comparison (10 types) | 4-8 hours (repeat workflow per type) | <0.01 sec (pre-indexed) | >1,000,000× |
 
-*Manual workflow estimates reflect typical researcher timings for querying databases (STRING, BioGRID, Enrichr, DAVID), downloading results, performing literature searches for domain-specific context, and manually integrating findings. Times exclude reading/interpretation and represent only data acquisition and basic analysis. RegNetAgents times measured on standard laptop (Intel i7-14700F, 64GB RAM) via Claude Desktop integration. Speedup calculated as (manual time)/(automated time).*
+*Manual workflow estimates reflect typical researcher timings for querying databases (STRING, BioGRID, Enrichr, DAVID), downloading results, performing literature searches for domain-specific context, and manually integrating findings. Times exclude reading/interpretation and represent only data acquisition and basic analysis. RegNetAgents times measured on standard desktop (Intel i7-14700F, 64GB RAM) via Claude Desktop integration. Speedup calculated as (manual time)/(automated time).*
 
 **Key observations:** The most dramatic speedups occur for tasks requiring integration across multiple sources (therapeutic target prioritization, multi-domain interpretation, cross-cell comparisons) where manual workflows require serial processing. Even simple network queries show 3-4 orders of magnitude improvement due to pre-computed caches eliminating web interface interactions. These performance gains enable exploratory hypothesis generation at scales impractical for manual workflows, though the framework outputs should always be validated through experimental follow-up.
 
