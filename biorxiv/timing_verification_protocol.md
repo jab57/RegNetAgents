@@ -176,7 +176,7 @@ After completing all tests:
 ```
 TIMING VERIFICATION SUMMARY
 Date: [date]
-System: [your laptop specs]
+System: [your system specs]
 Internet: [connection speed]
 
 Results:
