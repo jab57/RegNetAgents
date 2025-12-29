@@ -69,9 +69,9 @@ This report cross-references every table, figure, and quantitative claim in the 
 |------|----------------------------|---------------------------|--------|
 | MYC | Hub Regulator | Hub Regulator (427 targets > 20) | ✅ VERIFIED |
 | CTNNB1 | Hub Regulator | Hub Regulator (310 targets > 20) | ✅ VERIFIED |
-| CCND1 | Heavily Regulated | Heavily Regulated (42 regulators > 15, 0 targets) | ✅ VERIFIED |
+| CCND1 | Heavily Regulated | Heavily Regulated (42 regulators > 15, 0 targets ≤ 20) | ✅ VERIFIED |
 | TP53 | Hub Regulator | Hub Regulator (163 targets > 20) | ✅ VERIFIED |
-| KRAS | Heavily Regulated | Heavily Regulated (7 regulators ≤ 15, 0 targets) | ✅ VERIFIED |
+| KRAS | Weakly Regulated | Weakly Regulated (7 regulators ≤ 15, 0 targets) | ✅ VERIFIED |
 
 **Target/Regulator Counts** (`biomarker_results.json`)
 

@@ -256,7 +256,7 @@ Given the candidate genes, the system automatically:
 | **CTNNB1** | Hub Regulator | 310 | 18 | Diagnostic | **CHD2** (0.530) |
 | **CCND1** | Heavily Regulated | 0 | 42 | Diagnostic | **ZBTB20** (0.600) |
 | **TP53** | Hub Regulator | 163 | 7 | Prognostic | **WWTR1** (0.473) |
-| **KRAS** | Heavily Regulated | 0 | 7 | Predictive | **GPBP1** (0.609) |
+| **KRAS** | Weakly Regulated | 0 | 7 | Predictive | **GPBP1** (0.609) |
 
 *Therapeutic target prioritization performed for all 5 genes - all regulators analyzed (25, 18, 42, 7, 7 respectively). Regulators ranked using pre-computed PageRank scores from full epithelial cell network (captures global network influence; associated with drug target success per Mora & Donaldson 2021). Rankings serve as hypotheses for experimental validation. Full TP53 regulator ranking results shown in Case Study 2 (Table 3) with detailed rankings of all 7 regulators.*
 
@@ -266,9 +266,9 @@ Given the candidate genes, the system automatically:
 - **Predictive**: Predicts response to specific therapy (treatment selection)
 
 **Multi-Agent Analysis Summary**:
-- **Network Modeling**: Identified regulatory roles - 3 hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity, 2 heavily regulated genes (CCND1 with 42 regulators, KRAS with 7 regulators) as end-point effectors
+- **Network Modeling**: Identified regulatory roles - 3 hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity, 1 heavily regulated gene (CCND1 with 42 regulators), 1 weakly regulated endpoint (KRAS with 7 regulators)
 - **Pathway Enrichment**: 242 total significant pathways identified (FDR < 0.05) across 5 genes (MYC: 58, CTNNB1: 7, CCND1: 20, TP53: 16, KRAS: 141)
-- **Network Architecture Validation**: Regulatory architectures align with known biological roles (hub regulators as master regulators, heavily regulated genes as end-point effectors)
+- **Network Architecture Validation**: Regulatory architectures align with known biological roles (hub regulators as master regulators; CCND1 as heavily regulated endpoint; KRAS as weakly regulated endpoint)
 - **Therapeutic Target Prioritization** (PageRank Rankings): All 5 genes qualify for therapeutic target prioritization (>5 regulators each)
   - MYC: 25 regulators, CTNNB1: 18 regulators, CCND1: 42 regulators, TP53: 7 regulators, KRAS: 7 regulators
   - Detailed TP53 regulator ranking results shown in Case Study 2 below (7 candidate regulators ranked by PageRank for validation)

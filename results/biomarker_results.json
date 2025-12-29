@@ -81,7 +81,7 @@
     },
     {
       "gene": "KRAS",
-      "regulatory_role": "heavily_regulated",
+      "regulatory_role": "weakly_regulated",
       "num_targets": 0,
       "num_regulators": 7,
       "biomarker_type": "prognostic|predictive",

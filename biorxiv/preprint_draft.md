@@ -87,7 +87,7 @@ Regulatory roles are assigned algorithmically based on network topology:
 - **Heavily regulated**: >15 upstream regulators and ≤20 targets (complex regulatory control)
 - **Intermediate node**: >5 targets AND >5 regulators (balanced regulatory role)
 - **Regulator**: 1-20 targets not meeting hub or intermediate criteria (modest regulatory activity)
-- **Weakly regulated**: 0 targets and ≤15 regulators (simple endpoint)
+- **Weakly regulated**: 0 targets and ≤15 regulators (minimal regulatory architecture)
 
 These exploratory thresholds prioritize hub status over heavily-regulated status when genes meet both criteria, ensuring genes with extensive downstream influence are classified as hubs regardless of their input complexity. Network position metrics include in-degree (number of regulators), out-degree (number of targets), and regulatory role classification.
 
@@ -257,7 +257,7 @@ Regulatory network data were obtained from the GREmLN team (Zhang et al. 2025, b
 ### Validation Summary
 
 Framework validation against established colorectal cancer biology demonstrated:
-- **Network architecture alignment** with known biological roles (hub regulators: TP53, MYC, CTNNB1; end-point effectors: CCND1, KRAS)
+- **Network architecture alignment** with known biological roles (hub regulators: TP53, MYC, CTNNB1; heavily regulated: CCND1; weakly regulated: KRAS)
 - **High-ranking identification** of literature-supported TP53 interactors from Hippo pathway (WWTR1, YAP1, CHD4) based on network topology
 - **Pathway coherence** between network topology and biological pathways (Hippo signaling enrichment, FDR = 0.020)
 - **Novel hypothesis generation** for experimental validation (RBPMS, PRRX2, THRA, IKZF2)
@@ -323,7 +323,7 @@ To demonstrate framework capabilities and validate analytical outputs against es
 
 #### Multi-Gene Regulatory Network Analysis
 
-The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure 3). Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets, 7 regulators), MYC (427 targets, 25 regulators), and CTNNB1 (310 targets, 18 regulators), indicating central roles in signal amplification and oncogenic pathway activation. Two genes showed heavily regulated profiles with no identified downstream regulatory relationships in the epithelial network: CCND1 (0 targets, 42 regulators - extensively controlled) and KRAS (0 targets, 7 regulators), indicating they function as end-point effectors in signaling cascades.
+The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure 3). Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets, 7 regulators), MYC (427 targets, 25 regulators), and CTNNB1 (310 targets, 18 regulators), indicating central roles in signal amplification and oncogenic pathway activation. One gene showed a heavily regulated profile with extensive upstream control: CCND1 (0 targets, 42 regulators), indicating complex regulatory integration. One gene showed a weakly regulated profile with minimal regulatory architecture: KRAS (0 targets, 7 regulators), suggesting it functions as a simple endpoint effector in signaling cascades.
 
 <div style="page-break-before: always"></div>
 
@@ -335,17 +335,17 @@ The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure
 | CTNNB1 | Hub Regulator | 310 | 18 | CHD2 (0.530) |
 | CCND1 | Heavily Regulated | 0 | 42 | ZBTB20 (0.600) |
 | TP53 | Hub Regulator | 163 | 7 | **WWTR1 (0.473)** |
-| KRAS | Heavily Regulated | 0 | 7 | GPBP1 (0.609) |
+| KRAS | Weakly Regulated | 0 | 7 | GPBP1 (0.609) |
 
 *Therapeutic target prioritization performed for all five genes - all upstream regulators analyzed (25, 18, 42, 7, and 7 regulators respectively, total of 99 regulators). The system ranks regulators using pre-computed network centrality metrics from the full epithelial cell network, with **PageRank (normalized [0-1])** as the primary ranking metric calculated on entire network to capture global influence (best predictor of drug target success per Mora & Donaldson 2021). **Targets and Regulators columns** show count of network connections. Top candidate regulator shown for each gene (ranked by PageRank). These rankings serve as hypotheses for experimental validation. Detailed TP53 regulator ranking results presented below (Table 3) as representative example with complete rankings of all 7 regulators including both PageRank and out-degree centrality metrics.*
 
 #### Network Architecture and Literature Context
 
-Network analysis revealed distinct regulatory architectures that align with known biological roles. Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets), MYC (427 targets), and CTNNB1 (310 targets), indicating signal amplification roles consistent with their documented functions as master regulatory hubs in tumor suppression and oncogenic signaling. Two genes showed heavily regulated profiles with no downstream regulation: CCND1 (42 regulators) and KRAS (7 regulators), consistent with their roles as end-point effectors in signaling cascades.
+Network analysis revealed distinct regulatory architectures that align with known biological roles. Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets), MYC (427 targets), and CTNNB1 (310 targets), indicating signal amplification roles consistent with their documented functions as master regulatory hubs in tumor suppression and oncogenic signaling. CCND1 showed a heavily regulated profile with extensive upstream control (42 regulators), consistent with complex regulatory integration of cell cycle signaling. KRAS showed a weakly regulated profile (7 regulators, 0 targets), consistent with its role as a downstream endpoint effector in oncogenic signaling cascades.
 
 These regulatory patterns align with established CRC biology. MYC amplification occurs in 15-20% of CRCs and correlates with poor prognosis (23,24). CTNNB1 mutations/dysregulation occur in 40-80% of CRCs via APC loss and Wnt pathway activation (25,26). CCND1 overexpression occurs in 30-60% of CRCs and drives G1/S cell cycle transition (27). TP53 mutations occur in 50-70% of CRCs and associate with advanced stage, metastasis, and poor survival (28,29). KRAS mutations occur in 40-45% of CRCs and confer resistance to anti-EGFR therapies (30,31).
 
-The framework's identification of distinct network architectures (hub regulators vs. heavily regulated genes) demonstrates its ability to characterize gene regulatory roles from network topology, providing context for interpretation of each gene's potential biological significance.
+The framework's identification of distinct network architectures (hub regulators, heavily regulated genes, and weakly regulated endpoints) demonstrates its ability to characterize gene regulatory roles from network topology, providing context for interpretation of each gene's potential biological significance.
 
 ### Therapeutic Target Prioritization: TP53 Candidate Regulator Ranking
 
@@ -425,7 +425,7 @@ A critical question for any computational tool is whether it produces biological
 
 **2. Pathway-network concordance:** Pathway enrichment independently identified Hippo signaling (FDR = 0.020), confirming biological coherence between network structure and pathway-level regulation.
 
-**3. Network architecture alignment:** Identified regulatory architectures (hub regulators vs. heavily regulated genes) align with known biological roles - TP53, MYC, and CTNNB1 as master regulatory hubs in tumor suppression and oncogenic signaling, while CCND1 and KRAS function as end-point effectors.
+**3. Network architecture alignment:** Identified regulatory architectures align with known biological roles - TP53, MYC, and CTNNB1 as master regulatory hubs in tumor suppression and oncogenic signaling; CCND1 as a heavily regulated cell cycle effector with extensive upstream control; and KRAS as a weakly regulated downstream endpoint in oncogenic signaling cascades.
 
 These validations demonstrate the framework recapitulates established biology while generating novel testable hypotheses (RBPMS, PRRX2, THRA, IKZF2). This positions RegNetAgents as a reliable hypothesis generation tool for experimental biologists.
 
@@ -469,7 +469,7 @@ To contextualize the efficiency gains, we compared RegNetAgents to representativ
 
 ### Biological Insights from Case Studies
 
-The colorectal cancer analysis revealed distinct regulatory architectures with therapeutic implications. Hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163-427 targets) function as signal amplifiers but present off-target risks, while terminal effectors (CCND1, KRAS) offer more specific intervention points. TP53 therapeutic target prioritization revealed distributed regulatory control (7 regulators, each ~14% contribution), suggesting combinatorial therapeutic strategies may be necessary. The identification of YAP1/WWTR1 (Hippo pathway effectors) as top regulators aligns with recent interest in Hippo pathway-targeted therapies (34,35), demonstrating the framework can recapitulate and extend experimentally derived therapeutic hypotheses.
+The colorectal cancer analysis revealed distinct regulatory architectures with therapeutic implications. Hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163-427 targets) function as signal amplifiers but present off-target risks. Heavily regulated endpoints like CCND1 (42 upstream regulators) suggest complex regulatory integration requiring multi-pathway intervention strategies, while weakly regulated endpoints like KRAS (7 regulators) may offer simpler, more direct intervention points. TP53 therapeutic target prioritization revealed distributed regulatory control (7 regulators, each ~14% contribution), suggesting combinatorial therapeutic strategies may be necessary. The identification of YAP1/WWTR1 (Hippo pathway effectors) as top regulators aligns with recent interest in Hippo pathway-targeted therapies (34,35), demonstrating the framework can recapitulate and extend experimentally derived therapeutic hypotheses.
 
 ### Limitations
 
@@ -642,10 +642,10 @@ Workflow schematic showing the directed acyclic graph of agent execution. User q
 (A) Traditional manual workflow for gene regulatory analysis requires sequential querying of multiple databases (STRING/BioGRID for network data, Reactome/Enrichr for pathway enrichment, PubMed for literature curation) followed by manual synthesis, totaling 2-4 hours per gene. Workflow shown as four sequential steps with time estimates. (B) RegNetAgents automates this workflow through natural language interaction with Claude Desktop, executing parallel multi-agent analysis (network modeling, therapeutic target prioritization, pathway enrichment, four domain agents) in 0.6-15 seconds. (C) Performance comparison bar chart showing orders of magnitude speedup across single and multi-gene analyses in both rule-based and LLM-powered modes. Manual workflow baseline: 2.5 hours per gene (conservative estimate); 5-gene panel: 12.5 hours. Horizontal bars on logarithmic scale. (D) LLM-powered mode (right panel) adds scientific rationales and biological interpretations (+14 seconds) compared to rule-based network metrics and qualitative classifications only (left panel, 0.6 seconds), demonstrated with TP53 analysis. Example shows how LLM integrates gene function data (NCBI/UniProt) with network topology to provide biological context. System includes transparency flag (`llm_powered: true/false`) and graceful fallback to rule-based mode if Ollama unavailable.
 
 **Figure 3. Colorectal Cancer Biomarker Panel Regulatory Architecture.**
-(A) Network diagram showing the five analyzed genes (MYC, CTNNB1, CCND1, TP53, KRAS) with regulators (upstream arrows) and targets (downstream arrows) in the epithelial cell network. Node size represents number of connections; node color indicates regulatory role classification (red = hub regulator, orange = heavily regulated, blue = weakly regulated). TP53, MYC, and CTNNB1 emerge as central hubs with extensive downstream connectivity. (B) Bar chart comparing number of regulators (left) and targets (right) for each gene. (C) Biomarker type classification showing diagnostic, prognostic, and predictive categories.
+(A) Bar chart showing regulatory network architecture with number of upstream regulators (blue) and downstream targets (red) for each gene. TP53, MYC, and CTNNB1 show extensive downstream connectivity (163, 427, and 310 targets respectively), while CCND1 and KRAS have no downstream targets. (B) Regulatory role classification based on network topology: red = hub regulator (TP53, MYC, CTNNB1), orange = heavily regulated (CCND1), blue = weakly regulated (KRAS). (C) Biomarker type classification showing diagnostic, prognostic, and predictive categories. (D) Pathway enrichment showing number of significantly enriched Reactome pathways (FDR < 0.05) for each gene's regulatory neighborhood.
 
 **Figure 4. TP53 Therapeutic Target Prioritization and Regulator Ranking.**
-(A) Network diagram showing TP53 (center) with 7 upstream regulators. All regulators contribute equal direct regulatory loss (14.3% = 1/7 regulators). Node size represents downstream target count (larger = more targets = potential off-target effects). Top 3 regulators by PageRank are highlighted with color. (B) Horizontal bar chart of PageRank centrality scores for all 7 regulators, ranked from highest (WWTR1, 0.473) to lowest (IKZF2, 0.399). PageRank differentiates therapeutic potential when regulatory loss is equal. Color intensity indicates network influence. (C) Alternative ranking by degree centrality showing downstream target count, with RBPMS highest (403 targets). Annotations indicate regulators with literature validation (WWTR1, YAP1 - Hippo pathway) vs. novel hypotheses (RBPMS).
+(A) Network diagram showing TP53 (center) with 7 upstream regulators. All regulators contribute equal direct regulatory loss (14.3% = 1/7 regulators). Node size represents downstream target count (larger = more targets = potential off-target effects). Top 3 regulators by PageRank are highlighted in green. (B) Horizontal bar chart of PageRank centrality scores for all 7 regulators, ranked from highest (WWTR1, 0.473) to lowest (IKZF2, 0.399). PageRank differentiates therapeutic potential when regulatory loss is equal. Top 3 regulators highlighted in green. (C) Alternative ranking by degree centrality (out-degree) showing downstream target count, with RBPMS highest (403 targets), followed by WWTR1 (293 targets) and CHD4 (243 targets). This provides complementary ranking to PageRank, showing potential for broader network effects.
 
 <div style="page-break-before: always"></div>
 
