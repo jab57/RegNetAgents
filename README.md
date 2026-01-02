@@ -49,6 +49,30 @@ RegNetAgents is an AI-powered multi-agent framework that provides comprehensive 
 
 ---
 
+## ⚡ Quick Verification (For Reviewers)
+
+**Want to verify the paper's claims without full setup? Run this:**
+
+```bash
+git clone https://github.com/jab57/RegNetAgents.git
+cd RegNetAgents
+pip install -r requirements.txt
+python reproduce_paper_results.py
+```
+
+**What this verifies (in ~30 seconds):**
+- ✓ Five-gene colorectal cancer analysis completes
+- ✓ Regulatory role classifications match paper
+- ✓ Therapeutic target prioritization works
+- ✓ Performance claims (15-62 seconds for 5 genes)
+- ✓ All core analytical methods function correctly
+
+**No Claude Desktop required.** This standalone script uses the core workflow directly.
+
+**For detailed reproducibility information:** See [REPRODUCIBILITY.md](REPRODUCIBILITY.md)
+
+---
+
 ## 🚀 Quick Start
 
 **Note:** RegNetAgents is open source and publicly available at https://github.com/jab57/RegNetAgents under the MIT License.
