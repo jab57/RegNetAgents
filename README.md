@@ -69,6 +69,13 @@ python reproduce_paper_results.py
 
 **No Claude Desktop or Ollama required.** This standalone script uses rule-based analysis (not LLM-powered) for fast, deterministic verification.
 
+**Optional: Enable LLM-powered insights**
+If you want detailed scientific rationales (requires [Ollama](https://ollama.ai) with llama3.1:8b):
+1. Install Ollama and pull model: `ollama pull llama3.1:8b`
+2. Start Ollama server: `ollama serve` (keep running in separate terminal)
+3. Edit `reproduce_paper_results.py`: Set `USE_LLM = True` (line 68)
+4. Run: `python reproduce_paper_results.py` (takes 2-3 minutes instead of 30 seconds)
+
 **For detailed reproducibility information:** See [REPRODUCIBILITY.md](REPRODUCIBILITY.md)
 
 ---
