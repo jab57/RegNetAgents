@@ -1,5 +1,5 @@
 """
-Generate figures for bioRxiv preprint from analysis results
+Generate figures for manuscript from analysis results
 """
 
 import json
@@ -724,7 +724,7 @@ def create_table3():
 
 if __name__ == "__main__":
     print("\n" + "="*60)
-    print("Generating figures and tables for bioRxiv preprint")
+    print("Generating figures and tables for manuscript")
     print("="*60 + "\n")
 
     print("Creating Figure 1: Multi-Agent Architecture...")

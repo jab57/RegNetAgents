@@ -1087,10 +1087,10 @@ def main():
         traceback.print_exc()
         return
 
-    # Save file to biorxiv directory
-    biorxiv_dir = os.path.join(project_root, "biorxiv")
-    os.makedirs(biorxiv_dir, exist_ok=True)
-    output_file = os.path.join(biorxiv_dir, "REGNETAGENTS_CONFERENCE_POSTER.pptx")
+    # Save file to manuscript directory
+    manuscript_dir = os.path.join(project_root, "manuscript")
+    os.makedirs(manuscript_dir, exist_ok=True)
+    output_file = os.path.join(manuscript_dir, "REGNETAGENTS_CONFERENCE_POSTER.pptx")
     print(f"\n3. Saving to {output_file}...")
     try:
         prs.save(output_file)
