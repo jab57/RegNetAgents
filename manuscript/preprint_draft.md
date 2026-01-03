@@ -1,4 +1,4 @@
-# RegNetAgents: A Multi-Agent AI Framework for Automated Gene Regulatory Network Analysis and Therapeutic Target Prioritization
+# RegNetAgents: A Multi-Agent LLM System for Automating Complex Scientific Workflows
 
 **Running Title:** Multi-Agent Gene Regulatory Network Analysis
 
@@ -13,13 +13,13 @@ jbird@birdaisolutions.com
 
 ## ABSTRACT
 
-We present RegNetAgents, a multi-agent AI framework that automates complex scientific workflows by combining large language models, rule-based reasoning, and workflow orchestration. The system integrates four specialized agents that coordinate through a shared state, execute in parallel, and fall back to deterministic heuristics when LLM output is unavailable. RegNetAgents demonstrates how AI-driven workflow automation can replace multi-hour, multi-database analytical pipelines with second-scale, reproducible execution.
+We introduce RegNetAgents, a multi-agent large language model (LLM) system designed to automate complex scientific workflows that traditionally require extensive manual effort, domain expertise, and multi-tool coordination. The framework integrates four specialized agents that operate in parallel, coordinate through a shared state, and fall back to deterministic rule-based logic when LLM output is uncertain. This hybrid architecture enables reliable, fast, and reproducible workflow automation, transforming multi-hour analytical pipelines into second-scale execution through a unified conversational interface.
 
-As a case study, we apply the framework to gene regulatory network analysis using ARACNe-derived networks from 500,000+ single cells across 10 cell types. The system performs network modeling, pathway enrichment, and topology-based therapeutic target prioritization through a unified conversational interface requiring no programming expertise. In a five-gene benchmark, RegNetAgents analyzes 99 upstream regulators in 15-62 seconds, compared to 2-4 hours of manual workflows.
+To demonstrate the system's capabilities, we apply RegNetAgents to a representative scientific workflow: gene regulatory network analysis using ARACNe-derived networks from 500,000+ single cells across 10 cell types. The system performs network modeling, pathway enrichment, regulator ranking, and multi-domain interpretation without requiring programming expertise. In a five-gene benchmark, RegNetAgents analyzes 99 upstream regulators in 15–62 seconds, compared to 2–4 hours of manual multi-database workflows.
 
-The multi-agent architecture successfully recapitulates known regulatory patterns and identifies literature-supported upstream regulators of TP53 (WWTR1, YAP1, CHD4), while also generating novel hypotheses. This demonstrates how AI-assisted workflow systems can accelerate scientific hypothesis generation and democratize access to complex analytical methods.
+The multi-agent architecture successfully recapitulates known regulatory patterns and identifies literature-supported upstream regulators of TP53 (WWTR1, YAP1, CHD4), while also generating novel hypotheses. These results illustrate how AI-driven workflow systems can accelerate scientific reasoning, reduce cognitive load, and democratize access to sophisticated analytical methods. RegNetAgents highlights the potential of multi-agent LLM systems to generalize across scientific domains and serve as scalable engines for hypothesis generation and automated analysis.
 
-**Keywords:** multi-agent systems, workflow orchestration, LLM-powered automation, AI-for-science, scientific workflows, hypothesis generation, LangGraph, Model Context Protocol
+**Keywords:** multi-agent systems, LLM orchestration, workflow automation, AI-for-science, scientific reasoning, hypothesis generation, LangGraph, Model Context Protocol
 
 
 
