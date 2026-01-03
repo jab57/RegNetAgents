@@ -67,7 +67,7 @@ python reproduce_paper_results.py
 - ✓ Performance claims (15-62 seconds for 5 genes)
 - ✓ All core analytical methods function correctly
 
-**No Claude Desktop required.** This standalone script uses the core workflow directly.
+**No Claude Desktop or Ollama required.** This standalone script uses rule-based analysis (not LLM-powered) for fast, deterministic verification.
 
 **For detailed reproducibility information:** See [REPRODUCIBILITY.md](REPRODUCIBILITY.md)
 
