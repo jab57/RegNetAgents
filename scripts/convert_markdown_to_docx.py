@@ -192,9 +192,9 @@ def clean_markdown_text(text):
 if __name__ == '__main__':
     from docx2pdf import convert as convert_to_pdf
 
-    md_file = Path('biorxiv/preprint_draft.md')
-    docx_file = Path('biorxiv/regnetagents_preprint.docx')
-    pdf_file = Path('biorxiv/regnetagents_preprint.pdf')
+    md_file = Path('manuscript/preprint_draft.md')
+    docx_file = Path('manuscript/regnetagents_preprint.docx')
+    pdf_file = Path('manuscript/regnetagents_preprint.pdf')
 
     print("=" * 60)
     print("Converting Markdown to DOCX + PDF for bioRxiv Submission")

@@ -39,7 +39,7 @@ The `convert_manuscript.py` script:
 
 ## Files Generated
 
-All output files are created in the `biorxiv/` folder:
+All output files are created in the `manuscript/` folder:
 - `regnetagents_preprint.docx` - Main manuscript (Word)
 - `regnetagents_preprint.pdf` - Main manuscript (PDF)
 - `supplementary_material.docx` - Supplementary material (Word)
@@ -49,6 +49,6 @@ All output files are created in the `biorxiv/` folder:
 
 If you need the old conversion scripts, they're in git history:
 ```bash
-git log --oneline -- biorxiv/convert_to_pdf.py
-git checkout <commit-hash> -- biorxiv/convert_to_pdf.py
+git log --oneline -- manuscript/convert_to_pdf.py
+git checkout <commit-hash> -- manuscript/convert_to_pdf.py
 ```

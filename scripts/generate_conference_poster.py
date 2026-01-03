@@ -710,7 +710,7 @@ def create_poster(sections):
 
     # Add Figure 2: Framework Value image (readable size, after Discussion ends)
     figure2_y = Inches(14.3)
-    figure2_path = os.path.join(project_root, 'biorxiv', 'figure2_framework_value.png')
+    figure2_path = os.path.join(project_root, 'manuscript', 'figure2_framework_value.png')
 
     if os.path.exists(figure2_path):
         try:

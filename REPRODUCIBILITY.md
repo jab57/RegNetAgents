@@ -130,10 +130,10 @@ python scripts/generate_figures.py
 ```
 
 **Generates:**
-- `biorxiv/figure3_biomarker_panel.pdf` - Four-panel biomarker analysis
-- `biorxiv/figure4_tp53_therapeutic_targets.pdf` - TP53 therapeutic target ranking
-- `biorxiv/table2_biomarker_results.csv` - Summary table
-- `biorxiv/table3_tp53_therapeutic_targets.csv` - TP53 target table
+- `manuscript/figure3_biomarker_panel.pdf` - Four-panel biomarker analysis
+- `manuscript/figure4_tp53_therapeutic_targets.pdf` - TP53 therapeutic target ranking
+- `manuscript/table2_biomarker_results.csv` - Summary table
+- `manuscript/table3_tp53_therapeutic_targets.csv` - TP53 target table
 
 **Requirements:** matplotlib, pandas (in requirements.txt)
 

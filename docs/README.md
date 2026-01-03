@@ -125,7 +125,7 @@
 
 ## 🔗 Related Folders
 
-- **`../biorxiv/`** - bioRxiv preprint materials
+- **`../manuscript/`** - bioRxiv preprint materials
 - **`../scripts/`** - Utility scripts referenced in docs
 - **`../tests/`** - Test files for validation
 
@@ -161,7 +161,7 @@ For adding new cell types:
 
 - Check the specific documentation file for your topic
 - Review the main `../README.md` for project overview
-- See `../biorxiv/README.md` for publication guidance
+- See `../manuscript/README.md` for publication guidance
 
 ---
 

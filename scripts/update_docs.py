@@ -2,7 +2,7 @@
 """
 Intelligent Documentation Update Tool for RegNetAgents
 
-This script scans documentation in docs/ and biorxiv/ folders to:
+This script scans documentation in docs/ and manuscript/ folders to:
 1. Auto-fix mechanical issues (old names, dates, broken links)
 2. Detect content accuracy issues (outdated sections, broken code examples)
 3. Generate review checklists for human judgment

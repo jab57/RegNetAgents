@@ -163,9 +163,9 @@ ax.text(9.5, 1.4, 'Execution Time:\n~0.6s (rule-based)\n~15s (LLM-powered)',
 plt.tight_layout()
 
 # Save figure
-plt.savefig('C:/Dev/RegNetAgents/biorxiv/figure1_architecture.png',
+plt.savefig('C:/Dev/RegNetAgents/manuscript/figure1_architecture.png',
             dpi=300, bbox_inches='tight', facecolor='white')
-plt.savefig('C:/Dev/RegNetAgents/biorxiv/figure1_architecture.pdf',
+plt.savefig('C:/Dev/RegNetAgents/manuscript/figure1_architecture.pdf',
             bbox_inches='tight', facecolor='white')
 
 print("Figure 1 created successfully!")

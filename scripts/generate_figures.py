@@ -19,7 +19,7 @@ import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(script_dir)
 results_dir = os.path.join(project_root, 'results')
-output_dir = os.path.join(project_root, 'biorxiv')  # Output directory for all figures and tables
+output_dir = os.path.join(project_root, 'manuscript')  # Output directory for all figures and tables
 
 with open(os.path.join(results_dir, 'biomarker_results.json'), 'r') as f:
     biomarker_data = json.load(f)
@@ -748,7 +748,7 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("[SUCCESS] All figures and tables generated successfully!")
     print("="*60)
-    print("\nGenerated files in biorxiv/ folder:")
+    print("\nGenerated files in manuscript/ folder:")
     print("  - figure1_architecture.png (and .pdf)")
     print("  - figure2_framework_value.png (and .pdf)")
     print("  - figure3_biomarker_panel.png (and .pdf)")

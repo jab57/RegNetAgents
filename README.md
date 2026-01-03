@@ -544,7 +544,7 @@ RegNetAgents/
 │   ├── ADDING_NEW_CELL_TYPES.md               # Adding new cell types
 │   └── CONFERENCE_SUBMISSION_GUIDE_2026.md    # Conference guide
 │
-├── biorxiv/                                   # bioRxiv preprint materials
+├── manuscript/                                # Manuscript materials
 │   ├── preprint_draft.md                     # Complete manuscript
 │   └── submission_guide.md                   # Submission instructions
 │
