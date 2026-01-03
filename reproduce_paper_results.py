@@ -63,7 +63,9 @@ PAPER_GENES = ['MYC', 'CTNNB1', 'CCND1', 'TP53', 'KRAS']
 CELL_TYPE = "epithelial_cell"
 
 # Enable LLM-powered insights if Ollama is available
-USE_LLM = True  # Will auto-detect Ollama availability
+# NOTE: Disabled by default for fast verification (15-30 seconds)
+# Set to True for full LLM-powered insights (requires Ollama, takes 2-3 minutes)
+USE_LLM = False
 
 # Expected results from paper (for verification)
 EXPECTED_RESULTS = {
@@ -252,8 +254,8 @@ def extract_key_metrics(gene, result):
             'top_5_regulators': [
                 {
                     'regulator': r['regulator'],
-                    'pagerank': r.get('pagerank', 0),
-                    'degree_centrality': r.get('degree_centrality', 0),
+                    'pagerank': r.get('centrality_metrics', {}).get('pagerank', 0),
+                    'degree_centrality': r.get('centrality_metrics', {}).get('degree_centrality', 0),
                     'regulatory_loss_pct': r.get('regulatory_loss_pct', 0),
                 }
                 for r in top_5
