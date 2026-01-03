@@ -69,12 +69,12 @@ class CellType(Enum):
     NKT_CELLS = "nkt_cells"
     MONOCYTE_DERIVED_DENDRITIC_CELLS = "monocyte-derived_dendritic_cells"
 
-    # New priority cell types (5)
-    HEPATOCYTES = "hepatocytes"
-    CARDIOMYOCYTES = "cardiomyocytes"
-    NEURONS = "neurons"
-    FIBROBLASTS = "fibroblasts"
-    ENDOTHELIAL_CELLS = "endothelial_cells"
+    # New priority cell types (5) - FUTURE ADDITIONS (not yet available)
+    # HEPATOCYTES = "hepatocytes"
+    # CARDIOMYOCYTES = "cardiomyocytes"
+    # NEURONS = "neurons"
+    # FIBROBLASTS = "fibroblasts"
+    # ENDOTHELIAL_CELLS = "endothelial_cells"
 
 class RegNetAgentsCache:
     """Gene regulatory network cache for storing analysis results."""

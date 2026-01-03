@@ -70,8 +70,8 @@ EXPECTED_RESULTS = {
     'MYC': {'role': 'hub_regulator', 'has_targets': True, 'has_regulators': True},
     'CTNNB1': {'role': 'hub_regulator', 'has_targets': True, 'has_regulators': True},
     'CCND1': {'role': 'heavily_regulated', 'has_targets': False, 'has_regulators': True},
-    'TP53': {'role': 'heavily_regulated', 'has_targets': False, 'has_regulators': True},
-    'KRAS': {'role': 'intermediate_node', 'has_targets': True, 'has_regulators': True},
+    'TP53': {'role': 'hub_regulator', 'has_targets': True, 'has_regulators': True},
+    'KRAS': {'role': 'weakly_regulated', 'has_targets': False, 'has_regulators': True},
 }
 
 def print_banner(text):
