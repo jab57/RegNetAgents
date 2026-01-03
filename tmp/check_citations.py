@@ -1,7 +1,7 @@
 import re
 
 # Read the manuscript
-with open('biorxiv/preprint_draft.md', 'r', encoding='utf-8') as f:
+with open('manuscript/preprint_draft.md', 'r', encoding='utf-8') as f:
     content = f.read()
 
 # Extract all in-text citations

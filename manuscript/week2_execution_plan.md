@@ -11,7 +11,7 @@ Create Figure 4 showing RegNetAgents is **orders of magnitude faster** than manu
 
 ### 1. Create Figure 4 (Days 1-3)
 **File:** `scripts/generate_figures.py` (add after line 459)
-**Output:** `biorxiv/figure4_framework_value.png` + `.pdf`
+**Output:** `manuscript/figure4_framework_value.png` + `.pdf`
 
 #### Figure 4 Layout (2×2):
 
@@ -37,7 +37,7 @@ Create Figure 4 showing RegNetAgents is **orders of magnitude faster** than manu
 **Data:** All measurements already in `comprehensive_timing_results.json`
 
 ### 2. Add Manuscript Sections (Days 4-5)
-**File:** `biorxiv/preprint_draft.md`
+**File:** `manuscript/preprint_draft.md`
 
 **Insert after line 265:**
 - Section: "Workflow Automation and Performance" (~350 words)
@@ -59,7 +59,7 @@ Create Figure 4 showing RegNetAgents is **orders of magnitude faster** than manu
 
 ## Files to Modify
 1. `scripts/generate_figures.py` - Add `create_figure4()` after line 459
-2. `biorxiv/preprint_draft.md` - Lines 16, 265, 568
+2. `manuscript/preprint_draft.md` - Lines 16, 265, 568
 3. `scripts/generate_conference_poster.py` - Add Figure 4 to poster layout
 
 ## Success: Week 2 Complete

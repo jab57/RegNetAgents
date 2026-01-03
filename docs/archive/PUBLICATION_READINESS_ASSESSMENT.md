@@ -133,7 +133,7 @@
 
 ### Critical (Must Complete Before Submission)
 - [ ] **Author information** - Replace placeholders with real names/affiliations
-- [ ] **Generate figures** - Run `biorxiv/create_figure1.py` and verify outputs
+- [ ] **Generate figures** - Run `manuscript/create_figure1.py` and verify outputs
 - [ ] **Proofread manuscript** - Check for typos, consistency, sensitive info
 - [ ] **Create PDF** - Convert markdown to PDF with embedded figures
 - [ ] **Test installation** - Verify someone else can run RegNetAgents

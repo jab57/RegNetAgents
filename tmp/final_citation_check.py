@@ -1,7 +1,7 @@
 import re
 
 # Read manuscript
-with open('biorxiv/preprint_draft.md', 'r', encoding='utf-8') as f:
+with open('manuscript/preprint_draft.md', 'r', encoding='utf-8') as f:
     content = f.read()
 
 # Split at References section

@@ -240,7 +240,7 @@ RegNetAgents/
 ├── models/ (network data)
 ├── agents/ (agent definitions)
 │
-└── biorxiv/ (THIS FOLDER)
+└── manuscript/ (THIS FOLDER)
     ├── README.md (this file)
     ├── preprint_draft.md (manuscript - 8,500 words)
     ├── submission_guide.md (step-by-step instructions)

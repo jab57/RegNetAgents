@@ -810,13 +810,13 @@ I can:
 
 ### Files Modified (2025-11-25)
 - `scripts/generate_figures.py` - Increased Figure 4 font sizes
-- `biorxiv/preprint_draft.md` - Option 3 revisions (previously on 2025-11-25)
+- `manuscript/preprint_draft.md` - Option 3 revisions (previously on 2025-11-25)
 - `docs/REGNETAGENTS_CONFERENCE_POSTER.md` - Classification language updates
 - `scripts/generate_conference_poster.py` - Font size adjustments (previously)
-- `biorxiv/figure4_framework_value.png` - Regenerated with larger fonts
-- `biorxiv/figure4_framework_value.pdf` - Regenerated with larger fonts
-- `biorxiv/REGNETAGENTS_CONFERENCE_POSTER.pptx` - Regenerated with Option 3 language
-- `biorxiv/regnetagents_preprint.docx` - Regenerated with Option 3 revisions
+- `manuscript/figure4_framework_value.png` - Regenerated with larger fonts
+- `manuscript/figure4_framework_value.pdf` - Regenerated with larger fonts
+- `manuscript/REGNETAGENTS_CONFERENCE_POSTER.pptx` - Regenerated with Option 3 language
+- `manuscript/regnetagents_preprint.docx` - Regenerated with Option 3 revisions
 
 ### Next Steps (Week 3)
 When ready to proceed with Week 3:

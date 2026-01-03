@@ -48,8 +48,8 @@ All setup steps are finished. This checklist is kept for reference.
 - ✅ Git LFS installed and configured
 - ✅ Tracking files:
   - models/model.ckpt (120 MB)
-  - biorxiv/table2_biomarker_results.csv (241 B)
-  - biorxiv/table3_tp53_perturbation.csv (332 B)
+  - manuscript/table2_biomarker_results.csv (241 B)
+  - manuscript/table3_tp53_perturbation.csv (332 B)
 - ✅ Total LFS upload: 333 MB
 
 ---

@@ -190,8 +190,8 @@ git push backup main
 
    # Example output:
    modified:   regnetagents_langgraph_workflow.py
-   modified:   biorxiv/preprint_draft.md
-   modified:   biorxiv/submission_guide.md
+   modified:   manuscript/preprint_draft.md
+   modified:   manuscript/submission_guide.md
    ```
 
 4. **Claude commits the changes**
@@ -280,8 +280,8 @@ $ git push origin main
 │                                                               │
 │  Example output:                                             │
 │  modified:   regnetagents_langgraph_workflow.py  ← Code     │
-│  modified:   biorxiv/preprint_draft.md           ← Manuscript│
-│  modified:   biorxiv/submission_guide.md         ← Planning │
+│  modified:   manuscript/preprint_draft.md           ← Manuscript│
+│  modified:   manuscript/submission_guide.md         ← Planning │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ↓
@@ -386,9 +386,9 @@ git push backup main
 - Code files (*.py)
 - README.md, requirements.txt
 - Documentation (docs/*.md, except docs/archive/)
-- Manuscript (biorxiv/preprint_draft.md)
-- Figures (biorxiv/*.png, *.pdf)
-- Supplementary materials (biorxiv/supplementary_material.md, SUPPLEMENTARY_MATERIALS.md)
+- Manuscript (manuscript/preprint_draft.md)
+- Figures (manuscript/*.png, *.pdf)
+- Supplementary materials (manuscript/supplementary_material.md, SUPPLEMENTARY_MATERIALS.md)
 - Tests (tests/*.py)
 - Scripts (scripts/*.py)
 
@@ -398,15 +398,15 @@ git push origin main
 ```
 
 **IF changes include ANY of these files:**
-- biorxiv/README.md (internal submission guide)
-- biorxiv/submission_guide.md
-- biorxiv/journal_submission_plan_REVISED.md
-- biorxiv/email_template.md
-- biorxiv/PROOFREAD_REPORT.md
-- biorxiv/SCIENTIFIC_INTEGRITY_VERIFICATION.md
-- biorxiv/timing_verification_protocol.md
-- biorxiv/week2_execution_plan.md
-- biorxiv/one_page_summary.md
+- manuscript/README.md (internal submission guide)
+- manuscript/submission_guide.md
+- manuscript/journal_submission_plan_REVISED.md
+- manuscript/email_template.md
+- manuscript/PROOFREAD_REPORT.md
+- manuscript/SCIENTIFIC_INTEGRITY_VERIFICATION.md
+- manuscript/timing_verification_protocol.md
+- manuscript/week2_execution_plan.md
+- manuscript/one_page_summary.md
 - docs/archive/* (any files)
 - Any marketing plans
 - Any strategy/planning documents
@@ -437,7 +437,7 @@ git push origin main
    **First commit (Public-safe files only):**
    ```bash
    # Stage ONLY public-safe files
-   git add README.md biorxiv/preprint_draft.md
+   git add README.md manuscript/preprint_draft.md
 
    # Commit with clear message
    git commit -m "Fix terminology in manuscript and README"
@@ -450,7 +450,7 @@ git push origin main
    **Second commit (Private files only):**
    ```bash
    # Stage ONLY private files
-   git add biorxiv/PROOFREAD_REPORT.md biorxiv/one_page_summary.md
+   git add manuscript/PROOFREAD_REPORT.md manuscript/one_page_summary.md
 
    # Commit with clear message
    git commit -m "Update internal review documents"
@@ -502,18 +502,18 @@ git reset --soft HEAD~1
 - `docs/REGNETAGENTS_CONFERENCE_POSTER.md`
 
 **Manuscript & Publication:**
-- `biorxiv/preprint_draft.md`
-- `biorxiv/supplementary_material.md`
-- `biorxiv/SUPPLEMENTARY_MATERIALS.md`
-- `biorxiv/*.png` (all figure images)
-- `biorxiv/*.pdf` (all figure PDFs)
-- `biorxiv/table*.csv` (data tables)
-- `biorxiv/table*.txt` (data tables)
-- `biorxiv/CONVERSION_README.md`
-- `biorxiv/create_figure1.py`
-- `biorxiv/convert_manuscript.py`
-- `biorxiv/regnetagents_preprint.docx`
-- `biorxiv/regnetagents_preprint.pdf`
+- `manuscript/preprint_draft.md`
+- `manuscript/supplementary_material.md`
+- `manuscript/SUPPLEMENTARY_MATERIALS.md`
+- `manuscript/*.png` (all figure images)
+- `manuscript/*.pdf` (all figure PDFs)
+- `manuscript/table*.csv` (data tables)
+- `manuscript/table*.txt` (data tables)
+- `manuscript/CONVERSION_README.md`
+- `manuscript/create_figure1.py`
+- `manuscript/convert_manuscript.py`
+- `manuscript/regnetagents_preprint.docx`
+- `manuscript/regnetagents_preprint.pdf`
 
 **Data:**
 - `models/networks/*` (network cache files)
@@ -526,17 +526,17 @@ git reset --soft HEAD~1
 ### ❌ PRIVATE (backup only, NOT public)
 
 **Planning Documents:**
-- `biorxiv/README.md` (internal submission guide)
-- `biorxiv/submission_guide.md`
-- `biorxiv/journal_submission_plan_REVISED.md`
-- `biorxiv/email_template.md`
-- `biorxiv/week2_execution_plan.md`
-- `biorxiv/one_page_summary.md`
+- `manuscript/README.md` (internal submission guide)
+- `manuscript/submission_guide.md`
+- `manuscript/journal_submission_plan_REVISED.md`
+- `manuscript/email_template.md`
+- `manuscript/week2_execution_plan.md`
+- `manuscript/one_page_summary.md`
 
 **Internal Reviews:**
-- `biorxiv/PROOFREAD_REPORT.md`
-- `biorxiv/SCIENTIFIC_INTEGRITY_VERIFICATION.md`
-- `biorxiv/timing_verification_protocol.md`
+- `manuscript/PROOFREAD_REPORT.md`
+- `manuscript/SCIENTIFIC_INTEGRITY_VERIFICATION.md`
+- `manuscript/timing_verification_protocol.md`
 
 **Internal Assessments:**
 - `docs/archive/*` (all files in archive)

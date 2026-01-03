@@ -194,8 +194,8 @@ Action Items:
 ```
 
 ### Files to Update (if needed):
-- [ ] `biorxiv/preprint_draft.md` - Abstract, Table 1, Results, Discussion
-- [ ] `biorxiv/one_page_summary.md` - Performance claims
+- [ ] `manuscript/preprint_draft.md` - Abstract, Table 1, Results, Discussion
+- [ ] `manuscript/one_page_summary.md` - Performance claims
 - [ ] `docs/REGNETAGENTS_CONFERENCE_POSTER.md` - Timing figures
 - [ ] `results/biomarker_results.json` - May need to regenerate with actual run
 
