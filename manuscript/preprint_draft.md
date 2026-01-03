@@ -25,13 +25,28 @@ The multi-agent architecture successfully recapitulates known regulatory pattern
 
 ## INTRODUCTION
 
-### Background
+### Background: Multi-Agent LLM Systems for Scientific Workflow Automation
+
+Scientific discovery increasingly depends on computational workflows that integrate multiple databases, analytical tools, and domain-specific knowledge. Researchers routinely face tasks requiring multi-step pipelines: querying heterogeneous data sources, applying statistical methods, interpreting results through specialized lenses (clinical relevance, therapeutic potential, mechanistic insight), and synthesizing findings into actionable hypotheses. These workflows are typically manual, sequential, and require significant domain expertise—limiting scalability, reproducibility, and accessibility to non-computational researchers.
+
+Recent advances in large language models (LLMs) and multi-agent orchestration frameworks offer a compelling solution: **automated scientific reasoning systems that execute complex analytical pipelines through conversational interfaces**. Multi-agent architectures enable parallel execution of specialized analysis components (11), while graph-based workflow engines such as LangGraph provide intelligent routing and state management for complex analytical pipelines (12). The Model Context Protocol (MCP) enables integration of computational tools with conversational AI interfaces (13), potentially democratizing access to sophisticated analytical methods.
+
+However, deploying LLMs in scientific workflows introduces critical challenges: **reliability** (LLM outputs can be inconsistent or hallucinated), **reproducibility** (non-deterministic generation hinders scientific validation), and **performance** (LLM inference adds latency to time-sensitive analyses). To address these challenges, we introduce a **hybrid multi-agent architecture** that combines LLM-powered reasoning with deterministic rule-based fallback logic, enabling fast, reliable, and reproducible workflow automation.
+
+### Gene Regulatory Network Analysis as a Representative Scientific Workflow
+
+To demonstrate the capabilities and validate the reliability of multi-agent LLM workflow automation, we apply the framework to **gene regulatory network analysis**—a representative scientific workflow with well-defined steps, multiple specialized domains, and clear validation criteria.
 
 Gene regulatory networks (GRNs) represent the complex interactions between transcription factors and their target genes, forming the fundamental control systems that determine cellular identity, function, and disease states (1,2). Understanding these networks is critical for identifying disease biomarkers, elucidating disease mechanisms, and discovering therapeutic targets (3,4). Single-cell RNA sequencing (scRNA-seq) technologies have enabled reconstruction of cell-type-specific regulatory networks at unprecedented resolution, revealing how regulatory architecture varies across tissues and cell types (5,6).
 
-Traditional gene regulatory analysis requires researchers to manually query multiple databases and tools: network databases such as STRING (7) and BioGRID (8) for interaction data, pathway enrichment tools such as Enrichr (9) and DAVID (10) for functional annotation, and extensive literature curation for domain-specific context. This fragmented workflow presents several critical limitations. First, the process is labor-intensive and time-consuming, requiring researchers to navigate different web interfaces, export data, and manually integrate findings across domains for each gene analyzed. Second, sequential processing limits scalability—analyzing multiple genes or comparing across cell types requires repeating the entire workflow. Third, domain expertise remains siloed, with cancer relevance, drug development potential, clinical actionability, and systems-level effects analyzed separately rather than in an integrated framework. Finally, the lack of conversational interfaces necessitates technical expertise, limiting accessibility to researchers without computational backgrounds.
+Traditional gene regulatory analysis exemplifies the workflow bottlenecks that multi-agent LLM systems can address. Researchers must manually query multiple databases and tools: network databases such as STRING (7) and BioGRID (8) for interaction data, pathway enrichment tools such as Enrichr (9) and DAVID (10) for functional annotation, and extensive literature curation for domain-specific context. This fragmented workflow presents several critical limitations that align with broader scientific workflow challenges:
 
-These workflow bottlenecks—manual integration, limited scalability, and accessibility barriers—align precisely with challenges that recent AI advances are well-positioned to address. Multi-agent systems enable parallel execution of specialized analysis components (11), while graph-based workflow engines such as LangGraph provide intelligent routing and state management for complex analytical pipelines (12). The Model Context Protocol (MCP) enables integration of computational tools with conversational AI interfaces (13), potentially bridging the accessibility gap for non-computational researchers.
+1. **Manual integration**: Labor-intensive coordination across web interfaces, data export, and cross-domain synthesis for each gene analyzed
+2. **Sequential processing**: Limited scalability—analyzing multiple genes or comparing across cell types requires repeating the entire workflow
+3. **Siloed expertise**: Cancer relevance, drug development potential, clinical actionability, and systems-level effects analyzed separately rather than in an integrated framework
+4. **Technical barriers**: Lack of conversational interfaces necessitates programming expertise, limiting accessibility
+
+This workflow serves as an ideal test case for multi-agent LLM automation: it requires (1) structured data retrieval (network topology, pathway enrichment), (2) algorithmic computation (network centrality, therapeutic target ranking), (3) multi-domain interpretation (cancer biology, drug discovery, clinical relevance, systems biology), and (4) synthesis across specialized perspectives—precisely the capabilities that hybrid multi-agent architectures can provide.
 
 ### Regulatory Network Data Sources
 
@@ -43,7 +58,21 @@ Cell-type-specific regulatory networks were obtained as pre-computed ARACNe netw
 
 ### Our Contribution
 
-We present RegNetAgents, a multi-agent AI framework that streamlines gene regulatory network analysis and makes sophisticated computational methods accessible to experimental biologists. The system integrates network analysis, pathway enrichment, network-based target ranking, and multi-domain interpretation into a unified, conversational interface. Key contributions include: (1) **Workflow automation**: parallel multi-agent execution enabling second-scale analysis that replaces multi-hour manual workflows, (2) **Hypothesis generation**: automated therapeutic target prioritization that ranks regulators by network centrality to identify and prioritize candidate therapeutic targets for experimental validation, (3) **Multi-domain integration**: four specialized domain agents providing cancer, drug development, clinical, and systems biology perspectives in a single query, (4) **Accessibility**: natural language interface via Model Context Protocol enabling conversational access without programming expertise, and (5) **Demonstration**: case study on colorectal cancer biomarkers showing the framework can recapitulate literature-confirmed regulatory relationships and generate testable hypotheses. The framework is designed as a hypothesis generation and experimental prioritization tool, not a replacement for experimental validation.
+We present **RegNetAgents**, a hybrid multi-agent LLM system that automates complex scientific workflows through the combination of LLM-powered reasoning and deterministic rule-based computation. The system demonstrates how multi-agent architectures can transform multi-hour, multi-tool analytical pipelines into second-scale, reproducible execution through conversational interfaces—while maintaining reliability through intelligent fallback mechanisms.
+
+**Key AI systems contributions:**
+
+1. **Hybrid multi-agent architecture**: Four specialized agents operating in parallel with shared state coordination, combining LLM-powered domain interpretation with deterministic algorithmic computation (network topology analysis, pathway enrichment, therapeutic target ranking via PageRank centrality)
+
+2. **Reliable workflow automation**: Graceful degradation from LLM-powered insights to rule-based logic when LLM output is unavailable, ensuring deterministic execution of core analytical tasks regardless of LLM availability
+
+3. **Workflow orchestration via LangGraph**: Graph-based state management enabling intelligent routing, parallel execution, and conditional branching across heterogeneous analysis components
+
+4. **Conversational scientific computing via MCP**: Natural language interface to computational workflows, eliminating programming barriers and enabling researchers to execute sophisticated analyses through dialogue
+
+5. **Generalizability**: Architecture designed for extension to other scientific domains—any workflow requiring (a) structured data retrieval, (b) algorithmic computation, (c) multi-domain interpretation, and (d) cross-domain synthesis can leverage this framework
+
+**Validation through gene regulatory network analysis:** We demonstrate the framework on a well-characterized colorectal cancer biomarker panel (MYC, CTNNB1, CCND1, TP53, KRAS), showing the system recapitulates literature-confirmed regulatory relationships and generates testable hypotheses. This case study validates that hybrid multi-agent architectures can reliably automate complex scientific reasoning while maintaining scientific rigor. The framework is designed as a hypothesis generation and experimental prioritization tool, not a replacement for experimental validation.
 
 ### Validation Strategy
 
