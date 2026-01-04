@@ -80,6 +80,38 @@ To demonstrate framework capabilities and validate analytical accuracy, we analy
 
 
 
+## RELATED WORK
+
+### Multi-Agent LLM Systems
+
+The emergence of large language models has catalyzed rapid development of autonomous multi-agent systems. AutoGPT (18) pioneered accessible autonomous agents by enabling LLMs to execute tasks iteratively with minimal human intervention, demonstrating the potential for autonomous problem-solving but lacking specialized domain coordination. CAMEL (19) introduced communicative agents with role-playing frameworks for task decomposition and multi-agent collaboration, while MetaGPT (20) implemented software development workflows with specialized agent roles (product manager, architect, engineer) coordinated through standardized operating procedures. CrewAI (21) provides a Python framework for orchestrating role-playing autonomous agents that collaborate as cohesive crews, emphasizing task delegation and collaborative intelligence.
+
+These general-purpose multi-agent frameworks share a common architecture: LLM-powered agents with specialized roles, inter-agent communication protocols, and workflow orchestration for complex task completion. However, they exhibit three key limitations for scientific workflows: **(1) Reliability**: Pure LLM-based execution is non-deterministic, making reproducibility challenging for scientific applications where consistent outputs are critical; **(2) Performance**: LLM inference latency (multiple seconds per agent interaction) compounds across multi-step workflows, hindering time-sensitive analyses; **(3) Transparency**: Lack of fallback mechanisms means failures in LLM generation can halt entire workflows without providing deterministic alternatives.
+
+### Workflow Orchestration Frameworks
+
+LangChain and LangGraph (12) provide foundational infrastructure for LLM application development and stateful multi-agent workflows. LangGraph specifically enables directed acyclic graph (DAG) based workflow orchestration with conditional routing, state management, and parallel execution—capabilities RegNetAgents leverages for coordinating specialized analysis agents. However, these frameworks are application-neutral and do not address domain-specific challenges in scientific computing, particularly the need for hybrid LLM+deterministic execution patterns.
+
+### AI Systems for Scientific Discovery
+
+Recent AI systems have demonstrated potential for accelerating scientific discovery through LLM-powered reasoning and knowledge synthesis. Galactica (22) was trained on 48 million scientific articles, textbooks, and encyclopedias to organize scientific knowledge and assist with literature synthesis, though it was designed for knowledge retrieval rather than workflow automation. BioGPT (23) provides a domain-specific generative transformer for biomedical text generation and mining, pre-trained on biomedical literature to enhance performance on biomedical NLP tasks like question answering and relation extraction. These systems excel at knowledge synthesis and text generation but do not address multi-step analytical workflows requiring integration of computational tools, databases, and algorithmic analyses.
+
+More recently, fully autonomous scientific discovery systems have emerged, such as The AI Scientist (24), which attempts to conduct research independently including hypothesis generation, experimentation, and paper writing. However, these systems remain exploratory and face challenges in reliability, reproducibility, and integration with existing research infrastructure.
+
+### RegNetAgents' Contribution
+
+RegNetAgents addresses the reliability, performance, and scientific workflow integration gaps in existing multi-agent systems through three key innovations:
+
+**1. Hybrid LLM+Deterministic Architecture**: Unlike pure LLM-based agents (AutoGPT, CAMEL, MetaGPT), RegNetAgents implements graceful degradation to rule-based computation for core analytical tasks (network topology analysis, pathway enrichment, centrality-based ranking). This ensures deterministic, reproducible execution of scientific computations while retaining LLM-powered domain interpretation when available.
+
+**2. Scientific Workflow Optimization**: While general-purpose frameworks (CrewAI, LangGraph) provide orchestration primitives, RegNetAgents specializes these for scientific analysis patterns—parallel domain-specific interpretation, data provenance tracking, statistical validation, and structured output formatting designed for experimental validation workflows.
+
+**3. Real-World Scientific Data Integration**: Unlike knowledge synthesis systems (Galactica, BioGPT), RegNetAgents integrates directly with computational biology infrastructure: pre-computed gene regulatory networks (ARACNe), pathway databases (Reactome API), and gene annotation resources (NCBI, UniProt). This enables actionable hypothesis generation with quantitative metrics (PageRank-based target prioritization) rather than text-based knowledge retrieval.
+
+By combining LangGraph's workflow orchestration with domain-specific hybrid execution and scientific data integration, RegNetAgents demonstrates how multi-agent LLM systems can be adapted for reliable, reproducible scientific workflow automation.
+
+
+
 ## METHODS
 
 ### Architecture Overview
@@ -96,13 +128,13 @@ Cell-type-specific regulatory networks were obtained as pre-computed ARACNe netw
 Networks are provided in tab-separated value (TSV) format with the following structure: regulator gene ID (Ensembl), target gene ID (Ensembl), mutual information score (MI), Spearman correlation coefficient (SCC), bootstrap count, and log-transformed p-value. We downloaded pre-computed networks from the GREmLN Quickstart Tutorial (https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart) and converted them to NetworkX-compatible pickle caches for rapid querying. Network statistics: epithelial cells (183,247 edges), CD8 T cells (3,154 edges), monocyte-derived dendritic cells (5,317 edges), erythrocytes (19,398 edges), NKT cells (2,509 edges), CD14 monocytes (2,009 edges), CD16 monocytes (1,236 edges), CD4 T cells (1,371 edges), CD20 B cells (1,128 edges), and NK cells (404 edges). Gene identifiers use Ensembl IDs (GRCh38) with bidirectional mapping to HGNC gene symbols for user queries.
 
 #### Pathway Annotation
-Pathway enrichment analysis uses the Reactome Pathway Database (https://reactome.org), a manually curated, peer-reviewed database of human biological pathways (18). Given a set of genes (query gene plus regulators and targets), we query the Reactome Analysis Service API (https://reactome.org/AnalysisService/) with POST requests containing gene lists. The API returns enriched pathways with statistical validation: p-values from hypergeometric tests and false discovery rate (FDR) corrections via Benjamini-Hochberg method. We report pathways with FDR < 0.05 as significantly enriched.
+Pathway enrichment analysis uses the Reactome Pathway Database (https://reactome.org), a manually curated, peer-reviewed database of human biological pathways (25). Given a set of genes (query gene plus regulators and targets), we query the Reactome Analysis Service API (https://reactome.org/AnalysisService/) with POST requests containing gene lists. The API returns enriched pathways with statistical validation: p-values from hypergeometric tests and false discovery rate (FDR) corrections via Benjamini-Hochberg method. We report pathways with FDR < 0.05 as significantly enriched.
 
 **Rationale for Top 10 Regulator/Target Selection:**
 For pathway enrichment, gene lists are constructed from the query gene plus its **top 10 upstream regulators and top 10 downstream targets** (ranked by network centrality). This focused approach is critical for balancing biological signal with statistical specificity: **limiting to the immediate regulatory neighborhood captures direct mechanistic relationships while preventing pathway over-enrichment that occurs with large gene sets.** Reactome enrichment analysis performs optimally with focused gene sets of 10-50 genes (as recommended in Reactome documentation); larger gene lists dilute specificity by matching too many broad pathways, while smaller lists lack statistical power. **For hub regulators like MYC (427 targets), using all targets would produce overly general pathway enrichment; the top 10 approach focuses on the strongest regulatory relationships (highest PageRank and degree centrality) most likely to drive functional effects.**
 
 #### Gene Annotation
-Gene-level annotations including full names and functional descriptions are retrieved from local NCBI and UniProt databases. Gene identifier conversion between gene symbols and Ensembl IDs uses the Ensembl REST API (https://rest.ensembl.org) (19) with local caching for performance optimization.
+Gene-level annotations including full names and functional descriptions are retrieved from local NCBI and UniProt databases. Gene identifier conversion between gene symbols and Ensembl IDs uses the Ensembl REST API (https://rest.ensembl.org) (26) with local caching for performance optimization.
 
 ### Multi-Agent Workflow
 
@@ -124,7 +156,7 @@ For genes with five or more upstream regulators, we perform automated therapeuti
 <div style="page-break-before: always"></div>
 
 **Network Centrality Metrics for Therapeutic Target Ranking:**
-We calculate three core centrality measures for each regulator R using NetworkX (20) implementations:
+We calculate three core centrality measures for each regulator R using NetworkX (27) implementations:
 
 **Degree Centrality:**
 C_D(R) = deg(R) / (N - 1)
@@ -139,10 +171,10 @@ Where deg_out(R) is the number of downstream targets regulated by R. This metric
 **PageRank (Primary Ranking Metric):**
 PR(R) = (1-α)/N + α × Σ[PR(v) / L(v)] for all v in M(R)
 
-Where M(R) is the set of nodes with edges pointing to R, L(v) is the out-degree of node v (number of outbound edges), α = 0.85 is the damping factor, and N is the total number of nodes in the network. **Directionality**: In our regulatory networks, edges represent regulator → target relationships inferred by ARACNe. For a given target gene, M(R) comprises its upstream regulators—genes with regulatory edges directed toward R. PageRank then measures each regulator's importance by considering not only direct connectivity but also the PageRank scores of nodes that point to that regulator, capturing influence propagation through the regulatory hierarchy. PageRank values are normalized by dividing by the maximum PageRank in the network to ensure cross-network interpretability (range: 0-1). This is Google's algorithm adapted for biological networks, measuring connection quality rather than quantity (21).
+Where M(R) is the set of nodes with edges pointing to R, L(v) is the out-degree of node v (number of outbound edges), α = 0.85 is the damping factor, and N is the total number of nodes in the network. **Directionality**: In our regulatory networks, edges represent regulator → target relationships inferred by ARACNe. For a given target gene, M(R) comprises its upstream regulators—genes with regulatory edges directed toward R. PageRank then measures each regulator's importance by considering not only direct connectivity but also the PageRank scores of nodes that point to that regulator, capturing influence propagation through the regulatory hierarchy. PageRank values are normalized by dividing by the maximum PageRank in the network to ensure cross-network interpretability (range: 0-1). This is Google's algorithm adapted for biological networks, measuring connection quality rather than quantity (28).
 
 **Ranking and Interpretation:**
-Regulators are ranked by PageRank (primary), as this metric was identified as the best predictor of successful drug targets in protein interaction networks (22). We also provide alternative rankings by out-degree centrality for comparison. PageRank differentiates therapeutic potential even when regulators contribute equally to target gene regulation. According to Mora & Donaldson (2021), approved drug targets show significantly higher PageRank and degree centrality compared to non-targets (22).
+Regulators are ranked by PageRank (primary), as this metric was identified as the best predictor of successful drug targets in protein interaction networks (29). We also provide alternative rankings by out-degree centrality for comparison. PageRank differentiates therapeutic potential even when regulators contribute equally to target gene regulation. According to Mora & Donaldson (2021), approved drug targets show significantly higher PageRank and degree centrality compared to non-targets (29).
 
 For each regulator, we report:
 - Network centrality metrics (PageRank, degree centrality, out-degree centrality)
@@ -342,7 +374,7 @@ To assess LLM-generated rationale accuracy, we manually reviewed all domain agen
 
 **Therapeutic and druggability rationales:** LLM-generated drug development insights correctly linked network topology to therapeutic strategies. CTNNB1's drug agent rationale noted: "Inhibiting CTNNB1 could disrupt aberrant Wnt/β-catenin signaling pathways, which are implicated in various cancers"—matching established understanding of Wnt pathway dysregulation in 40-80% of CRCs (25,26). These mechanistic explanations synthesize network position (hub regulator, 310 targets) with pathway knowledge (Wnt signaling) to explain druggability.
 
-**Mechanistic explanations:** Systems biology agent rationales demonstrated accurate integration of network topology with biological function. For CCND1, the systems agent explained: "Given its critical role in cell cycle progression and frequent mutations in human cancers, CCND1's disruption would have significant network-wide effects"—reflecting documented CCND1 overexpression in 30-60% of CRCs and its G1/S transition function (27). Similarly, TP53 was characterized as: "Mutations in TP53 are associated with various human cancers, indicating that its loss or dysregulation has critical consequences for the network"—consistent with 50-70% mutation rates in CRCs (28,29).
+**Mechanistic explanations:** Systems biology agent rationales demonstrated accurate integration of network topology with biological function. For CCND1, the systems agent explained: "Given its critical role in cell cycle progression and frequent mutations in human cancers, CCND1's disruption would have significant network-wide effects"—reflecting documented CCND1 overexpression in 30-60% of CRCs and its G1/S transition function (34). Similarly, TP53 was characterized as: "Mutations in TP53 are associated with various human cancers, indicating that its loss or dysregulation has critical consequences for the network"—consistent with 50-70% mutation rates in CRCs (28,29).
 
 ### Demonstration Case Study: Colorectal Cancer Biomarker Analysis
 
@@ -370,7 +402,7 @@ The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure
 
 Network analysis revealed distinct regulatory architectures that align with known biological roles. Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets), MYC (427 targets), and CTNNB1 (310 targets), indicating signal amplification roles consistent with their documented functions as master regulatory hubs in tumor suppression and oncogenic signaling. CCND1 showed a heavily regulated profile with extensive upstream control (42 regulators), consistent with complex regulatory integration of cell cycle signaling. KRAS showed a weakly regulated profile (7 regulators, 0 targets), reflecting its role as a signal transducer (GTPase) rather than a transcription factor. This explains its absence of transcriptional targets in the ARACNe network despite extensive pathway enrichment (141 pathways, Figure 3C), consistent with its central position in MAPK and PI3K signaling cascades.
 
-These regulatory patterns align with established CRC biology. MYC amplification occurs in 15-20% of CRCs and correlates with poor prognosis (23,24). CTNNB1 mutations/dysregulation occur in 40-80% of CRCs via APC loss and Wnt pathway activation (25,26). CCND1 overexpression occurs in 30-60% of CRCs and drives G1/S cell cycle transition (27). TP53 mutations occur in 50-70% of CRCs and associate with advanced stage, metastasis, and poor survival (28,29). KRAS mutations occur in 40-45% of CRCs and confer resistance to anti-EGFR therapies (30,31).
+These regulatory patterns align with established CRC biology. MYC amplification occurs in 15-20% of CRCs and correlates with poor prognosis (23,24). CTNNB1 mutations/dysregulation occur in 40-80% of CRCs via APC loss and Wnt pathway activation (25,26). CCND1 overexpression occurs in 30-60% of CRCs and drives G1/S cell cycle transition (34). TP53 mutations occur in 50-70% of CRCs and associate with advanced stage, metastasis, and poor survival (28,29). KRAS mutations occur in 40-45% of CRCs and confer resistance to anti-EGFR therapies (30,31).
 
 The framework's identification of distinct network architectures (hub regulators, heavily regulated genes, and weakly regulated endpoints) demonstrates its ability to characterize gene regulatory roles from network topology, providing context for interpretation of each gene's potential biological significance.
 
@@ -384,7 +416,7 @@ We compared the top 3 network-ranked candidates (by PageRank) against published 
 
 **WWTR1 (TAZ):** WW domain-containing transcription regulator 1, also known as TAZ, is a Hippo pathway effector that functions as a transcriptional co-activator. WWTR1 and its paralog YAP1 are key downstream effectors of Hippo signaling involved in cell fate decisions, proliferation control, and DNA damage responses (32,33). The high PageRank ranking identifies WWTR1 as a central network node, consistent with the established role of Hippo pathway components in regulating cell growth and tumor suppression (34,35). Literature documents bidirectional crosstalk between TP53 and Hippo pathway effectors, where TP53 can regulate YAP1/WWTR1 and vice versa depending on cellular context. The network connectivity between WWTR1 and TP53 represents a testable hypothesis for functional interaction warranting experimental validation of the specific regulatory direction in epithelial cells.
 
-**RBPMS:** RNA-binding protein with multiple splicing that shows the highest degree centrality among TP53 regulators (403 downstream targets). The related protein RBPMS2 has been implicated in smooth muscle plasticity and gene regulation (36), suggesting potential roles in tissue-specific transcriptional control. While limited literature exists on RBPMS itself in cancer contexts, its extensive network connectivity and high PageRank (0.469) position it as a high-priority candidate for experimental validation in TP53 regulatory mechanisms.
+**RBPMS:** RNA-binding protein with multiple splicing that shows the highest degree centrality among TP53 regulators (403 downstream targets). The related protein RBPMS2 has been implicated in smooth muscle plasticity and gene regulation (43), suggesting potential roles in tissue-specific transcriptional control. While limited literature exists on RBPMS itself in cancer contexts, its extensive network connectivity and high PageRank (0.469) position it as a high-priority candidate for experimental validation in TP53 regulatory mechanisms.
 
 **PRRX2:** Paired-related homeobox 2, a transcription factor involved in mesenchymal development and epithelial-mesenchymal transition pathways. PRRX2's high PageRank (0.454) despite moderate degree centrality reflects quality over quantity in network connections—suggesting influence through key regulatory hubs rather than direct broad connectivity. Its limited characterization in TP53 regulatory contexts makes it a particularly intriguing novel hypothesis, as homeobox factors often orchestrate complex developmental and disease-relevant gene expression programs.
 
@@ -458,7 +490,7 @@ These validations demonstrate the framework recapitulates established biology wh
 
 ### Comparison to Existing Approaches
 
-Traditional gene regulatory analysis tools operate in isolation: network databases (STRING, BioGRID) provide interaction data but lack pathway context; pathway enrichment tools (Enrichr, DAVID, Reactome web interface) require manual gene list preparation; and domain-specific interpretation (cancer relevance, drug development potential, clinical actionability) remains a manual literature curation task. Recent tools have begun addressing integration: NetworkAnalyst combines network visualization with enrichment analysis (40), while CARNIVAL infers causal networks from perturbation data (41). However, these tools lack conversational interfaces and do not provide automated therapeutic target prioritization via regulator ranking. While NetworkAnalyst provides a web interface, users must manually navigate multi-step workflows; CARNIVAL requires R programming expertise.
+Traditional gene regulatory analysis tools operate in isolation: network databases (STRING, BioGRID) provide interaction data but lack pathway context; pathway enrichment tools (Enrichr, DAVID, Reactome web interface) require manual gene list preparation; and domain-specific interpretation (cancer relevance, drug development potential, clinical actionability) remains a manual literature curation task. Recent tools have begun addressing integration: NetworkAnalyst combines network visualization with enrichment analysis (47), while CARNIVAL infers causal networks from perturbation data (48). However, these tools lack conversational interfaces and do not provide automated therapeutic target prioritization via regulator ranking. While NetworkAnalyst provides a web interface, users must manually navigate multi-step workflows; CARNIVAL requires R programming expertise.
 
 RegNetAgents advances the field through four key innovations:
 
@@ -608,53 +640,67 @@ The authors declare no competing interests.
 
 17. Lachmann A, Giorgi FM, Lopez G, Califano A. ARACNe-AP: gene network reverse engineering through adaptive partitioning inference of mutual information. Bioinformatics. 2016;32(14):2233-2235.
 
-18. Gillespie M, Jassal B, Stephan R, et al. The reactome pathway knowledgebase 2022. Nucleic Acids Res. 2022;50(D1):D687-D692.
+18. Significant Gravitas. AutoGPT: An Autonomous GPT-4 Experiment. GitHub. https://github.com/Significant-Gravitas/AutoGPT
 
-19. Yates AD, Achuthan P, Akanni W, et al. Ensembl 2020. Nucleic Acids Res. 2020;48(D1):D682-D688.
+19. Li G, Hammoud HAA, Itani H, Khizbullin D, Ghanem B. CAMEL: Communicative Agents for "Mind" Exploration of Large Language Model Society. Proceedings of the 37th Conference on Neural Information Processing Systems; 2023.
 
-20. Hagberg AA, Schult DA, Swart PJ. Exploring network structure, dynamics, and function using NetworkX. Proceedings of the 7th Python in Science Conference (SciPy 2008); 2008. p. 11-15.
+20. Hong S, Zhuge M, Chen J, et al. MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework. arXiv. 2023. arXiv:2308.00352
 
-21. Koschützki D, Schreiber F. Centrality analysis methods for biological networks and their application to gene regulatory networks. Gene Regulation and Systems Biology. 2008;2:GRSB.S702.
+21. Moura J. CrewAI: Framework for orchestrating role-playing, autonomous AI agents. GitHub. https://github.com/crewAIInc/crewAI
 
-22. Mora A, Donaldson IM. Effects of protein interaction data integration, representation and reliability on the use of network properties for drug target prediction. BMC Bioinformatics. 2021;22(1):1-29. doi:10.1186/s12859-021-04042-6
+22. Taylor R, Kardas M, Cucurull G, et al. Galactica: A Large Language Model for Science. arXiv. 2022. arXiv:2211.09085
 
-23. Erisman MD, Rothberg PG, Diehl RE, Morse CC, Spandorfer JM, Astrin SM. Deregulation of c-myc gene expression in human colon carcinoma is not accompanied by amplification or rearrangement of the gene. Mol Cell Biol. 1985;5(8):1969-1976.
+23. Luo R, Sun L, Xia Y, et al. BioGPT: generative pre-trained transformer for biomedical text generation and mining. Brief Bioinform. 2022;23(6):bbac409. doi:10.1093/bib/bbac409
 
-24. Sears R, Nuckolls F, Haura E, Taya Y, Tamai K, Nevins JR. Multiple Ras-dependent phosphorylation pathways regulate Myc protein stability. Genes Dev. 2000;14(19):2501-2514.
+24. Lu C, Lu C, Lange RT, et al. The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery. arXiv. 2024. arXiv:2408.06292
 
-25. Morin PJ, Sparks AB, Korinek V, et al. Activation of beta-catenin-Tcf signaling in colon cancer by mutations in beta-catenin or APC. Science. 1997;275(5307):1787-1790.
+25. Gillespie M, Jassal B, Stephan R, et al. The reactome pathway knowledgebase 2022. Nucleic Acids Res. 2022;50(D1):D687-D692.
 
-26. Segditsas S, Tomlinson I. Colorectal cancer and genetic alterations in the Wnt pathway. Oncogene. 2006;25(57):7531-7537.
+26. Yates AD, Achuthan P, Akanni W, et al. Ensembl 2020. Nucleic Acids Res. 2020;48(D1):D682-D688.
 
-27. Bartkova J, Lukas J, Strauss M, Bartek J. Cyclin D1 oncoprotein aberrantly accumulates in malignancies of diverse histogenesis. Oncogene. 1995;10(4):775-778.
+27. Hagberg AA, Schult DA, Swart PJ. Exploring network structure, dynamics, and function using NetworkX. Proceedings of the 7th Python in Science Conference (SciPy 2008); 2008. p. 11-15.
 
-28. Iacopetta B. TP53 mutation in colorectal cancer. Hum Mutat. 2003;21(3):271-276.
+28. Koschützki D, Schreiber F. Centrality analysis methods for biological networks and their application to gene regulatory networks. Gene Regulation and Systems Biology. 2008;2:GRSB.S702.
 
-29. Olivier M, Hollstein M, Hainaut P. TP53 mutations in human cancers: origins, consequences, and clinical use. Cold Spring Harb Perspect Biol. 2010;2(1):a001008.
+29. Mora A, Donaldson IM. Effects of protein interaction data integration, representation and reliability on the use of network properties for drug target prediction. BMC Bioinformatics. 2021;22(1):1-29. doi:10.1186/s12859-021-04042-6
 
-30. Lievre A, Bachet JB, Le Corre D, et al. KRAS mutation status is predictive of response to cetuximab therapy in colorectal cancer. Cancer Res. 2006;66(8):3992-3995.
+30. Erisman MD, Rothberg PG, Diehl RE, Morse CC, Spandorfer JM, Astrin SM. Deregulation of c-myc gene expression in human colon carcinoma is not accompanied by amplification or rearrangement of the gene. Mol Cell Biol. 1985;5(8):1969-1976.
 
-31. Karapetis CS, Khambata-Ford S, Jonker DJ, et al. K-ras mutations and benefit from cetuximab in advanced colorectal cancer. N Engl J Med. 2008;359(17):1757-1765.
+31. Sears R, Nuckolls F, Haura E, Taya Y, Tamai K, Nevins JR. Multiple Ras-dependent phosphorylation pathways regulate Myc protein stability. Genes Dev. 2000;14(26):2501-2514.
 
-32. Strano S, Monti O, Pediconi N, et al. The transcriptional coactivator Yes-associated protein drives p73 gene-target specificity in response to DNA damage. Mol Cell. 2005;18(4):447-459.
+32. Morin PJ, Sparks AB, Korinek V, et al. Activation of beta-catenin-Tcf signaling in colon cancer by mutations in beta-catenin or APC. Science. 1997;275(5307):1787-1790.
 
-33. Levy D, Adamovich Y, Reuven N, Shaul Y. Yap1 phosphorylation by c-Abl is a critical step in selective activation of proapoptotic genes in response to DNA damage. Mol Cell. 2008;29(3):350-361.
+33. Segditsas S, Tomlinson I. Colorectal cancer and genetic alterations in the Wnt pathway. Oncogene. 2006;25(57):7531-7537.
 
-34. Zanconato F, Cordenonsi M, Piccolo S. YAP and TAZ: a signalling hub of the tumour microenvironment. Nat Rev Cancer. 2019;19(8):454-464.
+34. Bartkova J, Lukas J, Strauss M, Bartek J. Cyclin D1 oncoprotein aberrantly accumulates in malignancies of diverse histogenesis. Oncogene. 1995;10(4):775-778.
 
-35. Zhao B, Tumaneng K, Guan KL. The Hippo pathway in organ size control, tissue regeneration and stem cell self-renewal. Nat Cell Biol. 2011;13(8):877-883.
+35. Iacopetta B. TP53 mutation in colorectal cancer. Hum Mutat. 2003;21(3):271-276.
 
-36. Sagnol S, Yang Y, Bessin Y, et al. Homodimerization of RBPMS2 through a new RRM-interaction motif is necessary to control smooth muscle plasticity. Nucleic Acids Res. 2014;42(15):10173-10184.
+36. Olivier M, Hollstein M, Hainaut P. TP53 mutations in human cancers: origins, consequences, and clinical use. Cold Spring Harb Perspect Biol. 2010;2(1):a001008.
 
-37. Polo SE, Kaidi A, Baskcomb L, Galanty Y, Jackson SP. Regulation of DNA-damage responses and cell-cycle progression by the chromatin remodelling factor CHD4. EMBO J. 2010;29(18):3130-3139.
+37. Lievre A, Bachet JB, Le Corre D, et al. KRAS mutation status is predictive of response to cetuximab therapy in colorectal cancer. Cancer Res. 2006;66(8):3992-3995.
 
-38. Larsen DH, Poinsignon C, Gudjonsson T, et al. The chromatin-remodeling factor CHD4 coordinates signaling and repair after DNA damage. J Cell Biol. 2010;190(5):731-740.
+38. Karapetis CS, Khambata-Ford S, Jonker DJ, et al. K-ras mutations and benefit from cetuximab in advanced colorectal cancer. N Engl J Med. 2008;359(17):1757-1765.
 
-39. Smeenk G, Wiegant WW, Vrolijk H, et al. The NuRD chromatin-remodeling complex regulates signaling and repair of DNA damage. J Cell Biol. 2010;190(5):741-749.
+39. Strano S, Monti O, Pediconi N, et al. The transcriptional coactivator Yes-associated protein drives p73 gene-target specificity in response to DNA damage. Mol Cell. 2005;18(4):447-459.
 
-40. Zhou G, Soufan O, Ewald J, Hancock REW, Basu N, Xia J. NetworkAnalyst 3.0: a visual analytics platform for comprehensive gene expression profiling and meta-analysis. Nucleic Acids Res. 2019;47(W1):W234-W241.
+40. Levy D, Adamovich Y, Reuven N, Shaul Y. Yap1 phosphorylation by c-Abl is a critical step in selective activation of proapoptotic genes in response to DNA damage. Mol Cell. 2008;29(3):350-361.
 
-41. Liu A, Trairatphisan P, Gjerga E, et al. From expression footprints to causal pathways: contextualizing large signaling networks with CARNIVAL. NPJ Syst Biol Appl. 2019;5:40.
+41. Zanconato F, Cordenonsi M, Piccolo S. YAP and TAZ: a signalling hub of the tumour microenvironment. Nat Rev Cancer. 2019;19(8):454-464.
+
+42. Zhao B, Tumaneng K, Guan KL. The Hippo pathway in organ size control, tissue regeneration and stem cell self-renewal. Nat Cell Biol. 2011;13(8):877-883.
+
+43. Sagnol S, Yang Y, Bessin Y, et al. Homodimerization of RBPMS2 through a new RRM-interaction motif is necessary to control smooth muscle plasticity. Nucleic Acids Res. 2014;42(15):10173-10184.
+
+44. Polo SE, Kaidi A, Baskcomb L, Galanty Y, Jackson SP. Regulation of DNA-damage responses and cell-cycle progression by the chromatin remodelling factor CHD4. EMBO J. 2010;29(25):3130-3139.
+
+45. Larsen DH, Poinsignon C, Gudjonsson T, et al. The chromatin-remodeling factor CHD4 coordinates signaling and repair after DNA damage. J Cell Biol. 2010;190(5):731-740.
+
+46. Smeenk G, Wiegant WW, Vrolijk H, et al. The NuRD chromatin-remodeling complex regulates signaling and repair of DNA damage. J Cell Biol. 2010;190(5):741-749.
+
+47. Zhou G, Soufan O, Ewald J, Hancock REW, Basu N, Xia J. NetworkAnalyst 3.0: a visual analytics platform for comprehensive gene expression profiling and meta-analysis. Nucleic Acids Res. 2019;47(W1):W234-W241.
+
+48. Liu A, Trairatphisan P, Gjerga E, et al. From expression footprints to causal pathways: contextualizing large signaling networks with CARNIVAL. NPJ Syst Biol Appl. 2019;5:40.
 
 
 
