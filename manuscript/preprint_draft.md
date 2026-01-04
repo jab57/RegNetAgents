@@ -29,7 +29,7 @@ The multi-agent architecture successfully recapitulates known regulatory pattern
 
 Scientific discovery increasingly depends on computational workflows that integrate multiple databases, analytical tools, and domain-specific knowledge. Researchers routinely face tasks requiring multi-step pipelines: querying heterogeneous data sources, applying statistical methods, interpreting results through specialized lenses (clinical relevance, therapeutic potential, mechanistic insight), and synthesizing findings into actionable hypotheses. These workflows are typically manual, sequential, and require significant domain expertise—limiting scalability, reproducibility, and accessibility to non-computational researchers.
 
-Recent advances in large language models (LLMs) and multi-agent orchestration frameworks offer a compelling solution: **automated scientific reasoning systems that execute complex analytical pipelines through conversational interfaces**. Multi-agent architectures enable parallel execution of specialized analysis components (11), while graph-based workflow engines such as LangGraph provide intelligent routing and state management for complex analytical pipelines (12). The Model Context Protocol (MCP) enables integration of computational tools with conversational AI interfaces (13), potentially democratizing access to sophisticated analytical methods.
+Recent advances in large language models (LLMs) and multi-agent orchestration frameworks offer a compelling solution: **automated scientific reasoning systems that execute complex analytical pipelines through conversational interfaces**. Multi-agent architectures enable parallel execution of specialized analysis components (1), while graph-based workflow engines such as LangGraph provide intelligent routing and state management for complex analytical pipelines (2). The Model Context Protocol (MCP) enables integration of computational tools with conversational AI interfaces (3), potentially democratizing access to sophisticated analytical methods.
 
 However, deploying LLMs in scientific workflows introduces critical challenges: **reliability** (LLM outputs can be inconsistent or hallucinated), **reproducibility** (non-deterministic generation hinders scientific validation), and **performance** (LLM inference adds latency to time-sensitive analyses). To address these challenges, we introduce a **hybrid multi-agent architecture** that combines LLM-powered reasoning with deterministic rule-based fallback logic, enabling fast, reliable, and reproducible workflow automation.
 
@@ -37,9 +37,9 @@ However, deploying LLMs in scientific workflows introduces critical challenges: 
 
 To demonstrate the capabilities and validate the reliability of multi-agent LLM workflow automation, we apply the framework to **gene regulatory network analysis**—a representative scientific workflow with well-defined steps, multiple specialized domains, and clear validation criteria.
 
-Gene regulatory networks (GRNs) represent the complex interactions between transcription factors and their target genes, forming the fundamental control systems that determine cellular identity, function, and disease states (1,2). Understanding these networks is critical for identifying disease biomarkers, elucidating disease mechanisms, and discovering therapeutic targets (3,4). Single-cell RNA sequencing (scRNA-seq) technologies have enabled reconstruction of cell-type-specific regulatory networks at unprecedented resolution, revealing how regulatory architecture varies across tissues and cell types (5,6).
+Gene regulatory networks (GRNs) represent the complex interactions between transcription factors and their target genes, forming the fundamental control systems that determine cellular identity, function, and disease states (4,5). Understanding these networks is critical for identifying disease biomarkers, elucidating disease mechanisms, and discovering therapeutic targets (6,7). Single-cell RNA sequencing (scRNA-seq) technologies have enabled reconstruction of cell-type-specific regulatory networks at unprecedented resolution, revealing how regulatory architecture varies across tissues and cell types (8,9).
 
-Traditional gene regulatory analysis exemplifies the workflow bottlenecks that multi-agent LLM systems can address. Researchers must manually query multiple databases and tools: network databases such as STRING (7) and BioGRID (8) for interaction data, pathway enrichment tools such as Enrichr (9) and DAVID (10) for functional annotation, and extensive literature curation for domain-specific context. This fragmented workflow presents several critical limitations that align with broader scientific workflow challenges:
+Traditional gene regulatory analysis exemplifies the workflow bottlenecks that multi-agent LLM systems can address. Researchers must manually query multiple databases and tools: network databases such as STRING (10) and BioGRID (11) for interaction data, pathway enrichment tools such as Enrichr (12) and DAVID (13) for functional annotation, and extensive literature curation for domain-specific context. This fragmented workflow presents several critical limitations that align with broader scientific workflow challenges:
 
 1. **Manual integration**: Labor-intensive coordination across web interfaces, data export, and cross-domain synthesis for each gene analyzed
 2. **Sequential processing**: Limited scalability—analyzing multiple genes or comparing across cell types requires repeating the entire workflow
@@ -90,7 +90,7 @@ These general-purpose multi-agent frameworks share a common architecture: LLM-po
 
 ### Workflow Orchestration Frameworks
 
-LangChain and LangGraph (12) provide foundational infrastructure for LLM application development and stateful multi-agent workflows. LangGraph specifically enables directed acyclic graph (DAG) based workflow orchestration with conditional routing, state management, and parallel execution—capabilities RegNetAgents leverages for coordinating specialized analysis agents. However, these frameworks are application-neutral and do not address domain-specific challenges in scientific computing, particularly the need for hybrid LLM+deterministic execution patterns.
+LangChain and LangGraph (2) provide foundational infrastructure for LLM application development and stateful multi-agent workflows. LangGraph specifically enables directed acyclic graph (DAG) based workflow orchestration with conditional routing, state management, and parallel execution—capabilities RegNetAgents leverages for coordinating specialized analysis agents. However, these frameworks are application-neutral and do not address domain-specific challenges in scientific computing, particularly the need for hybrid LLM+deterministic execution patterns.
 
 ### AI Systems for Scientific Discovery
 
@@ -370,11 +370,11 @@ Each analysis result includes an `llm_powered: true/false` flag for transparency
 
 To assess LLM-generated rationale accuracy, we manually reviewed all domain agent rationales generated for the five-gene CRC panel. The LLM-powered mode produced scientific explanations for each classification across four domain agents (cancer biology, drug development, clinical relevance, systems biology), totaling multiple rationales per gene. Manual validation against published CRC literature demonstrated alignment with established biology:
 
-**Oncogenic/tumor suppressor classifications:** LLM rationales accurately identified MYC, CTNNB1, and CCND1 as oncogenic based on their network regulatory roles and known cancer involvement, while correctly characterizing TP53 as a tumor suppressor. For example, the MYC cancer agent rationale stated: "As a hub regulator with high in-degree and out-degree, MYC plays a central role in regulating transcriptional networks, contributing to its oncogenic potential"—aligning with documented MYC amplification in 15-20% of CRCs (23,24).
+**Oncogenic/tumor suppressor classifications:** LLM rationales accurately identified MYC, CTNNB1, and CCND1 as oncogenic based on their network regulatory roles and known cancer involvement, while correctly characterizing TP53 as a tumor suppressor. For example, the MYC cancer agent rationale stated: "As a hub regulator with high in-degree and out-degree, MYC plays a central role in regulating transcriptional networks, contributing to its oncogenic potential"—aligning with documented MYC amplification in 15-20% of CRCs (30,31).
 
-**Therapeutic and druggability rationales:** LLM-generated drug development insights correctly linked network topology to therapeutic strategies. CTNNB1's drug agent rationale noted: "Inhibiting CTNNB1 could disrupt aberrant Wnt/β-catenin signaling pathways, which are implicated in various cancers"—matching established understanding of Wnt pathway dysregulation in 40-80% of CRCs (25,26). These mechanistic explanations synthesize network position (hub regulator, 310 targets) with pathway knowledge (Wnt signaling) to explain druggability.
+**Therapeutic and druggability rationales:** LLM-generated drug development insights correctly linked network topology to therapeutic strategies. CTNNB1's drug agent rationale noted: "Inhibiting CTNNB1 could disrupt aberrant Wnt/β-catenin signaling pathways, which are implicated in various cancers"—matching established understanding of Wnt pathway dysregulation in 40-80% of CRCs (32,33). These mechanistic explanations synthesize network position (hub regulator, 310 targets) with pathway knowledge (Wnt signaling) to explain druggability.
 
-**Mechanistic explanations:** Systems biology agent rationales demonstrated accurate integration of network topology with biological function. For CCND1, the systems agent explained: "Given its critical role in cell cycle progression and frequent mutations in human cancers, CCND1's disruption would have significant network-wide effects"—reflecting documented CCND1 overexpression in 30-60% of CRCs and its G1/S transition function (34). Similarly, TP53 was characterized as: "Mutations in TP53 are associated with various human cancers, indicating that its loss or dysregulation has critical consequences for the network"—consistent with 50-70% mutation rates in CRCs (28,29).
+**Mechanistic explanations:** Systems biology agent rationales demonstrated accurate integration of network topology with biological function. For CCND1, the systems agent explained: "Given its critical role in cell cycle progression and frequent mutations in human cancers, CCND1's disruption would have significant network-wide effects"—reflecting documented CCND1 overexpression in 30-60% of CRCs and its G1/S transition function (34). Similarly, TP53 was characterized as: "Mutations in TP53 are associated with various human cancers, indicating that its loss or dysregulation has critical consequences for the network"—consistent with 50-70% mutation rates in CRCs (35,36).
 
 ### Demonstration Case Study: Colorectal Cancer Biomarker Analysis
 
@@ -402,7 +402,7 @@ The five-gene panel exhibited distinct regulatory architectures (Table 2, Figure
 
 Network analysis revealed distinct regulatory architectures that align with known biological roles. Three genes emerged as hub regulators with extensive downstream connectivity: TP53 (163 targets), MYC (427 targets), and CTNNB1 (310 targets), indicating signal amplification roles consistent with their documented functions as master regulatory hubs in tumor suppression and oncogenic signaling. CCND1 showed a heavily regulated profile with extensive upstream control (42 regulators), consistent with complex regulatory integration of cell cycle signaling. KRAS showed a weakly regulated profile (7 regulators, 0 targets), reflecting its role as a signal transducer (GTPase) rather than a transcription factor. This explains its absence of transcriptional targets in the ARACNe network despite extensive pathway enrichment (141 pathways, Figure 3C), consistent with its central position in MAPK and PI3K signaling cascades.
 
-These regulatory patterns align with established CRC biology. MYC amplification occurs in 15-20% of CRCs and correlates with poor prognosis (23,24). CTNNB1 mutations/dysregulation occur in 40-80% of CRCs via APC loss and Wnt pathway activation (25,26). CCND1 overexpression occurs in 30-60% of CRCs and drives G1/S cell cycle transition (34). TP53 mutations occur in 50-70% of CRCs and associate with advanced stage, metastasis, and poor survival (28,29). KRAS mutations occur in 40-45% of CRCs and confer resistance to anti-EGFR therapies (30,31).
+These regulatory patterns align with established CRC biology. MYC amplification occurs in 15-20% of CRCs and correlates with poor prognosis (30,31). CTNNB1 mutations/dysregulation occur in 40-80% of CRCs via APC loss and Wnt pathway activation (32,33). CCND1 overexpression occurs in 30-60% of CRCs and drives G1/S cell cycle transition (34). TP53 mutations occur in 50-70% of CRCs and associate with advanced stage, metastasis, and poor survival (35,36). KRAS mutations occur in 40-45% of CRCs and confer resistance to anti-EGFR therapies (37,38).
 
 The framework's identification of distinct network architectures (hub regulators, heavily regulated genes, and weakly regulated endpoints) demonstrates its ability to characterize gene regulatory roles from network topology, providing context for interpretation of each gene's potential biological significance.
 
@@ -414,13 +414,13 @@ To illustrate framework capabilities for hypothesis generation, we performed aut
 
 We compared the top 3 network-ranked candidates (by PageRank) against published literature to assess whether topology-based ranking recapitulates known biology:
 
-**WWTR1 (TAZ):** WW domain-containing transcription regulator 1, also known as TAZ, is a Hippo pathway effector that functions as a transcriptional co-activator. WWTR1 and its paralog YAP1 are key downstream effectors of Hippo signaling involved in cell fate decisions, proliferation control, and DNA damage responses (32,33). The high PageRank ranking identifies WWTR1 as a central network node, consistent with the established role of Hippo pathway components in regulating cell growth and tumor suppression (34,35). Literature documents bidirectional crosstalk between TP53 and Hippo pathway effectors, where TP53 can regulate YAP1/WWTR1 and vice versa depending on cellular context. The network connectivity between WWTR1 and TP53 represents a testable hypothesis for functional interaction warranting experimental validation of the specific regulatory direction in epithelial cells.
+**WWTR1 (TAZ):** WW domain-containing transcription regulator 1, also known as TAZ, is a Hippo pathway effector that functions as a transcriptional co-activator. WWTR1 and its paralog YAP1 are key downstream effectors of Hippo signaling involved in cell fate decisions, proliferation control, and DNA damage responses (39,40). The high PageRank ranking identifies WWTR1 as a central network node, consistent with the established role of Hippo pathway components in regulating cell growth and tumor suppression (41,42). Literature documents bidirectional crosstalk between TP53 and Hippo pathway effectors, where TP53 can regulate YAP1/WWTR1 and vice versa depending on cellular context. The network connectivity between WWTR1 and TP53 represents a testable hypothesis for functional interaction warranting experimental validation of the specific regulatory direction in epithelial cells.
 
 **RBPMS:** RNA-binding protein with multiple splicing that shows the highest degree centrality among TP53 regulators (403 downstream targets). The related protein RBPMS2 has been implicated in smooth muscle plasticity and gene regulation (43), suggesting potential roles in tissue-specific transcriptional control. While limited literature exists on RBPMS itself in cancer contexts, its extensive network connectivity and high PageRank (0.469) position it as a high-priority candidate for experimental validation in TP53 regulatory mechanisms.
 
 **PRRX2:** Paired-related homeobox 2, a transcription factor involved in mesenchymal development and epithelial-mesenchymal transition pathways. PRRX2's high PageRank (0.454) despite moderate degree centrality reflects quality over quantity in network connections—suggesting influence through key regulatory hubs rather than direct broad connectivity. Its limited characterization in TP53 regulatory contexts makes it a particularly intriguing novel hypothesis, as homeobox factors often orchestrate complex developmental and disease-relevant gene expression programs.
 
-This comparison demonstrates that topology-based ranking can: (1) recapitulate experimentally validated regulators (WWTR1 and YAP1 from Hippo pathway, CHD4 from chromatin remodeling complexes (37-39)), and (2) generate testable hypotheses (RBPMS, PRRX2, THRA, IKZF2) for experimental follow-up. The framework serves as a hypothesis generation tool to prioritize candidates for experimental validation.
+This comparison demonstrates that topology-based ranking can: (1) recapitulate experimentally validated regulators (WWTR1 and YAP1 from Hippo pathway, CHD4 from chromatin remodeling complexes (44-46)), and (2) generate testable hypotheses (RBPMS, PRRX2, THRA, IKZF2) for experimental follow-up. The framework serves as a hypothesis generation tool to prioritize candidates for experimental validation.
 
 **Table 3 shows the complete ranking of all 7 regulators**, not a filtered subset, providing full transparency in the prioritization analysis.
 
@@ -430,12 +430,12 @@ This comparison demonstrates that topology-based ranking can: (1) recapitulate e
 
 | Rank | Regulator | PageRank | Out-Degree Centrality | Downstream Targets | Literature Status |
 |------|-----------|----------|----------------------|-------------------|-------------------|
-| 1 | WWTR1 | 0.473 | 0.020 | 293 | ✓ Literature-supported (32-35) |
+| 1 | WWTR1 | 0.473 | 0.020 | 293 | ✓ Literature-supported (39-42) |
 | 2 | RBPMS | 0.469 | 0.028 | 403 | Novel hypothesis |
 | 3 | PRRX2 | 0.454 | 0.006 | 93 | Novel hypothesis |
-| 4 | CHD4 | 0.443 | 0.017 | 243 | ✓ Literature-supported (37-39) |
+| 4 | CHD4 | 0.443 | 0.017 | 243 | ✓ Literature-supported (44-46) |
 | 5 | THRA | 0.408 | 0.006 | 81 | Novel hypothesis |
-| 6 | YAP1 | 0.402 | 0.014 | 207 | ✓ Literature-supported (32-35) |
+| 6 | YAP1 | 0.402 | 0.014 | 207 | ✓ Literature-supported (39-42) |
 | 7 | IKZF2 | 0.399 | 0.008 | 112 | Novel hypothesis |
 
 *Regulators ranked by **PageRank (normalized [0-1])**, a metric associated with drug target success per Mora & Donaldson (2021). PageRank scores >0.30 suggest high-quality network connections. **Out-degree centrality (normalized [0-1])** measures downstream regulatory influence (hub identification). **Downstream Targets column** shows count of network connections. All 7 regulators contribute equally to TP53 direct regulation (14.3% each = 1/7 regulators). Literature status indicates whether published studies support functional interactions between the regulator and TP53. Three of seven high-ranking regulators (WWTR1, CHD4, YAP1) have literature support for TP53 interactions, demonstrating the framework identifies known functional interactors from network topology. **Novel exploratory hypotheses (RBPMS, PRRX2, THRA, IKZF2)** represent topology-based predictions requiring experimental validation—these should be interpreted as candidate regulators for testing, not confirmed functional interactors.*
@@ -528,7 +528,7 @@ To contextualize the efficiency gains, we compared RegNetAgents to representativ
 
 ### Biological Insights from Case Studies
 
-The colorectal cancer analysis revealed distinct regulatory architectures with therapeutic implications. Hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163-427 targets) function as signal amplifiers but present off-target risks. Heavily regulated endpoints like CCND1 (42 upstream regulators) suggest complex regulatory integration requiring multi-pathway intervention strategies, while weakly regulated endpoints like KRAS (7 regulators) may offer simpler, more direct intervention points. TP53 therapeutic target prioritization revealed distributed regulatory control (7 regulators, each ~14% contribution), suggesting combinatorial therapeutic strategies may be necessary. The identification of YAP1/WWTR1 (Hippo pathway effectors) as top regulators aligns with recent interest in Hippo pathway-targeted therapies (34,35), demonstrating the framework can recapitulate and extend experimentally derived therapeutic hypotheses.
+The colorectal cancer analysis revealed distinct regulatory architectures with therapeutic implications. Hub regulators (TP53, MYC, CTNNB1) with extensive downstream connectivity (163-427 targets) function as signal amplifiers but present off-target risks. Heavily regulated endpoints like CCND1 (42 upstream regulators) suggest complex regulatory integration requiring multi-pathway intervention strategies, while weakly regulated endpoints like KRAS (7 regulators) may offer simpler, more direct intervention points. TP53 therapeutic target prioritization revealed distributed regulatory control (7 regulators, each ~14% contribution), suggesting combinatorial therapeutic strategies may be necessary. The identification of YAP1/WWTR1 (Hippo pathway effectors) as top regulators aligns with recent interest in Hippo pathway-targeted therapies (41,42), demonstrating the framework can recapitulate and extend experimentally derived therapeutic hypotheses.
 
 ### Limitations
 
@@ -606,31 +606,31 @@ The authors declare no competing interests.
 
 ## REFERENCES
 
-1. Babu MM, Luscombe NM, Aravind L, Gerstein M, Teichmann SA. Structure and evolution of transcriptional regulatory networks. Curr Opin Struct Biol. 2004;14(3):283-291.
+1. Wooldridge M. An Introduction to MultiAgent Systems. 2nd ed. Wiley; 2009.
 
-2. Davidson EH, Levine MS. Properties of developmental gene regulatory networks. Proc Natl Acad Sci USA. 2008;105(51):20063-20066.
+2. LangGraph Documentation. LangChain AI. https://langchain-ai.github.io/langgraph/
 
-3. Califano A, Alvarez MJ. The recurrent architecture of tumour initiation, progression and drug sensitivity. Nat Rev Cancer. 2017;17(2):116-130.
+3. Anthropic. Model Context Protocol Documentation. https://modelcontextprotocol.io
 
-4. Sonawane AR, Platig J, Fagny M, et al. Understanding tissue-specific gene regulation. Cell Rep. 2017;21(4):1077-1088.
+4. Babu MM, Luscombe NM, Aravind L, Gerstein M, Teichmann SA. Structure and evolution of transcriptional regulatory networks. Curr Opin Struct Biol. 2004;14(3):283-291.
 
-5. Aibar S, González-Blas CB, Moerman T, et al. SCENIC: single-cell regulatory network inference and clustering. Nat Methods. 2017;14(11):1083-1086.
+5. Davidson EH, Levine MS. Properties of developmental gene regulatory networks. Proc Natl Acad Sci USA. 2008;105(51):20063-20066.
 
-6. Kamimoto K, Stringa B, Hoffmann CM, et al. Dissecting cell identity via network inference and in silico gene perturbation. Nature. 2023;614(7949):742-751.
+6. Califano A, Alvarez MJ. The recurrent architecture of tumour initiation, progression and drug sensitivity. Nat Rev Cancer. 2017;17(2):116-130.
 
-7. Szklarczyk D, Gable AL, Nastou KC, et al. The STRING database in 2021: customizable protein-protein networks, and functional characterization of user-uploaded gene/measurement sets. Nucleic Acids Res. 2021;49(D1):D605-D612.
+7. Sonawane AR, Platig J, Fagny M, et al. Understanding tissue-specific gene regulation. Cell Rep. 2017;21(4):1077-1088.
 
-8. Oughtred R, Rust J, Chang C, et al. The BioGRID database: A comprehensive biomedical resource of curated protein, genetic, and chemical interactions. Protein Sci. 2021;30(1):187-200.
+8. Aibar S, González-Blas CB, Moerman T, et al. SCENIC: single-cell regulatory network inference and clustering. Nat Methods. 2017;14(11):1083-1086.
 
-9. Chen EY, Tan CM, Kou Y, et al. Enrichr: interactive and collaborative HTML5 gene list enrichment analysis tool. BMC Bioinformatics. 2013;14:128.
+9. Kamimoto K, Stringa B, Hoffmann CM, et al. Dissecting cell identity via network inference and in silico gene perturbation. Nature. 2023;614(7949):742-751.
 
-10. Sherman BT, Hao M, Qiu J, et al. DAVID: a web server for functional enrichment analysis and functional annotation of gene lists (2021 update). Nucleic Acids Res. 2022;50(W1):W216-W221.
+10. Szklarczyk D, Gable AL, Nastou KC, et al. The STRING database in 2021: customizable protein-protein networks, and functional characterization of user-uploaded gene/measurement sets. Nucleic Acids Res. 2021;49(D1):D605-D612.
 
-11. Wooldridge M. An Introduction to MultiAgent Systems. 2nd ed. Wiley; 2009.
+11. Oughtred R, Rust J, Chang C, et al. The BioGRID database: A comprehensive biomedical resource of curated protein, genetic, and chemical interactions. Protein Sci. 2021;30(1):187-200.
 
-12. LangGraph Documentation. LangChain AI. https://langchain-ai.github.io/langgraph/
+12. Chen EY, Tan CM, Kou Y, et al. Enrichr: interactive and collaborative HTML5 gene list enrichment analysis tool. BMC Bioinformatics. 2013;14:128.
 
-13. Anthropic. Model Context Protocol Documentation. https://modelcontextprotocol.io
+13. Sherman BT, Hao M, Qiu J, et al. DAVID: a web server for functional enrichment analysis and functional annotation of gene lists (2021 update). Nucleic Acids Res. 2022;50(W1):W216-W221.
 
 14. Zhang M, Swamy V, Cassius R, Dupire L, Karaletsos T, Califano A. GREmLN: A Cellular Graph Structure Aware Transcriptomics Foundation Model. bioRxiv. 2025. doi:10.1101/2025.07.03.663009
 
@@ -703,8 +703,6 @@ The authors declare no competing interests.
 48. Liu A, Trairatphisan P, Gjerga E, et al. From expression footprints to causal pathways: contextualizing large signaling networks with CARNIVAL. NPJ Syst Biol Appl. 2019;5:40.
 
 
-
-<div style="page-break-before: always"></div>
 
 ## FIGURE LEGENDS
 
