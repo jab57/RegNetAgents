@@ -2273,26 +2273,30 @@ class RegNetAgentsWorkflow:
             role_diversity = len(set(analysis.get('regulatory_role') for analysis in cell_roles.values()))
             insights['cell_type_specificity'] = "high" if role_diversity > 3 else "low"
 
-        # Domain analysis insights
+        # Domain analysis insights (fixed to access nested 'insights' dict)
         cancer_analysis = state.get('cancer_analysis', {})
         if cancer_analysis and not cancer_analysis.get('error'):
-            insights['cancer_relevance'] = cancer_analysis.get('oncogenic_potential', 'unknown')
-            insights['therapeutic_potential'] = cancer_analysis.get('therapeutic_target_score', 0)
+            cancer_insights = cancer_analysis.get('insights', {})
+            insights['cancer_relevance'] = cancer_insights.get('oncogenic_potential', 'unknown')
+            insights['therapeutic_potential'] = cancer_insights.get('therapeutic_target_score', 0)
 
         drug_analysis = state.get('drug_analysis', {})
         if drug_analysis and not drug_analysis.get('error'):
-            insights['druggability'] = drug_analysis.get('druggability_score', 0)
-            insights['drug_development_priority'] = drug_analysis.get('development_priority', 'unknown')
+            drug_insights = drug_analysis.get('insights', {})
+            insights['druggability'] = drug_insights.get('druggability_score', 0)
+            insights['drug_development_priority'] = drug_insights.get('development_complexity', 'unknown')
 
         clinical_analysis = state.get('clinical_analysis', {})
         if clinical_analysis and not clinical_analysis.get('error'):
-            insights['clinical_significance'] = clinical_analysis.get('clinical_significance', 'unknown')
-            insights['biomarker_potential'] = clinical_analysis.get('biomarker_potential', 'unknown')
+            clinical_insights = clinical_analysis.get('insights', {})
+            insights['clinical_significance'] = clinical_insights.get('clinical_actionability', 'unknown')
+            insights['biomarker_potential'] = clinical_insights.get('biomarker_utility', 'unknown')
 
         systems_analysis = state.get('systems_analysis', {})
         if systems_analysis and not systems_analysis.get('error'):
-            insights['network_importance'] = systems_analysis.get('network_centrality', 'unknown')
-            insights['systems_complexity'] = systems_analysis.get('system_complexity', 'unknown')
+            systems_insights = systems_analysis.get('insights', {})
+            insights['network_importance'] = systems_insights.get('network_centrality', 'unknown')
+            insights['systems_complexity'] = systems_insights.get('network_vulnerability', 'unknown')
 
         return insights
 
