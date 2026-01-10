@@ -43,6 +43,8 @@ def create_arrow(ax, x1, y1, x2, y2, style='solid', color='black', linewidth=2):
 # Title
 ax.text(5, 15.5, 'RegNetAgents Multi-Agent Architecture',
         ha='center', va='center', fontsize=16, fontweight='bold')
+ax.text(5, 15.0, '(LangGraph-Orchestrated Workflow)',
+        ha='center', va='center', fontsize=11, fontweight='normal', style='italic')
 
 # 1. User Input (Top)
 create_box(ax, 5, 14.5, 3, 0.6, 'User Query via MCP Server\n(Natural Language)',

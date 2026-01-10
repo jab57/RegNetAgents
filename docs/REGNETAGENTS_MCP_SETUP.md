@@ -88,6 +88,41 @@ cp .env.example .env
 
 **Note**: System works perfectly without Ollama using fast rule-based heuristics. LLM mode adds scientific rationales and interpretations.
 
+#### Alternative: Ollama Cloud (No Local Installation Required)
+
+**For users without local GPU resources**, Ollama Cloud provides an alternative deployment option using the same methodology as the published results.
+
+**What this is:**
+- Cloud-hosted inference using Ollama's free tier
+- Access to models like `gemini-3-flash-preview`
+- Same analytical workflow as local Ollama
+- No local GPU or model downloads required
+
+**Setup:**
+
+1. Get API key from https://ollama.com/settings (free tier available)
+2. Edit your `.env` file:
+
+```bash
+# Use Ollama Cloud instead of local
+OLLAMA_API_KEY=your-api-key-here
+OLLAMA_MODEL=gemini-3-flash-preview
+USE_LLM_AGENTS=true
+```
+
+3. Restart Claude Desktop
+
+**Performance:**
+- Ollama Cloud: ~20-25 seconds per gene (network latency included)
+- Local Ollama: ~4 seconds per gene (published results)
+- Rule-based: <1 second (instant fallback)
+
+**Free Tier Limits:**
+- 5 premium requests/month for Gemini models
+- Hourly/weekly rate limits
+
+**Note:** This is a **deployment option**, not a methodological change. The analytical workflow, domain agents, and network analysis remain identical to the published approach. Ollama Cloud simply provides an alternative infrastructure for users without local compute resources.
+
 ### Network Cache Files
 
 Generate network cache files for 10 cell types:

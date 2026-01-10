@@ -668,16 +668,33 @@ class DomainAnalysisAgents:
             use_llm = os.getenv('USE_LLM_AGENTS', 'true').lower() == 'true'
 
         self.use_llm = use_llm
-        self.ollama_client = self._initialize_ollama() if use_llm else False
+        self.ollama_client = None  # Will be set by _initialize_ollama
+        self.ollama_available = self._initialize_ollama() if use_llm else False
         self.ollama_model = os.getenv('OLLAMA_MODEL', 'llama3.1:8b')
         self.ollama_temperature = float(os.getenv('OLLAMA_TEMPERATURE', '0.3'))
         self.ollama_max_tokens = int(os.getenv('OLLAMA_MAX_TOKENS', '1500'))
 
     def _initialize_ollama(self):
-        """Check if Ollama is available and running"""
+        """Check if Ollama is available and running (auto-detects local vs cloud)"""
         try:
+            # Auto-detect: Ollama Cloud (if API key exists) or Local Ollama (default)
+            api_key = os.getenv('OLLAMA_API_KEY')
+
+            if api_key:
+                # OPTION B: Ollama Cloud mode
+                logger.info("🌐 Using Ollama Cloud (API key detected)")
+                self.ollama_client = ollama.Client(
+                    host='https://ollama.com',
+                    headers={'Authorization': f'Bearer {api_key}'}
+                )
+            else:
+                # OPTION A: Local Ollama mode (DEFAULT)
+                host = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
+                logger.info(f"🏠 Using local Ollama at {host}")
+                self.ollama_client = ollama.Client(host=host)
+
             # Test connection to Ollama
-            models_response = ollama.list()
+            models_response = self.ollama_client.list()
 
             # Handle different response structures from Ollama API
             if hasattr(models_response, 'models'):
@@ -733,7 +750,7 @@ class DomainAnalysisAgents:
 
                 response = await asyncio.wait_for(
                     asyncio.to_thread(
-                        ollama.chat,
+                        self.ollama_client.chat,
                         model=self.ollama_model,
                         messages=messages,
                         options={

@@ -1,0 +1,398 @@
+\documentclass[11pt]{article}
+
+% Essential packages
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage[margin=1in]{geometry}
+\usepackage{authblk}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{amssymb}
+
+
+% Listings configuration for code blocks
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  xleftmargin=2em,
+  framexleftmargin=1.5em
+}
+
+% Title and authors
+\title{Supplementary Material\\
+RegNetAgents: A Multi-Agent AI Framework for Automated Gene Regulatory Network Analysis and Therapeutic Target Prioritization}
+
+\author[1]{Jose A. Bird, PhD}
+\affil[1]{Bird AI Solutions}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Table S1: Domain Agent LLM Prompt Templates}
+
+RegNetAgents employs four specialized domain agents that use structured LLM prompts to generate scientific insights. Each agent receives gene-specific context (network topology, functional annotations, pathway enrichment) and returns structured JSON responses with domain-specific interpretations and rationales.
+
+\subsection{LLM Configuration}
+
+\begin{itemize}
+\item \textbf{Model}: llama3.1:8b (via Ollama local inference)
+\item \textbf{Temperature}: 0.3 (for scientific accuracy)
+\item \textbf{Timeout}: 90 seconds (for parallel multi-gene analysis)
+\item \textbf{Retry logic}: 2 attempts with graceful fallback to rule-based heuristics
+\end{itemize}
+
+\subsection{Context Variables}
+
+The following variables are populated dynamically for each gene:
+
+\begin{itemize}
+\item \texttt{\{gene\}}: Gene symbol (e.g., ``TP53'', ``MYC'')
+\item \texttt{\{function\_context\}}: NCBI/UniProt functional description
+\item \texttt{\{gene\_info\}}: Network topology (regulatory role, degree centrality)
+\item \texttt{\{enriched\_pathways\}}: Reactome pathway enrichment results (when available)
+\item \texttt{\{regulator\_count\}}, \texttt{\{target\_count\}}: Cascade analysis results
+\item \texttt{\{tissue\_context\}}: Cross-cell-type activity
+\item \texttt{\{pagerank\}}: PageRank centrality score
+\end{itemize}
+
+\subsection{S1.1 Cancer Biology Agent}
+
+\subsubsection{System Prompt}
+
+\begin{quote}
+\textit{You are an expert cancer biologist analyzing gene regulatory networks. Provide scientifically accurate, evidence-based analysis in structured JSON format only.}
+\end{quote}
+
+\subsubsection{User Prompt Template}
+
+\begin{quote}
+\textit{Analyze the gene \{gene\} from a cancer biology perspective. \{function\_context\}}
+
+\textit{Gene Network Context:}
+\begin{itemize}
+\item \textit{Regulatory Role: \{regulatory\_role\}}
+\item \textit{Upstream Regulators: \{num\_regulators\}}
+\item \textit{Downstream Targets: \{num\_targets\}}
+\item \textit{Network Position: in-degree=\{num\_regulators\}, out-degree=\{num\_targets\}}
+\end{itemize}
+
+\textit{Enriched Pathways: \{enriched\_pathways\}}
+
+\textit{Provide a cancer biology analysis in this EXACT JSON format:}
+
+\begin{verbatim}
+{
+  "oncogenic_potential": "high|moderate|low",
+  "oncogenic_rationale": "brief scientific explanation based on
+    network topology and cancer biology",
+  "tumor_suppressor_likelihood": "high|moderate|low",
+  "tumor_suppressor_rationale": "brief scientific explanation",
+  "therapeutic_target_score": 0.0-1.0,
+  "therapeutic_rationale": "explanation of druggability and
+    therapeutic potential",
+  "cancer_pathways": ["pathway1", "pathway2"],
+  "biomarker_potential": "high|moderate|low",
+  "biomarker_utility": "diagnostic|prognostic|predictive",
+  "biomarker_rationale": "explanation",
+  "research_priority": "high|moderate|low",
+  "summary": "1-2 sentence synthesis of cancer relevance"
+}
+\end{verbatim}
+
+\textit{Base your analysis on:}
+\begin{itemize}
+\item \textit{Network centrality (hub regulators are critical for cancer)}
+\item \textit{Regulatory control (highly regulated genes often tumor suppressors)}
+\item \textit{Pathway involvement (cancer-related pathways)}
+\item \textit{Known cancer biology principles}
+\end{itemize}
+
+\textit{Provide only the JSON, no additional text.}
+\end{quote}
+
+\subsubsection{Example Output Structure}
+
+\begin{lstlisting}
+{
+  "oncogenic_potential": "high",
+  "oncogenic_rationale": "TP53 acts as a hub regulator with 163
+    downstream targets, indicating strong regulatory influence
+    characteristic of oncogenes when dysregulated.",
+  "tumor_suppressor_likelihood": "high",
+  "tumor_suppressor_rationale": "Heavily regulated by 7 upstream
+    factors, consistent with checkpoint function.",
+  "therapeutic_target_score": 0.8,
+  "llm_powered": true
+}
+\end{lstlisting}
+
+\subsection{S1.2 Drug Development Agent}
+
+\subsubsection{System Prompt}
+
+\begin{quote}
+\textit{You are an expert in drug discovery and development analyzing gene regulatory networks. Provide scientifically accurate, evidence-based analysis in structured JSON format only.}
+\end{quote}
+
+\subsubsection{User Prompt Template}
+
+\begin{quote}
+\textit{Analyze the gene \{gene\} from a drug development perspective. \{function\_context\}}
+
+\textit{Gene Network Context:}
+\begin{itemize}
+\item \textit{Regulatory Role: \{regulatory\_role\}}
+\item \textit{Upstream Regulators: \{num\_regulators\}}
+\item \textit{Downstream Targets: \{num\_targets\}}
+\item \textit{Total Regulators Found: \{regulator\_count\}}
+\item \textit{Total Targets Found: \{target\_count\}}
+\end{itemize}
+
+\textit{Provide drug development analysis in this EXACT JSON format:}
+
+\begin{verbatim}
+{
+  "druggability_score": 0.0-1.0,
+  "druggability_rationale": "explanation of druggability based on
+    structure and network",
+  "target_class": "kinase|GPCR|transcription_factor|
+    nuclear_receptor|other",
+  "intervention_strategy": "inhibition|activation|modulation|
+    allosteric",
+  "intervention_rationale": "why this strategy is appropriate",
+  "development_complexity": "high|moderate|low",
+  "cascade_effects": ["effect1", "effect2"],
+  "clinical_trial_readiness": "ready|needs_preclinical|
+    needs_research|not_suitable",
+  "development_timeline": "estimated years",
+  "summary": "1-2 sentence synthesis of drug development potential"
+}
+\end{verbatim}
+
+\textit{Base analysis on:}
+\begin{itemize}
+\item \textit{Network topology (hub genes may have broad effects)}
+\item \textit{Regulatory control (heavily regulated may be indirect targets)}
+\item \textit{Cascade effects (downstream impact)}
+\item \textit{Known drug target classes}
+\end{itemize}
+
+\textit{Provide only the JSON, no additional text.}
+\end{quote}
+
+\subsection{S1.3 Clinical Medicine Agent}
+
+\subsubsection{System Prompt}
+
+\begin{quote}
+\textit{You are an expert clinician and translational researcher analyzing gene networks for precision medicine applications.}
+\end{quote}
+
+\subsubsection{User Prompt Template}
+
+\begin{quote}
+\textit{Analyze the gene \{gene\} from a clinical medicine and personalized healthcare perspective. \{function\_context\}}
+
+\textit{Gene Network Context:}
+\begin{itemize}
+\item \textit{Regulatory Role: \{regulatory\_role\}}
+\item \textit{Upstream Regulators: \{num\_regulators\}}
+\item \textit{Downstream Targets: \{num\_targets\}}
+\item \textit{Tissue Distribution: \{tissue\_context\}}
+\end{itemize}
+
+\textit{Provide a clinical analysis in this EXACT JSON format:}
+
+\begin{verbatim}
+{
+  "disease_association_likelihood": "high|moderate|low",
+  "disease_rationale": "brief explanation of disease relevance",
+  "biomarker_utility": "diagnostic|prognostic|predictive|
+    therapeutic",
+  "biomarker_rationale": "brief explanation of biomarker potential",
+  "clinical_actionability": "high|moderate|low",
+  "actionability_rationale": "brief explanation of clinical utility",
+  "tissue_specificity": "tissue-specific|broadly_expressed|
+    ubiquitous",
+  "diagnostic_potential": "high|moderate|low",
+  "summary": "1-2 sentence clinical significance summary"
+}
+\end{verbatim}
+
+\textit{Focus on:}
+\begin{itemize}
+\item \textit{Disease association potential based on network position}
+\item \textit{Biomarker utility for diagnosis, prognosis, or therapeutic monitoring}
+\item \textit{Clinical actionability and translational potential}
+\item \textit{Tissue specificity implications for personalized medicine}
+\end{itemize}
+
+\textit{Provide only the JSON, no additional text.}
+\end{quote}
+
+\subsection{S1.4 Systems Biology Agent}
+
+\subsubsection{System Prompt}
+
+\begin{quote}
+\textit{You are an expert systems biologist analyzing gene regulatory networks. Provide scientifically accurate, evidence-based analysis in structured JSON format only.}
+\end{quote}
+
+\subsubsection{User Prompt Template}
+
+\begin{quote}
+\textit{Analyze the gene \{gene\} from a systems biology and network theory perspective. \{function\_context\}}
+
+\textit{Gene Network Context:}
+\begin{itemize}
+\item \textit{Regulatory Role: \{regulatory\_role\}}
+\item \textit{Upstream Regulators: \{num\_regulators\} (total in cascade: \{reg\_count\})}
+\item \textit{Downstream Targets: \{num\_targets\} (total in cascade: \{target\_count\})}
+\item \textit{PageRank Centrality: \{pagerank\}}
+\item \textit{Total Network Degree: \{num\_regulators + num\_targets\}}
+\end{itemize}
+
+\textit{Provide a systems biology analysis in this EXACT JSON format:}
+
+\begin{verbatim}
+{
+  "network_centrality": 0.0-1.0,
+  "centrality_rationale": "brief explanation of network position",
+  "regulatory_hierarchy": "master|hub|intermediate|peripheral",
+  "hierarchy_rationale": "brief explanation of hierarchical
+    position",
+  "information_flow": "high|moderate|low",
+  "flow_rationale": "brief explanation of information processing",
+  "network_vulnerability": "critical|important|moderate|minimal",
+  "vulnerability_rationale": "brief explanation of network impact",
+  "therapeutic_impact": "system-wide|modular|localized|minimal",
+  "therapeutic_rationale": "brief explanation of knockout/
+    intervention effects",
+  "evolutionary_conservation": "high|moderate|low",
+  "conservation_rationale": "brief inference about evolutionary
+    importance",
+  "summary": "1-2 sentence systems biology summary"
+}
+\end{verbatim}
+
+\textit{Focus on:}
+\begin{itemize}
+\item \textit{Network topology and centrality (degree, betweenness, PageRank implications)}
+\item \textit{Hierarchical position and regulatory control}
+\item \textit{Information flow and signal transduction}
+\item \textit{Network robustness and vulnerability to therapeutic intervention}
+\item \textit{Evolutionary conservation inferred from network position}
+\end{itemize}
+
+\textit{Provide only the JSON, no additional text.}
+\end{quote}
+
+\section{Notes on Prompt Engineering}
+
+\subsection{Structured Output Constraints}
+
+All prompts explicitly request JSON-only responses with predefined keys and value constraints (e.g., ``high|moderate|low'', ``0.0--1.0''). This ensures:
+
+\begin{enumerate}
+\item Parseable structured output for downstream integration
+\item Consistent classification schemes across genes
+\item Minimal hallucination through constrained response space
+\item Graceful error handling via JSON validation
+\end{enumerate}
+
+\subsection{Context Integration}
+
+Each prompt incorporates multiple information sources:
+\begin{itemize}
+\item Gene functional annotations (UniProt/NCBI) provide biological grounding
+\item Network topology metrics constrain interpretations to data-supported claims
+\item Pathway enrichment results (when available) add mechanistic context
+\item Cross-cell-type analysis provides tissue specificity
+\end{itemize}
+
+\subsection{Fallback Mechanism}
+
+If LLM calls fail (timeout, parsing error, unavailable service), agents automatically fall back to rule-based heuristics using network topology thresholds:
+
+\begin{itemize}
+\item Oncogenic potential: $>$50 targets = high, 20--50 = moderate, $<$20 = low
+\item Tumor suppressor likelihood: $>$10 regulators = high (checkpoint function)
+\item Druggability: Hubs = complex (off-target risks), heavily regulated = lower priority
+\end{itemize}
+
+Each analysis result includes an \texttt{llm\_powered: true/false} flag for transparency.
+
+\subsection{Temperature Selection}
+
+Temperature = 0.3 balances determinism (reproducibility) with linguistic variety (natural rationale text). Lower temperatures (0.0--0.2) produced overly repetitive text; higher temperatures (0.5--1.0) increased inconsistency across runs.
+
+\section{Table S2: Cervical Cancer Gene Validation}
+
+To demonstrate framework generalizability beyond the colorectal cancer validation presented in the main manuscript, we analyzed 7 cervical cancer-associated genes with confirmed regulatory network coverage in epithelial cells (all genes with $\geq$5 regulators). This analysis serves as independent validation that the framework produces biologically meaningful results across different cancer contexts.
+
+All 7 genes were successfully analyzed using the same comprehensive workflow (network modeling, therapeutic target prioritization, pathway enrichment) in 103 seconds. The analysis recapitulated expected regulatory architectures: TP53 and MYC emerged as hub regulators with extensive downstream connectivity (163 and 427 targets respectively), while BRCA1, BRCA2, EGFR, and CCND1 exhibited heavily regulated profiles consistent with their roles as downstream effectors in oncogenic signaling cascades. Therapeutic target prioritization identified high-confidence regulatory candidates for each gene, including WWTR1 (TAZ) as the top-ranked TP53 regulator - consistent with documented Hippo pathway regulation of p53 activity. LLM-powered domain analysis correctly classified TP53 and MYC as tumor suppressors with high therapeutic potential, while BRCA1/BRCA2 were identified as high-priority targets for DNA repair pathway intervention, consistent with established cancer biology. Pathway enrichment analysis further validated these findings: WWTR1 (TAZ) appears in TP53's most significantly enriched pathways (YAP1/WWTR1-stimulated gene expression, Hippo signaling), while BRCA1/BRCA2 showed enrichment for TP53-mediated DNA repair pathways, confirming the mechanistic coherence of the regulatory network predictions.
+
+This cervical cancer validation demonstrates that RegNetAgents generates scientifically coherent results across cancer types, with regulatory network patterns aligning with established biological knowledge. The analysis required no modification to the framework or workflow, highlighting the system's generalizability for hypothesis generation across diverse disease contexts.
+
+\begin{table}[htbp]
+\centering
+\caption{Cervical Cancer Gene Validation Results}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Gene} & \textbf{Regulatory Role} & \textbf{Targets} & \textbf{Regulators} & \textbf{Top Candidate Regulator} \\
+ & & & & \textbf{(PageRank)} \\
+\midrule
+TP53 & Hub Regulator & 163 & 7 & WWTR1 (0.473) \\
+MYC & Hub Regulator & 427 & 25 & ID4 (0.622) \\
+BRCA1 & Heavily Regulated & 0 & 23 & ZNF334 (0.723) \\
+BRCA2 & Heavily Regulated & 0 & 20 & HMGB2 (0.510) \\
+EGFR & Heavily Regulated & 0 & 37 & HMGB2 (0.510) \\
+CCND1 & Heavily Regulated & 0 & 42 & ZBTB20 (0.600) \\
+KRAS & Weakly Regulated & 0 & 7 & GPBP1 (0.609) \\
+\bottomrule
+\end{tabular}
+\label{tab:cervical_validation}
+\end{table}
+
+\textit{Seven cervical cancer-associated genes were analyzed in epithelial cells to demonstrate framework generalizability. Regulatory roles were automatically classified based on network topology. Top therapeutic target candidates were identified through PageRank-based ranking of upstream regulators. Analysis execution time: 69 seconds for all 7 genes.}
+
+\section{Reproducibility Notes}
+
+\subsection{To Reproduce LLM Analyses}
+
+\begin{enumerate}
+\item Install Ollama: \url{https://ollama.com/download}
+\item Pull model: \texttt{ollama pull llama3.1:8b}
+\item Configure environment variables:
+\begin{itemize}
+\item \texttt{OLLAMA\_HOST=http://localhost:11434}
+\item \texttt{OLLAMA\_MODEL=llama3.1:8b}
+\item \texttt{OLLAMA\_TEMPERATURE=0.3}
+\item \texttt{OLLAMA\_TIMEOUT=90}
+\item \texttt{USE\_LLM\_AGENTS=true}
+\end{itemize}
+\item Run analysis via MCP server or Python API
+\end{enumerate}
+
+\subsection{LLM Output Variability}
+
+Due to temperature-based sampling, exact wording of rationales will vary across runs. However, core classifications (high/moderate/low, diagnostic/prognostic) remain consistent. For deterministic analysis, use rule-based mode (\texttt{USE\_LLM\_AGENTS=false}). \textbf{Network metrics (PageRank, degree centrality) are deterministic} and fully reproducible across all runs.
+
+\subsection{Code Availability}
+
+Complete implementation available at: \url{https://github.com/jab57/RegNetAgents}
+
+\end{document}

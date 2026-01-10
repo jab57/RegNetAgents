@@ -141,6 +141,8 @@ cp .env.example .env
 - Clinical actionability explanations
 - Systems biology interpretations
 
+**Alternative Deployment:** Users without local GPU resources can use [Ollama Cloud](docs/REGNETAGENTS_MCP_SETUP.md#alternative-ollama-cloud-no-local-installation-required) (free tier available). Same methodology, cloud-hosted inference.
+
 **Performance:** 15.49 seconds (rule-based) or ~62 seconds (LLM-powered) for 5-gene analysis (1,900-3,700× faster than manual workflows)
 
 **Fallback:** If Ollama unavailable, system uses fast rule-based heuristics automatically.
