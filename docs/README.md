@@ -161,7 +161,6 @@ For adding new cell types:
 
 - Check the specific documentation file for your topic
 - Review the main `../README.md` for project overview
-- See `../manuscript/preprint_draft.md` for the publication manuscript
 
 ---
 
