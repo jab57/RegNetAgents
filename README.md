@@ -2,7 +2,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![bioRxiv](https://img.shields.io/badge/bioRxiv-pending-red.svg)](https://biorxiv.org/)
 
 **LLM-Powered Multi-Agent Framework for Gene Regulatory Analysis**
 
@@ -46,37 +45,6 @@ RegNetAgents is an AI-powered multi-agent framework that provides comprehensive 
 - This is a research prototype intended for hypothesis generation, not clinical diagnosis
 - Users should validate findings through established experimental methods
 - Contributions and improvements from the bioinformatics community are welcome
-
----
-
-## ⚡ Quick Verification (For Reviewers)
-
-**Want to verify the paper's claims without full setup? Run this:**
-
-```bash
-git clone https://github.com/jab57/RegNetAgents.git
-cd RegNetAgents
-pip install -r requirements.txt
-python reproduce_paper_results.py
-```
-
-**What this verifies (in ~30 seconds):**
-- ✓ Five-gene colorectal cancer analysis completes
-- ✓ Regulatory role classifications match paper
-- ✓ Therapeutic target prioritization works
-- ✓ Performance claims (15-62 seconds for 5 genes)
-- ✓ All core analytical methods function correctly
-
-**No Claude Desktop or Ollama required.** This standalone script uses rule-based analysis (not LLM-powered) for fast, deterministic verification.
-
-**Optional: Enable LLM-powered insights**
-If you want detailed scientific rationales (requires [Ollama](https://ollama.ai) with llama3.1:8b):
-1. Install Ollama and pull model: `ollama pull llama3.1:8b`
-2. Start Ollama server: `ollama serve` (keep running in separate terminal)
-3. Edit `reproduce_paper_results.py`: Set `USE_LLM = True` (line 68)
-4. Run: `python reproduce_paper_results.py` (takes 2-3 minutes instead of 30 seconds)
-
-**For detailed reproducibility information:** See [REPRODUCIBILITY.md](REPRODUCIBILITY.md)
 
 ---
 
@@ -284,7 +252,7 @@ The system currently supports 10 cell types with pre-generated regulatory networ
 1. **Requirements:**
    - Single-cell RNA-seq data (H5AD format, 3,000+ cells, 15,000+ genes)
    - HPC cluster access (64-128 GB RAM, 16-32 cores)
-   - ARACNe3 software (included in `gremln_source/scripts/`)
+   - ARACNe3 software (see [GREmLN GitHub](https://github.com/czi-ai/GREmLN))
    - 12-14 hours processing time per cell type
 
 2. **Process:**
@@ -517,7 +485,10 @@ Each network is derived from CellxGene single-cell RNA-seq data processed throug
 ```
 RegNetAgents/
 ├── README.md                                  # This file
+├── INSTALL.md                                 # Installation guide
+├── LICENSE                                    # MIT License
 ├── requirements.txt                           # Python dependencies
+├── verify_installation.py                     # Installation verification
 │
 ├── regnetagents_langgraph_mcp_server.py      # Main MCP server
 ├── regnetagents_langgraph_workflow.py        # Core workflow engine
@@ -528,37 +499,25 @@ RegNetAgents/
 │   └── complete_gene_service.py              # Gene annotation service
 │
 ├── models/                                    # Network data
-│   └── networks/                              # Cell-type specific networks
+│   └── networks/                              # Cell-type specific networks (10 types)
 │
 ├── scripts/                                   # Utility scripts
 │   ├── build_network_cache.py                # Network cache generation
-│   ├── generate_figures.py                   # Figure generation
-│   └── archive/                              # Archived scripts
-│
-├── results/                                   # Analysis outputs
-│   ├── biomarker_results.json                # Example results
-│   └── tp53_therapeutic_targets.json
+│   └── build_gene_annotation_database.py     # Gene annotation database
 │
 ├── tests/                                     # Test suite
 │   ├── test_langgraph_workflow.py
 │   ├── test_langgraph_mcp_server.py
-│   └── test_reactome_integration.py
+│   ├── test_reactome_integration.py
+│   └── ...                                   # Additional tests
 │
-├── docs/                                      # Documentation
-│   ├── README.md                              # Documentation index
-│   ├── REGNETAGENTS_MCP_SETUP.md              # Setup guide
-│   ├── REGNETAGENTS_Analysis_Pipeline.md      # Architecture docs
-│   ├── DATA_SOURCES.md                        # Cell type data sources
-│   ├── END_TO_END_DATA_PIPELINE.md            # Complete pipeline
-│   ├── ADDING_NEW_CELL_TYPES.md               # Adding new cell types
-│   └── CONFERENCE_SUBMISSION_GUIDE_2026.md    # Conference guide
-│
-├── manuscript/                                # Manuscript materials
-│   ├── preprint_draft.md                     # Complete manuscript
-│   └── submission_guide.md                   # Submission instructions
-│
-└── cache/                                     # Cached data
-    └── gene_id_cache.pkl
+└── docs/                                      # Documentation
+    ├── README.md                              # Documentation index
+    ├── REGNETAGENTS_MCP_SETUP.md              # Setup guide
+    ├── REGNETAGENTS_Analysis_Pipeline.md      # Architecture docs
+    ├── DATA_SOURCES.md                        # Cell type data sources
+    ├── END_TO_END_DATA_PIPELINE.md            # Complete pipeline
+    └── ADDING_NEW_CELL_TYPES.md               # Adding new cell types
 ```
 
 ## Architecture
@@ -591,7 +550,6 @@ All documentation is in the `docs/` folder. Key documents:
 - **docs/END_TO_END_DATA_PIPELINE.md**: Complete processing pipeline
 - **docs/ADDING_NEW_CELL_TYPES.md**: Comprehensive guide to adding new cell types
 - **docs/GENE_MAPPING_ARCHITECTURE.md**: Gene ID mapping technical details
-- **docs/CONFERENCE_SUBMISSION_GUIDE_2026.md**: Publishing your work
 - **docs/README.md**: Full documentation index
 
 See `docs/README.md` for a complete list of available documentation.
