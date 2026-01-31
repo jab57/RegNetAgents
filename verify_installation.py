@@ -162,8 +162,8 @@ def check_network_data():
         cache_file = models_dir / cell_type / "network_index.pkl"
         if cache_file.exists():
             file_size = cache_file.stat().st_size
-            # Check if file is reasonable size (> 1MB, not a tiny pointer)
-            if file_size > 1_000_000:  # 1 MB minimum
+            # Check if file is reasonable size (> 10KB, not a tiny LFS pointer)
+            if file_size > 10_000:  # 10 KB minimum (LFS pointers are ~130 bytes)
                 ready_count += 1
                 total_size += file_size
             elif file_size < 1000:  # Likely a Git LFS pointer
@@ -181,7 +181,7 @@ def check_network_data():
     print("  Testing network loading...")
     test_file = models_dir / 'epithelial_cell' / 'network_index.pkl'
 
-    if test_file.exists() and test_file.stat().st_size > 1_000_000:
+    if test_file.exists() and test_file.stat().st_size > 10_000:
         try:
             start_time = time.time()
             with open(test_file, 'rb') as f:
