@@ -161,8 +161,8 @@ For adding new cell types:
 
 - Check the specific documentation file for your topic
 - Review the main `../README.md` for project overview
-- See `../manuscript/README.md` for publication guidance
+- See `../manuscript/preprint_draft.md` for the publication manuscript
 
 ---
 
-Last Updated: 2025-11-08
+Last Updated: 2026-01-31
