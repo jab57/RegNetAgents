@@ -319,6 +319,10 @@ Execution time includes all workflow steps from query initiation to final JSON o
 
 Regulatory network data were obtained from the GREmLN team (Zhang et al. 2025, bioRxiv 2025.07.03.663009). Preprocessed ARACNe networks for 10 cell types (CD14 monocytes, CD16 monocytes, CD20 B cells, CD4 T cells, CD8 T cells, NK cells, NKT cells, monocyte-derived dendritic cells, erythrocytes, and epithelial cells) are publicly available through the GREmLN Quickstart Tutorial at https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart. Networks are provided as TSV files downloaded via Google Drive in the tutorial materials. The underlying scRNA-seq data (11 million profiles across 162 cell types) were sourced from the CZ CELLxGENE Data Portal (Census release: 2024-07-01). Pathway annotations use the publicly accessible Reactome API (https://reactome.org/AnalysisService/). Gene-level annotations use local NCBI and UniProt databases. Gene identifier conversion uses the Ensembl REST API (https://rest.ensembl.org).
 
+### AI Assistance Statement
+
+This work was developed with substantial assistance from Claude Code (Anthropic), a large language model-based coding assistant. The LLM contributed to software implementation, architecture design, code debugging, and manuscript drafting. The author directed all work, made scientific decisions, designed validation experiments, and takes full responsibility for the content and conclusions.
+
 ## RESULTS
 
 ### Validation Summary
@@ -600,7 +604,7 @@ We thank the Chan Zuckerberg Initiative and the Califano Lab (CZ Biohub NY / Col
 
 ## AUTHOR CONTRIBUTIONS
 
-J.A.B. conceived the project, designed the analysis framework, performed validation studies, and wrote the manuscript with substantial assistance from Claude Code. Software implementation, architecture, and manuscript preparation were developed collaboratively with Claude Code (Anthropic AI coding agent). This work demonstrates the potential of AI-assisted development and writing tools to enable researchers from diverse backgrounds to tackle complex computational biology challenges.
+J.A.B. conceived the project, designed the multi-agent architecture, performed validation studies, and wrote the manuscript.
 
 
 
