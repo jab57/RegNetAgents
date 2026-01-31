@@ -9,7 +9,8 @@ VENV/
 # Bytecode and cache
 __pycache__/
 *.py[cod]
-cache/
+cache/*.tmp
+# Note: cache/gene_id_cache.pkl IS tracked (provides faster startup for users)
 
 # OS-specific
 .DS_Store
