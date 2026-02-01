@@ -87,8 +87,7 @@ git lfs ls-files
 ```
 
 **Expected LFS files:**
-- `data/epithelial_cells.h5ad` (33 MB)
-- `data/human_immune_cells.h5ad` (171 MB)
+- `models/networks/*/network_index.pkl` (10 cell type network caches)
 - `models/model.ckpt` (115 MB)
 
 ---
@@ -512,14 +511,9 @@ ollama rm llama3.1:8b
 **Documentation:**
 - See `README.md` for overview and features
 - See `docs/` directory for detailed guides
-- See `TROUBLESHOOTING.md` for common issues
 
 **Support:**
-- GitHub Issues: [repository URL]/issues
-- Email: [your email]
-
-**Contributing:**
-- See `CONTRIBUTING.md` for guidelines (if available)
+- GitHub Issues: https://github.com/jab57/RegNetAgents/issues
 
 ---
 
