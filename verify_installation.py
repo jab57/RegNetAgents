@@ -365,7 +365,7 @@ def main():
     if passed == total:
         print(f"\n{CHECK} SUCCESS! RegNetAgents is ready to use.\n")
         print("Next steps:")
-        print("  1. Configure Claude Desktop (see README.md or INSTALL.md)")
+        print("  1. Configure Claude Desktop (see README.md)")
         print("  2. Restart Claude Desktop completely")
         print("  3. Test with: 'Analyze TP53 in epithelial cells'\n")
         return 0
