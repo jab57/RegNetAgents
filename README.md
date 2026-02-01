@@ -229,6 +229,23 @@ Find biomarkers for colon cancer screening
 What pathways is IL6 involved in for immune cells?
 ```
 
+### Alternative: Programmatic Usage (No Claude Desktop)
+
+If you prefer to use RegNetAgents programmatically or want to integrate it into your own pipelines:
+
+```bash
+# Run the demo script
+python demo_biomarker_analysis.py
+```
+
+This demonstrates:
+- How to use `RegNetAgentsWorkflow` directly
+- Parallel multi-gene analysis
+- Extracting network metrics and pathway enrichment
+- Customizing gene panels (edit `DEMO_GENES` in the script)
+
+**Output:** Results saved to `results/demo_biomarker_results.json`
+
 ---
 
 ## Adding More Cell Types
@@ -489,6 +506,7 @@ RegNetAgents/
 ├── LICENSE                                    # MIT License
 ├── requirements.txt                           # Python dependencies
 ├── verify_installation.py                     # Installation verification
+├── demo_biomarker_analysis.py                 # Standalone demo (no Claude Desktop)
 │
 ├── regnetagents_langgraph_mcp_server.py      # Main MCP server
 ├── regnetagents_langgraph_workflow.py        # Core workflow engine
