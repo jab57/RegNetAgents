@@ -502,7 +502,6 @@ Each network is derived from CellxGene single-cell RNA-seq data processed throug
 ```
 RegNetAgents/
 ├── README.md                                  # This file
-├── INSTALL.md                                 # Installation guide
 ├── LICENSE                                    # MIT License
 ├── requirements.txt                           # Python dependencies
 ├── verify_installation.py                     # Installation verification
