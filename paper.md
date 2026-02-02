@@ -9,7 +9,7 @@ tags:
   - workflow automation
 authors:
   - name: Jose A. Bird
-    orcid: 0000-0000-0000-0000
+    orcid: 0009-0006-2744-0606
     affiliation: 1
 affiliations:
   - name: Bird AI Solutions
