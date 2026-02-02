@@ -1,0 +1,120 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "regnetagents"
+version = "1.0.0"
+description = "A multi-agent LLM system for gene regulatory network analysis"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Jose A. Bird", email = "jbird@birdaisolutions.com"}
+]
+maintainers = [
+    {name = "Jose A. Bird", email = "jbird@birdaisolutions.com"}
+]
+keywords = [
+    "gene-regulatory-networks",
+    "multi-agent-systems",
+    "llm",
+    "bioinformatics",
+    "langgraph",
+    "aracne",
+    "network-analysis",
+    "systems-biology",
+    "workflow-automation"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+
+dependencies = [
+    "langgraph>=0.2.0",
+    "mcp>=1.0.0",
+    "networkx>=3.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "requests>=2.31.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.13.0",
+    "python-pptx>=0.6.21",
+    "python-dotenv>=1.0.0",
+    "ollama>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=2.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/jab57/RegNetAgents"
+Documentation = "https://github.com/jab57/RegNetAgents#readme"
+Repository = "https://github.com/jab57/RegNetAgents.git"
+Issues = "https://github.com/jab57/RegNetAgents/issues"
+
+[project.scripts]
+regnetagents-server = "regnetagents_langgraph_mcp_server:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["regnetagents*"]
+
+[tool.setuptools.package-data]
+regnetagents = ["models/**/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+    | \.venv
+    | __pycache__
+    | build
+    | dist
+    | gremln_source
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "gremln_source",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+ignore = ["E501"]
