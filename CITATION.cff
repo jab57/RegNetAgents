@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+title: RegNetAgents
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Bird
+    given-names: Jose A.
+    orcid: https://orcid.org/0009-0006-2744-0606
+    affiliation: Bird AI Solutions
+repository-code: https://github.com/jab57/RegNetAgents
+url: https://github.com/jab57/RegNetAgents
+license: MIT
+version: 1.0.0
+date-released: 2025-02-02
+keywords:
+  - gene-regulatory-networks
+  - multi-agent-systems
+  - bioinformatics
+  - llm
+  - langgraph
+abstract: >-
+  A multi-agent LLM system for gene regulatory network analysis.
+  Built on LangGraph, it coordinates specialized domain agents
+  to analyze ARACNe-inferred networks, perform pathway enrichment,
+  and prioritize therapeutic targets through a conversational interface.
