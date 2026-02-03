@@ -215,15 +215,17 @@ async def test_llm_vs_rules_comparison():
     print("=" * 70)
 
     try:
-        from regnetagents_langgraph_workflow import RegNetAgentsWorkflow, DomainAnalysisAgents
+        from regnetagents_langgraph_workflow import RegNetAgentsWorkflow, DomainAnalysisAgents, RegNetAgentsModelingAgent
 
         # Use workflow's cache (simplest approach)
         workflow = RegNetAgentsWorkflow()
         cache = workflow.cache
+        modeling_agent = RegNetAgentsModelingAgent(cache)
 
         # Test gene: TP53
         gene = "TP53"
-        gene_info = cache.get_gene_info(gene, 'epithelial_cell')
+        gene_info_obj = modeling_agent.gene_service.get_gene_info(gene)
+        gene_info = gene_info_obj.__dict__ if gene_info_obj else {}
 
         print(f"Testing {gene} with both approaches...")
 
