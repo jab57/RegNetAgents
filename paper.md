@@ -39,7 +39,7 @@ The software processes pre-computed ARACNe networks from the GREmLN project [@zh
 
 ![RegNetAgents multi-agent architecture.](figure1_architecture.png)
 
-RegNetAgents requires Python 3.10+ and uses NetworkX [@hagberg2008networkx] for graph algorithms. The workflow is implemented as a LangGraph DAG, ensuring reproducible, stepwise execution: gene validation, network lookup, therapeutic prioritization (for genes with >5 regulators), pathway enrichment, parallel domain analysis, and report generation. Domain agents support dual-mode operation--LLM-powered (Ollama) or rule-based--with all centrality metrics computed deterministically. The package includes installation verification, a test suite with 10 test modules, and documentation covering setup, API usage, and tutorials. RegNetAgents runs on Windows, macOS, and Linux.
+RegNetAgents requires Python 3.10+ and uses NetworkX [@hagberg2008networkx] for graph algorithms. The workflow is implemented as a LangGraph DAG, ensuring reproducible, stepwise execution: gene validation, network lookup, therapeutic prioritization (for genes with >5 regulators), pathway enrichment, parallel domain analysis, and report generation. Domain agents support dual-mode operation--LLM-powered (Ollama) or rule-based--with all centrality metrics computed deterministically. The package includes installation verification, a test suite with 7 test modules, and documentation covering setup, API usage, and tutorials. RegNetAgents runs on Windows, macOS, and Linux.
 
 # Availability
 
