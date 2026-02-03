@@ -24,14 +24,16 @@ RegNetAgents is a Python package that automates gene regulatory network analysis
 
 Key features:
 
-- **Hybrid architecture**: Combines LLM-powered interpretation with deterministic rule-based fallback for reliable execution
-- **Parallel agents**: Four domain agents run concurrently for fast analysis
-- **Therapeutic prioritization**: PageRank-based ranking of upstream regulators [@mora2021effects]
-- **Pathway enrichment**: Automated Reactome API queries with FDR correction [@gillespie2022reactome]
+- **Hybrid architecture**: Combines LLM-powered interpretation with deterministic rule-based fallback for reliable execution  
+- **Parallel agents**: Four domain agents run concurrently for fast analysis  
+- **Therapeutic prioritization**: Deterministic PageRank and centrality-based ranking of upstream regulators [@mora2021effects]  
+- **Pathway enrichment**: Automated Reactome API queries with FDR correction [@gillespie2022reactome]  
 
 # Statement of Need
 
-Researchers analyzing gene regulatory networks typically query multiple databases manually (STRING, BioGRID, Reactome), export data across platforms, and synthesize findings--a process requiring hours per gene and programming expertise. No existing tool provides an integrated, conversational workflow for GRN analysis with deterministic reproducibility. RegNetAgents addresses this gap by automating the complete workflow through a conversational interface, reducing analysis time from hours to seconds.
+Researchers analyzing gene regulatory networks typically query multiple databases manually (STRING, BioGRID, Reactome), export data across platforms, and synthesize findings—a process requiring hours per gene and programming expertise. Existing tools support individual steps (e.g., network inference, interaction lookup, pathway enrichment), but **to our knowledge, none provide an integrated, conversational workflow for GRN analysis with deterministic reproducibility**.
+
+RegNetAgents addresses this gap by combining a natural-language interface with a reproducible, multi-agent workflow that performs regulator/target identification, therapeutic prioritization, pathway enrichment, and domain-specific interpretation in a single automated pipeline.
 
 The software processes pre-computed ARACNe networks from the GREmLN project [@zhang2025gremln], covering 10 cell types from the CELLxGENE Data Portal [@megill2021cellxgene]. Unlike general-purpose agent frameworks [@autogpt; @li2023camel; @hong2023metagpt], RegNetAgents provides domain-specific scientific workflow integration with deterministic fallback guarantees for reproducible research.
 
@@ -39,7 +41,11 @@ The software processes pre-computed ARACNe networks from the GREmLN project [@zh
 
 ![RegNetAgents multi-agent architecture.](figure1_architecture.png)
 
-RegNetAgents requires Python 3.10+ and uses NetworkX [@hagberg2008networkx] for graph algorithms. The workflow is implemented as a LangGraph DAG, ensuring reproducible, stepwise execution: gene validation, network lookup, therapeutic prioritization (for genes with >5 regulators), pathway enrichment, parallel domain analysis, and report generation. The architecture is modular, allowing users to add new domain agents or replace components without modifying the core DAG. Domain agents support dual-mode operation--LLM-powered (Ollama) or rule-based--with all centrality metrics computed deterministically. The package includes installation verification, a test suite with 7 test modules that validate MCP integration, workflow determinism, and agent-level behavior, and documentation covering setup, API usage, and tutorials. A minimal usage example in the README enables users to run a complete GRN analysis with a single command. RegNetAgents runs on Windows, macOS, and Linux.
+RegNetAgents requires Python 3.10+ and uses NetworkX [@hagberg2008networkx] for graph algorithms. The workflow is implemented as a LangGraph DAG, which enforces explicit stepwise execution and ensures reproducibility across runs. The pipeline includes gene validation, network lookup, therapeutic prioritization (for genes with >5 regulators), pathway enrichment, parallel domain analysis, and report generation.
+
+Therapeutic prioritization uses NetworkX’s deterministic PageRank and degree-based centrality metrics to rank upstream regulators by influence within the ARACNe-derived subnetwork. Domain agents support dual-mode operation—LLM-powered (Ollama) or rule-based—with the rule-based fallback ensuring reproducible outputs even when LLM variability is present.
+
+The architecture is modular, allowing users to add new domain agents or replace components without modifying the core DAG. The package includes installation verification, a test suite with seven modules validating MCP integration, workflow determinism, and agent-level behavior, and documentation covering setup, API usage, and tutorials. A minimal usage example in the README enables users to run a complete GRN analysis with a single command. RegNetAgents runs on Windows, macOS, and Linux.
 
 # Availability
 
