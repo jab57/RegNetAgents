@@ -6,6 +6,9 @@ Tests the therapeutic target prioritization capability with TP53
 
 import asyncio
 import json
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 
 async def test_therapeutic_target_prioritization():

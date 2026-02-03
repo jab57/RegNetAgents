@@ -5,6 +5,9 @@ Run this to test the server independently of Claude Desktop
 """
 import asyncio
 import json
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from regnetagents_langgraph_mcp_server import get_workflow
 
 async def test_server():

@@ -5,6 +5,9 @@ Test script for Reactome pathway enrichment integration
 
 import asyncio
 import json
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from regnetagents_langgraph_workflow import PathwayEnricherAgent, RegNetAgentsWorkflow
 
 async def test_reactome_agent():
