@@ -55,7 +55,7 @@ async def test_workflow_integration():
     )
 
     # Extract pathway enrichment results
-    pathway_enrichment = result.get('pathway_enrichment', {})
+    pathway_enrichment = result.get('pathway_enrichment') or {}
 
     print(f"Pathway Enrichment Status: {pathway_enrichment.get('status')}")
     print(f"Total pathways: {pathway_enrichment.get('summary', {}).get('total_pathways')}")
