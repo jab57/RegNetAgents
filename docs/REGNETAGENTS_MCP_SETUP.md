@@ -333,7 +333,6 @@ Multi-agent orchestration, intelligent workflow routing, parallel gene analysis,
 For issues, questions, or support:
 - **Contact**: jbird@birdaisolutions.com
 - **Documentation**: See `README.md` for general overview
-- **Conference Poster**: See `REGNETAGENTS_CONFERENCE_POSTER.md` for technical details
 
 ---
 
