@@ -8,7 +8,7 @@ tags:
   - bioinformatics
   - workflow automation
 authors:
-  - name: Jose A. Bird, PhD
+  - name: Jose A. Bird
     orcid: 0009-0006-2744-0606
     affiliation: 1
 affiliations:
