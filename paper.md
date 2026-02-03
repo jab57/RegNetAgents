@@ -41,11 +41,7 @@ The software processes pre-computed ARACNe networks from the GREmLN project [@zh
 
 ![RegNetAgents multi-agent architecture.](figure1_architecture.png)
 
-RegNetAgents requires Python 3.10+ and uses NetworkX [@hagberg2008networkx] for graph algorithms. The workflow is implemented as a LangGraph DAG, which enforces explicit stepwise execution and ensures reproducibility across runs. The pipeline includes gene validation, network lookup, therapeutic prioritization (for genes with >5 regulators), pathway enrichment, parallel domain analysis, and report generation.
-
-Therapeutic prioritization uses NetworkX’s deterministic PageRank and degree-based centrality metrics to rank upstream regulators by influence within the ARACNe-derived subnetwork. Domain agents support dual-mode operation—LLM-powered (Ollama) or rule-based—with the rule-based fallback ensuring reproducible outputs even when LLM variability is present.
-
-The architecture is modular, allowing users to add new domain agents or replace components without modifying the core DAG. The package includes installation verification, a test suite with seven modules validating MCP integration, workflow determinism, and agent-level behavior, and documentation covering setup, API usage, and tutorials. A minimal usage example in the README enables users to run a complete GRN analysis with a single command. RegNetAgents runs on Windows, macOS, and Linux.
+RegNetAgents requires Python 3.10+ and uses NetworkX [@hagberg2008networkx] for graph algorithms. The workflow is implemented as a LangGraph DAG, ensuring reproducible, stepwise execution: gene validation, network lookup, therapeutic prioritization (for genes with >5 regulators), pathway enrichment, parallel domain analysis, and report generation. The architecture is modular, allowing users to add new domain agents or replace components without modifying the core DAG. Domain agents support dual-mode operation--LLM-powered (Ollama) or rule-based--with all centrality metrics computed deterministically. The package includes installation verification, a test suite with 7 test modules that validate MCP integration, workflow determinism, and agent-level behavior, and documentation covering setup, API usage, and tutorials. A minimal usage example in the README enables users to run a complete GRN analysis with a single command. RegNetAgents runs on Windows, macOS, and Linux.
 
 # Availability
 
