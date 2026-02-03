@@ -69,8 +69,8 @@ async def test_therapeutic_target_prioritization():
             degree = metrics.get('degree_centrality', 0)
             downstream = target.get('regulator_downstream_targets', 0)
 
-            # Derive therapeutic potential from PageRank
-            potential = "High" if pagerank > 0.5 else "Medium" if pagerank > 0.1 else "Low"
+            # Derive therapeutic potential from PageRank (normalized 0-1)
+            potential = "High" if pagerank > 0.45 else "Medium" if pagerank > 0.3 else "Low"
 
             print(f"\n{i}. {target.get('regulator')}")
             print(f"   PageRank Score: {pagerank:.4f}")
