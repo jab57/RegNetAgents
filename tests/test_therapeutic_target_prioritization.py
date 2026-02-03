@@ -45,16 +45,16 @@ async def test_therapeutic_target_prioritization():
         print('=' * 80)
         print(f"\nSummary: {insights.get('summary')}")
 
-        top_target = insights.get('top_target', {})
+        top_target = insights.get('top_target_by_pagerank', {})
         if top_target:
-            print(f"\nTop Therapeutic Target:")
+            print(f"\nTop Therapeutic Target (by PageRank):")
             print(f"  Regulator: {top_target.get('regulator')}")
-            print(f"  Impact Score: {top_target.get('impact_score')}")
-            print(f"  Potential: {top_target.get('therapeutic_potential')}")
+            print(f"  PageRank: {top_target.get('pagerank')}")
+            print(f"  Downstream Targets: {top_target.get('downstream_targets')}")
 
-        print(f"\nHigh Impact Targets: {insights.get('high_impact_targets', 0)}")
+        print(f"\nConsensus Target: {insights.get('consensus_target', False)}")
         print(f"\nStrategy: {insights.get('strategy')}")
-        print(f"\nRecommendation: {insights.get('recommendation')}")
+        print(f"\nInterpretation: {insights.get('interpretation')}")
 
         # Show top 5 therapeutic targets
         print(f"\n{'=' * 80}")
@@ -62,14 +62,22 @@ async def test_therapeutic_target_prioritization():
         print('=' * 80)
 
         results = target_prioritization.get('ranked_regulators', [])
+        total_regulators = len(results)
         for i, target in enumerate(results[:5], 1):
+            metrics = target.get('centrality_metrics', {})
+            pagerank = metrics.get('pagerank', 0)
+            degree = metrics.get('degree_centrality', 0)
+            downstream = target.get('regulator_downstream_targets', 0)
+
+            # Derive therapeutic potential from PageRank
+            potential = "High" if pagerank > 0.5 else "Medium" if pagerank > 0.1 else "Low"
+
             print(f"\n{i}. {target.get('regulator')}")
-            print(f"   Impact Score: {target.get('impact_score')}")
-            print(f"   Regulatory Loss: {target.get('regulatory_loss_pct')}%")
-            print(f"   Downstream Targets: {target.get('regulator_downstream_targets')}")
-            print(f"   Therapeutic Potential: {target.get('therapeutic_potential')}")
+            print(f"   PageRank Score: {pagerank:.4f}")
+            print(f"   Degree Centrality: {degree:.4f}")
+            print(f"   Downstream Targets: {downstream}")
+            print(f"   Therapeutic Potential: {potential}")
             print(f"   Cascade Overlap: {target.get('cascade_overlap')} genes")
-            print(f"   Note: {target.get('druggability_notes')}")
 
             affected = target.get('affected_cascades', [])
             if affected:
