@@ -11,7 +11,7 @@ repository-code: https://github.com/jab57/RegNetAgents
 url: https://github.com/jab57/RegNetAgents
 license: MIT
 version: 1.0.0
-date-released: 2025-02-02
+date-released: 2026-02-05
 keywords:
   - gene-regulatory-networks
   - multi-agent-systems
