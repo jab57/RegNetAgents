@@ -96,10 +96,10 @@ jobs:
         env:
           USE_LLM_AGENTS: 'false'
         run: |
-          cd tests && python -c "
+          python -c "
           import asyncio
           import sys
-          sys.path.insert(0, '..')
+          sys.path.insert(0, 'tests')
 
           from test_timing import (
               test_single_gene_focused_rules,
