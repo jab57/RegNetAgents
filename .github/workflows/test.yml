@@ -17,11 +17,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.10', '3.11']
-
-    name: Python ${{ matrix.python-version }}
+    name: Test Suite
 
     steps:
       - name: Checkout
@@ -29,10 +25,10 @@ jobs:
         with:
           lfs: true
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.11'
           cache: 'pip'
 
       - name: Install dependencies
