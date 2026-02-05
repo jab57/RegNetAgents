@@ -1,6 +1,6 @@
-# RegNetAgents Agents MCP Server Setup Guide
+# RegNetAgents MCP Server Setup Guide
 
-> **Note:** This guide is for users who have received access to the RegNetAgents software. The code is available from the corresponding author upon reasonable request for academic research purposes. Contact jbird@birdaisolutions.com for access inquiries.
+This guide helps you set up RegNetAgents with Claude Desktop using the Model Context Protocol (MCP).
 
 ---
 
@@ -46,7 +46,7 @@ Restart Claude Desktop and check that the RegNetAgents tools are available. You 
 ## Requirements
 
 ### System Requirements
-- Python 3.8 or higher
+- Python 3.10 or higher
 - 8GB+ RAM recommended
 - Network cache files (pre-computed ARACNe networks)
 - **Optional**: Ollama for LLM-powered domain insights (recommended)
