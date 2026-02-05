@@ -1,0 +1,119 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '*.py'
+      - 'tests/**'
+      - 'requirements.txt'
+      - '.github/workflows/test.yml'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11']
+
+    name: Python ${{ matrix.python-version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Verify installation
+        run: python verify_installation.py
+
+      - name: Run workflow tests (rule-based mode)
+        env:
+          USE_LLM_AGENTS: 'false'
+        run: |
+          python -c "
+          import asyncio
+          from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
+
+          async def test():
+              workflow = RegNetAgentsWorkflow()
+              result = await workflow.run_analysis(
+                  gene='TP53',
+                  cell_type='epithelial_cell',
+                  analysis_depth='comprehensive'
+              )
+              assert result is not None
+              assert 'gene_info' in result or 'error' not in result
+              print('Workflow test PASSED')
+
+          asyncio.run(test())
+          "
+
+      - name: Run MCP server tests (rule-based mode)
+        env:
+          USE_LLM_AGENTS: 'false'
+        run: |
+          python -c "
+          import asyncio
+          import sys
+          sys.path.insert(0, '.')
+
+          async def test():
+              from regnetagents_langgraph_mcp_server import handle_call_tool, get_workflow
+
+              # Initialize workflow
+              workflow = await get_workflow()
+              print('MCP server initialized')
+
+              # Test comprehensive_gene_analysis tool
+              result = await handle_call_tool('comprehensive_gene_analysis', {
+                  'gene': 'TP53',
+                  'cell_type': 'epithelial_cell',
+                  'analysis_depth': 'focused'
+              })
+
+              assert result is not None
+              assert len(result) > 0
+              print('MCP server test PASSED')
+
+          asyncio.run(test())
+          "
+
+      - name: Run timing tests (rule-based mode)
+        env:
+          USE_LLM_AGENTS: 'false'
+        run: |
+          cd tests && python -c "
+          import asyncio
+          import sys
+          sys.path.insert(0, '..')
+
+          from test_timing import (
+              test_single_gene_focused_rules,
+              test_single_gene_comprehensive_rules
+          )
+
+          async def run_tests():
+              t1 = await test_single_gene_focused_rules()
+              t2 = await test_single_gene_comprehensive_rules()
+              print(f'Timing tests PASSED (focused: {t1:.2f}s, comprehensive: {t2:.2f}s)')
+
+          asyncio.run(run_tests())
+          "
