@@ -192,7 +192,7 @@ RegNetAgents/
 
 ## Development Context
 
-This project was developed with assistance from Claude Code (Anthropic). It is a research prototype for hypothesis generation—users should validate findings experimentally. Contributions welcome.
+This project was developed with assistance from Claude Code (Anthropic). It is a research prototype for hypothesis generation—users should validate findings experimentally. See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ---
 
