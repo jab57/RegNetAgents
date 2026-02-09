@@ -189,12 +189,10 @@ def check_network_data():
             load_time = time.time() - start_time
 
             # Verify it's a dict with expected structure
-            if isinstance(network_data, dict) and 'graph' in network_data:
-                import networkx as nx
-                graph = network_data['graph']
-                nodes = graph.number_of_nodes() if hasattr(graph, 'number_of_nodes') else len(network_data.get('genes', []))
-                edges = graph.number_of_edges() if hasattr(graph, 'number_of_edges') else len(network_data.get('regulators', {}))
-                print(f"{CHECK} Successfully loaded epithelial_cell network ({nodes:,} nodes, {edges:,} edges, {load_time:.2f}s)")
+            if isinstance(network_data, dict) and 'all_genes' in network_data:
+                nodes = network_data.get('num_genes', len(network_data.get('all_genes', [])))
+                edges = network_data.get('num_edges', 0)
+                print(f"{CHECK} Successfully loaded epithelial_cell network ({nodes:,} genes, {edges:,} edges, {load_time:.2f}s)")
             else:
                 print(f"{WARN} Network data structure unexpected")
                 return True  # Don't fail, but warn
