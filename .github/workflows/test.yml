@@ -8,6 +8,7 @@ on:
       - '*.py'
       - 'tests/**'
       - 'requirements.txt'
+      - 'pyproject.toml'
       - '.github/workflows/test.yml'
   pull_request:
     branches:
