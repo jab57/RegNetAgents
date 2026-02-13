@@ -13,15 +13,19 @@ to trigger comprehensive multi-agent analysis workflows.
 Architecture:
     - MCP Server: Handles Claude Desktop communication and tool registration
     - LangGraph Workflow: Orchestrates multi-agent analysis pipeline
-    - Tool Registry: Exposes 6 analysis tools to Claude Desktop
+    - Tool Registry: Exposes analysis tools to Claude Desktop
 
 Available Tools:
-    1. comprehensive_gene_analysis: Full workflow-driven analysis (recommended)
-    2. multi_gene_analysis: Parallel processing of multiple genes
-    3. pathway_focused_analysis: Pathway-centric analysis
-    4. workflow_status: Real-time execution monitoring
-    5. workflow_insights: Performance analytics
-    6. create_analysis_report: Generate formatted reports
+    1. validate_gene: Quick gene name check with fuzzy suggestions (<100ms)
+    2. comprehensive_gene_analysis: Full workflow-driven analysis (recommended)
+    3. multi_gene_analysis: Parallel processing of multiple genes
+    4. pathway_focused_analysis: Pathway-centric analysis
+    5. cross_cell_comparison: Gene behavior across cell types
+    6. load_gene_results: Load previously saved analysis results
+    7. list_available_results: List available result files
+    8. workflow_status: Real-time execution monitoring
+    9. workflow_insights: Performance analytics
+    10. create_analysis_report: Generate formatted reports
 
 Key Features:
     - Conversational interface (natural language → structured analysis)
@@ -400,6 +404,45 @@ async def handle_list_tools() -> list[Tool]:
                 "properties": {},
                 "required": []
             }
+        ),
+        Tool(
+            name="validate_gene",
+            description="""
+            Quickly check if a gene name is valid and present in the network (<100ms).
+
+            Use this BEFORE running a full analysis to catch typos or invalid gene names
+            instantly, instead of waiting 5-15 seconds for the analysis to fail.
+
+            Returns:
+            - If valid: gene symbol, Ensembl ID, and quick network stats (regulators, targets, role)
+            - If invalid: fuzzy-matched suggestions for similar gene names
+
+            Great for:
+            - "Is TP53 in the epithelial cell network?"
+            - "Did I spell this gene name correctly?"
+            - Quick lookup of a gene's regulatory role without full analysis
+            """,
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "gene": {
+                        "type": "string",
+                        "description": "Gene symbol to validate (e.g., TP53, BRCA1)"
+                    },
+                    "cell_type": {
+                        "type": "string",
+                        "enum": [
+                            "epithelial_cell", "cd14_monocytes", "cd16_monocytes",
+                            "cd20_b_cells", "cd4_t_cells", "cd8_t_cells",
+                            "erythrocytes", "nk_cells", "nkt_cells",
+                            "monocyte-derived_dendritic_cells"
+                        ],
+                        "description": "Cell type network to validate against",
+                        "default": "epithelial_cell"
+                    }
+                },
+                "required": ["gene"]
+            }
         )
     ]
 
@@ -677,6 +720,16 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             }
 
             return [TextContent(type="text", text=json.dumps(response, indent=2))]
+
+        elif name == "validate_gene":
+            gene = arguments["gene"]
+            cell_type = arguments.get("cell_type", "epithelial_cell")
+
+            logger.info(f"Validating gene '{gene}' in {cell_type}")
+
+            result = workflow.modeling_agent.validate_gene(gene, cell_type)
+
+            return [TextContent(type="text", text=json.dumps(result, indent=2))]
 
         else:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]

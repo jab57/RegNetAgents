@@ -115,11 +115,15 @@ python demo_biomarker_analysis.py
 
 | Tool | Description |
 |------|-------------|
+| `validate_gene` | Quick gene name check with fuzzy suggestions (<100ms) |
 | `comprehensive_gene_analysis` | Full analysis with domain insights |
 | `multi_gene_analysis` | Parallel processing of multiple genes |
 | `pathway_focused_analysis` | Reactome pathway enrichment |
 | `cross_cell_comparison` | Gene behavior across cell types |
+| `load_gene_results` | Load previously saved analysis results |
+| `list_available_results` | List available result files |
 | `workflow_status` | Execution monitoring |
+| `workflow_insights` | Performance analytics |
 | `create_analysis_report` | Generate reports |
 
 ---
@@ -153,7 +157,7 @@ What pathways is IL6 involved in for immune cells?
 | Network index missing | Run `python scripts/build_network_cache.py --all` |
 | Tools not in Claude Desktop | Check path in config, use absolute path, restart |
 | Module not found | Activate venv, run `pip install -r requirements.txt` |
-| Empty results | Gene may not be in network for that cell type |
+| Empty results | Use `validate_gene` to check gene name first |
 | Pathway analysis fails | Check internet connection |
 
 ---

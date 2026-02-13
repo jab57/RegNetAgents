@@ -61,12 +61,20 @@ Claude should respond with genes that have saved results.
 
 ## Available MCP Tools
 
-Claude Desktop can now use these tools:
+Claude Desktop can now use these tools (10 total):
 
-### 1. `comprehensive_gene_analysis`
+### 1. `validate_gene`
+Quick gene name check (<100ms). Returns basic stats if found, or fuzzy-matched suggestions for misspelled names. Use before full analysis to catch typos.
+
+**Example**:
+```
+Is TP53 in the epithelial cell network?
+```
+
+### 2. `comprehensive_gene_analysis`
 Run full analysis for a gene (triggers Ollama workflow).
 
-### 2. `load_gene_results` ⭐ NEW
+### 3. `load_gene_results`
 Load previously saved analysis results without re-running analysis.
 
 **Example**:
@@ -74,7 +82,7 @@ Load previously saved analysis results without re-running analysis.
 Load the TP53 analysis results
 ```
 
-### 3. `list_available_results` ⭐ NEW
+### 4. `list_available_results`
 See what gene analyses are available.
 
 **Example**:
@@ -82,15 +90,15 @@ See what gene analyses are available.
 What gene analyses do I have?
 ```
 
-### 4. `multi_gene_analysis`
+### 5. `multi_gene_analysis`
 Analyze multiple genes in parallel.
 
-### 5. Other tools
-- `workflow_status`
-- `cross_cell_comparison`
+### 6-10. Other tools
 - `pathway_focused_analysis`
-- `create_analysis_report`
+- `cross_cell_comparison`
+- `workflow_status`
 - `workflow_insights`
+- `create_analysis_report`
 
 ---
 

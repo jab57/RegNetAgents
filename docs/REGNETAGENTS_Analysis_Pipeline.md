@@ -29,12 +29,33 @@ The RegNetAgents system uses a **single, advanced MCP server** with intelligent 
 
 **LangGraph MCP Server** (`regnetagents_langgraph_mcp_server.py`)
 - Visual workflow orchestration with LangGraph
-- 6 intelligent tools with advanced capabilities
+- 10 intelligent tools with advanced capabilities
 - State management and execution insights
 - Production-ready logging and error handling
 - Complete data processing pipeline integration
 
 ## LangGraph Tools
+
+### Tool 0: `validate_gene` ✅
+**Quick gene name validation (<100ms)**
+
+Checks if a gene symbol exists in the network and returns basic stats or fuzzy-matched suggestions for misspelled names. Use before running a full analysis to catch typos instantly.
+
+**Example Usage:**
+```json
+{
+  "gene": "TP53",
+  "cell_type": "epithelial_cell"
+}
+```
+
+**Returns (found):**
+- Gene symbol, Ensembl ID, cell type
+- Quick stats: number of regulators, number of targets, regulatory role
+
+**Returns (not found):**
+- Fuzzy-matched suggestions (e.g., "TP5" → ["TP53"])
+- Descriptive error message
 
 ### Tool 1: `comprehensive_gene_analysis` ⭐
 **Intelligent workflow-driven gene analysis with domain expertise**

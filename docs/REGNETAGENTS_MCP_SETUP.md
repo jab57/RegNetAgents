@@ -35,10 +35,10 @@ Add the following to your Claude Desktop MCP configuration file:
 ### 2. Verify Installation
 
 Restart Claude Desktop and check that the RegNetAgents tools are available. You should see tools like:
+- `validate_gene`
 - `comprehensive_gene_analysis`
-- `analyze_regulators`
-- `analyze_targets`
-- `pathway_enrichment`
+- `multi_gene_analysis`
+- `pathway_focused_analysis`
 - `cross_cell_comparison`
 
 ---
@@ -192,9 +192,18 @@ Once installed, you can ask Claude Desktop natural language questions:
 
 ## MCP Tools Available
 
+### Validation Tools
+
+1. **validate_gene**
+   - Quick gene name check against the network (<100ms)
+   - Returns basic stats (regulators, targets, role) if found
+   - Returns fuzzy-matched suggestions for misspelled gene names
+   - Use before full analysis to catch typos instantly
+   - Parameters: gene, cell_type
+
 ### Core Analysis Tools
 
-1. **comprehensive_gene_analysis**
+2. **comprehensive_gene_analysis**
    - Full multi-agent analysis (network + regulators + targets + therapeutic target prioritization + pathways + 4 LLM-powered domain agents)
    - **LLM Mode**: AI-generated insights with scientific rationales (Ollama/llama3.1:8b)
    - **Fallback Mode**: Rule-based heuristics if LLM unavailable
@@ -202,16 +211,11 @@ Once installed, you can ask Claude Desktop natural language questions:
    - Execution: ~4 seconds per gene (LLM mode), <1 second (rule-based mode)
    - Includes therapeutic target prioritization for genes with >5 regulators
 
-2. **analyze_regulators**
-   - Detailed upstream regulator analysis
-   - Shows genes that control the target gene
-   - Includes therapeutic target prioritization (ranks regulators by network centrality)
+3. **multi_gene_analysis**
+   - Parallel processing of multiple genes (up to 10)
+   - Faster than sequential calls
 
-3. **analyze_targets**
-   - Detailed downstream target analysis
-   - Shows genes controlled by the regulator
-
-4. **pathway_enrichment**
+4. **pathway_focused_analysis**
    - Reactome pathway enrichment analysis
    - Statistical validation (FDR < 0.05)
 
@@ -219,16 +223,22 @@ Once installed, you can ask Claude Desktop natural language questions:
    - Compare gene across all 10 cell types
    - Identifies cell-type-specific regulation
 
+6. **load_gene_results**
+   - Load previously saved analysis results from disk
+
+7. **list_available_results**
+   - List available result files in the results directory
+
 ### Utility Tools
 
-6. **create_analysis_report**
+8. **create_analysis_report**
    - Generate formatted JSON/markdown reports
 
-7. **workflow_status**
+9. **workflow_status**
    - Check analysis progress (for long-running queries)
 
-8. **workflow_insights**
-   - Technical performance metrics
+10. **workflow_insights**
+    - Technical performance metrics
 
 ---
 
@@ -240,7 +250,7 @@ Once installed, you can ask Claude Desktop natural language questions:
 ┌─────────────────────────────────────────┐
 │   MCP Server (regnetagents_langgraph_mcp_server.py)
 │   • Protocol translation                │
-│   • Tool registration (8 tools)         │
+│   • Tool registration (10 tools)        │
 │   • Claude Desktop integration          │
 │   • ~466 lines                           │
 └─────────────┬───────────────────────────┘

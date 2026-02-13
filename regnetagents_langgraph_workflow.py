@@ -234,6 +234,99 @@ class RegNetAgentsModelingAgent:
         }
 
 
+    def validate_gene(self, gene: str, cell_type: str = "epithelial_cell") -> dict:
+        """
+        Validate a gene name against the network quickly (<100ms).
+
+        Checks if a gene symbol resolves to an Ensembl ID present in the
+        specified cell-type network, returning basic stats or fuzzy-matched
+        suggestions for misspelled names.
+
+        Args:
+            gene: Gene symbol to validate (e.g., "TP53")
+            cell_type: Cell type network to check against
+
+        Returns:
+            dict with found/not-found status, stats or suggestions
+        """
+        import difflib
+
+        gene_upper = gene.strip().upper()
+        network_data = self.cache.network_indices.get(cell_type, {})
+
+        if not network_data:
+            return {
+                "found": False,
+                "gene": gene,
+                "cell_type": cell_type,
+                "message": f"No network data loaded for cell type '{cell_type}'"
+            }
+
+        # Try to resolve the gene symbol to an Ensembl ID
+        ensembl_id = self.gene_mapper.symbol_to_ensembl(gene_upper)
+
+        all_genes = set(network_data.get('all_genes', []))
+        regulator_targets = network_data.get('regulator_targets', {})
+        target_regulators = network_data.get('target_regulators', {})
+
+        if ensembl_id and ensembl_id in all_genes:
+            # Gene found in network — gather quick stats
+            targets = regulator_targets.get(ensembl_id, [])
+            regulators = target_regulators.get(ensembl_id, [])
+            num_targets = len(targets)
+            num_regulators = len(regulators)
+
+            # Determine regulatory role (same logic as analyze_gene_network_context)
+            if num_targets > 20:
+                regulatory_role = "hub_regulator"
+            elif num_regulators > 15:
+                regulatory_role = "heavily_regulated"
+            elif num_targets > 5 and num_regulators > 5:
+                regulatory_role = "intermediate_node"
+            elif num_targets > 0:
+                regulatory_role = "regulator"
+            else:
+                regulatory_role = "weakly_regulated"
+
+            return {
+                "found": True,
+                "gene": gene_upper,
+                "ensembl_id": ensembl_id,
+                "cell_type": cell_type,
+                "quick_stats": {
+                    "num_regulators": num_regulators,
+                    "num_targets": num_targets,
+                    "regulatory_role": regulatory_role
+                }
+            }
+
+        # Gene not found — build suggestions via fuzzy matching
+        # Collect known gene symbols from the mapper cache
+        known_symbols = list(self.gene_mapper.cache.get("symbol_to_ensembl", {}).keys())
+
+        suggestions = difflib.get_close_matches(gene_upper, known_symbols, n=5, cutoff=0.6)
+
+        # Filter suggestions to those actually present in this cell-type network
+        network_suggestions = []
+        for sym in suggestions:
+            eid = self.gene_mapper.symbol_to_ensembl(sym)
+            if eid and eid in all_genes:
+                network_suggestions.append(sym)
+
+        message = f"Gene '{gene}' not found in {cell_type} network."
+        if network_suggestions:
+            message += f" Did you mean: {', '.join(network_suggestions)}?"
+        elif suggestions:
+            message += f" Similar gene symbols (not in this network): {', '.join(suggestions)}."
+
+        return {
+            "found": False,
+            "gene": gene,
+            "cell_type": cell_type,
+            "suggestions": network_suggestions if network_suggestions else suggestions,
+            "message": message
+        }
+
     async def compare_gene_across_cell_types(self, gene: str):
         """Compare gene across multiple cell types."""
         results = {}

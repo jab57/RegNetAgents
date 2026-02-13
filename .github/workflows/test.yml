@@ -93,6 +93,43 @@ jobs:
           asyncio.run(test())
           "
 
+      - name: Run validate_gene tests (rule-based mode)
+        env:
+          USE_LLM_AGENTS: 'false'
+        run: |
+          python -c "
+          import asyncio
+          import sys
+          sys.path.insert(0, '.')
+
+          async def test():
+              from regnetagents_langgraph_mcp_server import get_workflow
+
+              workflow = await get_workflow()
+              agent = workflow.modeling_agent
+
+              # Test valid gene
+              result = agent.validate_gene('TP53', 'epithelial_cell')
+              assert result['found'] is True, f'Expected found=True, got {result}'
+              assert 'quick_stats' in result, f'Expected quick_stats in result'
+              print(f'validate_gene(TP53): found={result[\"found\"]}, role={result[\"quick_stats\"][\"regulatory_role\"]}')
+
+              # Test invalid gene
+              result = agent.validate_gene('FAKEGENE', 'epithelial_cell')
+              assert result['found'] is False, f'Expected found=False, got {result}'
+              print(f'validate_gene(FAKEGENE): found={result[\"found\"]}')
+
+              # Test case insensitivity
+              r1 = agent.validate_gene('tp53', 'epithelial_cell')
+              r2 = agent.validate_gene('TP53', 'epithelial_cell')
+              assert r1['found'] == r2['found'], 'Case insensitivity failed'
+              print('validate_gene case insensitivity: PASSED')
+
+              print('validate_gene tests PASSED')
+
+          asyncio.run(test())
+          "
+
       - name: Run timing tests (rule-based mode)
         env:
           USE_LLM_AGENTS: 'false'
