@@ -6,7 +6,7 @@
 
 **Multi-Agent LLM Framework for Gene Regulatory Network Analysis**
 
-RegNetAgents automates gene regulatory network analysis through Claude Desktop. Built on pre-computed ARACNe networks from single-cell RNA-seq data and powered by LangGraph workflow orchestration, it deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) that generate scientific insights using local Ollama inference.
+RegNetAgents automates gene regulatory network analysis through Claude Desktop. Built on pre-computed ARACNe networks from single-cell RNA-seq data and powered by LangGraph workflow orchestration, it deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) that generate scientific insights using Ollama inference (local or cloud), with support for a range of open-weight models.
 
 Analyze **10 cell types** including immune cells, blood cells, and epithelial tissue—with AI-generated rationales and interpretations.
 
