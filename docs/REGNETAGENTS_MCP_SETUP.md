@@ -129,10 +129,10 @@ Generate network cache files for 10 cell types:
 
 ```bash
 # Build all networks
-python build_network_cache.py --all
+python scripts/build_network_cache.py --all
 
 # Or build specific cell types
-python build_network_cache.py --cell-type epithelial_cell
+python scripts/build_network_cache.py --cell-type epithelial_cell
 ```
 
 **Cell types available:**
@@ -266,7 +266,7 @@ Once installed, you can ask Claude Desktop natural language questions:
 
 ### "Network cache not found"
 
-**Solution**: Run `python build_network_cache.py --all` to generate network files.
+**Solution**: Run `python scripts/build_network_cache.py --all` to generate network files.
 
 ### "Reactome API timeout"
 

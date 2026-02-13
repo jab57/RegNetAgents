@@ -21,7 +21,7 @@ RegNetAgents currently supports **10 human cell types** with pre-computed gene r
 
 ### How Networks Were Obtained
 
-The 10 cell types were obtained from the **RegNetAgents Quickstart Tutorial**, which provides:
+The 10 cell types were obtained from the **GREmLN Quickstart Tutorial**, which provides:
 
 1. **`human_immune_cells.h5ad`** - 9 immune and blood cell types (2,473 cells from bone marrow and peripheral blood)
 2. **`epithelial_cells.h5ad`** - 1 epithelial cell type (1,000 cells from CELLxGENE)
@@ -116,7 +116,7 @@ These cell types were extracted from the `human_immune_cells.h5ad` dataset, whic
 
 ## How to Download the Cell Type Networks
 
-**📥 RECOMMENDED METHOD: Use the RegNetAgents Quickstart Tutorial**
+**📥 RECOMMENDED METHOD: Use the GREmLN Quickstart Tutorial**
 
 This is how the RegNetAgents networks were obtained. Follow these steps to get the same 10 pre-computed cell type networks.
 

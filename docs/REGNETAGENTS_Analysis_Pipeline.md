@@ -417,10 +417,10 @@ The RegNetAgents system uses pre-computed network indices for optimal performanc
 #### **Quick Start**
 ```bash
 # Process all cell types from TSV files
-python build_network_cache.py --all
+python scripts/build_network_cache.py --all
 
 # Process specific cell type
-python build_network_cache.py epithelial_cell
+python scripts/build_network_cache.py epithelial_cell
 ```
 
 #### **Data Sources**
@@ -498,7 +498,7 @@ ERROR: Network directory missing: models/networks/epithelial_cell
 ERROR: Please ensure network cache files are generated using build_network_cache.py
 
 ERROR: Network index file missing: models/networks/epithelial_cell/network_index.pkl
-ERROR: Please run: python build_network_cache.py --all
+ERROR: Please run: python scripts/build_network_cache.py --all
 ```
 
 #### **User Experience Benefits**
