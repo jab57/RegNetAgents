@@ -116,6 +116,7 @@ python demo_biomarker_analysis.py
 | Tool | Description |
 |------|-------------|
 | `validate_gene` | Quick gene name check with fuzzy suggestions (<100ms) |
+| `query_network` | Instant network queries — top regulators, targets, neighbors, stats (<50ms) |
 | `comprehensive_gene_analysis` | Full analysis with domain insights |
 | `multi_gene_analysis` | Parallel processing of multiple genes |
 | `pathway_focused_analysis` | Reactome pathway enrichment |

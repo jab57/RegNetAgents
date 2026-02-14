@@ -130,6 +130,55 @@ jobs:
           asyncio.run(test())
           "
 
+      - name: Run query_network tests (rule-based mode)
+        env:
+          USE_LLM_AGENTS: 'false'
+        run: |
+          python -c "
+          import asyncio
+          import sys
+          sys.path.insert(0, '.')
+
+          async def test():
+              from regnetagents_langgraph_mcp_server import get_workflow
+
+              workflow = await get_workflow()
+              agent = workflow.modeling_agent
+
+              # Test top_regulators
+              result = agent.query_network('top_regulators', 'epithelial_cell', top_n=5)
+              assert 'results' in result, f'Expected results key, got {result}'
+              assert len(result['results']) == 5, f'Expected 5 results, got {len(result[\"results\"])}'
+              counts = [r['num_targets'] for r in result['results']]
+              assert counts == sorted(counts, reverse=True), 'Results not sorted by num_targets'
+              print(f'top_regulators: top={result[\"results\"][0][\"gene\"]} ({counts[0]} targets)')
+
+              # Test top_targets
+              result = agent.query_network('top_targets', 'epithelial_cell', top_n=5)
+              assert 'results' in result, f'Expected results key, got {result}'
+              assert len(result['results']) == 5, f'Expected 5 results, got {len(result[\"results\"])}'
+              print(f'top_targets: top={result[\"results\"][0][\"gene\"]} ({result[\"results\"][0][\"num_regulators\"]} regulators)')
+
+              # Test gene_neighbors
+              result = agent.query_network('gene_neighbors', 'epithelial_cell', gene='TP53')
+              assert 'regulators' in result and 'targets' in result, f'Expected regulators/targets, got {result}'
+              print(f'gene_neighbors(TP53): {result[\"num_regulators\"]} regulators, {result[\"num_targets\"]} targets')
+
+              # Test gene_neighbors with invalid gene
+              result = agent.query_network('gene_neighbors', 'epithelial_cell', gene='FAKEGENE')
+              assert result.get('error') is True, f'Expected error=True, got {result}'
+              print(f'gene_neighbors(FAKEGENE): error={result[\"error\"]}')
+
+              # Test network_stats
+              result = agent.query_network('network_stats', 'epithelial_cell')
+              assert 'num_genes' in result and 'num_edges' in result and 'density' in result
+              print(f'network_stats: {result[\"num_genes\"]} genes, {result[\"num_edges\"]} edges, density={result[\"density\"]}')
+
+              print('query_network tests PASSED')
+
+          asyncio.run(test())
+          "
+
       - name: Run timing tests (rule-based mode)
         env:
           USE_LLM_AGENTS: 'false'

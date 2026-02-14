@@ -36,6 +36,7 @@ Add the following to your Claude Desktop MCP configuration file:
 
 Restart Claude Desktop and check that the RegNetAgents tools are available. You should see tools like:
 - `validate_gene`
+- `query_network`
 - `comprehensive_gene_analysis`
 - `multi_gene_analysis`
 - `pathway_focused_analysis`
@@ -201,9 +202,16 @@ Once installed, you can ask Claude Desktop natural language questions:
    - Use before full analysis to catch typos instantly
    - Parameters: gene, cell_type
 
+2. **query_network**
+   - Instant network queries from pre-computed data (<50ms)
+   - Query types: top_regulators, top_targets, gene_neighbors, network_stats
+   - Returns gene symbols, counts, PageRank scores, and network statistics
+   - Use for quick questions like "top regulators?" or "what regulates MYC?"
+   - Parameters: query_type, cell_type, gene (for gene_neighbors), top_n
+
 ### Core Analysis Tools
 
-2. **comprehensive_gene_analysis**
+3. **comprehensive_gene_analysis**
    - Full multi-agent analysis (network + regulators + targets + therapeutic target prioritization + pathways + 4 LLM-powered domain agents)
    - **LLM Mode**: AI-generated insights with scientific rationales (Ollama/llama3.1:8b)
    - **Fallback Mode**: Rule-based heuristics if LLM unavailable
@@ -211,33 +219,33 @@ Once installed, you can ask Claude Desktop natural language questions:
    - Execution: ~4 seconds per gene (LLM mode), <1 second (rule-based mode)
    - Includes therapeutic target prioritization for genes with >5 regulators
 
-3. **multi_gene_analysis**
+4. **multi_gene_analysis**
    - Parallel processing of multiple genes (up to 10)
    - Faster than sequential calls
 
-4. **pathway_focused_analysis**
+5. **pathway_focused_analysis**
    - Reactome pathway enrichment analysis
    - Statistical validation (FDR < 0.05)
 
-5. **cross_cell_comparison**
+6. **cross_cell_comparison**
    - Compare gene across all 10 cell types
    - Identifies cell-type-specific regulation
 
-6. **load_gene_results**
+7. **load_gene_results**
    - Load previously saved analysis results from disk
 
-7. **list_available_results**
+8. **list_available_results**
    - List available result files in the results directory
 
 ### Utility Tools
 
-8. **create_analysis_report**
+9. **create_analysis_report**
    - Generate formatted JSON/markdown reports
 
-9. **workflow_status**
+10. **workflow_status**
    - Check analysis progress (for long-running queries)
 
-10. **workflow_insights**
+11. **workflow_insights**
     - Technical performance metrics
 
 ---

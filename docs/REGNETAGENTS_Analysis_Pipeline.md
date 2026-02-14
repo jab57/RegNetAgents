@@ -57,6 +57,31 @@ Checks if a gene symbol exists in the network and returns basic stats or fuzzy-m
 - Fuzzy-matched suggestions (e.g., "TP5" → ["TP53"])
 - Descriptive error message
 
+### Tool 0.5: `query_network` ✅
+**Instant network queries (<50ms)**
+
+Answers structural questions about the gene regulatory network directly from pre-computed cache data, without running a full analysis.
+
+**Query Types:**
+- `top_regulators` — Genes with the most targets (out-degree), with PageRank scores
+- `top_targets` — Most highly regulated genes (in-degree)
+- `gene_neighbors` — Immediate regulators and targets of a specific gene
+- `network_stats` — Summary statistics (genes, edges, regulons, density)
+
+**Example Usage:**
+```json
+{
+  "query_type": "top_regulators",
+  "cell_type": "epithelial_cell",
+  "top_n": 5
+}
+```
+
+**Returns:**
+- Ranked list of genes with symbols, Ensembl IDs, counts, and PageRank scores
+- For gene_neighbors: lists of regulator and target gene symbols
+- For network_stats: num_genes, num_edges, num_regulons, avg degrees, density
+
 ### Tool 1: `comprehensive_gene_analysis` ⭐
 **Intelligent workflow-driven gene analysis with domain expertise**
 

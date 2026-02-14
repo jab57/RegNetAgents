@@ -327,6 +327,145 @@ class RegNetAgentsModelingAgent:
             "message": message
         }
 
+    def query_network(self, query_type: str, cell_type: str = "epithelial_cell",
+                      gene: str = None, top_n: int = 10) -> dict:
+        """
+        Query the pre-computed network cache for instant answers (<50ms).
+
+        Args:
+            query_type: One of 'top_regulators', 'top_targets', 'gene_neighbors', 'network_stats'
+            cell_type: Cell type network to query
+            gene: Gene symbol (required for 'gene_neighbors')
+            top_n: Number of results to return for ranked queries
+
+        Returns:
+            dict with query results
+        """
+        network_data = self.cache.network_indices.get(cell_type, {})
+
+        if not network_data:
+            return {
+                "error": True,
+                "query_type": query_type,
+                "cell_type": cell_type,
+                "message": f"No network data loaded for cell type '{cell_type}'"
+            }
+
+        regulator_targets = network_data.get('regulator_targets', {})
+        target_regulators = network_data.get('target_regulators', {})
+        all_genes = network_data.get('all_genes', [])
+        pagerank = network_data.get('pagerank_normalized', {})
+
+        if query_type == "top_regulators":
+            # Sort regulators by out-degree (number of targets)
+            ranked = sorted(regulator_targets.items(), key=lambda x: len(x[1]), reverse=True)
+            results = []
+            for ensembl_id, targets in ranked[:top_n]:
+                symbol = self.gene_mapper.ensembl_to_symbol(ensembl_id) or ensembl_id
+                entry = {
+                    "gene": symbol,
+                    "ensembl_id": ensembl_id,
+                    "num_targets": len(targets)
+                }
+                if pagerank:
+                    entry["pagerank"] = round(pagerank.get(ensembl_id, 0.0), 6)
+                results.append(entry)
+            return {
+                "query_type": query_type,
+                "cell_type": cell_type,
+                "top_n": top_n,
+                "results": results
+            }
+
+        elif query_type == "top_targets":
+            # Sort targets by in-degree (number of regulators)
+            ranked = sorted(target_regulators.items(), key=lambda x: len(x[1]), reverse=True)
+            results = []
+            for ensembl_id, regulators in ranked[:top_n]:
+                symbol = self.gene_mapper.ensembl_to_symbol(ensembl_id) or ensembl_id
+                results.append({
+                    "gene": symbol,
+                    "ensembl_id": ensembl_id,
+                    "num_regulators": len(regulators)
+                })
+            return {
+                "query_type": query_type,
+                "cell_type": cell_type,
+                "top_n": top_n,
+                "results": results
+            }
+
+        elif query_type == "gene_neighbors":
+            if not gene:
+                return {
+                    "error": True,
+                    "query_type": query_type,
+                    "message": "The 'gene' parameter is required for 'gene_neighbors' queries"
+                }
+            gene_upper = gene.strip().upper()
+            ensembl_id = self.gene_mapper.symbol_to_ensembl(gene_upper)
+            all_genes_set = set(all_genes)
+
+            if not ensembl_id or ensembl_id not in all_genes_set:
+                return {
+                    "error": True,
+                    "query_type": query_type,
+                    "gene": gene_upper,
+                    "cell_type": cell_type,
+                    "message": f"Gene '{gene_upper}' not found in {cell_type} network"
+                }
+
+            targets = regulator_targets.get(ensembl_id, [])
+            regulators = target_regulators.get(ensembl_id, [])
+
+            target_symbols = []
+            for t in targets:
+                sym = self.gene_mapper.ensembl_to_symbol(t) or t
+                target_symbols.append(sym)
+
+            regulator_symbols = []
+            for r in regulators:
+                sym = self.gene_mapper.ensembl_to_symbol(r) or r
+                regulator_symbols.append(sym)
+
+            return {
+                "query_type": query_type,
+                "gene": gene_upper,
+                "ensembl_id": ensembl_id,
+                "cell_type": cell_type,
+                "num_targets": len(targets),
+                "targets": target_symbols,
+                "num_regulators": len(regulators),
+                "regulators": regulator_symbols
+            }
+
+        elif query_type == "network_stats":
+            num_genes = len(all_genes)
+            num_edges = sum(len(targets) for targets in regulator_targets.values())
+            num_regulons = len(regulator_targets)
+            avg_out_degree = num_edges / num_regulons if num_regulons > 0 else 0.0
+            num_targets_total = len(target_regulators)
+            avg_in_degree = num_edges / num_targets_total if num_targets_total > 0 else 0.0
+            density = num_edges / (num_genes * (num_genes - 1)) if num_genes > 1 else 0.0
+
+            return {
+                "query_type": query_type,
+                "cell_type": cell_type,
+                "num_genes": num_genes,
+                "num_edges": num_edges,
+                "num_regulons": num_regulons,
+                "avg_out_degree": round(avg_out_degree, 2),
+                "avg_in_degree": round(avg_in_degree, 2),
+                "density": round(density, 6)
+            }
+
+        else:
+            return {
+                "error": True,
+                "query_type": query_type,
+                "message": f"Unknown query_type '{query_type}'. Valid types: top_regulators, top_targets, gene_neighbors, network_stats"
+            }
+
     async def compare_gene_across_cell_types(self, gene: str):
         """Compare gene across multiple cell types."""
         results = {}

@@ -17,7 +17,8 @@ Architecture:
 
 Available Tools:
     1. validate_gene: Quick gene name check with fuzzy suggestions (<100ms)
-    2. comprehensive_gene_analysis: Full workflow-driven analysis (recommended)
+    2. query_network: Instant network queries (top regulators, targets, neighbors, stats) (<50ms)
+    3. comprehensive_gene_analysis: Full workflow-driven analysis (recommended)
     3. multi_gene_analysis: Parallel processing of multiple genes
     4. pathway_focused_analysis: Pathway-centric analysis
     5. cross_cell_comparison: Gene behavior across cell types
@@ -443,6 +444,58 @@ async def handle_list_tools() -> list[Tool]:
                 },
                 "required": ["gene"]
             }
+        ),
+        Tool(
+            name="query_network",
+            description="""
+            Instantly query the pre-computed gene regulatory network (<50ms).
+
+            Use this for quick network questions instead of running a full analysis.
+            Answers questions about network structure directly from pre-computed data.
+
+            Query types:
+            - top_regulators: Genes with the most targets (out-degree), with PageRank scores
+            - top_targets: Most highly regulated genes (in-degree)
+            - gene_neighbors: Immediate regulators and targets of a specific gene
+            - network_stats: Summary statistics (genes, edges, density, etc.)
+
+            Great for:
+            - "What are the top regulators in epithelial cells?"
+            - "How many targets does TP53 have?"
+            - "What regulates MYC?"
+            - "How large is the CD4 T cell network?"
+            """,
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query_type": {
+                        "type": "string",
+                        "enum": ["top_regulators", "top_targets", "gene_neighbors", "network_stats"],
+                        "description": "Type of network query to run"
+                    },
+                    "cell_type": {
+                        "type": "string",
+                        "enum": [
+                            "epithelial_cell", "cd14_monocytes", "cd16_monocytes",
+                            "cd20_b_cells", "cd4_t_cells", "cd8_t_cells",
+                            "erythrocytes", "nk_cells", "nkt_cells",
+                            "monocyte-derived_dendritic_cells"
+                        ],
+                        "description": "Cell type network to query",
+                        "default": "epithelial_cell"
+                    },
+                    "gene": {
+                        "type": "string",
+                        "description": "Gene symbol (required for gene_neighbors query)"
+                    },
+                    "top_n": {
+                        "type": "integer",
+                        "description": "Number of results to return for ranked queries",
+                        "default": 10
+                    }
+                },
+                "required": ["query_type"]
+            }
         )
     ]
 
@@ -728,6 +781,24 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             logger.info(f"Validating gene '{gene}' in {cell_type}")
 
             result = workflow.modeling_agent.validate_gene(gene, cell_type)
+
+            return [TextContent(type="text", text=json.dumps(result, indent=2))]
+
+        elif name == "query_network":
+            query_type = arguments["query_type"]
+            cell_type = arguments.get("cell_type", "epithelial_cell")
+            gene = arguments.get("gene", None)
+            top_n = arguments.get("top_n", 10)
+
+            logger.info(f"Network query: {query_type} in {cell_type}" +
+                        (f" for {gene}" if gene else ""))
+
+            result = workflow.modeling_agent.query_network(
+                query_type=query_type,
+                cell_type=cell_type,
+                gene=gene,
+                top_n=top_n
+            )
 
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
 
