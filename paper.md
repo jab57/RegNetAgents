@@ -41,9 +41,9 @@ The software processes pre-computed ARACNe networks from the GREmLN project [@zh
 
 # Implementation
 
-![RegNetAgents multi-agent architecture.](figure1_architecture.png)
-
 RegNetAgents requires Python 3.10+ and uses NetworkX [@hagberg2008networkx] for graph algorithms. The workflow is implemented as a LangGraph DAG, which enforces explicit stepwise execution and ensures reproducibility across runs. This design intentionally reduces agent autonomy—agents cannot dynamically alter the workflow—in exchange for deterministic, auditable execution. Three design trade-offs follow from this choice: the DAG constraints limit agent autonomy but guarantee reproducibility and auditability; the dual-mode architecture (LLM + rule-based) trades richer interpretation for guaranteed determinism when needed; and restricting input to pre-computed ARACNe networks prioritizes validated, curated data over generality. The pipeline includes gene validation, network lookup, therapeutic prioritization (for genes with >5 regulators), pathway enrichment, parallel domain analysis, and report generation.
+
+![RegNetAgents multi-agent architecture.](figure1_architecture.png)
 
 Therapeutic prioritization uses NetworkX's deterministic PageRank and degree-based centrality metrics to rank upstream regulators by influence within the ARACNe-derived subnetwork. Domain agents support dual-mode operation—LLM-powered or rule-based—with the rule-based fallback ensuring reproducible outputs even when LLM variability is present. All computational steps—network lookup, PageRank ranking, and pathway enrichment—are fully deterministic; only the natural-language interpretation layer varies between runs. The LLM layer uses Ollama, which supports local or cloud deployment and runs a range of open-weight models (e.g., Llama, Mistral); the modular architecture allows alternative LLM backends to be substituted.
 
