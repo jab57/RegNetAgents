@@ -179,6 +179,46 @@ jobs:
           asyncio.run(test())
           "
 
+      - name: Run MCP Resources tests (rule-based mode)
+        env:
+          USE_LLM_AGENTS: 'false'
+        run: |
+          python -c "
+          import asyncio, json, sys
+          sys.path.insert(0, '.')
+
+          async def test():
+              from pydantic import AnyUrl
+              from regnetagents_langgraph_mcp_server import handle_list_resources, handle_read_resource
+
+              # list_resources returns 1 static + 10 network resources
+              resources = await handle_list_resources()
+              assert len(resources) == 11, f'Expected 11 resources, got {len(resources)}'
+              print(f'handle_list_resources: {len(resources)} resources')
+
+              # read cell-types resource returns 10 cell types
+              contents = await handle_read_resource(AnyUrl('regnetagents://cell-types'))
+              data = json.loads(contents[0].content)
+              assert len(data['cell_types']) == 10, f'Expected 10 cell types, got {len(data[\"cell_types\"])}'
+              print(f'cell-types resource: {len(data[\"cell_types\"])} cell types')
+
+              # read network resource returns expected fields
+              contents = await handle_read_resource(AnyUrl('regnetagents://network/epithelial_cell'))
+              data = json.loads(contents[0].content)
+              assert 'num_genes' in data and 'num_edges' in data and 'top_regulators_by_pagerank' in data
+              print(f'network resource: {data[\"num_genes\"]} genes, {data[\"num_edges\"]} edges')
+
+              # read gene resource returns found=True for TP53
+              contents = await handle_read_resource(AnyUrl('regnetagents://gene/TP53'))
+              data = json.loads(contents[0].content)
+              assert data['found'] is True, f'Expected found=True, got {data}'
+              print(f'gene resource: found={data[\"found\"]}, present_in={len(data[\"present_in_cell_types\"])} cell types')
+
+              print('MCP Resources tests PASSED')
+
+          asyncio.run(test())
+          "
+
       - name: Run timing tests (rule-based mode)
         env:
           USE_LLM_AGENTS: 'false'

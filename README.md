@@ -127,6 +127,16 @@ python demo_biomarker_analysis.py
 | `workflow_insights` | Performance analytics |
 | `create_analysis_report` | Generate reports |
 
+### MCP Resources
+
+Browsable resources for discovering available data without running analyses:
+
+| Resource URI | Description |
+|-------------|-------------|
+| `regnetagents://cell-types` | List all cell types with gene/edge counts |
+| `regnetagents://network/{cell_type}` | Network summary: density, top regulators by PageRank |
+| `regnetagents://gene/{gene_symbol}` | Gene lookup across all cell types (template) |
+
 ---
 
 ## Cell Types (10 Available)

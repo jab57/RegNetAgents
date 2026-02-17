@@ -82,6 +82,16 @@ Answers structural questions about the gene regulatory network directly from pre
 - For gene_neighbors: lists of regulator and target gene symbols
 - For network_stats: num_genes, num_edges, num_regulons, avg degrees, density
 
+### MCP Resources (Browsable Data Discovery)
+
+Complementing the tools above, the server exposes **MCP Resources** — read-only, browsable endpoints for data discovery without running an analysis:
+
+- **`regnetagents://cell-types`** — List all cell types with gene/edge counts
+- **`regnetagents://network/{cell_type}`** — Network summary (genes, edges, density, top regulators by PageRank)
+- **`regnetagents://gene/{gene_symbol}`** — Gene lookup across all cell types (presence, regulator/target counts)
+
+Resources are ideal for exploration before committing to a full analysis.
+
 ### Tool 1: `comprehensive_gene_analysis` ⭐
 **Intelligent workflow-driven gene analysis with domain expertise**
 

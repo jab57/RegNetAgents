@@ -113,6 +113,25 @@ Analyze multiple genes in parallel.
 
 ---
 
+## Available MCP Resources
+
+The server also exposes browsable **MCP Resources** for quick data discovery:
+
+| URI | Description |
+|-----|-------------|
+| `regnetagents://cell-types` | List all cell types with gene/edge counts |
+| `regnetagents://network/{cell_type}` | Network summary (genes, edges, density, top regulators) |
+| `regnetagents://gene/{gene_symbol}` | Gene lookup across all cell types |
+
+**Try asking:**
+```
+What cell types are available?
+Show me the epithelial_cell network summary.
+Where does TP53 appear across cell types?
+```
+
+---
+
 ## Example Workflows
 
 ### Workflow 1: Quick Data Exploration

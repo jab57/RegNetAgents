@@ -11,9 +11,10 @@ MCP protocol, enabling natural language queries like "Analyze TP53 in epithelial
 to trigger comprehensive multi-agent analysis workflows.
 
 Architecture:
-    - MCP Server: Handles Claude Desktop communication and tool registration
+    - MCP Server: Handles Claude Desktop communication, tool registration, and resource browsing
     - LangGraph Workflow: Orchestrates multi-agent analysis pipeline
     - Tool Registry: Exposes analysis tools to Claude Desktop
+    - Resource Registry: Exposes browsable resources (cell types, network summaries, gene lookups)
 
 Available Tools:
     1. validate_gene: Quick gene name check with fuzzy suggestions (<100ms)
@@ -49,7 +50,7 @@ import json
 import logging
 import os
 import sys
-from typing import Any, Sequence
+from typing import Any, Iterable, Sequence
 from mcp.server import Server, NotificationOptions
 from mcp.server.models import InitializationOptions
 import mcp.server.stdio as stdio
@@ -64,6 +65,7 @@ from mcp.types import (
 )
 from pydantic import AnyUrl
 import mcp.types as types
+from mcp.server.lowlevel.helper_types import ReadResourceContents
 
 # Import our LangGraph workflow
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow, GeneAnalysisState, CellType
@@ -104,6 +106,154 @@ async def get_workflow():
         workflow_instance = RegNetAgentsWorkflow()
         logger.info("LangGraph workflow ready")
     return workflow_instance
+
+@server.list_resources()
+async def handle_list_resources() -> list[Resource]:
+    """Return static resources and dynamic per-cell-type resources."""
+    workflow = await get_workflow()
+    cache = workflow.cache
+
+    resources = [
+        Resource(
+            uri=AnyUrl("regnetagents://cell-types"),
+            name="Available Cell Types",
+            description="List of all cell types with gene and edge counts",
+            mimeType="application/json"
+        )
+    ]
+
+    for ct in CellType:
+        network_data = cache.network_indices.get(ct.value, {})
+        gene_count = network_data.get("num_genes", 0)
+        edge_count = network_data.get("num_edges", 0)
+        resources.append(Resource(
+            uri=AnyUrl(f"regnetagents://network/{ct.value}"),
+            name=f"Network Summary: {ct.value}",
+            description=f"{gene_count} genes, {edge_count} edges",
+            mimeType="application/json"
+        ))
+
+    return resources
+
+
+@server.list_resource_templates()
+async def handle_list_resource_templates() -> list[types.ResourceTemplate]:
+    """Return parameterized resource templates."""
+    return [
+        types.ResourceTemplate(
+            uriTemplate="regnetagents://gene/{gene_symbol}",
+            name="Gene Lookup",
+            description="Look up a gene across all cell types",
+            mimeType="application/json"
+        )
+    ]
+
+
+@server.read_resource()
+async def handle_read_resource(uri: AnyUrl) -> Iterable[ReadResourceContents]:
+    """Serve resource data for the given URI."""
+    uri_str = str(uri)
+    workflow = await get_workflow()
+    cache = workflow.cache
+    gene_mapper = workflow.modeling_agent.gene_mapper
+
+    # regnetagents://cell-types
+    if uri_str == "regnetagents://cell-types":
+        cell_types = []
+        for ct in CellType:
+            network_data = cache.network_indices.get(ct.value, {})
+            cell_types.append({
+                "cell_type": ct.value,
+                "num_genes": network_data.get("num_genes", 0),
+                "num_edges": network_data.get("num_edges", 0),
+                "num_regulons": network_data.get("num_regulons", 0),
+            })
+        return [ReadResourceContents(
+            content=json.dumps({"cell_types": cell_types}, indent=2),
+            mime_type="application/json"
+        )]
+
+    # regnetagents://network/{cell_type}
+    if uri_str.startswith("regnetagents://network/"):
+        cell_type = uri_str.replace("regnetagents://network/", "")
+        network_data = cache.network_indices.get(cell_type, {})
+        if not network_data:
+            return [ReadResourceContents(
+                content=json.dumps({"error": f"Unknown cell type: {cell_type}"}),
+                mime_type="application/json"
+            )]
+
+        num_genes = network_data.get("num_genes", 0)
+        num_edges = network_data.get("num_edges", 0)
+        density = (num_edges / (num_genes * (num_genes - 1))) if num_genes > 1 else 0
+
+        # Top 10 regulators by PageRank
+        pagerank = network_data.get("pagerank_normalized", {})
+        top_regulators = sorted(pagerank.items(), key=lambda x: x[1], reverse=True)[:10]
+        top_regulators_named = []
+        for ensembl_id, score in top_regulators:
+            symbol = gene_mapper.ensembl_to_symbol(ensembl_id) or ensembl_id
+            top_regulators_named.append({"gene": symbol, "pagerank": round(score, 6)})
+
+        summary = {
+            "cell_type": cell_type,
+            "num_genes": num_genes,
+            "num_edges": num_edges,
+            "num_regulons": network_data.get("num_regulons", 0),
+            "density": round(density, 6),
+            "top_regulators_by_pagerank": top_regulators_named,
+            "cache_version": network_data.get("cache_version", "unknown"),
+        }
+        return [ReadResourceContents(
+            content=json.dumps(summary, indent=2),
+            mime_type="application/json"
+        )]
+
+    # regnetagents://gene/{gene_symbol}
+    if uri_str.startswith("regnetagents://gene/"):
+        gene_symbol = uri_str.replace("regnetagents://gene/", "").upper()
+        ensembl_id = gene_mapper.symbol_to_ensembl(gene_symbol)
+
+        if not ensembl_id:
+            return [ReadResourceContents(
+                content=json.dumps({
+                    "gene": gene_symbol,
+                    "found": False,
+                    "message": f"Gene '{gene_symbol}' not found in mapper"
+                }),
+                mime_type="application/json"
+            )]
+
+        presence = []
+        for ct in CellType:
+            network_data = cache.network_indices.get(ct.value, {})
+            all_genes = set(network_data.get("all_genes", []))
+            if ensembl_id in all_genes:
+                regulators = network_data.get("target_regulators", {}).get(ensembl_id, [])
+                targets = network_data.get("regulator_targets", {}).get(ensembl_id, [])
+                presence.append({
+                    "cell_type": ct.value,
+                    "num_regulators": len(regulators),
+                    "num_targets": len(targets),
+                })
+
+        return [ReadResourceContents(
+            content=json.dumps({
+                "gene": gene_symbol,
+                "ensembl_id": ensembl_id,
+                "found": True,
+                "present_in_cell_types": len(presence),
+                "cell_type_details": presence,
+            }, indent=2),
+            mime_type="application/json"
+        )]
+
+    # Unknown URI
+    return [ReadResourceContents(
+        content=json.dumps({"error": f"Unknown resource URI: {uri_str}"}),
+        mime_type="application/json"
+    )]
+
 
 @server.list_tools()
 async def handle_list_tools() -> list[Tool]:

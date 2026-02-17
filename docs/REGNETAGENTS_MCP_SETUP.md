@@ -250,6 +250,36 @@ Once installed, you can ask Claude Desktop natural language questions:
 
 ---
 
+## MCP Resources Available
+
+In addition to tools, the server exposes **browsable MCP Resources** for lightweight data discovery without running an analysis.
+
+### 1. `regnetagents://cell-types`
+**List all available cell types** with gene and edge counts.
+
+Example query in Claude Desktop:
+```
+What cell types are available and how large are the networks?
+```
+
+### 2. `regnetagents://network/{cell_type}`
+**Network summary** for a specific cell type — gene/edge counts, density, and top 10 regulators by PageRank.
+
+Example query:
+```
+Show me the epithelial_cell network summary
+```
+
+### 3. `regnetagents://gene/{gene_symbol}`
+**Gene lookup** across all cell types — shows which networks contain the gene and its regulator/target counts in each.
+
+Example query:
+```
+Where does TP53 appear across cell types?
+```
+
+---
+
 ## Architecture Overview
 
 ### Thin-Wrapper Design
