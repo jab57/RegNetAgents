@@ -212,7 +212,7 @@ jobs:
               contents = await handle_read_resource(AnyUrl('regnetagents://gene/TP53'))
               data = json.loads(contents[0].content)
               assert data['found'] is True, f'Expected found=True, got {data}'
-              print(f'gene resource: found={data[\"found\"]}, present_in={len(data[\"present_in_cell_types\"])} cell types')
+              print(f'gene resource: found={data[\"found\"]}, present_in={data[\"present_in_cell_types\"]} cell types')
 
               print('MCP Resources tests PASSED')
 
