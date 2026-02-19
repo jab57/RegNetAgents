@@ -96,9 +96,39 @@ Analyze the TP53 gene in epithelial cells
 
 ### Programmatic Usage
 
+No Claude Desktop required — call the workflow directly from Python:
+
+```python
+import asyncio
+from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
+
+async def main():
+    workflow = RegNetAgentsWorkflow()
+    result = await workflow.run_analysis(
+        gene="TP53",
+        cell_type="epithelial_cell",
+        analysis_depth="comprehensive"
+    )
+    print(result["network_summary"])
+
+asyncio.run(main())
+```
+
+For a full multi-gene example:
+
 ```bash
 python demo_biomarker_analysis.py
 ```
+
+---
+
+## Running Tests
+
+```bash
+pytest tests/
+```
+
+Core tests run without Ollama or Claude Desktop. Tests requiring Ollama are skipped automatically if it is not running.
 
 ---
 
@@ -209,6 +239,26 @@ RegNetAgents/
 ## Development Context
 
 This project was developed with assistance from Claude Code (Anthropic). It is a research prototype for hypothesis generation—users should validate findings experimentally. See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+
+---
+
+## Citation
+
+If you use RegNetAgents in your research, please cite:
+
+```bibtex
+@software{bird_2026_regnetagents,
+  author    = {Bird, Jose A.},
+  title     = {RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis},
+  year      = {2026},
+  version   = {1.0.0},
+  doi       = {10.5281/zenodo.18500028},
+  url       = {https://github.com/jab57/RegNetAgents},
+  license   = {MIT}
+}
+```
+
+Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.0.0). https://doi.org/10.5281/zenodo.18500028
 
 ---
 
