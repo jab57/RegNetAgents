@@ -120,6 +120,20 @@ For a full multi-gene example:
 python demo_biomarker_analysis.py
 ```
 
+Example output (5-gene colorectal cancer panel, rule-based mode):
+
+```
+Genes: MYC, CTNNB1, CCND1, TP53, KRAS | Cell Type: epithelial_cell
+
+[OK] MYC:   hub_regulator  | Regulators: 25  | Targets: 427 | Pathways: 58  | Top regulator: ID4   (PageRank: 0.622)
+[OK] CTNNB1:hub_regulator  | Regulators: 18  | Targets: 310 | Pathways:  2  | Top regulator: CHD2  (PageRank: 0.530)
+[OK] CCND1: heavily_reg.   | Regulators: 42  | Targets:   0 | Pathways: 66  | Top regulator: ZBTB20(PageRank: 0.600)
+[OK] TP53:  hub_regulator  | Regulators:  7  | Targets: 163 | Pathways: 16  | Top regulator: WWTR1 (PageRank: 0.473)
+[OK] KRAS:  weakly_reg.    | Regulators:  7  | Targets:   0 | Pathways: 141 | Top regulator: GPBP1 (PageRank: 0.609)
+
+Analyzed 5 genes in 104.68 seconds
+```
+
 ---
 
 ## Running Tests
