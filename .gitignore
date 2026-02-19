@@ -1,3 +1,8 @@
+# Python packaging artifacts
+*.egg-info/
+dist/
+build/
+
 # Python virtual environments (common names)
 regnetagents-env/
 env/
