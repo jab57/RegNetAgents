@@ -71,9 +71,11 @@ from mcp.server.lowlevel.helper_types import ReadResourceContents
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow, GeneAnalysisState, CellType
 
 # Configure logging with more detail
+# IMPORTANT: MCP uses stdout for JSON-RPC transport, so all logging MUST go to stderr
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stderr
 )
 logger = logging.getLogger(__name__)
 

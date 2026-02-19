@@ -43,7 +43,9 @@ import ollama
 from dotenv import load_dotenv
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+# IMPORTANT: MCP uses stdout for JSON-RPC transport, so all logging MUST go to stderr
+import sys
+logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
