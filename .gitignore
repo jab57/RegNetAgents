@@ -29,6 +29,7 @@ gremln_source/
 
 # Results and outputs (users generate their own)
 results/*.json
+*_results.json
 
 # Temporary files
 *.tmp

@@ -18,13 +18,32 @@ import asyncio
 import sys
 import os
 import time
+import urllib.request
 from pathlib import Path
+
+import pytest
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 import ollama
+
+
+def _ollama_running():
+    """Return True if the Ollama service is reachable."""
+    try:
+        urllib.request.urlopen('http://localhost:11434/api/tags', timeout=2)
+        return True
+    except Exception:
+        return False
+
+
+# Skip all tests in this file when Ollama is not running
+pytestmark = pytest.mark.skipif(
+    not _ollama_running(),
+    reason="Ollama not running — install from https://ollama.com/download then: ollama pull llama3.1:8b"
+)
 
 def check_ollama_available():
     """Check if Ollama is installed and running"""
