@@ -88,15 +88,15 @@ def check_git_lfs():
 
 
 def check_python_version():
-    """Verify Python version is 3.8+."""
+    """Verify Python version is 3.10+."""
     print("Checking Python version...")
     version = sys.version_info
-    if version.major >= 3 and version.minor >= 8:
+    if version.major >= 3 and version.minor >= 10:
         print(f"{CHECK} Python {version.major}.{version.minor}.{version.micro}")
         return True
     else:
         print(f"{CROSS} Python {version.major}.{version.minor}.{version.micro}")
-        print("  Required: Python 3.8 or higher")
+        print("  Required: Python 3.10 or higher")
         return False
 
 

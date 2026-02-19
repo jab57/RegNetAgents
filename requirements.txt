@@ -1,5 +1,6 @@
 # RegNetAgents - Core Dependencies
 # Gene regulatory network analysis with multi-agent AI
+# Python 3.10+ required
 
 # Multi-agent workflow orchestration
 langgraph>=0.2.0
@@ -17,20 +18,10 @@ numpy>=1.24.0
 # HTTP requests (Reactome API, Ensembl API)
 requests>=2.31.0
 
-# Visualization (figure generation)
-matplotlib>=3.7.0
-seaborn>=0.13.0
-
-# PowerPoint poster generation
-python-pptx>=0.6.21
-
-# Optional: Environment configuration
+# Environment configuration
 python-dotenv>=1.0.0
 
-# Local LLM inference (Ollama)
+# Ollama Python SDK (required for import; Ollama application is optional)
+# Without the Ollama app running, system automatically uses rule-based fallback
+# To enable LLM agents: install from https://ollama.com/download, then: ollama pull llama3.1:8b
 ollama>=0.1.0
-
-# Note: Python 3.10+ required
-# Installation: pip install -r requirements.txt
-# For LLM agents: Install Ollama from https://ollama.com/download
-# Then run: ollama pull llama3.1:8b
