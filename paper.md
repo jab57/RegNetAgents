@@ -49,11 +49,34 @@ The MCP server exposes eleven tools and three browsable MCP Resources (cell-type
 
 ![RegNetAgents multi-agent architecture.\label{fig:architecture}](figure1_architecture.png)
 
-# Research Application
+# Usage
 
-To illustrate practical usage, a five-gene colorectal cancer case study demonstrates that RegNetAgents completes a full analysis pipeline—from gene validation through multi-perspective domain synthesis—in 15–62 seconds per gene. For a representative query on TP53 in the epithelial\_cell network, the system identifies 7 upstream regulators and 163 downstream targets, performs PageRank-based therapeutic prioritization, runs pathway enrichment against Reactome, and synthesizes findings from four domain perspectives in a single automated run.
+RegNetAgents is accessed through Claude Desktop via natural language after MCP server configuration (see installation guide):
 
-In rule-based mode, all outputs—regulator lists, rankings, enrichment results, and domain reports—are identical across runs, supporting reproducible computational workflows. The modular architecture also supports extensibility: new cell types can be added through the documented data pipeline without modifying the core analysis logic.
+```
+Analyze the TP53 gene in epithelial cells
+Compare MYC, TP53, and KRAS across different cell types
+```
+
+It can also be called programmatically without Claude Desktop:
+
+```python
+import asyncio
+from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
+
+async def main():
+    workflow = RegNetAgentsWorkflow()
+    result = await workflow.run_analysis(
+        gene="TP53",
+        cell_type="epithelial_cell",
+        analysis_depth="comprehensive"
+    )
+    print(result["network_summary"])
+
+asyncio.run(main())
+```
+
+The `analysis_depth` parameter accepts `"focused"` (network and pathways), `"basic"` (adds rule-based domain insights), or `"comprehensive"` (adds therapeutic prioritization and parallel domain analysis).
 
 # Availability
 
