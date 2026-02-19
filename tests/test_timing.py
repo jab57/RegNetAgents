@@ -44,6 +44,11 @@ async def test_single_gene_focused_rules():
     )
     execution_time = time.time() - start_time
 
+    assert execution_time > 0, "Execution time must be > 0 — network data may not have loaded"
+    assert isinstance(result, dict) and result, "Result must be a non-empty dict — analysis may not have run"
+    assert "gene_analysis_summary" in result, "Result missing gene_analysis_summary — analysis may not have run"
+    assert result["gene_analysis_summary"]["gene"] == "TP53"
+
     print(f"Execution Time: {execution_time:.3f} seconds")
     return execution_time
 
@@ -64,6 +69,11 @@ async def test_single_gene_comprehensive_rules():
         analysis_depth="comprehensive"
     )
     execution_time = time.time() - start_time
+
+    assert execution_time > 0, "Execution time must be > 0 — network data may not have loaded"
+    assert isinstance(result, dict) and result, "Result must be a non-empty dict — analysis may not have run"
+    assert "gene_analysis_summary" in result, "Result missing gene_analysis_summary — analysis may not have run"
+    assert result["gene_analysis_summary"]["gene"] == "TP53"
 
     print(f"Execution Time: {execution_time:.3f} seconds")
     return execution_time
@@ -89,6 +99,11 @@ async def test_single_gene_comprehensive_llm():
         analysis_depth="comprehensive"
     )
     execution_time = time.time() - start_time
+
+    assert execution_time > 0, "Execution time must be > 0 — network data may not have loaded"
+    assert isinstance(result, dict) and result, "Result must be a non-empty dict — analysis may not have run"
+    assert "gene_analysis_summary" in result, "Result missing gene_analysis_summary — analysis may not have run"
+    assert result["gene_analysis_summary"]["gene"] == "TP53"
 
     print(f"Execution Time: {execution_time:.3f} seconds")
     return execution_time
@@ -119,6 +134,13 @@ async def test_multi_gene_parallel_rules():
     success_count = sum(1 for r in results if not isinstance(r, Exception))
     print(f"{success_count}/{len(MULTI_GENE_PANEL)} genes completed")
     print(f"Execution Time: {execution_time:.3f} seconds")
+
+    assert execution_time > 0, "Execution time must be > 0 — network data may not have loaded"
+    assert success_count == len(MULTI_GENE_PANEL), f"Expected all {len(MULTI_GENE_PANEL)} genes to succeed, got {success_count}"
+    for r in results:
+        if isinstance(r, dict):
+            assert "gene_analysis_summary" in r, f"Result missing gene_analysis_summary — analysis may not have run for {r.get('gene', 'unknown')}"
+
     return execution_time
 
 
@@ -151,6 +173,13 @@ async def test_multi_gene_parallel_llm():
     success_count = sum(1 for r in results if not isinstance(r, Exception))
     print(f"{success_count}/{len(MULTI_GENE_PANEL)} genes completed")
     print(f"Execution Time: {execution_time:.3f} seconds")
+
+    assert execution_time > 0, "Execution time must be > 0 — network data may not have loaded"
+    assert success_count == len(MULTI_GENE_PANEL), f"Expected all {len(MULTI_GENE_PANEL)} genes to succeed, got {success_count}"
+    for r in results:
+        if isinstance(r, dict):
+            assert "gene_analysis_summary" in r, f"Result missing gene_analysis_summary — analysis may not have run for {r.get('gene', 'unknown')}"
+
     return execution_time
 
 
@@ -185,6 +214,9 @@ async def test_multi_gene_sequential_llm():
                 analysis_depth="comprehensive"
             )
             gene_time = time.time() - gene_start
+            assert gene_time > 0, f"Execution time must be > 0 for {gene} — network data may not have loaded"
+            assert isinstance(result, dict) and result, f"Result must be a non-empty dict for {gene}"
+            assert "gene_analysis_summary" in result, f"Result missing gene_analysis_summary for {gene} — analysis may not have run"
             per_gene_results.append({'gene': gene, 'time': gene_time, 'success': True})
             print(f"{gene_time:.2f} sec")
         except Exception as e:
@@ -193,6 +225,9 @@ async def test_multi_gene_sequential_llm():
             print(f"FAILED ({e})")
 
     execution_time = time.time() - start_time
+
+    success_count = sum(1 for r in per_gene_results if r['success'])
+    assert success_count == len(MULTI_GENE_PANEL), f"Expected all {len(MULTI_GENE_PANEL)} genes to succeed, got {success_count}"
 
     print(f"\nTotal: {execution_time:.2f} seconds (manuscript claim: ~62 sec)")
     if abs(execution_time - 62) < 20:
