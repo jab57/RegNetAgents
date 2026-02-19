@@ -6,7 +6,7 @@
 
 **Multi-Agent LLM Framework for Gene Regulatory Network Analysis**
 
-RegNetAgents automates gene regulatory network analysis through Claude Desktop. Built on pre-computed ARACNe networks from single-cell RNA-seq data and powered by LangGraph workflow orchestration, it deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) that generate scientific insights using Ollama inference (local or cloud), with support for a range of open-weight models.
+RegNetAgents automates gene regulatory network analysis through Claude Desktop and other MCP-compatible clients (Cursor, Zed, and others). Built on pre-computed ARACNe networks from single-cell RNA-seq data and powered by LangGraph workflow orchestration, it deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) that generate scientific insights using Ollama inference (local or cloud), with support for a range of open-weight models.
 
 Analyze **10 cell types** including immune cells, blood cells, and epithelial tissue—with AI-generated rationales and interpretations.
 
@@ -60,7 +60,9 @@ cp .env.example .env
 
 If Ollama unavailable, system uses fast rule-based heuristics automatically.
 
-### Configure Claude Desktop
+### Configure MCP Client
+
+Works with any MCP-compatible client. Example for Claude Desktop:
 
 Add to `claude_desktop_config.json`:
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
@@ -77,7 +79,7 @@ Add to `claude_desktop_config.json`:
 }
 ```
 
-Replace path with your actual installation path. Restart Claude Desktop.
+Replace path with your actual installation path. Restart your MCP client. Other clients (Cursor, Zed, etc.) use the same JSON structure — consult their documentation for config file location.
 
 ### Verify Installation
 

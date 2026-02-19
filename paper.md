@@ -20,7 +20,7 @@ bibliography: paper.bib
 
 # Summary
 
-RegNetAgents is a Python package that automates gene regulatory network analysis using a multi-agent architecture built on LangGraph [@langgraph]. The software coordinates four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) to analyze regulatory relationships from ARACNe-inferred networks [@margolin2006aracne; @lachmann2016aracne]. It integrates with Claude Desktop via the Model Context Protocol (MCP) [@mcp], enabling natural language queries for network analysis. RegNetAgents is intended for computational biologists, bioinformaticians, and researchers who need automated GRN analysis without writing code.
+RegNetAgents is a Python package that automates gene regulatory network analysis using a multi-agent architecture built on LangGraph [@langgraph]. The software coordinates four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) to analyze regulatory relationships from ARACNe-inferred networks [@margolin2006aracne; @lachmann2016aracne]. It integrates with Claude Desktop and other MCP-compatible clients (e.g., Cursor, Zed) via the Model Context Protocol (MCP) [@mcp], enabling natural language queries for network analysis. RegNetAgents is intended for computational biologists, bioinformaticians, and researchers who need automated GRN analysis without writing code.
 
 The architecture separates workflow logic from LLM interpretation: a fixed directed acyclic graph (DAG) controls execution order and data flow, while LLMs provide domain-specific synthesis of results. This separation ensures that identical inputs produce identical computational outputs, with LLM variability isolated to the interpretation layer.
 
@@ -51,7 +51,7 @@ The MCP server exposes eleven tools and three browsable MCP Resources (cell-type
 
 # Usage
 
-RegNetAgents is accessed through Claude Desktop via natural language after MCP server configuration (see installation guide):
+RegNetAgents is accessed through any MCP-compatible client (Claude Desktop, Cursor, Zed, and others) via natural language after MCP server configuration (see installation guide):
 
 ```
 Analyze the TP53 gene in epithelial cells
