@@ -57,7 +57,7 @@ In rule-based mode, all outputs—regulator lists, rankings, enrichment results,
 
 # Availability
 
-RegNetAgents is available at <https://github.com/jab57/RegNetAgents> under the MIT License, with archived releases on Zenodo (DOI: [10.5281/zenodo.18500028](https://doi.org/10.5281/zenodo.18500028)). Contribution guidelines and issue tracking are provided via GitHub.
+RegNetAgents is available at <https://github.com/jab57/RegNetAgents> under the MIT License. The v1.0.0 release is archived on Zenodo (DOI: [10.5281/zenodo.18500028](https://doi.org/10.5281/zenodo.18500028)). Contribution guidelines and issue tracking are provided via GitHub.
 
 # Acknowledgements
 

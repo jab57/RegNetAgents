@@ -1,84 +1,52 @@
 #!/usr/bin/env python3
 """
-Standalone test to verify the MCP server works
-Run this to test the server independently of Claude Desktop
+Tests for the MCP server workflow integration.
+
+Verifies single-gene and multi-gene analysis via the MCP server's
+get_workflow() entry point, covering the fields Claude Desktop receives.
 """
+
 import asyncio
-import json
 import sys
 import os
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from regnetagents_langgraph_mcp_server import get_workflow
 
-async def test_server():
-    print("=" * 80)
-    print("Testing RegNetAgents MCP Server Standalone")
-    print("=" * 80)
 
-    # Test 1: Initialize workflow
-    print("\n[TEST 1] Initializing workflow...")
-    try:
-        workflow = await get_workflow()
-        print("[OK] Workflow initialized successfully")
-    except Exception as e:
-        print(f"[FAIL] Workflow initialization failed: {e}")
-        return False
+async def test_mcp_server_initializes():
+    """get_workflow() returns a valid workflow instance."""
+    workflow = await get_workflow()
+    assert workflow is not None
+    assert hasattr(workflow, "modeling_agent")
 
-    # Test 2: Single gene analysis
-    print("\n[TEST 2] Running single gene analysis (TP53)...")
-    try:
-        import time
-        start = time.time()
-        result = await workflow.run_analysis('TP53', 'epithelial_cell', 'comprehensive')
-        elapsed = time.time() - start
 
-        print(f"[OK] Analysis completed in {elapsed:.2f} seconds")
-        print(f"  - Gene: {result.get('gene_analysis_summary', {}).get('gene', 'unknown')}")
-        print(f"  - Regulatory role: {result.get('network_analysis', {}).get('regulatory_role', 'unknown')}")
-        print(f"  - Targets: {result.get('network_analysis', {}).get('num_targets', 0)}")
-        print(f"  - Regulators: {result.get('network_analysis', {}).get('num_regulators', 0)}")
+async def test_mcp_server_single_gene_analysis():
+    """TP53 comprehensive analysis → result contains gene summary and network fields."""
+    workflow = await get_workflow()
+    result = await workflow.run_analysis("TP53", "epithelial_cell", "comprehensive")
 
-        pathway_info = result.get('pathway_enrichment', {})
-        print(f"  - Pathways: {pathway_info.get('summary', {}).get('total_pathways', 0)}")
+    assert isinstance(result, dict), "Result must be a dict"
+    assert result.get("status") != "error", f"Analysis failed: {result.get('error')}"
+    assert result.get("gene_analysis_summary", {}).get("gene") == "TP53"
 
-        domain = result.get('domain_analysis', {})
-        print(f"  - Domain analyses: {list(domain.keys())}")
+    network = result.get("network_analysis", {})
+    assert "regulatory_role" in network
+    assert "num_targets" in network
+    assert "num_regulators" in network
 
-    except Exception as e:
-        print(f"[FAIL] Single gene analysis failed: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
 
-    # Test 3: Multi-gene analysis
-    print("\n[TEST 3] Running multi-gene analysis (MYC, TP53, KRAS)...")
-    try:
-        genes = ['MYC', 'TP53', 'KRAS']
-        start = time.time()
+async def test_mcp_server_multi_gene_analysis():
+    """Parallel analysis of MYC, TP53, KRAS → all three succeed."""
+    workflow = await get_workflow()
+    genes = ["MYC", "TP53", "KRAS"]
+    tasks = [workflow.run_analysis(gene, "epithelial_cell", "focused") for gene in genes]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        tasks = [workflow.run_analysis(gene, 'epithelial_cell', 'focused') for gene in genes]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+    failures = [r for r in results if isinstance(r, Exception)]
+    assert len(failures) == 0, f"Exceptions in multi-gene analysis: {failures}"
 
-        elapsed = time.time() - start
-        successful = sum(1 for r in results if not isinstance(r, Exception))
-
-        print(f"[OK] Multi-gene analysis completed in {elapsed:.2f} seconds")
-        print(f"  - Success: {successful}/{len(genes)} genes")
-
-    except Exception as e:
-        print(f"[FAIL] Multi-gene analysis failed: {e}")
-        return False
-
-    print("\n" + "=" * 80)
-    print("ALL TESTS PASSED - MCP Server is working correctly")
-    print("=" * 80)
-    print("\nIf Claude Desktop is still timing out, the issue is with:")
-    print("  1. Claude Desktop's MCP client timeout settings")
-    print("  2. Claude Desktop not properly launching the server")
-    print("  3. Communication protocol issue between Claude Desktop and the server")
-    print("\nThe RegNetAgents workflow itself is fast and working perfectly.")
-    return True
-
-if __name__ == "__main__":
-    success = asyncio.run(test_server())
-    exit(0 if success else 1)
+    successful = [r for r in results if isinstance(r, dict) and r.get("status") != "error"]
+    assert len(successful) == len(genes), \
+        f"Expected {len(genes)} successful results, got {len(successful)}"
