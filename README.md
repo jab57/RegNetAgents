@@ -268,14 +268,14 @@ If you use RegNetAgents in your research, please cite:
   author    = {Bird, Jose A.},
   title     = {RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis},
   year      = {2026},
-  version   = {1.0.0},
+  version   = {1.0.1},
   doi       = {10.5281/zenodo.18500028},
   url       = {https://github.com/jab57/RegNetAgents},
   license   = {MIT}
 }
 ```
 
-Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.0.0). https://doi.org/10.5281/zenodo.18500028
+Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.0.1). https://doi.org/10.5281/zenodo.18500028
 
 ---
 
