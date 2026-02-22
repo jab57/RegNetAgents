@@ -141,6 +141,7 @@ Analyzed 5 genes in 104.68 seconds
 ## Running Tests
 
 ```bash
+pip install pytest pytest-asyncio
 pytest tests/
 ```
 

@@ -13,9 +13,10 @@ Thank you for your interest in contributing to RegNetAgents.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Make your changes
-4. Run tests: `pytest tests/`
-5. Submit a pull request
+3. Install development dependencies: `pip install -e ".[dev]"`
+4. Make your changes
+5. Run tests: `pytest tests/`
+6. Submit a pull request
 
 ### Code Guidelines
 
