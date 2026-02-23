@@ -1623,7 +1623,7 @@ Provide only the JSON, no additional text."""
                 "actionability_rationale": insights.get("actionability_rationale", "N/A")
             },
             "tissue_specificity": tissue_spec_list,
-            "diagnostic_potential": insights.get("diagnostic_potential", "moderate"),
+            "diagnostic_potential": "high" if insights.get("clinical_actionability") == "high" else "moderate",
             "summary": insights.get("summary", f"{gene} clinical analysis completed"),
             "llm_powered": True
         }
@@ -2822,7 +2822,7 @@ Do NOT invent numerical scores or assessments beyond what is stated above. Synth
         if clinical_analysis and not clinical_analysis.get('error'):
             clinical_insights = clinical_analysis.get('insights', {})
             insights['clinical_significance'] = clinical_insights.get('clinical_actionability', 'unknown')
-            insights['biomarker_potential'] = clinical_insights.get('biomarker_utility', 'unknown')
+            insights['biomarker_potential'] = clinical_analysis.get('diagnostic_potential', 'unknown')
 
         systems_analysis = state.get('systems_analysis', {})
         if systems_analysis and not systems_analysis.get('error'):
