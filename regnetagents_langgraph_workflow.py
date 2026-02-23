@@ -1637,7 +1637,7 @@ Provide only the JSON, no additional text."""
         clinical_insights = {
             "disease_association_likelihood": "high" if num_regulators > 15 else "moderate" if num_regulators > 5 else "low",
             "biomarker_utility": "diagnostic" if regulatory_role == "heavily_regulated" else "prognostic" if regulatory_role == "hub_regulator" else "predictive",
-            "clinical_actionability": "high" if num_regulators > 10 and regulatory_role in ['hub_regulator', 'heavily_regulated'] else "moderate"
+            "clinical_actionability": "high" if (regulatory_role in ['hub_regulator', 'master_regulator'] or num_regulators > 10) else "moderate"
         }
 
         # Cross-cell type clinical insights
