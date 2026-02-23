@@ -52,7 +52,7 @@ pip install -r requirements.txt
 
 ### Install Ollama (Optional)
 
-LLM agents are **off by default** (`USE_LLM_AGENTS=false`). The system runs entirely on fast rule-based heuristics without any LLM. This is the recommended mode for MCP clients (Claude Desktop, Cursor, Zed) to avoid triggering an 8B model inference automatically.
+LLM agents are **off by default** (`USE_LLM_AGENTS=false`). The system runs entirely on rule-based analysis without any LLM. This is the recommended mode for MCP clients (Claude Desktop, Cursor, Zed).
 
 To enable LLM-powered insights with Ollama:
 
@@ -168,7 +168,7 @@ Core tests run without Ollama or Claude Desktop. Tests requiring Ollama are skip
 - **Network Analysis**: Gene positions in regulatory networks
 - **Therapeutic Target Prioritization**: PageRank-based ranking of upstream regulators
 - **10 Cell Types**: Immune cells, blood cells, epithelial tissue
-- **Domain Insights**: 4 agents produce categorical assessments (high/moderate/low) with evidence factors — no invented float scores
+- **Domain Insights**: 4 agents produce categorical assessments (high/moderate/low) with evidence factors derived from network topology
 - **Cross-Domain Contradiction Detection**: Automatic rule-based flagging of inconsistencies across domain agents
 - **Pathway Enrichment**: Reactome API with FDR correction
 - **Dual Mode**: Optional LLM narrative (Ollama, OpenAI, Anthropic, or compatible) on top of deterministic rule-based analysis
