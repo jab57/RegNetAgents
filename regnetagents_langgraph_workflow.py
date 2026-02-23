@@ -899,16 +899,33 @@ class DomainAnalysisAgents:
 
         # Auto-detect if Ollama is available
         if use_llm is None:
-            use_llm = os.getenv('USE_LLM_AGENTS', 'true').lower() == 'true'
+            use_llm = os.getenv('USE_LLM_AGENTS', 'false').lower() == 'true'
 
         self.use_llm = use_llm
-        self.ollama_client = None  # Will be set by _initialize_ollama
-        self.ollama_available = self._initialize_ollama() if use_llm else False
+        self.use_llm_reconciliation = os.getenv('USE_LLM_RECONCILIATION', 'false').lower() == 'true'
+        self.llm_client = None  # Will be set by _initialize_llm
+        self.llm_available = self._initialize_llm() if use_llm else False
+        # Keep backward-compat aliases
+        self.ollama_client = self.llm_client
+        self.ollama_available = self.llm_available
         self.ollama_model = os.getenv('OLLAMA_MODEL', 'llama3.1:8b')
         self.ollama_temperature = float(os.getenv('OLLAMA_TEMPERATURE', '0.3'))
         self.ollama_max_tokens = int(os.getenv('OLLAMA_MAX_TOKENS', '1500'))
 
-    def _initialize_ollama(self):
+    def _initialize_llm(self):
+        """Initialize LLM client based on LLM_PROVIDER env var (default: ollama)"""
+        provider = os.getenv('LLM_PROVIDER', 'ollama').lower()
+        if provider == 'ollama':
+            return self._initialize_ollama_provider()
+        elif provider in ('openai', 'openai_compatible'):
+            return self._initialize_openai_provider()
+        elif provider == 'anthropic':
+            return self._initialize_anthropic_provider()
+        else:
+            logger.error(f"Unknown LLM_PROVIDER: {provider}. Use: ollama | openai | openai_compatible | anthropic")
+            return False
+
+    def _initialize_ollama_provider(self):
         """Check if Ollama is available and running (auto-detects local vs cloud)"""
         try:
             # Auto-detect: Ollama Cloud (if API key exists) or Local Ollama (default)
@@ -916,19 +933,19 @@ class DomainAnalysisAgents:
 
             if api_key:
                 # OPTION B: Ollama Cloud mode
-                logger.info("🌐 Using Ollama Cloud (API key detected)")
-                self.ollama_client = ollama.Client(
+                logger.info("Using Ollama Cloud (API key detected)")
+                self.llm_client = ollama.Client(
                     host='https://ollama.com',
                     headers={'Authorization': f'Bearer {api_key}'}
                 )
             else:
                 # OPTION A: Local Ollama mode (DEFAULT)
                 host = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
-                logger.info(f"🏠 Using local Ollama at {host}")
-                self.ollama_client = ollama.Client(host=host)
+                logger.info(f"Using local Ollama at {host}")
+                self.llm_client = ollama.Client(host=host)
 
             # Test connection to Ollama
-            models_response = self.ollama_client.list()
+            models_response = self.llm_client.list()
 
             # Handle different response structures from Ollama API
             if hasattr(models_response, 'models'):
@@ -963,6 +980,7 @@ class DomainAnalysisAgents:
                 return False
 
             logger.info(f"Ollama available, using model: {model_name}")
+            self.ollama_client = self.llm_client
             return True
 
         except Exception as e:
@@ -971,7 +989,67 @@ class DomainAnalysisAgents:
             logger.warning(f"                     2) Run: ollama pull {os.getenv('OLLAMA_MODEL', 'llama3.1:8b')}")
             return False
 
-    async def _call_ollama(self, prompt: str, system_prompt: str = None, max_retries: int = 2) -> str:
+    def _initialize_openai_provider(self):
+        """Initialize OpenAI or OpenAI-compatible provider"""
+        try:
+            import openai
+            api_key = os.getenv('LLM_API_KEY')
+            if not api_key:
+                logger.error("LLM_API_KEY required for openai/openai_compatible provider")
+                return False
+            api_base = os.getenv('LLM_API_BASE')
+            kwargs = {"api_key": api_key}
+            if api_base:
+                kwargs["base_url"] = api_base
+            self.llm_client = openai.AsyncOpenAI(**kwargs)
+            self.ollama_client = None  # not Ollama
+            model = os.getenv('LLM_MODEL', 'gpt-4o-mini')
+            logger.info(f"OpenAI provider initialized, model: {model}")
+            return True
+        except ImportError:
+            logger.error("openai package not installed. Run: pip install openai")
+            return False
+        except Exception as e:
+            logger.error(f"OpenAI provider initialization failed: {e}")
+            return False
+
+    def _initialize_anthropic_provider(self):
+        """Initialize Anthropic provider"""
+        try:
+            import anthropic
+            api_key = os.getenv('LLM_API_KEY')
+            if not api_key:
+                logger.error("LLM_API_KEY required for anthropic provider")
+                return False
+            self.llm_client = anthropic.AsyncAnthropic(api_key=api_key)
+            self.ollama_client = None  # not Ollama
+            model = os.getenv('LLM_MODEL', 'claude-haiku-4-5-20251001')
+            logger.info(f"Anthropic provider initialized, model: {model}")
+            return True
+        except ImportError:
+            logger.error("anthropic package not installed. Run: pip install anthropic")
+            return False
+        except Exception as e:
+            logger.error(f"Anthropic provider initialization failed: {e}")
+            return False
+
+    # Keep backward-compat alias
+    def _initialize_ollama(self):
+        return self._initialize_llm()
+
+    async def _call_llm(self, prompt: str, system_prompt: str = None, max_retries: int = 2) -> str:
+        """Dispatch LLM call to the configured provider"""
+        provider = os.getenv('LLM_PROVIDER', 'ollama').lower()
+        if provider == 'ollama':
+            return await self._call_ollama_provider(prompt, system_prompt, max_retries)
+        elif provider in ('openai', 'openai_compatible'):
+            return await self._call_openai_provider(prompt, system_prompt, max_retries)
+        elif provider == 'anthropic':
+            return await self._call_anthropic_provider(prompt, system_prompt, max_retries)
+        else:
+            raise ValueError(f"Unknown LLM_PROVIDER: {provider}")
+
+    async def _call_ollama_provider(self, prompt: str, system_prompt: str = None, max_retries: int = 2) -> str:
         """Call Ollama with structured prompt, return response with retry logic"""
         timeout = int(os.getenv('OLLAMA_TIMEOUT', '30'))
 
@@ -984,7 +1062,7 @@ class DomainAnalysisAgents:
 
                 response = await asyncio.wait_for(
                     asyncio.to_thread(
-                        self.ollama_client.chat,
+                        self.llm_client.chat,
                         model=self.ollama_model,
                         messages=messages,
                         options={
@@ -1009,13 +1087,89 @@ class DomainAnalysisAgents:
                 logger.error(f"Ollama call timed out after {timeout} seconds (attempt {attempt + 1}/{max_retries})")
                 if attempt == max_retries - 1:
                     raise
-                await asyncio.sleep(1)  # Brief delay before retry
+                await asyncio.sleep(1)
 
             except Exception as e:
                 logger.error(f"Ollama call failed (attempt {attempt + 1}/{max_retries}): {e}")
                 if attempt == max_retries - 1:
                     raise
-                await asyncio.sleep(1)  # Brief delay before retry
+                await asyncio.sleep(1)
+
+    async def _call_openai_provider(self, prompt: str, system_prompt: str = None, max_retries: int = 2) -> str:
+        """Call OpenAI or OpenAI-compatible provider"""
+        model = os.getenv('LLM_MODEL', 'gpt-4o-mini')
+        timeout = int(os.getenv('OLLAMA_TIMEOUT', '30'))
+
+        for attempt in range(max_retries):
+            try:
+                messages = []
+                if system_prompt:
+                    messages.append({"role": "system", "content": system_prompt})
+                messages.append({"role": "user", "content": prompt})
+
+                response = await asyncio.wait_for(
+                    self.llm_client.chat.completions.create(
+                        model=model,
+                        messages=messages,
+                        temperature=self.ollama_temperature,
+                        max_tokens=self.ollama_max_tokens
+                    ),
+                    timeout=timeout
+                )
+                content = response.choices[0].message.content
+                if not content or len(content.strip()) < 10:
+                    raise ValueError("Empty or too short response from OpenAI provider")
+                return content
+
+            except asyncio.TimeoutError:
+                logger.error(f"OpenAI call timed out (attempt {attempt + 1}/{max_retries})")
+                if attempt == max_retries - 1:
+                    raise
+                await asyncio.sleep(1)
+            except Exception as e:
+                logger.error(f"OpenAI call failed (attempt {attempt + 1}/{max_retries}): {e}")
+                if attempt == max_retries - 1:
+                    raise
+                await asyncio.sleep(1)
+
+    async def _call_anthropic_provider(self, prompt: str, system_prompt: str = None, max_retries: int = 2) -> str:
+        """Call Anthropic provider"""
+        model = os.getenv('LLM_MODEL', 'claude-haiku-4-5-20251001')
+        timeout = int(os.getenv('OLLAMA_TIMEOUT', '30'))
+
+        for attempt in range(max_retries):
+            try:
+                kwargs = {
+                    "model": model,
+                    "max_tokens": self.ollama_max_tokens,
+                    "messages": [{"role": "user", "content": prompt}]
+                }
+                if system_prompt:
+                    kwargs["system"] = system_prompt
+
+                response = await asyncio.wait_for(
+                    self.llm_client.messages.create(**kwargs),
+                    timeout=timeout
+                )
+                content = response.content[0].text
+                if not content or len(content.strip()) < 10:
+                    raise ValueError("Empty or too short response from Anthropic")
+                return content
+
+            except asyncio.TimeoutError:
+                logger.error(f"Anthropic call timed out (attempt {attempt + 1}/{max_retries})")
+                if attempt == max_retries - 1:
+                    raise
+                await asyncio.sleep(1)
+            except Exception as e:
+                logger.error(f"Anthropic call failed (attempt {attempt + 1}/{max_retries}): {e}")
+                if attempt == max_retries - 1:
+                    raise
+                await asyncio.sleep(1)
+
+    # Keep backward-compat alias
+    async def _call_ollama(self, prompt: str, system_prompt: str = None, max_retries: int = 2) -> str:
+        return await self._call_llm(prompt, system_prompt, max_retries)
 
     def _parse_llm_json(self, response_text: str, expected_keys: list) -> dict:
         """Extract JSON from LLM response, validate structure"""
@@ -1050,12 +1204,12 @@ class DomainAnalysisAgents:
                 for key in missing_keys:
                     parsed[key] = "N/A" if "_rationale" in key or "summary" in key else "unknown"
 
-            # Validate and normalize score values (0.0-1.0)
-            for key, value in parsed.items():
-                if isinstance(value, (int, float)) and ("score" in key or "centrality" in key):
-                    if value < 0 or value > 1:
-                        logger.warning(f"Score {key}={value} out of range [0,1], clamping")
-                        parsed[key] = max(0.0, min(1.0, value))
+            # Validate and normalize pagerank_centrality if present (algorithmically derived float)
+            if "pagerank_centrality" in parsed and isinstance(parsed["pagerank_centrality"], (int, float)):
+                val = parsed["pagerank_centrality"]
+                if val < 0 or val > 1:
+                    logger.warning(f"pagerank_centrality={val} out of range [0,1], clamping")
+                    parsed["pagerank_centrality"] = max(0.0, min(1.0, val))
 
             return parsed
 
@@ -1122,8 +1276,9 @@ Provide a cancer biology analysis in this EXACT JSON format:
   "oncogenic_rationale": "brief scientific explanation based on network topology and cancer biology",
   "tumor_suppressor_likelihood": "high|moderate|low",
   "tumor_suppressor_rationale": "brief scientific explanation",
-  "therapeutic_target_score": 0.0-1.0,
-  "therapeutic_rationale": "explanation of druggability and therapeutic potential",
+  "therapeutic_assessment": "high|moderate|low",
+  "therapeutic_factors": ["factor1", "factor2"],
+  "therapeutic_rationale": "explanation of therapeutic potential",
   "cancer_pathways": ["pathway1", "pathway2"],
   "biomarker_potential": "high|moderate|low",
   "biomarker_utility": "diagnostic|prognostic|predictive",
@@ -1147,7 +1302,7 @@ Provide only the JSON, no additional text."""
 
         # Parse JSON response
         expected_keys = ['oncogenic_potential', 'tumor_suppressor_likelihood',
-                         'therapeutic_target_score', 'biomarker_potential', 'summary']
+                         'therapeutic_assessment', 'biomarker_potential', 'summary']
         insights = self._parse_llm_json(response, expected_keys)
 
         # Format into standard structure
@@ -1157,7 +1312,8 @@ Provide only the JSON, no additional text."""
             "insights": {
                 "oncogenic_potential": insights.get('oncogenic_potential', 'moderate'),
                 "tumor_suppressor_likelihood": insights.get('tumor_suppressor_likelihood', 'moderate'),
-                "therapeutic_target_score": float(insights.get('therapeutic_target_score', 0.5)),
+                "therapeutic_assessment": insights.get('therapeutic_assessment', 'moderate'),
+                "therapeutic_factors": insights.get('therapeutic_factors', []),
                 "mutation_impact": "high" if insights.get('oncogenic_potential') == 'high' else "moderate"
             },
             "cancer_pathways": insights.get('cancer_pathways', []),
@@ -1179,11 +1335,24 @@ Provide only the JSON, no additional text."""
         num_regulators = gene_info.get('num_regulators', 0)
         num_targets = gene_info.get('num_targets', 0)
 
-        # Cancer-specific insights
+        # Build evidence factors (no invented floats)
+        factors = []
+        if regulatory_role in ['hub_regulator', 'master_regulator']:
+            factors.append(f"hub/master regulator role ({regulatory_role})")
+        if num_targets > 20:
+            factors.append(f"high target count ({num_targets} downstream targets)")
+        elif num_targets > 5:
+            factors.append(f"moderate target count ({num_targets} downstream targets)")
+        if num_regulators > 15:
+            factors.append(f"highly regulated ({num_regulators} upstream regulators)")
+
+        therapeutic_assessment = "high" if len(factors) >= 2 else "moderate" if len(factors) == 1 else "low"
+
         cancer_insights = {
             "oncogenic_potential": "high" if num_targets > 20 else "moderate" if num_targets > 5 else "low",
             "tumor_suppressor_likelihood": "high" if num_regulators > 15 else "moderate" if num_regulators > 5 else "low",
-            "therapeutic_target_score": min(0.9, (num_targets * 0.02) + (num_regulators * 0.01)),
+            "therapeutic_assessment": therapeutic_assessment,
+            "therapeutic_factors": factors,
             "mutation_impact": "high" if regulatory_role in ['hub_regulator', 'master_regulator'] else "moderate"
         }
 
@@ -1203,7 +1372,7 @@ Provide only the JSON, no additional text."""
             "domain": "cancer_research",
             "insights": cancer_insights,
             "cancer_pathways": cancer_pathways,
-            "biomarker_potential": "high" if cancer_insights["therapeutic_target_score"] > 0.7 else "moderate",
+            "biomarker_potential": "high" if therapeutic_assessment == "high" else "moderate",
             "research_priority": "high" if regulatory_role == "hub_regulator" else "moderate",
             "summary": f"{gene} shows {cancer_insights['oncogenic_potential']} oncogenic potential with {cancer_insights['tumor_suppressor_likelihood']} tumor suppressor likelihood"
         }
@@ -1249,7 +1418,8 @@ Gene Network Context:
 
 Provide drug development analysis in this EXACT JSON format:
 {{
-  "druggability_score": 0.0-1.0,
+  "druggability_assessment": "high|moderate|low",
+  "druggability_factors": ["factor1", "factor2"],
   "druggability_rationale": "explanation of druggability based on structure and network",
   "target_class": "kinase|GPCR|transcription_factor|nuclear_receptor|other",
   "intervention_strategy": "inhibition|activation|modulation|allosteric",
@@ -1275,7 +1445,7 @@ Provide only the JSON, no additional text."""
         response = await self._call_ollama(prompt, system_prompt)
 
         # Parse JSON response
-        expected_keys = ['druggability_score', 'target_class', 'intervention_strategy', 'development_complexity', 'summary']
+        expected_keys = ['druggability_assessment', 'target_class', 'intervention_strategy', 'development_complexity', 'summary']
         insights = self._parse_llm_json(response, expected_keys)
 
         # Format into standard structure
@@ -1283,7 +1453,8 @@ Provide only the JSON, no additional text."""
             "gene": gene,
             "domain": "drug_development",
             "insights": {
-                "druggability_score": float(insights.get('druggability_score', 0.5)),
+                "druggability_assessment": insights.get('druggability_assessment', 'moderate'),
+                "druggability_factors": insights.get('druggability_factors', []),
                 "target_class": insights.get('target_class', 'other'),
                 "intervention_strategy": insights.get('intervention_strategy', 'modulation'),
                 "development_complexity": insights.get('development_complexity', 'moderate')
@@ -1302,15 +1473,28 @@ Provide only the JSON, no additional text."""
     def _analyze_drug_rules(self, gene: str, gene_info: Dict, regulators_analysis: Dict, targets_analysis: Dict) -> Dict:
         """Rule-based drug development analysis (fallback)"""
         num_targets = gene_info.get('num_targets', 0)
+        num_regulators = gene_info.get('num_regulators', 0)
         regulatory_role = gene_info.get('regulatory_role', 'unknown')
+        is_regulator = regulatory_role in ['hub_regulator', 'master_regulator', 'regulator']
 
-        # Drug target assessment
-        druggability_score = min(0.95, (num_targets * 0.03) + (0.2 if regulatory_role == 'hub_regulator' else 0))
+        # Build evidence factors (no invented floats)
+        factors = []
+        if regulatory_role == 'hub_regulator':
+            factors.append("hub regulator (broad network influence)")
+        if num_targets > 15:
+            factors.append(f"high target count ({num_targets} targets — significant cascade effects)")
+        elif num_targets > 5:
+            factors.append(f"moderate target count ({num_targets} targets)")
+        if is_regulator:
+            factors.append("confirmed regulatory activity")
+
+        druggability_assessment = "high" if len(factors) >= 2 else "moderate" if len(factors) == 1 else "low"
 
         drug_insights = {
-            "druggability_score": druggability_score,
+            "druggability_assessment": druggability_assessment,
+            "druggability_factors": factors,
             "target_class": "kinase" if num_targets > 10 else "transcription_factor" if regulatory_role == "regulator" else "other",
-            "intervention_strategy": "inhibition" if num_targets > 15 else "activation" if gene_info.get('num_regulators', 0) > 10 else "modulation",
+            "intervention_strategy": "inhibition" if num_targets > 15 else "activation" if num_regulators > 10 else "modulation",
             "development_complexity": "high" if num_targets > 20 else "moderate" if num_targets > 5 else "low"
         }
 
@@ -1326,9 +1510,9 @@ Provide only the JSON, no additional text."""
             "domain": "drug_development",
             "insights": drug_insights,
             "cascade_effects": cascade_effects,
-            "clinical_trial_readiness": "ready" if druggability_score > 0.6 else "needs_research",
-            "development_timeline": "3-5 years" if druggability_score > 0.7 else "5-8 years",
-            "summary": f"{gene} has {druggability_score:.1%} druggability score with {drug_insights['intervention_strategy']} strategy recommended"
+            "clinical_trial_readiness": "ready" if druggability_assessment == "high" else "needs_research",
+            "development_timeline": "3-5 years" if druggability_assessment == "high" else "5-8 years",
+            "summary": f"{gene} has {druggability_assessment} druggability with {drug_insights['intervention_strategy']} strategy recommended"
         }
 
     async def analyze_clinical_relevance(self, gene: str, gene_info: Dict, cross_cell_analysis: Dict) -> Dict:
@@ -1514,7 +1698,8 @@ Gene Network Context:
 
 Provide a systems biology analysis in this EXACT JSON format:
 {{
-  "network_centrality": 0.0-1.0,
+  "centrality_assessment": "high|moderate|low",
+  "centrality_factors": ["factor1", "factor2"],
   "centrality_rationale": "brief explanation of network position",
   "regulatory_hierarchy": "master|hub|intermediate|peripheral",
   "hierarchy_rationale": "brief explanation of hierarchical position",
@@ -1544,7 +1729,7 @@ Provide only the JSON, no additional text."""
 
         # Parse LLM response
         expected_keys = [
-            "network_centrality", "centrality_rationale",
+            "centrality_assessment", "centrality_factors", "centrality_rationale",
             "regulatory_hierarchy", "hierarchy_rationale",
             "information_flow", "flow_rationale",
             "network_vulnerability", "vulnerability_rationale",
@@ -1561,13 +1746,15 @@ Provide only the JSON, no additional text."""
         if target_count > 10:
             network_effects.append(f"Regulatory hub controlling {target_count} downstream targets")
 
-        # Structure response
+        # Structure response — pagerank is passed in from gene_info, not from LLM
         return {
             "gene": gene,
             "domain": "systems_biology",
             "insights": {
-                "network_centrality": insights.get("network_centrality", 0.0),
+                "centrality_assessment": insights.get("centrality_assessment", "moderate"),
+                "centrality_factors": insights.get("centrality_factors", []),
                 "centrality_rationale": insights.get("centrality_rationale", "N/A"),
+                "pagerank_centrality": pagerank,   # algorithmically derived
                 "regulatory_hierarchy": insights.get("regulatory_hierarchy", "unknown"),
                 "hierarchy_rationale": insights.get("hierarchy_rationale", "N/A"),
                 "information_flow": insights.get("information_flow", "unknown"),
@@ -1588,11 +1775,26 @@ Provide only the JSON, no additional text."""
         num_targets = gene_info.get('num_targets', 0)
         regulatory_role = gene_info.get('regulatory_role', 'unknown')
 
-        # Network topology analysis
-        network_centrality = (num_regulators + num_targets) / 50.0  # Normalized centrality score
+        # PageRank is algorithmically derived — keep it as a float
+        pagerank = gene_info.get('pagerank', None)
+
+        # Build evidence factors (no invented floats for centrality)
+        factors = []
+        if regulatory_role in ['hub_regulator', 'master_regulator']:
+            factors.append(f"hub/master role ({regulatory_role})")
+        if num_targets > 10:
+            factors.append(f"high out-degree ({num_targets} targets)")
+        if num_regulators > 10:
+            factors.append(f"high in-degree ({num_regulators} regulators)")
+        if pagerank and pagerank > 0.01:
+            factors.append(f"elevated PageRank ({pagerank:.4f})")
+
+        centrality_assessment = "high" if len(factors) >= 2 else "moderate" if len(factors) == 1 else "low"
 
         systems_insights = {
-            "network_centrality": min(1.0, network_centrality),
+            "centrality_assessment": centrality_assessment,
+            "centrality_factors": factors,
+            "pagerank_centrality": pagerank,   # algorithmically derived — kept as float
             "regulatory_hierarchy": "master" if regulatory_role == "master_regulator" else "hub" if regulatory_role == "hub_regulator" else "intermediate",
             "information_flow": "high" if num_regulators > 10 and num_targets > 10 else "moderate" if num_regulators + num_targets > 10 else "low",
             "network_vulnerability": "critical" if regulatory_role in ['hub_regulator', 'master_regulator'] else "important" if num_targets > 5 else "minimal"
@@ -1616,8 +1818,8 @@ Provide only the JSON, no additional text."""
             "insights": systems_insights,
             "network_effects": network_effects,
             "therapeutic_impact": "system-wide" if systems_insights["network_vulnerability"] == "critical" else "localized",
-            "evolutionary_conservation": "high" if network_centrality > 0.5 else "moderate",
-            "summary": f"{gene} has {systems_insights['network_centrality']:.1%} network centrality with {systems_insights['network_vulnerability']} vulnerability level",
+            "evolutionary_conservation": "high" if centrality_assessment == "high" else "moderate",
+            "summary": f"{gene} has {centrality_assessment} network centrality with {systems_insights['network_vulnerability']} vulnerability level",
             "llm_powered": False
         }
 
@@ -2432,6 +2634,78 @@ class RegNetAgentsWorkflow:
             state['analysis_metadata']['steps_completed'].append('systems_domain_analysis')
             return state
 
+    def _detect_contradictions(self, state: GeneAnalysisState) -> List[Dict]:
+        """Rule-based cross-domain contradiction detection (string comparisons only, no floats)"""
+        contradictions = []
+
+        cancer   = (state.get('cancer_analysis') or {}).get('insights') or {}
+        drug     = (state.get('drug_analysis') or {}).get('insights') or {}
+        clinical = (state.get('clinical_analysis') or {}).get('insights') or {}
+        systems  = (state.get('systems_analysis') or {}).get('insights') or {}
+
+        # Rule 1: High cancer relevance but minimal network impact
+        if cancer.get('oncogenic_potential') == 'high' and systems.get('network_vulnerability') == 'minimal':
+            contradictions.append({
+                "agents": ["cancer", "systems"],
+                "flag": "High oncogenic potential but minimal network vulnerability — review regulatory role"
+            })
+
+        # Rule 2: Druggable but not clinically actionable
+        if drug.get('druggability_assessment') == 'high' and clinical.get('clinical_actionability') == 'low':
+            contradictions.append({
+                "agents": ["drug", "clinical"],
+                "flag": "High druggability but low clinical actionability — may lack disease-relevant indication"
+            })
+
+        # Rule 3: Inhibition strategy for tumor suppressor
+        if (drug.get('intervention_strategy') == 'inhibition'
+                and cancer.get('tumor_suppressor_likelihood') == 'high'):
+            contradictions.append({
+                "agents": ["drug", "cancer"],
+                "flag": "Inhibition strategy conflicts with high tumor suppressor likelihood — consider activation instead"
+            })
+
+        # Rule 4: Critical network node with low complexity drug development
+        if (systems.get('network_vulnerability') == 'critical'
+                and drug.get('development_complexity') == 'low'):
+            contradictions.append({
+                "agents": ["systems", "drug"],
+                "flag": "Critical network node flagged as easy drug target — high off-target risk"
+            })
+
+        return contradictions
+
+    async def _synthesize_domain_narrative(self, state: GeneAnalysisState, contradictions: List[Dict]) -> str:
+        """Optional LLM narrative synthesis across domains (gated by USE_LLM_RECONCILIATION)"""
+        gene = state.get('gene', 'unknown')
+
+        cancer_summary   = state.get('cancer_analysis', {}).get('summary', '')
+        drug_summary     = state.get('drug_analysis', {}).get('summary', '')
+        clinical_summary = state.get('clinical_analysis', {}).get('summary', '')
+        systems_summary  = state.get('systems_analysis', {}).get('summary', '')
+
+        contradiction_text = ""
+        if contradictions:
+            flags = [c['flag'] for c in contradictions]
+            contradiction_text = "\nNoted cross-domain flags:\n" + "\n".join(f"- {f}" for f in flags)
+
+        prompt = f"""You are a biomedical expert. Write a concise 2-4 sentence plain-text cross-domain synthesis for {gene}.
+
+Domain summaries:
+- Cancer: {cancer_summary}
+- Drug development: {drug_summary}
+- Clinical: {clinical_summary}
+- Systems biology: {systems_summary}
+{contradiction_text}
+
+Do NOT invent numerical scores or assessments beyond what is stated above. Synthesize only."""
+
+        try:
+            return await self.domain_agents._call_llm(prompt)
+        except Exception as e:
+            logger.warning(f"LLM narrative synthesis failed: {e}")
+            return None
+
     async def _generate_final_report(self, state: GeneAnalysisState) -> GeneAnalysisState:
         """Generate comprehensive final report"""
         logger.info(f"Generating final report for {state['gene']}")
@@ -2443,6 +2717,14 @@ class RegNetAgentsWorkflow:
             start_time = state['analysis_metadata'].get('start_time', 0)
             total_time = (asyncio.get_event_loop().time() - start_time) * 1000  # Convert to ms
             state['analysis_metadata']['total_analysis_time'] = total_time
+
+            # Cross-domain contradiction detection (rule-based, always runs)
+            contradictions = self._detect_contradictions(state)
+
+            # Optional LLM narrative synthesis (only when USE_LLM_RECONCILIATION=true and LLM available)
+            narrative = None
+            if (self.domain_agents.use_llm_reconciliation and self.domain_agents.llm_available):
+                narrative = await self._synthesize_domain_narrative(state, contradictions)
 
             # Compile comprehensive report
             report = {
@@ -2463,7 +2745,9 @@ class RegNetAgentsWorkflow:
                     "cancer_analysis": state.get('cancer_analysis'),
                     "drug_analysis": state.get('drug_analysis'),
                     "clinical_analysis": state.get('clinical_analysis'),
-                    "systems_analysis": state.get('systems_analysis')
+                    "systems_analysis": state.get('systems_analysis'),
+                    "contradictions": contradictions,
+                    "narrative": narrative
                 },
                 "workflow_metadata": state['analysis_metadata'],
                 "key_insights": self._extract_key_insights(state)
@@ -2507,17 +2791,17 @@ class RegNetAgentsWorkflow:
             role_diversity = len(set(analysis.get('regulatory_role') for analysis in cell_roles.values()))
             insights['cell_type_specificity'] = "high" if role_diversity > 3 else "low"
 
-        # Domain analysis insights (fixed to access nested 'insights' dict)
+        # Domain analysis insights (access nested 'insights' dict)
         cancer_analysis = state.get('cancer_analysis', {})
         if cancer_analysis and not cancer_analysis.get('error'):
             cancer_insights = cancer_analysis.get('insights', {})
             insights['cancer_relevance'] = cancer_insights.get('oncogenic_potential', 'unknown')
-            insights['therapeutic_potential'] = cancer_insights.get('therapeutic_target_score', 0)
+            insights['therapeutic_potential'] = cancer_insights.get('therapeutic_assessment', 'unknown')
 
         drug_analysis = state.get('drug_analysis', {})
         if drug_analysis and not drug_analysis.get('error'):
             drug_insights = drug_analysis.get('insights', {})
-            insights['druggability'] = drug_insights.get('druggability_score', 0)
+            insights['druggability'] = drug_insights.get('druggability_assessment', 'unknown')
             insights['drug_development_priority'] = drug_insights.get('development_complexity', 'unknown')
 
         clinical_analysis = state.get('clinical_analysis', {})
@@ -2529,7 +2813,7 @@ class RegNetAgentsWorkflow:
         systems_analysis = state.get('systems_analysis', {})
         if systems_analysis and not systems_analysis.get('error'):
             systems_insights = systems_analysis.get('insights', {})
-            insights['network_importance'] = systems_insights.get('network_centrality', 'unknown')
+            insights['network_importance'] = systems_insights.get('centrality_assessment', 'unknown')
             insights['systems_complexity'] = systems_insights.get('network_vulnerability', 'unknown')
 
         return insights

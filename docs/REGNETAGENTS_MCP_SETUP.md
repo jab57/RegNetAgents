@@ -50,7 +50,7 @@ Restart Claude Desktop and check that the RegNetAgents tools are available. You 
 - Python 3.10 or higher
 - 8GB+ RAM recommended
 - Network cache files (pre-computed ARACNe networks)
-- **Optional**: Ollama for LLM-powered domain insights (recommended)
+- **Optional**: LLM for narrative rationales — Ollama (local/cloud), OpenAI, Anthropic, or any OpenAI-compatible API
 
 ### Python Dependencies
 
@@ -67,27 +67,30 @@ This installs all dependencies including:
 - networkx, pandas, numpy (data processing)
 - requests (API calls)
 
-### Optional: Ollama Setup (for LLM-Powered Insights)
+### Optional: LLM Setup (for Narrative Rationales)
 
-**What this adds**: AI-generated scientific rationales for all domain analyses (cancer, drug, clinical, systems biology)
+**Default behaviour**: `USE_LLM_AGENTS=false` — the system runs entirely on rule-based categorical assessments (high/moderate/low with evidence factors) plus automatic cross-domain contradiction detection. No LLM is needed and no model is loaded. This is the correct setting for MCP clients (Claude Desktop, Cursor, Zed).
 
-**Setup (5 minutes)**:
+**What enabling LLM adds**: Natural-language scientific rationales explaining each domain assessment (cancer, drug, clinical, systems biology).
 
-1. Install Ollama: https://ollama.com/download
-2. Pull model: `ollama pull llama3.1:8b`
-3. Configure: Create `.env` file in RegNetAgents directory:
+**Option A — Local Ollama** (free, no API key):
+1. Install from https://ollama.com/download
+2. Run: `ollama pull llama3.1:8b`
+3. In `.env`: set `USE_LLM_AGENTS=true` (keep `LLM_PROVIDER=ollama`)
 
+**Option B — Cloud provider** (OpenAI, Anthropic, or compatible):
 ```bash
-# Copy from example
-cp .env.example .env
+USE_LLM_AGENTS=true
+LLM_PROVIDER=openai          # or: anthropic | openai_compatible
+LLM_API_KEY=your-key
+LLM_MODEL=gpt-4o-mini        # or claude-haiku-4-5-20251001, etc.
+# LLM_API_BASE=https://api.groq.com/openai/v1  # for openai_compatible
 ```
 
 **Performance**:
-- With Ollama: ~4 seconds per gene (LLM-generated insights with rationales)
-- Without Ollama: Instant (rule-based heuristics, automatic fallback)
-- Both modes orders of magnitude faster than manual literature review
-
-**Note**: System works perfectly without Ollama using fast rule-based heuristics. LLM mode adds scientific rationales and interpretations.
+- Rule-based (default): <1 second per gene
+- With local Ollama: ~4 seconds per gene
+- With cloud provider: ~5–25 seconds per gene (network latency)
 
 #### Alternative: Ollama Cloud (No Local Installation Required)
 

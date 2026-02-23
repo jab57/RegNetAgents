@@ -6,7 +6,7 @@
 
 **Multi-Agent LLM Framework for Gene Regulatory Network Analysis**
 
-RegNetAgents automates gene regulatory network analysis through Claude Desktop and other MCP-compatible clients (Cursor, Zed, and others). Built on pre-computed ARACNe networks from single-cell RNA-seq data and powered by LangGraph workflow orchestration, it deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) that generate scientific insights using Ollama inference (local or cloud), with support for a range of open-weight models.
+RegNetAgents automates gene regulatory network analysis through Claude Desktop and other MCP-compatible clients (Cursor, Zed, and others). Built on pre-computed ARACNe networks from single-cell RNA-seq data and powered by LangGraph workflow orchestration, it deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) that generate categorical evidence-based assessments (high/moderate/low) with supporting factors. LLM inference is optional and supports multiple backends: Ollama (local or cloud, default), OpenAI, Anthropic, and any OpenAI-compatible API (Groq, Together, LM Studio).
 
 Analyze **10 cell types** including immune cells, blood cells, and epithelial tissue—with AI-generated rationales and interpretations.
 
@@ -50,15 +50,29 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-### Install Ollama (Optional but Recommended)
+### Install Ollama (Optional)
+
+LLM agents are **off by default** (`USE_LLM_AGENTS=false`). The system runs entirely on fast rule-based heuristics without any LLM. This is the recommended mode for MCP clients (Claude Desktop, Cursor, Zed) to avoid triggering an 8B model inference automatically.
+
+To enable LLM-powered insights with Ollama:
 
 ```bash
 # Download from https://ollama.com/download
 ollama pull llama3.1:8b
 cp .env.example .env
+# Then set USE_LLM_AGENTS=true in .env
 ```
 
-If Ollama unavailable, system uses fast rule-based heuristics automatically.
+To use a cloud LLM provider instead (OpenAI, Anthropic, or any OpenAI-compatible API):
+
+```bash
+# In .env:
+USE_LLM_AGENTS=true
+LLM_PROVIDER=openai            # or: anthropic | openai_compatible
+LLM_API_KEY=sk-...
+LLM_MODEL=gpt-4o-mini          # or claude-haiku-4-5-20251001, etc.
+# LLM_API_BASE=https://api.groq.com/openai/v1  # for openai_compatible
+```
 
 ### Configure MCP Client
 
@@ -154,9 +168,26 @@ Core tests run without Ollama or Claude Desktop. Tests requiring Ollama are skip
 - **Network Analysis**: Gene positions in regulatory networks
 - **Therapeutic Target Prioritization**: PageRank-based ranking of upstream regulators
 - **10 Cell Types**: Immune cells, blood cells, epithelial tissue
-- **LLM-Powered Insights**: 4 domain agents with scientific rationales
+- **Domain Insights**: 4 agents produce categorical assessments (high/moderate/low) with evidence factors — no invented float scores
+- **Cross-Domain Contradiction Detection**: Automatic rule-based flagging of inconsistencies across domain agents
 - **Pathway Enrichment**: Reactome API with FDR correction
-- **Dual Mode**: LLM-powered or deterministic rule-based fallback
+- **Dual Mode**: Optional LLM narrative (Ollama, OpenAI, Anthropic, or compatible) on top of deterministic rule-based analysis
+- **Optional LLM Reconciliation**: Cross-domain narrative synthesis (`USE_LLM_RECONCILIATION=true`)
+
+### Configuration
+
+Key environment variables (set in `.env`):
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `USE_LLM_AGENTS` | `false` | Enable LLM-powered domain agents |
+| `LLM_PROVIDER` | `ollama` | LLM backend: `ollama` \| `openai` \| `anthropic` \| `openai_compatible` |
+| `LLM_API_KEY` | — | Required for cloud providers |
+| `LLM_MODEL` | — | Override model (e.g. `gpt-4o-mini`, `claude-haiku-4-5-20251001`) |
+| `LLM_API_BASE` | — | Base URL for `openai_compatible` providers (e.g. Groq, Together) |
+| `USE_LLM_RECONCILIATION` | `false` | Enable LLM cross-domain narrative synthesis |
+| `OLLAMA_MODEL` | `llama3.1:8b` | Ollama model name |
+| `OLLAMA_HOST` | `http://localhost:11434` | Ollama server URL |
 
 ### MCP Tools
 
@@ -217,6 +248,8 @@ What pathways is IL6 involved in for immune cells?
 | Module not found | Activate venv, run `pip install -r requirements.txt` |
 | Empty results | Use `validate_gene` to check gene name first |
 | Pathway analysis fails | Check internet connection |
+| LLM agents not running | Set `USE_LLM_AGENTS=true` in `.env`; check `LLM_PROVIDER` and credentials |
+| Ollama model not found | Run `ollama pull llama3.1:8b` (or the model set in `OLLAMA_MODEL`) |
 
 ---
 

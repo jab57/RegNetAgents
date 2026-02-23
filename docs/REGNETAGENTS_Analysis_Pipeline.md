@@ -5,11 +5,12 @@
 
 This document outlines the **next-generation RegNetAgents analysis pipeline** powered by **LangGraph workflows** with **MCP integration for Claude Desktop**. The system combines intelligent workflow orchestration, visual state management, advanced gene regulatory network analysis, and a complete data processing pipeline from raw TSV files to optimized network caches.
 
-### 🎯 Current Status: **Production Ready with LLM-Powered Domain Agents**
+### 🎯 Current Status: **Production Ready**
 - ✅ **LangGraph workflow implementation complete**
-- ✅ **LLM-powered domain agents** (Ollama/llama3.1:8b) 🤖 NEW
-- ✅ **AI-generated scientific rationales** for all domain insights 🤖 NEW
-- ✅ **Graceful fallback to rule-based heuristics** for reliability 🤖 NEW
+- ✅ **Rule-based domain agents** — categorical assessments (high/moderate/low) with evidence factors; no invented float scores
+- ✅ **Cross-domain contradiction detection** — automatic rule-based consistency checks across all 4 agents
+- ✅ **Optional LLM rationales** (Ollama local/cloud, OpenAI, Anthropic, or any OpenAI-compatible API; `USE_LLM_AGENTS=true`)
+- ✅ **Optional LLM narrative synthesis** across domains (`USE_LLM_RECONCILIATION=true`)
 - ✅ **Data processing pipeline with TSV-to-cache conversion**
 - ✅ **Intelligent routing and state management**
 - ✅ **0ms gene mapping performance** (instant cached lookups)
@@ -146,20 +147,21 @@ Therapeutic target prioritization automatically runs for genes with >5 regulator
 6. **Secondary Analyses** (Context-based)
    - Pathway Analysis (Reactome enrichment with p-values and FDR)
    - Cross-cell Comparison (for important genes with >15 regulators)
-7. **Domain Analyses** (Comprehensive mode only - LLM-powered)
-   - Cancer Research Context (LLM-generated with scientific rationales)
-   - Drug Development Context (LLM-generated with druggability assessments)
-   - Clinical Relevance Context (LLM-generated with biomarker utility)
-   - Systems Biology Context (LLM-generated with network impact)
-   - **LLM Engine**: Local Ollama (llama3.1:8b) with graceful fallback to rules
-   - **Performance**: ~5 seconds per gene (4 agents) in LLM mode, instant in rule-based mode
-8. **Generate Report** → Comprehensive findings with AI-generated domain insights and candidate regulators
+7. **Domain Analyses** (Comprehensive mode only)
+   - Cancer Research Context — oncogenic potential, tumor suppressor likelihood, therapeutic assessment + factors
+   - Drug Development Context — druggability assessment + factors, intervention strategy, development complexity
+   - Clinical Relevance Context — disease association, biomarker utility, clinical actionability
+   - Systems Biology Context — centrality assessment + factors, PageRank (algorithmic), network vulnerability
+   - **Cross-domain contradiction detection** — automatic rule-based consistency check across all 4 agents
+   - **Mode**: Rule-based (default, `USE_LLM_AGENTS=false`, instant) or LLM rationales (`USE_LLM_AGENTS=true`, ~5s/gene)
+   - **LLM providers**: Ollama (local/cloud), OpenAI, Anthropic, or any OpenAI-compatible API
+8. **Generate Report** → Comprehensive findings with domain assessments, contradiction flags, and candidate regulators
 
 **Key Features:**
-- **LLM-powered insights**: AI-generated scientific rationales for all domain analyses
+- **Categorical assessments**: Domain agents produce high/moderate/low with evidence factors — no invented float scores
+- **Contradiction detection**: Rule-based cross-agent consistency checks always run
 - **Smart routing**: Analyses triggered based on gene characteristics
-- **Graceful degradation**: Falls back to rule-based heuristics if LLM unavailable
-- **Flexible modes**: Rule-based (instant) or LLM-powered (~20 sec for 5 genes)
+- **Flexible modes**: Rule-based (instant) or optional LLM rationales (~20 sec for 5 genes)
 - **No similarity search**: Removed slow computational bottleneck (~30-60s saved)
 
 ### Tool 2: `multi_gene_analysis` 🚀
