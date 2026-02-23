@@ -1436,7 +1436,6 @@ Provide drug development analysis in this EXACT JSON format:
   "intervention_rationale": "why this strategy is appropriate",
   "development_complexity": "high|moderate|low",
   "cascade_effects": ["effect1", "effect2"],
-  "clinical_trial_readiness": "ready|needs_research|not_suitable",
   "development_timeline": "estimated years",
   "summary": "1-2 sentence synthesis of drug development potential"
 }}
@@ -1470,8 +1469,6 @@ Provide only the JSON, no additional text."""
                 "development_complexity": insights.get('development_complexity', 'moderate')
             },
             "cascade_effects": insights.get('cascade_effects', []),
-            "clinical_trial_readiness": ("needs_research" if insights.get('clinical_trial_readiness') == 'needs_preclinical'
-                                         else insights.get('clinical_trial_readiness', 'needs_research')),
             "development_timeline": insights.get('development_timeline', '5-8 years'),
             "summary": insights.get('summary', f"{gene} drug development analysis"),
             "llm_rationale": {
@@ -1521,7 +1518,6 @@ Provide only the JSON, no additional text."""
             "domain": "drug_development",
             "insights": drug_insights,
             "cascade_effects": cascade_effects,
-            "clinical_trial_readiness": "ready" if druggability_assessment == "high" else "needs_research",
             "development_timeline": "3-5 years" if druggability_assessment == "high" else "5-8 years",
             "summary": f"{gene} has {druggability_assessment} druggability with {drug_insights['intervention_strategy']} strategy recommended"
         }
