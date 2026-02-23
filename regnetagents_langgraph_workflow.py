@@ -166,6 +166,10 @@ class RegNetAgentsModelingAgent:
         in_network = len(regulators) > 0 or len(targets) > 0
         is_regulator = len(targets) > 0
 
+        # Look up PageRank using Ensembl ID (cache keys are Ensembl IDs, not symbols)
+        pagerank_normalized = network_data.get('pagerank_normalized', {}) if network_data else {}
+        pagerank = round(pagerank_normalized.get(ensembl_id, 0.0), 6) if ensembl_id else 0.0
+
         return {
             "gene": gene,
             "ensembl_id": ensembl_id,
@@ -179,6 +183,7 @@ class RegNetAgentsModelingAgent:
             "num_targets": len(targets),
             "regulators": regulators[:10],  # Top 10 for brevity
             "targets": targets[:10],        # Top 10 for brevity
+            "pagerank": pagerank,
             "network_position": {
                 "in_degree": len(regulators),
                 "out_degree": len(targets),
@@ -290,6 +295,10 @@ class RegNetAgentsModelingAgent:
             else:
                 regulatory_role = "weakly_regulated"
 
+            # Look up PageRank using Ensembl ID (cache keys are Ensembl IDs, not symbols)
+            pagerank_normalized = network_data.get('pagerank_normalized', {})
+            pagerank = round(pagerank_normalized.get(ensembl_id, 0.0), 6)
+
             return {
                 "found": True,
                 "gene": gene_upper,
@@ -298,7 +307,8 @@ class RegNetAgentsModelingAgent:
                 "quick_stats": {
                     "num_regulators": num_regulators,
                     "num_targets": num_targets,
-                    "regulatory_role": regulatory_role
+                    "regulatory_role": regulatory_role,
+                    "pagerank": pagerank
                 }
             }
 
