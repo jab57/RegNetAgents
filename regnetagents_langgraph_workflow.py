@@ -1436,7 +1436,7 @@ Provide drug development analysis in this EXACT JSON format:
   "intervention_rationale": "why this strategy is appropriate",
   "development_complexity": "high|moderate|low",
   "cascade_effects": ["effect1", "effect2"],
-  "clinical_trial_readiness": "ready|needs_preclinical|needs_research|not_suitable",
+  "clinical_trial_readiness": "ready|needs_research|not_suitable",
   "development_timeline": "estimated years",
   "summary": "1-2 sentence synthesis of drug development potential"
 }}
@@ -1470,7 +1470,8 @@ Provide only the JSON, no additional text."""
                 "development_complexity": insights.get('development_complexity', 'moderate')
             },
             "cascade_effects": insights.get('cascade_effects', []),
-            "clinical_trial_readiness": insights.get('clinical_trial_readiness', 'needs_research'),
+            "clinical_trial_readiness": ("needs_research" if insights.get('clinical_trial_readiness') == 'needs_preclinical'
+                                         else insights.get('clinical_trial_readiness', 'needs_research')),
             "development_timeline": insights.get('development_timeline', '5-8 years'),
             "summary": insights.get('summary', f"{gene} drug development analysis"),
             "llm_rationale": {
@@ -2802,17 +2803,24 @@ Do NOT invent numerical scores or assessments beyond what is stated above. Synth
             insights['cell_type_specificity'] = "high" if role_diversity > 3 else "low"
 
         # Domain analysis insights (access nested 'insights' dict)
+        _tier = {'high': 2, 'moderate': 1, 'low': 0, 'unknown': -1}
+
         cancer_analysis = state.get('cancer_analysis', {})
         if cancer_analysis and not cancer_analysis.get('error'):
             cancer_insights = cancer_analysis.get('insights', {})
-            insights['cancer_relevance'] = cancer_insights.get('oncogenic_potential', 'unknown')
-            insights['therapeutic_potential'] = cancer_insights.get('therapeutic_assessment', 'unknown')
+            # cancer_relevance = max(oncogenic_potential, tumor_suppressor_likelihood)
+            # A gene is cancer-relevant whether it drives cancer (oncogene) or suppresses it
+            oncogenic = cancer_insights.get('oncogenic_potential', 'unknown')
+            tsl = cancer_insights.get('tumor_suppressor_likelihood', 'unknown')
+            insights['cancer_relevance'] = max([oncogenic, tsl], key=lambda x: _tier.get(x, -1))
 
         drug_analysis = state.get('drug_analysis', {})
         if drug_analysis and not drug_analysis.get('error'):
             drug_insights = drug_analysis.get('insights', {})
             insights['druggability'] = drug_insights.get('druggability_assessment', 'unknown')
             insights['drug_development_priority'] = drug_insights.get('development_complexity', 'unknown')
+            # therapeutic_potential comes from drug agent (most direct source for druggability)
+            insights['therapeutic_potential'] = drug_insights.get('druggability_assessment', 'unknown')
 
         clinical_analysis = state.get('clinical_analysis', {})
         if clinical_analysis and not clinical_analysis.get('error'):
