@@ -251,6 +251,11 @@ Once installed, you can ask Claude Desktop natural language questions:
 11. **workflow_insights**
     - Technical performance metrics
 
+12. **export_results**
+    - Export analysis results as markdown (renders as tables) or CSV (for spreadsheets)
+    - Parameters: gene, format (markdown/csv), cell_type, sections (summary/regulators/targets/pathways/all)
+    - Returns plain text, not JSON — markdown renders natively in Claude Desktop
+
 ---
 
 ## MCP Resources Available

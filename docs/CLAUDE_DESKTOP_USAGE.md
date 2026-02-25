@@ -61,7 +61,7 @@ Claude should respond with genes that have saved results.
 
 ## Available MCP Tools
 
-Claude Desktop can now use these tools (11 total):
+Claude Desktop can now use these tools (12 total):
 
 ### 1. `validate_gene`
 Quick gene name check (<100ms). Returns basic stats if found, or fuzzy-matched suggestions for misspelled names. Use before full analysis to catch typos.
@@ -104,7 +104,16 @@ What gene analyses do I have?
 ### 6. `multi_gene_analysis`
 Analyze multiple genes in parallel.
 
-### 7-11. Other tools
+### 7. `export_results`
+Export gene analysis as markdown (renders as tables in Claude Desktop) or CSV (for spreadsheets/manuscripts). Specify `format: "markdown"` or `format: "csv"` and optionally filter `sections`.
+
+**Example**:
+```
+Export TP53 analysis as markdown
+Export BRCA1 results as CSV
+```
+
+### 8-12. Other tools
 - `pathway_focused_analysis`
 - `cross_cell_comparison`
 - `workflow_status`

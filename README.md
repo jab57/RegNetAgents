@@ -201,6 +201,7 @@ Key environment variables (set in `.env`):
 | `cross_cell_comparison` | Gene behavior across cell types |
 | `load_gene_results` | Load previously saved analysis results |
 | `list_available_results` | List available result files |
+| `export_results` | Export analysis as markdown or CSV for manuscripts and spreadsheets |
 | `workflow_status` | Execution monitoring |
 | `workflow_insights` | Performance analytics |
 | `create_analysis_report` | Generate reports |

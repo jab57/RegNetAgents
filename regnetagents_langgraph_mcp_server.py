@@ -257,6 +257,165 @@ async def handle_read_resource(uri: AnyUrl) -> Iterable[ReadResourceContents]:
     )]
 
 
+def _format_markdown(gene: str, cell_type: str, result: dict, sections: list) -> str:
+    """Format a run_analysis result as a markdown report."""
+    include_all = "all" in sections
+
+    lines = [f"# {gene} Regulatory Network Analysis — {cell_type.replace('_', ' ').title()}", ""]
+
+    # --- Summary ---
+    if include_all or "summary" in sections:
+        network = result.get("network_analysis") or {}
+        gene_sum = result.get("gene_analysis_summary") or {}
+        key = result.get("key_insights") or {}
+
+        lines += [
+            "## Summary",
+            "| Property | Value |",
+            "|----------|-------|",
+            f"| Gene | {gene} |",
+            f"| Cell Type | {cell_type} |",
+            f"| Regulatory Role | {network.get('regulatory_role') or gene_sum.get('regulatory_role', 'N/A')} |",
+            f"| Regulators | {network.get('num_regulators', 'N/A')} |",
+            f"| Targets | {network.get('num_targets', 'N/A')} |",
+            f"| In Network | {network.get('in_network', 'N/A')} |",
+            f"| Cancer Relevance | {key.get('cancer_relevance', 'N/A')} |",
+            f"| Druggability | {key.get('druggability', 'N/A')} |",
+            f"| Clinical Significance | {key.get('clinical_significance', 'N/A')} |",
+            f"| Biomarker Potential | {key.get('biomarker_potential', 'N/A')} |",
+            "",
+        ]
+
+    # --- Regulators ---
+    if include_all or "regulators" in sections:
+        reg_data = result.get("regulatory_analysis") or {}
+        hub_regs = reg_data.get("hub_regulators") or []
+        lines += [
+            "## Top Regulators",
+            "| Gene | Ensembl ID | Regulatory Strength |",
+            "|------|-----------|---------------------|",
+        ]
+        if hub_regs:
+            for r in hub_regs:
+                lines.append(
+                    f"| {r.get('gene_symbol', 'N/A')} | {r.get('ensembl_id', 'N/A')} | {r.get('regulatory_strength', 'N/A')} |"
+                )
+        else:
+            lines.append("| N/A | — | — |")
+        lines.append("")
+
+    # --- Targets ---
+    if include_all or "targets" in sections:
+        tgt_data = result.get("target_analysis") or {}
+        cascade = tgt_data.get("cascade_targets") or []
+        lines += [
+            "## Top Targets",
+            "| Gene | Ensembl ID | Cascade Level |",
+            "|------|-----------|--------------|",
+        ]
+        if cascade:
+            for t in cascade:
+                lines.append(
+                    f"| {t.get('gene_symbol', 'N/A')} | {t.get('ensembl_id', 'N/A')} | {t.get('cascade_level', 'N/A')} |"
+                )
+        else:
+            lines.append("| N/A | — | — |")
+        lines.append("")
+
+    # --- Pathways ---
+    if include_all or "pathways" in sections:
+        pw_data = result.get("pathway_enrichment") or {}
+        pathways = pw_data.get("enriched_pathways") or []
+        lines += [
+            "## Enriched Pathways",
+            "| Pathway | p-value | FDR | Genes Found | Genes Total |",
+            "|---------|---------|-----|-------------|-------------|",
+        ]
+        if pathways and isinstance(pathways, list):
+            for p in pathways:
+                pval = p.get("p_value")
+                fdr = p.get("fdr")
+                lines.append(
+                    f"| {p.get('pathway_name', 'N/A')} | "
+                    f"{f'{pval:.2e}' if pval is not None else 'N/A'} | "
+                    f"{f'{fdr:.2e}' if fdr is not None else 'N/A'} | "
+                    f"{p.get('genes_found', 'N/A')} | "
+                    f"{p.get('genes_total', 'N/A')} |"
+                )
+        else:
+            lines.append("| N/A | — | — | — | — |")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+def _format_csv(gene: str, cell_type: str, result: dict, sections: list) -> str:
+    """Format a run_analysis result as CSV (three sections separated by blank lines)."""
+    include_all = "all" in sections
+    parts = []
+
+    # --- Summary ---
+    if include_all or "summary" in sections:
+        network = result.get("network_analysis") or {}
+        gene_sum = result.get("gene_analysis_summary") or {}
+        key = result.get("key_insights") or {}
+        rows = [
+            "# Summary",
+            "property,value",
+            f"gene,{gene}",
+            f"cell_type,{cell_type}",
+            f"regulatory_role,{network.get('regulatory_role') or gene_sum.get('regulatory_role', '')}",
+            f"num_regulators,{network.get('num_regulators', '')}",
+            f"num_targets,{network.get('num_targets', '')}",
+            f"in_network,{network.get('in_network', '')}",
+            f"cancer_relevance,{key.get('cancer_relevance', '')}",
+            f"druggability,{key.get('druggability', '')}",
+            f"clinical_significance,{key.get('clinical_significance', '')}",
+            f"biomarker_potential,{key.get('biomarker_potential', '')}",
+        ]
+        parts.append("\n".join(rows))
+
+    # --- Regulators ---
+    if include_all or "regulators" in sections:
+        reg_data = result.get("regulatory_analysis") or {}
+        hub_regs = reg_data.get("hub_regulators") or []
+        rows = ["# Regulators", "gene,regulator,ensembl_id,regulatory_strength"]
+        for r in hub_regs:
+            rows.append(
+                f"{gene},{r.get('gene_symbol', '')},{r.get('ensembl_id', '')},{r.get('regulatory_strength', '')}"
+            )
+        parts.append("\n".join(rows))
+
+    # --- Targets ---
+    if include_all or "targets" in sections:
+        tgt_data = result.get("target_analysis") or {}
+        cascade = tgt_data.get("cascade_targets") or []
+        rows = ["# Targets", "gene,target,ensembl_id,cascade_level"]
+        for t in cascade:
+            rows.append(
+                f"{gene},{t.get('gene_symbol', '')},{t.get('ensembl_id', '')},{t.get('cascade_level', '')}"
+            )
+        parts.append("\n".join(rows))
+
+    # --- Pathways ---
+    if include_all or "pathways" in sections:
+        pw_data = result.get("pathway_enrichment") or {}
+        pathways = pw_data.get("enriched_pathways") or []
+        rows = ["# Pathways", "pathway_id,pathway_name,p_value,fdr,genes_found,genes_total"]
+        if isinstance(pathways, list):
+            for p in pathways:
+                pval = p.get("p_value", "")
+                fdr = p.get("fdr", "")
+                name = str(p.get("pathway_name", "")).replace(",", ";")
+                rows.append(
+                    f"{p.get('pathway_id', '')},{name},{pval},{fdr},"
+                    f"{p.get('genes_found', '')},{p.get('genes_total', '')}"
+                )
+        parts.append("\n".join(rows))
+
+    return "\n\n".join(parts)
+
+
 @server.list_tools()
 async def handle_list_tools() -> list[Tool]:
     """List available LangGraph-powered tools."""
@@ -648,7 +807,46 @@ async def handle_list_tools() -> list[Tool]:
                 },
                 "required": ["query_type"]
             }
-        )
+        ),
+        Tool(
+            name="export_results",
+            description="Export gene analysis results as markdown or CSV for sharing and manuscripts.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "gene": {
+                        "type": "string",
+                        "description": "Gene symbol to analyze and export"
+                    },
+                    "format": {
+                        "type": "string",
+                        "enum": ["markdown", "csv"],
+                        "description": "Output format: markdown (renders in Claude Desktop) or csv (for spreadsheets)",
+                        "default": "markdown"
+                    },
+                    "cell_type": {
+                        "type": "string",
+                        "enum": [
+                            "epithelial_cell", "cd14_monocytes", "cd16_monocytes",
+                            "cd20_b_cells", "cd4_t_cells", "cd8_t_cells",
+                            "erythrocytes", "nk_cells", "nkt_cells",
+                            "monocyte-derived_dendritic_cells"
+                        ],
+                        "default": "epithelial_cell"
+                    },
+                    "sections": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": ["summary", "regulators", "targets", "pathways", "all"]
+                        },
+                        "description": "Which sections to include",
+                        "default": ["all"]
+                    }
+                },
+                "required": ["gene"]
+            }
+        ),
     ]
 
 @server.call_tool()
@@ -953,6 +1151,27 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             )
 
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
+
+        elif name == "export_results":
+            gene = arguments["gene"]
+            fmt = arguments.get("format", "markdown")
+            cell_type = arguments.get("cell_type", "epithelial_cell")
+            sections = arguments.get("sections", ["all"])
+
+            logger.info(f"Exporting results for {gene} as {fmt} (cell_type={cell_type})")
+
+            result = await workflow.run_analysis(
+                gene=gene,
+                cell_type=cell_type,
+                analysis_depth="comprehensive"
+            )
+
+            if fmt == "markdown":
+                text = _format_markdown(gene.upper(), cell_type, result, sections)
+            else:
+                text = _format_csv(gene.upper(), cell_type, result, sections)
+
+            return [TextContent(type="text", text=text)]
 
         else:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]
