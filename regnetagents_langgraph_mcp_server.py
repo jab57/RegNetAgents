@@ -1000,6 +1000,15 @@ async def handle_list_tools() -> list[Tool]:
             }
         ),
         Tool(
+            name="list_prompts",
+            description="List the available MCP prompt templates and how to use them. Call this when a user asks what prompts are available or how to get started.",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        ),
+        Tool(
             name="export_results",
             description="Export gene analysis results as markdown or CSV for sharing and manuscripts.",
             inputSchema={
@@ -1341,6 +1350,70 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 top_n=top_n
             )
 
+            return [TextContent(type="text", text=json.dumps(result, indent=2))]
+
+        elif name == "list_prompts":
+            result = {
+                "available_prompts": [
+                    {
+                        "name": "gene_deep_dive",
+                        "description": "Comprehensive guided analysis of a single gene.",
+                        "arguments": {
+                            "gene": "required — gene symbol, e.g. TP53, MYC, BRCA1",
+                            "cell_type": "optional — default: epithelial_cell"
+                        },
+                        "what_it_does": (
+                            "Validates the gene, runs full comprehensive analysis, "
+                            "queries immediate network neighbors, then summarizes "
+                            "regulatory role, top regulators, top targets, key pathways, "
+                            "and clinical/cancer relevance."
+                        ),
+                        "example": "Use the gene_deep_dive prompt for TP53 in epithelial cells"
+                    },
+                    {
+                        "name": "cancer_biomarker_panel",
+                        "description": "Parallel analysis of a pre-defined cancer gene panel.",
+                        "arguments": {
+                            "cancer_type": "required — one of: colorectal, breast, lung, prostate, general",
+                            "cell_type": "optional — default: epithelial_cell"
+                        },
+                        "panels": {
+                            "colorectal": ["APC", "TP53", "KRAS", "MYC", "CTNNB1"],
+                            "breast":     ["BRCA1", "BRCA2", "TP53", "ERBB2", "ESR1"],
+                            "lung":       ["KRAS", "EGFR", "TP53", "ALK", "STK11"],
+                            "prostate":   ["AR", "TP53", "PTEN", "MYC", "ERG"],
+                            "general":    ["TP53", "MYC", "KRAS", "BRCA1", "EGFR"]
+                        },
+                        "what_it_does": (
+                            "Runs multi_gene_analysis on the selected panel in parallel, "
+                            "identifies the most central regulator, flags genes absent "
+                            "from the network, and summarizes the panel's regulatory landscape."
+                        ),
+                        "example": "Use the cancer_biomarker_panel prompt for colorectal cancer"
+                    },
+                    {
+                        "name": "cross_cell_comparison",
+                        "description": "Compare a gene across all 10 cell-type networks.",
+                        "arguments": {
+                            "gene": "required — gene symbol, e.g. TP53, MYC"
+                        },
+                        "what_it_does": (
+                            "Runs cross_cell_comparison, summarizes results in a table "
+                            "(cell type / regulatory role / regulators / targets / in network), "
+                            "highlights the most active cell type, and compares immune cells "
+                            "vs. epithelial cells."
+                        ),
+                        "example": "Use the cross_cell_comparison prompt for MYC"
+                    }
+                ],
+                "how_to_use": (
+                    "These prompts scaffold common workflows. "
+                    "You can trigger them by describing what you want in plain language — "
+                    "for example: 'Do a deep dive on TP53', "
+                    "'Analyze the colorectal cancer panel', or "
+                    "'Compare BRCA1 across all cell types'."
+                )
+            }
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
 
         elif name == "export_results":
