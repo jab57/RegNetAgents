@@ -42,6 +42,11 @@ Restart Claude Desktop and check that the RegNetAgents tools are available. You 
 - `pathway_focused_analysis`
 - `cross_cell_comparison`
 
+You should also see three **MCP Prompts** in the prompt picker:
+- `gene_deep_dive`
+- `cancer_biomarker_panel`
+- `cross_cell_comparison`
+
 ---
 
 ## Requirements
@@ -288,6 +293,27 @@ Where does TP53 appear across cell types?
 
 ---
 
+## MCP Prompts Available
+
+The server exposes three **guided prompt templates** that scaffold common analysis workflows. In Claude Desktop, these appear in the prompt picker and automatically fill in the conversation with step-by-step instructions.
+
+### 1. `gene_deep_dive`
+**Arguments**: `gene` (required), `cell_type` (optional, default: epithelial_cell)
+
+Guides a complete single-gene analysis: validates the gene, runs comprehensive analysis, queries immediate neighbors, and summarizes regulatory role, pathways, and clinical relevance.
+
+### 2. `cancer_biomarker_panel`
+**Arguments**: `cancer_type` (required: colorectal/breast/lung/prostate/general), `cell_type` (optional)
+
+Runs multi-gene parallel analysis for a pre-defined cancer gene panel, identifies the most central regulator, and flags genes absent from the network.
+
+### 3. `cross_cell_comparison`
+**Arguments**: `gene` (required)
+
+Compares a gene across all 10 cell-type networks, summarizes results in a table, and highlights differences between immune and epithelial contexts.
+
+---
+
 ## Architecture Overview
 
 ### Thin-Wrapper Design
@@ -296,9 +322,10 @@ Where does TP53 appear across cell types?
 ┌─────────────────────────────────────────┐
 │   MCP Server (regnetagents_langgraph_mcp_server.py)
 │   • Protocol translation                │
-│   • Tool registration (10 tools)        │
+│   • Tool registration (12 tools)        │
+│   • Resource registration (3 resources) │
+│   • Prompt registration (3 prompts)     │
 │   • Claude Desktop integration          │
-│   • ~466 lines                           │
 └─────────────┬───────────────────────────┘
               ↓
 ┌─────────────────────────────────────────┐
@@ -392,4 +419,4 @@ For issues, questions, or support:
 
 ---
 
-**Last Updated**: 2025-10-22
+**Last Updated**: 2026-02-26

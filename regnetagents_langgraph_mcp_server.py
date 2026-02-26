@@ -15,6 +15,7 @@ Architecture:
     - LangGraph Workflow: Orchestrates multi-agent analysis pipeline
     - Tool Registry: Exposes analysis tools to Claude Desktop
     - Resource Registry: Exposes browsable resources (cell types, network summaries, gene lookups)
+    - Prompt Registry: Exposes guided prompt templates for common analysis workflows
 
 Available Tools:
     1. validate_gene: Quick gene name check with fuzzy suggestions (<100ms)
@@ -255,6 +256,196 @@ async def handle_read_resource(uri: AnyUrl) -> Iterable[ReadResourceContents]:
         content=json.dumps({"error": f"Unknown resource URI: {uri_str}"}),
         mime_type="application/json"
     )]
+
+
+# ---------------------------------------------------------------------------
+# Cancer gene panels used by the cancer_biomarker_panel prompt
+# ---------------------------------------------------------------------------
+_CANCER_PANELS = {
+    "colorectal": ["APC", "TP53", "KRAS", "MYC", "CTNNB1"],
+    "breast":     ["BRCA1", "BRCA2", "TP53", "ERBB2", "ESR1"],
+    "lung":       ["KRAS", "EGFR", "TP53", "ALK", "STK11"],
+    "prostate":   ["AR", "TP53", "PTEN", "MYC", "ERG"],
+    "general":    ["TP53", "MYC", "KRAS", "BRCA1", "EGFR"],
+}
+
+_CELL_TYPES = [
+    "epithelial_cell", "cd14_monocytes", "cd16_monocytes",
+    "cd20_b_cells", "cd4_t_cells", "cd8_t_cells",
+    "erythrocytes", "nk_cells", "nkt_cells",
+    "monocyte-derived_dendritic_cells"
+]
+
+
+@server.list_prompts()
+async def handle_list_prompts() -> list[types.Prompt]:
+    """Return available prompt templates."""
+    return [
+        types.Prompt(
+            name="gene_deep_dive",
+            description=(
+                "Comprehensive guided analysis of a single gene. "
+                "Validates the gene, runs full network analysis, queries immediate neighbors, "
+                "and summarizes regulatory role, pathways, and clinical relevance."
+            ),
+            arguments=[
+                types.PromptArgument(
+                    name="gene",
+                    description="Gene symbol to analyze (e.g. TP53, MYC, BRCA1)",
+                    required=True
+                ),
+                types.PromptArgument(
+                    name="cell_type",
+                    description=f"Cell type network to use. Options: {', '.join(_CELL_TYPES)}",
+                    required=False
+                ),
+            ]
+        ),
+        types.Prompt(
+            name="cancer_biomarker_panel",
+            description=(
+                "Analyze a pre-defined panel of cancer-related genes in parallel. "
+                "Available panels: colorectal, breast, lung, prostate, general."
+            ),
+            arguments=[
+                types.PromptArgument(
+                    name="cancer_type",
+                    description="Cancer type panel to use: colorectal, breast, lung, prostate, or general",
+                    required=True
+                ),
+                types.PromptArgument(
+                    name="cell_type",
+                    description=f"Cell type network to use. Options: {', '.join(_CELL_TYPES)}",
+                    required=False
+                ),
+            ]
+        ),
+        types.Prompt(
+            name="cross_cell_comparison",
+            description=(
+                "Compare how a single gene behaves across all 10 cell-type networks. "
+                "Highlights differences in regulatory role between immune and epithelial contexts."
+            ),
+            arguments=[
+                types.PromptArgument(
+                    name="gene",
+                    description="Gene symbol to compare across cell types (e.g. TP53, MYC)",
+                    required=True
+                ),
+            ]
+        ),
+    ]
+
+
+@server.get_prompt()
+async def handle_get_prompt(name: str, arguments: dict | None) -> types.GetPromptResult:
+    """Generate a prompt message for the requested template."""
+    args = arguments or {}
+
+    if name == "gene_deep_dive":
+        gene = args.get("gene", "").upper() or "TP53"
+        cell_type = args.get("cell_type", "epithelial_cell")
+
+        text = (
+            f"Please perform a comprehensive deep-dive analysis of **{gene}** "
+            f"in **{cell_type}** using the following steps:\n\n"
+            f"1. Use `validate_gene` to confirm **{gene}** exists in the {cell_type} network "
+            f"and get basic stats.\n"
+            f"2. Run `comprehensive_gene_analysis` for the full multi-agent report "
+            f"(network position, pathways, therapeutic targets, domain insights).\n"
+            f"3. Use `query_network` with `query_type=\"gene_neighbors\"` and `gene=\"{gene}\"` "
+            f"to show the immediate regulatory context.\n"
+            f"4. Summarize:\n"
+            f"   - Regulatory role (hub, intermediate, heavily regulated?)\n"
+            f"   - Top upstream regulators and downstream targets\n"
+            f"   - Key enriched pathways\n"
+            f"   - Cancer relevance and druggability\n"
+            f"   - Any clinical significance\n"
+        )
+        return types.GetPromptResult(
+            description=f"Deep-dive analysis of {gene} in {cell_type}",
+            messages=[
+                types.PromptMessage(
+                    role="user",
+                    content=types.TextContent(type="text", text=text)
+                )
+            ]
+        )
+
+    elif name == "cancer_biomarker_panel":
+        cancer_type = args.get("cancer_type", "general").lower()
+        cell_type = args.get("cell_type", "epithelial_cell")
+        panel = _CANCER_PANELS.get(cancer_type, _CANCER_PANELS["general"])
+        gene_list_str = ", ".join(panel)
+
+        text = (
+            f"Please analyze the **{cancer_type} cancer biomarker panel** "
+            f"in **{cell_type}** using the following steps:\n\n"
+            f"Gene panel: {gene_list_str}\n\n"
+            f"1. Use `multi_gene_analysis` with genes={panel} and cell_type=\"{cell_type}\" "
+            f"to run all analyses in parallel.\n"
+            f"2. For each gene, briefly summarize:\n"
+            f"   - Regulatory role in {cell_type}\n"
+            f"   - Number of regulators and targets\n"
+            f"   - Cancer relevance\n"
+            f"3. Identify which gene in the panel has the **highest network centrality** "
+            f"(most targets or highest PageRank) — this is the likely master regulator.\n"
+            f"4. Note any genes that are **absent from the network** "
+            f"(not expressed in {cell_type}).\n"
+            f"5. Provide a one-paragraph summary of the panel's collective regulatory landscape.\n"
+        )
+        return types.GetPromptResult(
+            description=f"{cancer_type.title()} cancer biomarker panel in {cell_type}",
+            messages=[
+                types.PromptMessage(
+                    role="user",
+                    content=types.TextContent(type="text", text=text)
+                )
+            ]
+        )
+
+    elif name == "cross_cell_comparison":
+        gene = args.get("gene", "").upper() or "TP53"
+
+        text = (
+            f"Please compare **{gene}** across all available cell-type networks "
+            f"using the following steps:\n\n"
+            f"1. Use `cross_cell_comparison` with `gene=\"{gene}\"` to get network statistics "
+            f"across all 10 cell types.\n"
+            f"2. Summarize the results in a table with columns: "
+            f"Cell Type | Regulatory Role | # Regulators | # Targets | In Network.\n"
+            f"3. Highlight:\n"
+            f"   - Which cell type shows the **highest activity** for {gene} "
+            f"(most regulators + targets)\n"
+            f"   - Differences between **immune cells** (T cells, B cells, monocytes, NK cells) "
+            f"and **epithelial cells**\n"
+            f"   - Any cell types where {gene} is **absent from the network**\n"
+            f"4. Provide a brief biological interpretation of why {gene} might differ "
+            f"across these contexts.\n"
+        )
+        return types.GetPromptResult(
+            description=f"Cross-cell-type comparison of {gene}",
+            messages=[
+                types.PromptMessage(
+                    role="user",
+                    content=types.TextContent(type="text", text=text)
+                )
+            ]
+        )
+
+    else:
+        return types.GetPromptResult(
+            description="Unknown prompt",
+            messages=[
+                types.PromptMessage(
+                    role="user",
+                    content=types.TextContent(
+                        type="text",
+                        text=f"Unknown prompt '{name}'. Available prompts: gene_deep_dive, cancer_biomarker_panel, cross_cell_comparison."
+                    )
+                )
+            ]
+        )
 
 
 def _format_markdown(gene: str, cell_type: str, result: dict, sections: list) -> str:

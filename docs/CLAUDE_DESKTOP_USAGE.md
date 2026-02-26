@@ -61,7 +61,7 @@ Claude should respond with genes that have saved results.
 
 ## Available MCP Tools
 
-Claude Desktop can now use these tools (12 total):
+Claude Desktop can now use these tools (12 tools + 3 prompt templates):
 
 ### 1. `validate_gene`
 Quick gene name check (<100ms). Returns basic stats if found, or fuzzy-matched suggestions for misspelled names. Use before full analysis to catch typos.
@@ -119,6 +119,20 @@ Export BRCA1 results as CSV
 - `workflow_status`
 - `workflow_insights`
 - `create_analysis_report`
+
+---
+
+## Available MCP Prompts
+
+The server exposes three **guided prompt templates** visible in the Claude Desktop prompt picker:
+
+| Prompt | Key Argument | What it does |
+|--------|-------------|--------------|
+| `gene_deep_dive` | `gene` | Full guided analysis: validate → comprehensive → neighbors → summary |
+| `cancer_biomarker_panel` | `cancer_type` | Parallel analysis of a pre-defined panel (colorectal, breast, lung, prostate, general) |
+| `cross_cell_comparison` | `gene` | Compares gene across all 10 cell types with immune vs. epithelial breakdown |
+
+Use these as starting points if you're not sure what to ask.
 
 ---
 

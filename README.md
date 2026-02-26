@@ -216,6 +216,16 @@ Browsable resources for discovering available data without running analyses:
 | `regnetagents://network/{cell_type}` | Network summary: density, top regulators by PageRank |
 | `regnetagents://gene/{gene_symbol}` | Gene lookup across all cell types (template) |
 
+### MCP Prompts
+
+Guided prompt templates that scaffold common analysis workflows in the MCP client:
+
+| Prompt | Arguments | Description |
+|--------|-----------|-------------|
+| `gene_deep_dive` | `gene`, `cell_type` | Validates gene, runs full analysis, queries neighbors, summarizes regulatory role and clinical relevance |
+| `cancer_biomarker_panel` | `cancer_type`, `cell_type` | Runs multi-gene parallel analysis for a pre-defined cancer panel (colorectal, breast, lung, prostate, general) |
+| `cross_cell_comparison` | `gene` | Compares gene behavior across all 10 cell types, highlighting immune vs. epithelial differences |
+
 ---
 
 ## Cell Types (10 Available)
