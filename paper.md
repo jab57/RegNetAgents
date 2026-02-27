@@ -22,7 +22,7 @@ bibliography: paper.bib
 
 RegNetAgents is a Python package for automated downstream analysis of pre-computed gene regulatory networks (GRNs) using a multi-agent architecture built on LangGraph [@langgraph]. The software coordinates four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) to analyze regulatory relationships from ARACNe-inferred networks [@margolin2006aracne; @lachmann2016aracne]. It integrates with Claude Desktop and other MCP-compatible clients (e.g., Cursor, Zed) via the Model Context Protocol (MCP) [@mcp], enabling natural language queries for network analysis. RegNetAgents is intended for computational biologists, bioinformaticians, and researchers who need automated GRN analysis without writing code.
 
-The architecture separates workflow logic from LLM interpretation: a fixed directed acyclic graph (DAG) controls execution order and data flow, while an optional LLM layer adds natural-language narrative rationale to deterministic rule-based domain assessments. This separation ensures that identical inputs produce identical computational outputs, with LLM variability isolated to the interpretation layer. RegNetAgents thus provides a reproducible, code-free entry point for downstream GRN interpretation.
+The architecture separates workflow logic from LLM interpretation: a fixed directed acyclic graph (DAG) controls execution order and data flow, while an optional LLM layer adds natural-language narrative rationale to deterministic rule-based domain assessments. This separation ensures that identical inputs produce identical computational outputs, with LLM variability isolated to the interpretation layer. RegNetAgents thus provides a reproducible, code-free entry point for downstream GRN interpretation. LLM-generated interpretations are intended as hypothesis-generating rationales and should be validated through experimental follow-up.
 
 Key features:
 
@@ -35,7 +35,7 @@ Key features:
 
 Researchers analyzing gene regulatory networks typically query multiple databases manually (STRING, BioGRID, Reactome), export data across platforms, and synthesize findings—a process requiring hours per gene and programming expertise. Established tools address individual components of this workflow: Cytoscape [@shannon2003cytoscape] provides interactive network visualization, pySCENIC [@aibar2017scenic] and CellOracle [@kamimoto2023dissecting] infer regulatory networks from expression data, and STRING [@szklarczyk2023string] catalogs known protein interactions. However, these tools operate on separate steps that must be manually connected, require programming expertise, and produce outputs that need expert interpretation across multiple biological contexts. These tools focus on network inference or visualization, whereas RegNetAgents operates downstream, automating multi-perspective interpretation of pre-computed networks. **No existing tool in this landscape provides an integrated, conversational workflow that combines GRN analysis with deterministic reproducibility.**
 
-RegNetAgents addresses this gap by combining a natural-language interface with a reproducible, multi-agent workflow that performs regulator/target identification, therapeutic prioritization, pathway enrichment, and domain-specific interpretation in a single automated pipeline. Unlike network inference tools (pySCENIC, CellOracle) that construct networks from raw data, RegNetAgents operates downstream—analyzing pre-computed networks to answer biological questions without requiring users to write code. In a five-gene colorectal cancer case study, the system analyzed 99 upstream regulators in 15–62 seconds. The equivalent manual workflow—querying regulators and targets across 10 cell types, performing pathway enrichment for each, and synthesizing findings across four biological perspectives per gene—requires an estimated 8–16 hours, a speedup of three orders of magnitude.
+RegNetAgents addresses this gap by combining a natural-language interface with a reproducible, multi-agent workflow that performs regulator/target identification, therapeutic prioritization, pathway enrichment, and domain-specific interpretation in a single automated pipeline. Unlike network inference tools (pySCENIC, CellOracle) that construct networks from raw data, RegNetAgents operates downstream—analyzing pre-computed networks to answer biological questions without requiring users to write code. In a five-gene colorectal cancer case study, the system analyzed 99 upstream regulators in 15–62 seconds; single-gene comprehensive analyses typically complete in under a minute on a standard laptop. The equivalent manual workflow—querying regulators and targets across 10 cell types, performing pathway enrichment for each, and synthesizing findings across four biological perspectives per gene—requires an estimated 8–16 hours, a speedup of three orders of magnitude.
 
 The software processes pre-computed ARACNe networks from the GREmLN project [@zhang2025gremln], covering 10 cell types from the CELLxGENE Data Portal [@megill2021cellxgene]. Unlike general-purpose agent frameworks [@autogpt; @li2023camel; @hong2023metagpt], RegNetAgents provides domain-specific scientific workflow integration with deterministic fallback guarantees for reproducible research.
 
@@ -64,6 +64,18 @@ For reverse-direction analysis — identifying transcription factors that drive 
 These genes are upregulated in my RNA-seq experiment: TP53, CDKN1A, MDM2,
 BAX, CCND1, MYC, EGFR, KRAS, CTNNB1, APC. Which transcription factors are
 most likely driving this signature in epithelial cells?
+```
+
+Example output for the five-gene panel above:
+
+```
+Genes: MYC, CTNNB1, CCND1, TP53, KRAS | Cell Type: epithelial_cell
+
+[OK] MYC:   hub_regulator | Regulators: 25 | Targets: 427 | Pathways: 58 | Top regulator: ID4    (PageRank: 0.622)
+[OK] CTNNB1:hub_regulator | Regulators: 18 | Targets: 310 | Pathways:  2 | Top regulator: CHD2   (PageRank: 0.530)
+[OK] CCND1: heavily_reg.  | Regulators: 42 | Targets:   0 | Pathways: 66 | Top regulator: ZBTB20 (PageRank: 0.600)
+[OK] TP53:  hub_regulator | Regulators:  7 | Targets: 163 | Pathways: 16 | Top regulator: WWTR1  (PageRank: 0.473)
+[OK] KRAS:  weakly_reg.   | Regulators:  7 | Targets:   0 | Pathways: 141| Top regulator: GPBP1  (PageRank: 0.609)
 ```
 
 It can also be called programmatically without Claude Desktop:
