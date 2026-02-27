@@ -250,10 +250,8 @@ What pathways is IL6 involved in for immune cells?
 **Reverse-direction analysis** (master regulator identification):
 ```
 These genes are upregulated in my RNA-seq experiment: TP53, CDKN1A, MDM2,
-BAX, CCND1, MYC, EGFR, KRAS, CTNNB1, APC. Use find_master_regulators in
-epithelial_cell to identify the top 5 TFs driving this signature, then use
-query_network gene_neighbors on the top 2 results. Do NOT run
-comprehensive_gene_analysis.
+BAX, CCND1, MYC, EGFR, KRAS, CTNNB1, APC. Which transcription factors are
+most likely driving this signature in epithelial cells?
 ```
 
 **Popular genes**: TP53, BRCA1, APC, KRAS, MYC, IL6, TNF

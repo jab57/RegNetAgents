@@ -1064,6 +1064,12 @@ async def handle_list_tools() -> list[Tool]:
             - p-value (Fisher's exact test, one-sided)
             - Overlapping gene symbols
 
+            IMPORTANT - follow-up guidance: After calling this tool, if the user wants more
+            detail on a specific returned TF, use query_network with query_type="gene_neighbors"
+            (fast, <50ms). Do NOT automatically call comprehensive_gene_analysis on the results
+            — that tool takes 15-60 seconds per gene and is not needed to interpret master
+            regulator output.
+
             Example: "Which TFs drive this set of upregulated genes from my experiment?"
             """,
             inputSchema={
