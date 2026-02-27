@@ -116,10 +116,19 @@ Export BRCA1 results as CSV
 ### 8. `find_master_regulators`
 Reverse-direction ARACNe analysis: given a list of differentially expressed genes, identifies which TFs in the network most significantly drive that signature using Fisher's exact test enrichment.
 
-**Example**:
+**Example** (constrained prompt — prevents Claude from running slow follow-up analyses):
 ```
-Which transcription factors drive these upregulated genes: TP53, MYC, CDKN1A, BAX, MDM2?
+These genes are upregulated in my RNA-seq experiment: TP53, CDKN1A, MDM2,
+BAX, CCND1, MYC, EGFR, KRAS, CTNNB1, APC, CDH1, VIM, CDK4, RB1, E2F1.
+
+Step 1: Use find_master_regulators in epithelial_cell, top_n=5.
+Step 2: For the top 2 results only, use query_network with
+query_type="gene_neighbors". Do NOT run comprehensive_gene_analysis.
+Step 3: Based only on those results, summarize the likely key drivers.
 ```
+
+**Note**: Omitting "Do NOT run comprehensive_gene_analysis" may cause Claude
+to run full analyses on the top results, adding 15–60 seconds per gene.
 
 ### 9-13. Other tools
 - `pathway_focused_analysis`

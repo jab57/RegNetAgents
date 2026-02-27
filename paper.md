@@ -58,6 +58,14 @@ Analyze the TP53 gene in epithelial cells
 Compare MYC, TP53, and KRAS across different cell types
 ```
 
+For reverse-direction analysis — identifying transcription factors that drive a gene signature — the `find_master_regulators` tool accepts a gene set directly:
+
+```
+These genes are upregulated in my RNA-seq experiment: TP53, CDKN1A, MDM2,
+BAX, CCND1, MYC, EGFR, KRAS, CTNNB1, APC. Use find_master_regulators in
+epithelial_cell to identify the top 5 TFs driving this signature.
+```
+
 It can also be called programmatically without Claude Desktop:
 
 ```python
