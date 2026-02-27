@@ -478,6 +478,120 @@ class RegNetAgentsModelingAgent:
                 "message": f"Unknown query_type '{query_type}'. Valid types: top_regulators, top_targets, gene_neighbors, network_stats"
             }
 
+    def find_master_regulators(self, gene_set: list, cell_type: str = "epithelial_cell",
+                               top_n: int = 10) -> dict:
+        """
+        Identify transcription factors that significantly drive a gene signature.
+
+        Given a list of differentially expressed genes, ranks TFs whose regulons
+        are most enriched in the input gene set using Fisher's exact test.
+
+        Args:
+            gene_set: List of gene symbols (e.g., from an RNA-seq experiment)
+            cell_type: Cell type network to use
+            top_n: Number of top master regulators to return
+
+        Returns:
+            dict with ranked master regulators and query summary
+        """
+        from scipy.stats import fisher_exact
+
+        network_data = self.cache.network_indices.get(cell_type, {})
+        if not network_data:
+            return {
+                "error": True,
+                "message": f"No network data loaded for cell type '{cell_type}'"
+            }
+
+        regulator_targets = network_data.get('regulator_targets', {})
+        all_genes = network_data.get('all_genes', [])
+        network_size = len(all_genes)
+        all_genes_set = set(all_genes)
+
+        # Convert input gene symbols to Ensembl IDs
+        gene_set_ensembl = set()
+        not_found = []
+        for symbol in gene_set:
+            symbol_upper = symbol.strip().upper()
+            eid = self.gene_mapper.symbol_to_ensembl(symbol_upper)
+            if eid and eid in all_genes_set:
+                gene_set_ensembl.add(eid)
+            else:
+                not_found.append(symbol_upper)
+
+        gene_set_found = len(gene_set_ensembl)
+
+        if gene_set_found == 0:
+            return {
+                "error": True,
+                "message": "None of the input genes were found in the network.",
+                "genes_not_found": not_found
+            }
+
+        # Score each TF by overlap with gene set using Fisher's exact test
+        results = []
+        for reg_ensembl, targets in regulator_targets.items():
+            targets_set = set(targets)
+            regulon_size = len(targets_set)
+            if regulon_size == 0:
+                continue
+
+            overlap_ensembl = gene_set_ensembl & targets_set
+            overlap_count = len(overlap_ensembl)
+            if overlap_count == 0:
+                continue
+
+            # 2x2 contingency table for one-sided Fisher's exact test (enrichment)
+            #                  In gene set         Not in gene set
+            # In regulon:      overlap              regulon_size - overlap
+            # Not in regulon:  gene_set_found - overlap   (remainder)
+            a = overlap_count
+            b = regulon_size - overlap_count
+            c = gene_set_found - overlap_count
+            d = max(0, network_size - regulon_size - gene_set_found + overlap_count)
+
+            _, p_value = fisher_exact([[a, b], [c, d]], alternative='greater')
+
+            enrichment_score = (overlap_count / regulon_size) / (gene_set_found / network_size)
+
+            overlapping_symbols = sorted(
+                self.gene_mapper.ensembl_to_symbol(eid) or eid
+                for eid in overlap_ensembl
+            )
+
+            reg_symbol = self.gene_mapper.ensembl_to_symbol(reg_ensembl) or reg_ensembl
+
+            results.append({
+                "gene": reg_symbol,
+                "ensembl_id": reg_ensembl,
+                "regulon_size": regulon_size,
+                "overlap_count": overlap_count,
+                "enrichment_score": round(enrichment_score, 4),
+                "p_value": p_value,
+                "overlapping_genes": overlapping_symbols
+            })
+
+        # Sort by p-value ascending, enrichment score descending as tiebreaker
+        results.sort(key=lambda x: (x["p_value"], -x["enrichment_score"]))
+
+        top_results = []
+        for i, r in enumerate(results[:top_n], start=1):
+            r["rank"] = i
+            r["p_value"] = round(r["p_value"], 6)
+            top_results.append(r)
+
+        return {
+            "master_regulators": top_results,
+            "query_summary": {
+                "gene_set_size": len(gene_set),
+                "genes_found_in_network": gene_set_found,
+                "genes_not_found": not_found,
+                "network_size": network_size,
+                "cell_type": cell_type,
+                "total_regulators_tested": len(results)
+            }
+        }
+
     async def compare_gene_across_cell_types(self, gene: str):
         """Compare gene across multiple cell types."""
         results = {}

@@ -61,7 +61,7 @@ Claude should respond with genes that have saved results.
 
 ## Available MCP Tools
 
-Claude Desktop can now use these tools (12 tools + 3 prompt templates):
+Claude Desktop can now use these tools (13 tools + 3 prompt templates):
 
 ### 1. `validate_gene`
 Quick gene name check (<100ms). Returns basic stats if found, or fuzzy-matched suggestions for misspelled names. Use before full analysis to catch typos.
@@ -113,7 +113,15 @@ Export TP53 analysis as markdown
 Export BRCA1 results as CSV
 ```
 
-### 8-12. Other tools
+### 8. `find_master_regulators`
+Reverse-direction ARACNe analysis: given a list of differentially expressed genes, identifies which TFs in the network most significantly drive that signature using Fisher's exact test enrichment.
+
+**Example**:
+```
+Which transcription factors drive these upregulated genes: TP53, MYC, CDKN1A, BAX, MDM2?
+```
+
+### 9-13. Other tools
 - `pathway_focused_analysis`
 - `cross_cell_comparison`
 - `workflow_status`

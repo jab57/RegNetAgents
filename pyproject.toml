@@ -51,6 +51,7 @@ dependencies = [
     "python-pptx>=0.6.21",
     "python-dotenv>=1.0.0",
     "ollama>=0.1.0",
+    "scipy>=1.10.0",
 ]
 
 [project.optional-dependencies]

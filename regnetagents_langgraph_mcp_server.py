@@ -1047,6 +1047,53 @@ async def handle_list_tools() -> list[Tool]:
                 "required": ["gene"]
             }
         ),
+        Tool(
+            name="find_master_regulators",
+            description="""
+            Identify which transcription factors drive a gene signature (reverse ARACNe analysis).
+
+            Given a list of differentially expressed genes (e.g., from an RNA-seq experiment),
+            finds which TFs in the regulatory network have regulons most enriched in that gene
+            set. This is the core reverse-direction use case ARACNe networks were designed for.
+
+            Uses Fisher's exact test to rank TFs by statistical enrichment significance.
+
+            Returns the top N master regulators with:
+            - Overlap count and regulon size
+            - Enrichment score (fold enrichment over random)
+            - p-value (Fisher's exact test, one-sided)
+            - Overlapping gene symbols
+
+            Example: "Which TFs drive this set of upregulated genes from my experiment?"
+            """,
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "gene_set": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "List of gene symbols (e.g., differentially expressed genes)"
+                    },
+                    "cell_type": {
+                        "type": "string",
+                        "enum": [
+                            "epithelial_cell", "cd14_monocytes", "cd16_monocytes",
+                            "cd20_b_cells", "cd4_t_cells", "cd8_t_cells",
+                            "erythrocytes", "nk_cells", "nkt_cells",
+                            "monocyte-derived_dendritic_cells"
+                        ],
+                        "description": "Cell type network to use",
+                        "default": "epithelial_cell"
+                    },
+                    "top_n": {
+                        "type": "integer",
+                        "description": "Number of top master regulators to return",
+                        "default": 10
+                    }
+                },
+                "required": ["gene_set"]
+            }
+        ),
     ]
 
 @server.call_tool()
@@ -1414,6 +1461,21 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                     "'Compare BRCA1 across all cell types'."
                 )
             }
+            return [TextContent(type="text", text=json.dumps(result, indent=2))]
+
+        elif name == "find_master_regulators":
+            gene_set = arguments["gene_set"]
+            cell_type = arguments.get("cell_type", "epithelial_cell")
+            top_n = arguments.get("top_n", 10)
+
+            logger.info(f"Finding master regulators for {len(gene_set)}-gene set in {cell_type}")
+
+            result = workflow.modeling_agent.find_master_regulators(
+                gene_set=gene_set,
+                cell_type=cell_type,
+                top_n=top_n
+            )
+
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
 
         elif name == "export_results":

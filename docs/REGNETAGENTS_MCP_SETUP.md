@@ -37,6 +37,7 @@ Add the following to your Claude Desktop MCP configuration file:
 Restart Claude Desktop and check that the RegNetAgents tools are available. You should see tools like:
 - `validate_gene`
 - `query_network`
+- `find_master_regulators`
 - `comprehensive_gene_analysis`
 - `multi_gene_analysis`
 - `pathway_focused_analysis`
@@ -322,7 +323,7 @@ Compares a gene across all 10 cell-type networks, summarizes results in a table,
 ┌─────────────────────────────────────────┐
 │   MCP Server (regnetagents_langgraph_mcp_server.py)
 │   • Protocol translation                │
-│   • Tool registration (12 tools)        │
+│   • Tool registration (13 tools)        │
 │   • Resource registration (3 resources) │
 │   • Prompt registration (3 prompts)     │
 │   • Claude Desktop integration          │

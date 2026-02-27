@@ -30,7 +30,7 @@ The RegNetAgents system uses a **single, advanced MCP server** with intelligent 
 
 **LangGraph MCP Server** (`regnetagents_langgraph_mcp_server.py`)
 - Visual workflow orchestration with LangGraph
-- 10 intelligent tools with advanced capabilities
+- 11 intelligent tools with advanced capabilities
 - State management and execution insights
 - Production-ready logging and error handling
 - Complete data processing pipeline integration
@@ -82,6 +82,34 @@ Answers structural questions about the gene regulatory network directly from pre
 - Ranked list of genes with symbols, Ensembl IDs, counts, and PageRank scores
 - For gene_neighbors: lists of regulator and target gene symbols
 - For network_stats: num_genes, num_edges, num_regulons, avg degrees, density
+
+### Tool 0.6: `find_master_regulators` ✅
+**Reverse-direction ARACNe analysis — identify TFs driving a gene signature**
+
+Given a list of differentially expressed genes (e.g., from an RNA-seq experiment), finds which transcription factors in the network have regulons most enriched in that gene set. This is the core reverse-direction use case ARACNe networks were designed for.
+
+**Algorithm:**
+1. Convert input gene symbols to Ensembl IDs via GeneIDMapper
+2. For each TF in `regulator_targets`, compute overlap with the input gene set
+3. Score each TF using Fisher's exact test (one-sided, `alternative='greater'`)
+4. Return top N TFs ranked by p-value, with enrichment score and overlapping genes
+
+**Example Usage:**
+```json
+{
+  "gene_set": ["CDKN1A", "MDM2", "BAX", "GADD45A", "PUMA"],
+  "cell_type": "epithelial_cell",
+  "top_n": 10
+}
+```
+
+**Returns:**
+- Ranked list of master regulators with: rank, gene symbol, Ensembl ID, regulon size, overlap count, enrichment score, p-value, overlapping gene symbols
+- Query summary: gene set size, genes found/not found, network size, total regulators tested
+
+**Dependency:** `scipy>=1.10.0` (Fisher's exact test)
+
+---
 
 ### MCP Resources (Browsable Data Discovery)
 

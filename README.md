@@ -195,6 +195,7 @@ Key environment variables (set in `.env`):
 |------|-------------|
 | `validate_gene` | Quick gene name check with fuzzy suggestions (<100ms) |
 | `query_network` | Instant network queries — top regulators, targets, neighbors, stats (<50ms) |
+| `find_master_regulators` | Identify TFs driving a gene signature (Fisher's exact test enrichment) |
 | `comprehensive_gene_analysis` | Full analysis with domain insights |
 | `multi_gene_analysis` | Parallel processing of multiple genes |
 | `pathway_focused_analysis` | Reactome pathway enrichment |
