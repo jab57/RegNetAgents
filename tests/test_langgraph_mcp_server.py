@@ -69,14 +69,15 @@ async def test_pathway_focused_analysis():
 
 
 async def test_workflow_insights():
-    """workflow_insights (performance) → message and architecture keys present."""
+    """workflow_insights (performance) → message and architecture present in workflow_insights."""
     result = await handle_call_tool("workflow_insights", {
         "analysis_type": "performance"
     })
     assert result and len(result) > 0, "No response received"
     response = json.loads(result[0].text)
-    assert "message" in response, f"Missing 'message' key in response: {response}"
-    assert "architecture" in response, f"Missing 'architecture' key in response: {response}"
+    insights = response.get("workflow_insights", {})
+    assert "message" in insights, f"Missing 'message' key in workflow_insights: {response}"
+    assert "architecture" in insights, f"Missing 'architecture' key in workflow_insights: {response}"
 
 
 async def test_create_analysis_report():
