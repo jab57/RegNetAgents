@@ -19,12 +19,8 @@ import sys
 import os
 import time
 import urllib.request
-from pathlib import Path
 
 import pytest
-
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 import ollama

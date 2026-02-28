@@ -7,10 +7,9 @@ import asyncio
 import json
 import time
 import os
-import sys
 import urllib.request
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import pytest
 
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 
@@ -86,8 +85,7 @@ async def test_single_gene_comprehensive_llm():
     print("=" * 70)
 
     if not check_ollama_available():
-        print("Ollama not available - skipping")
-        return None
+        pytest.skip("Ollama not running — install from https://ollama.com/download then: ollama pull llama3.1:8b")
 
     os.environ['USE_LLM_AGENTS'] = 'true'
     workflow = RegNetAgentsWorkflow()
@@ -152,8 +150,7 @@ async def test_multi_gene_parallel_llm():
     print(f"Genes: {', '.join(MULTI_GENE_PANEL)}")
 
     if not check_ollama_available():
-        print("Ollama not available - skipping")
-        return None
+        pytest.skip("Ollama not running — install from https://ollama.com/download then: ollama pull llama3.1:8b")
 
     os.environ['USE_LLM_AGENTS'] = 'true'
     workflow = RegNetAgentsWorkflow()
@@ -194,8 +191,7 @@ async def test_multi_gene_sequential_llm():
     print(f"Genes: {', '.join(MULTI_GENE_PANEL)}")
 
     if not check_ollama_available():
-        print("Ollama not available - skipping")
-        return None, []
+        pytest.skip("Ollama not running — install from https://ollama.com/download then: ollama pull llama3.1:8b")
 
     os.environ['USE_LLM_AGENTS'] = 'true'
     workflow = RegNetAgentsWorkflow()

@@ -6,11 +6,6 @@ Verifies that TP53 comprehensive analysis returns ranked regulators
 with the expected structure and PageRank-based scoring.
 """
 
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 
 

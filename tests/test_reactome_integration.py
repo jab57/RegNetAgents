@@ -7,11 +7,6 @@ and that the workflow handles Reactome API availability gracefully.
 Note: Live API calls may return empty results if Reactome is unreachable.
 """
 
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from regnetagents_langgraph_workflow import PathwayEnricherAgent, RegNetAgentsWorkflow
 
 

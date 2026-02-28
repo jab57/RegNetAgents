@@ -7,10 +7,6 @@ to verify cell-type listing, network summaries, and gene lookups.
 """
 
 import json
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pydantic import AnyUrl
 from regnetagents_langgraph_mcp_server import (

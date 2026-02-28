@@ -15,7 +15,7 @@ Thank you for your interest in contributing to RegNetAgents.
 2. Create a feature branch (`git checkout -b feature/your-feature`)
 3. Install development dependencies: `pip install -e ".[dev]"`
 4. Make your changes
-5. Run tests: `pytest tests/`
+5. Run tests: `pytest tests/ --cov=regnetagents_langgraph_mcp_server --cov=regnetagents_langgraph_workflow --cov-report=term-missing`
 6. Submit a pull request
 
 ### Code Guidelines

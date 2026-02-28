@@ -7,10 +7,6 @@ get_workflow() entry point, covering the fields Claude Desktop receives.
 """
 
 import asyncio
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from regnetagents_langgraph_mcp_server import get_workflow
 

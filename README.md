@@ -155,8 +155,8 @@ Analyzed 5 genes in 104.68 seconds
 ## Running Tests
 
 ```bash
-pip install pytest pytest-asyncio
-pytest tests/
+pip install pytest pytest-asyncio pytest-cov
+pytest tests/ --cov=regnetagents_langgraph_mcp_server --cov=regnetagents_langgraph_workflow --cov-report=term-missing
 ```
 
 Core tests run without Ollama or Claude Desktop. Tests requiring Ollama are skipped automatically if it is not running.

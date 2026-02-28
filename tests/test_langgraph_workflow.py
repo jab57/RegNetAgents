@@ -6,11 +6,6 @@ Verifies end-to-end workflow execution: gene validation, network lookup,
 pathway enrichment, domain analysis, and result structure.
 """
 
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 
 

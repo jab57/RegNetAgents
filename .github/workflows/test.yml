@@ -36,7 +36,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest pytest-asyncio
+          pip install pytest pytest-asyncio pytest-cov
 
       - name: Verify installation
         run: python verify_installation.py
@@ -44,4 +44,8 @@ jobs:
       - name: Run tests (rule-based mode, no Ollama required)
         env:
           USE_LLM_AGENTS: 'false'
-        run: pytest tests/ --ignore=tests/test_ollama_agents.py -v
+        run: |
+          pytest tests/ --ignore=tests/test_ollama_agents.py -v \
+            --cov=regnetagents_langgraph_mcp_server \
+            --cov=regnetagents_langgraph_workflow \
+            --cov-report=term-missing

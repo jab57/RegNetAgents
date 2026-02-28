@@ -11,11 +11,6 @@ Tests network queries against the pre-computed cache, including:
 - top_n parameter
 """
 
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from regnetagents_langgraph_mcp_server import get_workflow
 
 

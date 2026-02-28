@@ -10,11 +10,6 @@ targets. Supplying a list of canonical TP53 targets should rank TP53 (or a
 close co-regulator) near the top of the results.
 """
 
-import sys
-import os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from regnetagents_langgraph_mcp_server import get_workflow
 
 # Canonical TP53 target genes used as test signature
