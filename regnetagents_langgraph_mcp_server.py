@@ -958,13 +958,18 @@ async def handle_list_tools() -> list[Tool]:
             Query types:
             - top_regulators: Genes with the most targets (out-degree), with PageRank scores
             - top_targets: Most highly regulated genes (in-degree)
-            - gene_neighbors: Immediate regulators and targets of a specific gene
+            - gene_neighbors: Immediate regulators and targets of a specific gene (includes MI score per edge)
             - network_stats: Summary statistics (genes, edges, density, etc.)
+
+            Edge confidence filtering (confidence_level):
+            - "all" (default): all edges, no filter
+            - "medium": edges with MI score > 0.05
+            - "high": edges with MI score > 0.1 AND bootstrap count >= 3
 
             Great for:
             - "What are the top regulators in epithelial cells?"
-            - "How many targets does TP53 have?"
-            - "What regulates MYC?"
+            - "How many high-confidence targets does TP53 have?"
+            - "What regulates MYC with high confidence?"
             - "How large is the CD4 T cell network?"
             """,
             inputSchema={
@@ -994,6 +999,12 @@ async def handle_list_tools() -> list[Tool]:
                         "type": "integer",
                         "description": "Number of results to return for ranked queries",
                         "default": 10
+                    },
+                    "confidence_level": {
+                        "type": "string",
+                        "enum": ["all", "medium", "high"],
+                        "description": "Edge confidence filter based on ARACNe MI score and bootstrap count. 'all' = no filter (default), 'medium' = MI>0.05, 'high' = MI>0.1 AND bootstrap_count>=3",
+                        "default": "all"
                     }
                 },
                 "required": ["query_type"]
@@ -1392,15 +1403,18 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             cell_type = arguments.get("cell_type", "epithelial_cell")
             gene = arguments.get("gene", None)
             top_n = arguments.get("top_n", 10)
+            confidence_level = arguments.get("confidence_level", "all")
 
             logger.info(f"Network query: {query_type} in {cell_type}" +
-                        (f" for {gene}" if gene else ""))
+                        (f" for {gene}" if gene else "") +
+                        (f" [{confidence_level} confidence]" if confidence_level != "all" else ""))
 
             result = workflow.modeling_agent.query_network(
                 query_type=query_type,
                 cell_type=cell_type,
                 gene=gene,
-                top_n=top_n
+                top_n=top_n,
+                confidence_level=confidence_level
             )
 
             return [TextContent(type="text", text=json.dumps(result, indent=2))]

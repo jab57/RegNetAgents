@@ -194,7 +194,7 @@ Key environment variables (set in `.env`):
 | Tool | Description |
 |------|-------------|
 | `validate_gene` | Quick gene name check with fuzzy suggestions (<100ms) |
-| `query_network` | Instant network queries — top regulators, targets, neighbors, stats (<50ms) |
+| `query_network` | Instant network queries — top regulators, targets, neighbors, stats (<50ms); supports ARACNe edge confidence filtering (MI score, bootstrap count) |
 | `find_master_regulators` | Identify TFs driving a gene signature (Fisher's exact test enrichment) |
 | `comprehensive_gene_analysis` | Full analysis with domain insights |
 | `multi_gene_analysis` | Parallel processing of multiple genes |

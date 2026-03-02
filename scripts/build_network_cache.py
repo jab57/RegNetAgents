@@ -8,7 +8,7 @@ and converts them into the optimized .pkl cache format used by the system.
 Expected TSV format:
 - ARACNe network output format with header
 - Columns: regulator.values \t target.values \t mi.values \t scc.values \t count.values \t log.p.values
-- Uses only first two columns (regulator.values, target.values)
+- Uses columns 0-1 (regulator, target) and columns 2, 4 (mi.values, count.values) for edge confidence
 - Gene IDs should be Ensembl format (ENSG...)
 - Header line is automatically detected and skipped
 
@@ -48,7 +48,7 @@ SUPPORTED_CELL_TYPES = [
     'monocyte-derived_dendritic_cells'
 ]
 
-def load_tsv_network(tsv_file: str) -> Tuple[Dict[str, List[str]], Dict[str, List[str]], Set[str]]:
+def load_tsv_network(tsv_file: str) -> Tuple[Dict[str, List[str]], Dict[str, List[str]], Set[str], Dict[str, Dict[str, float]], Dict[str, Dict[str, int]]]:
     """
     Load network from TSV file and build regulator-target mappings.
 
@@ -56,11 +56,16 @@ def load_tsv_network(tsv_file: str) -> Tuple[Dict[str, List[str]], Dict[str, Lis
         tsv_file: Path to TSV file with regulator-target pairs
 
     Returns:
-        Tuple of (regulator_targets, target_regulators, all_genes)
+        Tuple of (regulator_targets, target_regulators, all_genes,
+                  regulator_target_mi, regulator_target_count)
+        where regulator_target_mi[reg][tgt] = mutual information score
+        and   regulator_target_count[reg][tgt] = bootstrap reproducibility count
     """
     regulator_targets = defaultdict(list)
     target_regulators = defaultdict(list)
     all_genes = set()
+    regulator_target_mi = defaultdict(dict)
+    regulator_target_count = defaultdict(dict)
 
     print(f"Loading network from {tsv_file}...")
 
@@ -99,13 +104,27 @@ def load_tsv_network(tsv_file: str) -> Tuple[Dict[str, List[str]], Dict[str, Lis
             all_genes.add(regulator)
             all_genes.add(target)
 
+            # Parse MI (col 2) and bootstrap count (col 4)
+            try:
+                mi_score = float(parts[2]) if len(parts) > 2 else 0.0
+            except ValueError:
+                mi_score = 0.0
+            try:
+                boot_count = int(parts[4]) if len(parts) > 4 else 0
+            except ValueError:
+                boot_count = 0
+            regulator_target_mi[regulator][target] = mi_score
+            regulator_target_count[regulator][target] = boot_count
+
     # Convert defaultdicts to regular dicts
     regulator_targets = dict(regulator_targets)
     target_regulators = dict(target_regulators)
+    regulator_target_mi = dict(regulator_target_mi)
+    regulator_target_count = dict(regulator_target_count)
 
     print(f"Loaded {len(regulator_targets)} regulators, {len(target_regulators)} targets, {len(all_genes)} total genes")
 
-    return regulator_targets, target_regulators, all_genes
+    return regulator_targets, target_regulators, all_genes, regulator_target_mi, regulator_target_count
 
 def calculate_stats(regulator_targets: Dict[str, List[str]],
                    target_regulators: Dict[str, List[str]],
@@ -174,7 +193,7 @@ def build_network_cache(tsv_file: str, output_file: str) -> None:
         output_file: Path to output pickle file
     """
     # Load network data
-    regulator_targets, target_regulators, all_genes = load_tsv_network(tsv_file)
+    regulator_targets, target_regulators, all_genes, regulator_target_mi, regulator_target_count = load_tsv_network(tsv_file)
 
     # Calculate statistics
     stats = calculate_stats(regulator_targets, target_regulators, all_genes)
@@ -197,7 +216,9 @@ def build_network_cache(tsv_file: str, output_file: str) -> None:
             'max_iter': 100,
             'tol': 1e-06
         },
-        'cache_version': 2,  # Version 2: includes pre-computed PageRank
+        'regulator_target_mi': regulator_target_mi,        # {reg: {tgt: mi_score}}
+        'regulator_target_count': regulator_target_count,  # {reg: {tgt: bootstrap_count}}
+        'cache_version': 3,  # Version 3: adds ARACNe edge confidence (MI score, bootstrap count)
         'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
 
@@ -247,16 +268,21 @@ def validate_cache(cache_file: str) -> bool:
             print(f"ERROR: Regulator count mismatch: {len(data['regulator_targets'])} vs {data['num_regulons']}")
             return False
 
-        # Check cache version and PageRank data
+        # Check cache version and optional feature data
         cache_version = data.get('cache_version', 1)  # Default to version 1 if not present
         if cache_version >= 2:
-            # Version 2+ should have PageRank data
             if 'pagerank_normalized' in data:
                 pagerank_count = len(data['pagerank_normalized'])
                 print(f"  Cache version {cache_version} with {pagerank_count} PageRank scores")
             else:
                 print(f"  WARNING: Cache version {cache_version} missing PageRank data")
-        else:
+        if cache_version >= 3:
+            if 'regulator_target_mi' in data and 'regulator_target_count' in data:
+                edge_count = sum(len(v) for v in data['regulator_target_mi'].values())
+                print(f"  Edge confidence data present ({edge_count} MI scores)")
+            else:
+                print(f"  WARNING: Cache version {cache_version} missing edge confidence data")
+        if cache_version < 2:
             print(f"  Cache version 1 (legacy, no PageRank - will calculate on-demand)")
 
         print(f"Cache validation passed")

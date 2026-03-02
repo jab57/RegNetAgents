@@ -340,7 +340,8 @@ class RegNetAgentsModelingAgent:
         }
 
     def query_network(self, query_type: str, cell_type: str = "epithelial_cell",
-                      gene: str = None, top_n: int = 10) -> dict:
+                      gene: str = None, top_n: int = 10,
+                      confidence_level: str = "all") -> dict:
         """
         Query the pre-computed network cache for instant answers (<50ms).
 
@@ -349,6 +350,8 @@ class RegNetAgentsModelingAgent:
             cell_type: Cell type network to query
             gene: Gene symbol (required for 'gene_neighbors')
             top_n: Number of results to return for ranked queries
+            confidence_level: Edge filter — 'all' (no filter), 'medium' (MI>0.05),
+                              or 'high' (MI>0.1 AND bootstrap_count>=3)
 
         Returns:
             dict with query results
@@ -367,12 +370,49 @@ class RegNetAgentsModelingAgent:
         target_regulators = network_data.get('target_regulators', {})
         all_genes = network_data.get('all_genes', [])
         pagerank = network_data.get('pagerank_normalized', {})
+        mi_scores = network_data.get('regulator_target_mi', {})
+        boot_counts = network_data.get('regulator_target_count', {})
+
+        # Validate confidence_level
+        valid_levels = ("all", "medium", "high")
+        if confidence_level not in valid_levels:
+            return {
+                "error": True,
+                "query_type": query_type,
+                "message": f"Invalid confidence_level '{confidence_level}'. Valid values: {valid_levels}"
+            }
+
+        # Warn if confidence filtering requested but cache lacks MI data (version < 3)
+        if confidence_level != "all" and not mi_scores:
+            return {
+                "error": True,
+                "query_type": query_type,
+                "cell_type": cell_type,
+                "message": (
+                    "Edge confidence data not available in this cache. "
+                    "Rebuild network caches with: python scripts/build_network_cache.py --all"
+                )
+            }
+
+        def passes_filter(reg: str, tgt: str) -> bool:
+            if confidence_level == "all":
+                return True
+            mi = mi_scores.get(reg, {}).get(tgt, 0.0)
+            if confidence_level == "medium":
+                return mi > 0.05
+            # high
+            cnt = boot_counts.get(reg, {}).get(tgt, 0)
+            return mi > 0.1 and cnt >= 3
 
         if query_type == "top_regulators":
-            # Sort regulators by out-degree (number of targets)
-            ranked = sorted(regulator_targets.items(), key=lambda x: len(x[1]), reverse=True)
+            # Build filtered target lists, then sort by count descending
+            items = []
+            for ensembl_id, targets in regulator_targets.items():
+                filtered = [t for t in targets if passes_filter(ensembl_id, t)]
+                items.append((ensembl_id, filtered))
+            items.sort(key=lambda x: len(x[1]), reverse=True)
             results = []
-            for ensembl_id, targets in ranked[:top_n]:
+            for ensembl_id, targets in items[:top_n]:
                 symbol = self.gene_mapper.ensembl_to_symbol(ensembl_id) or ensembl_id
                 entry = {
                     "gene": symbol,
@@ -385,15 +425,20 @@ class RegNetAgentsModelingAgent:
             return {
                 "query_type": query_type,
                 "cell_type": cell_type,
+                "confidence_level": confidence_level,
                 "top_n": top_n,
                 "results": results
             }
 
         elif query_type == "top_targets":
-            # Sort targets by in-degree (number of regulators)
-            ranked = sorted(target_regulators.items(), key=lambda x: len(x[1]), reverse=True)
+            # Build filtered regulator lists per target, then sort by count descending
+            items = []
+            for ensembl_id, regulators in target_regulators.items():
+                filtered = [r for r in regulators if passes_filter(r, ensembl_id)]
+                items.append((ensembl_id, filtered))
+            items.sort(key=lambda x: len(x[1]), reverse=True)
             results = []
-            for ensembl_id, regulators in ranked[:top_n]:
+            for ensembl_id, regulators in items[:top_n]:
                 symbol = self.gene_mapper.ensembl_to_symbol(ensembl_id) or ensembl_id
                 results.append({
                     "gene": symbol,
@@ -403,6 +448,7 @@ class RegNetAgentsModelingAgent:
             return {
                 "query_type": query_type,
                 "cell_type": cell_type,
+                "confidence_level": confidence_level,
                 "top_n": top_n,
                 "results": results
             }
@@ -427,27 +473,42 @@ class RegNetAgentsModelingAgent:
                     "message": f"Gene '{gene_upper}' not found in {cell_type} network"
                 }
 
-            targets = regulator_targets.get(ensembl_id, [])
-            regulators = target_regulators.get(ensembl_id, [])
+            raw_targets = regulator_targets.get(ensembl_id, [])
+            raw_regulators = target_regulators.get(ensembl_id, [])
 
             target_symbols = []
-            for t in targets:
+            for t in raw_targets:
+                if not passes_filter(ensembl_id, t):
+                    continue
                 sym = self.gene_mapper.ensembl_to_symbol(t) or t
-                target_symbols.append(sym)
+                entry = {"gene": sym}
+                mi = mi_scores.get(ensembl_id, {}).get(t)
+                if mi is not None:
+                    entry["mi_score"] = round(mi, 6)
+                    entry["bootstrap_count"] = boot_counts.get(ensembl_id, {}).get(t, 0)
+                target_symbols.append(entry)
 
             regulator_symbols = []
-            for r in regulators:
+            for r in raw_regulators:
+                if not passes_filter(r, ensembl_id):
+                    continue
                 sym = self.gene_mapper.ensembl_to_symbol(r) or r
-                regulator_symbols.append(sym)
+                entry = {"gene": sym}
+                mi = mi_scores.get(r, {}).get(ensembl_id)
+                if mi is not None:
+                    entry["mi_score"] = round(mi, 6)
+                    entry["bootstrap_count"] = boot_counts.get(r, {}).get(ensembl_id, 0)
+                regulator_symbols.append(entry)
 
             return {
                 "query_type": query_type,
                 "gene": gene_upper,
                 "ensembl_id": ensembl_id,
                 "cell_type": cell_type,
-                "num_targets": len(targets),
+                "confidence_level": confidence_level,
+                "num_targets": len(target_symbols),
                 "targets": target_symbols,
-                "num_regulators": len(regulators),
+                "num_regulators": len(regulator_symbols),
                 "regulators": regulator_symbols
             }
 
@@ -468,7 +529,8 @@ class RegNetAgentsModelingAgent:
                 "num_regulons": num_regulons,
                 "avg_out_degree": round(avg_out_degree, 2),
                 "avg_in_degree": round(avg_in_degree, 2),
-                "density": round(density, 6)
+                "density": round(density, 6),
+                "has_edge_confidence": bool(mi_scores)
             }
 
         else:
