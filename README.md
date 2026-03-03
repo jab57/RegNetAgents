@@ -130,7 +130,13 @@ async def main():
 asyncio.run(main())
 ```
 
-For a full multi-gene example:
+For a minimal single-gene example (2–5 seconds, no API keys needed):
+
+```bash
+python examples/quickstart.py
+```
+
+For a full multi-gene panel example:
 
 ```bash
 python demo_biomarker_analysis.py
@@ -288,6 +294,8 @@ RegNetAgents/
 ├── regnetagents_langgraph_mcp_server.py  # MCP server
 ├── regnetagents_langgraph_workflow.py    # Core workflow
 ├── regnetagents/                          # Package
+├── examples/                              # Minimal usage examples
+│   └── quickstart.py                     # Single-gene quick start
 ├── models/networks/                       # Network data (10 cell types)
 ├── tests/                                 # Test suite
 ├── docs/                                  # Documentation

@@ -87,7 +87,7 @@ Genes: MYC, CTNNB1, CCND1, TP53, KRAS | Cell Type: epithelial_cell
 [OK] KRAS:  weakly_reg.   | Regulators:  7 | Targets:   0 | Pathways: 141| Top regulator: GPBP1  (PageRank: 0.609)
 ```
 
-It can also be called programmatically without Claude Desktop:
+It can also be called programmatically without Claude Desktop. The repository includes `examples/quickstart.py`, a minimal single-gene entry point (2–5 seconds, no API keys required), and `demo_biomarker_analysis.py` for multi-gene panel analysis:
 
 ```python
 import asyncio
