@@ -58,7 +58,7 @@ The MCP server exposes thirteen tools, three browsable MCP Resources (cell-type 
 
 # Usage
 
-RegNetAgents is accessed through any MCP-compatible client (Claude Desktop, Cursor, Zed, and others) via natural language after MCP server configuration (see installation guide):
+RegNetAgents can be used programmatically via Python or through any MCP-compatible client (Claude Desktop, Cursor, Zed) via natural language (see installation guide):
 
 ```
 Analyze the TP53 gene in epithelial cells
