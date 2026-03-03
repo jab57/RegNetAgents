@@ -24,6 +24,12 @@ For multi-gene panel analysis, see:
 """
 
 import asyncio
+import os
+import sys
+
+# Allow running from the examples/ subdirectory
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 
 # ─── Configure your analysis here ──────────────────────────────────────────
@@ -91,7 +97,7 @@ async def main():
                   f"{cancer.get('oncogenic_potential', 'unknown')}")
         if drug:
             print(f"  Druggability           : "
-                  f"{drug.get('druggability', 'unknown')}")
+                  f"{drug.get('druggability_assessment', 'unknown')}")
 
     print("\n" + "-" * 60)
     print("Done.")
