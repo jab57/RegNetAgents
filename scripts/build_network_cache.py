@@ -28,10 +28,12 @@ Usage:
 import os
 import pickle
 import argparse
+import json
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Set, Tuple
 import sys
+import numpy as np
 import networkx as nx
 
 # Cell types supported by RegNetAgents (with available network data)
@@ -184,13 +186,94 @@ def calculate_pagerank(regulator_targets: Dict[str, List[str]],
         print(f"  Returning empty PageRank dict (will fall back to on-demand calculation)")
         return {}
 
-def build_network_cache(tsv_file: str, output_file: str) -> None:
+def compute_thresholds(
+    regulator_targets: Dict[str, List[str]],
+    target_regulators: Dict[str, List[str]],
+    all_genes: Set[str],
+    pagerank_normalized: Dict[str, float]
+) -> Dict[str, float]:
+    """
+    Compute empirical threshold defaults from the degree distributions of a
+    cell-type network.
+
+    Thresholds are set at the 90th percentile (high) and 75th percentile
+    (moderate) of target count, regulator count, and normalized PageRank
+    across all genes in the network. This ensures 'high' evidence reflects
+    genuine outliers within each tissue context rather than fixed absolute
+    values. A minimum of 1 is applied to target and regulator thresholds so
+    that the moderate tier always requires at least one connection.
+
+    These values serve as biologically informed defaults and can be overridden
+    by the user at runtime via ThresholdConfig. They are empirically motivated,
+    not optimized, and should be adjusted when applying RegNetAgents to
+    networks with substantially different topology (e.g., bulk RNA-seq derived
+    networks).
+
+    Args:
+        regulator_targets: Mapping of regulator gene IDs to their target lists
+        target_regulators: Mapping of target gene IDs to their regulator lists
+        all_genes: Set of all gene IDs in the network
+        pagerank_normalized: Normalized PageRank scores (max-normalized to 1.0)
+
+    Returns:
+        Dict with keys: target_high, target_moderate, regulator_high,
+        regulator_moderate, pagerank_high
+    """
+    target_counts = [len(regulator_targets.get(g, [])) for g in all_genes]
+    regulator_counts = [len(target_regulators.get(g, [])) for g in all_genes]
+    pagerank_values = [pagerank_normalized.get(g, 0.0) for g in all_genes]
+
+    def pct(values, p):
+        return float(np.percentile(values, p))
+
+    return {
+        "target_high":      max(1, round(pct(target_counts, 90))),
+        "target_moderate":  max(1, round(pct(target_counts, 75))),
+        "regulator_high":   max(1, round(pct(regulator_counts, 90))),
+        "regulator_moderate": max(1, round(pct(regulator_counts, 75))),
+        "pagerank_high":    round(pct(pagerank_values, 90), 4),
+        "percentiles_used": {"high": 90, "moderate": 75},
+        "n_genes": len(all_genes),
+    }
+
+
+def update_threshold_config(cell_type: str, thresholds: Dict, config_path: str) -> None:
+    """
+    Update models/threshold_config.json with thresholds for a cell type.
+
+    Creates the file if it does not exist. Existing entries for other cell
+    types are preserved. Called automatically by build_network_cache so that
+    adding a new cell type always produces a matching threshold entry.
+
+    Args:
+        cell_type: Cell type name (e.g. 'epithelial_cell')
+        thresholds: Dict returned by compute_thresholds()
+        config_path: Path to threshold_config.json
+    """
+    config = {}
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            config = json.load(f)
+
+    config[cell_type] = thresholds
+
+    os.makedirs(os.path.dirname(config_path), exist_ok=True)
+    with open(config_path, "w") as f:
+        json.dump(config, f, indent=2)
+
+    print(f"  Thresholds saved to {config_path}")
+
+
+def build_network_cache(tsv_file: str, output_file: str) -> dict:
     """
     Convert TSV network file to pickle cache format.
 
     Args:
         tsv_file: Path to input TSV file
         output_file: Path to output pickle file
+
+    Returns:
+        Thresholds dict computed from this network's topology distributions
     """
     # Load network data
     regulator_targets, target_regulators, all_genes, regulator_target_mi, regulator_target_count = load_tsv_network(tsv_file)
@@ -201,6 +284,13 @@ def build_network_cache(tsv_file: str, output_file: str) -> None:
     # Calculate PageRank (pre-compute for performance)
     print("Calculating PageRank centrality...")
     pagerank_normalized = calculate_pagerank(regulator_targets, stats['num_genes'])
+
+    # Compute empirical thresholds from this network's topology distributions
+    print("Computing empirical thresholds from network topology distributions...")
+    thresholds = compute_thresholds(regulator_targets, target_regulators, all_genes, pagerank_normalized)
+    print(f"  target_high={thresholds['target_high']}, target_moderate={thresholds['target_moderate']}, "
+          f"regulator_high={thresholds['regulator_high']}, regulator_moderate={thresholds['regulator_moderate']}, "
+          f"pagerank_high={thresholds['pagerank_high']}")
 
     # Build cache data structure
     cache_data = {
@@ -236,6 +326,8 @@ def build_network_cache(tsv_file: str, output_file: str) -> None:
     print(f"  - {stats['num_genes']} total genes")
     print(f"  - {stats['num_edges']} total edges")
     print(f"  - Output: {output_file}")
+
+    return thresholds
 
 def validate_cache(cache_file: str) -> bool:
     """
@@ -296,6 +388,10 @@ def process_cell_type(cell_type: str, input_dir: str, output_dir: str) -> bool:
     """
     Process a single cell type.
 
+    Builds the network index pickle and computes empirical thresholds from
+    that network's topology distributions, then updates
+    models/threshold_config.json automatically.
+
     Args:
         cell_type: Name of cell type
         input_dir: Directory containing TSV files
@@ -306,14 +402,15 @@ def process_cell_type(cell_type: str, input_dir: str, output_dir: str) -> bool:
     """
     print(f"\n=== Processing {cell_type} ===")
 
-    # Input TSV file
     tsv_file = os.path.join(input_dir, cell_type, "network.tsv")
-
-    # Output pickle file
     output_file = os.path.join(output_dir, cell_type, "network_index.pkl")
+    config_path = os.path.join(output_dir, "..", "threshold_config.json")
 
     try:
-        build_network_cache(tsv_file, output_file)
+        thresholds = build_network_cache(tsv_file, output_file)
+
+        # Update threshold config with this cell type's empirical thresholds
+        update_threshold_config(cell_type, thresholds, os.path.normpath(config_path))
 
         # Validate the generated cache
         if validate_cache(output_file):

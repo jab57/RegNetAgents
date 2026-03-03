@@ -1,0 +1,122 @@
+{
+  "epithelial_cell": {
+    "target_high": 16,
+    "target_moderate": 1,
+    "regulator_high": 32,
+    "regulator_moderate": 17,
+    "pagerank_high": 0.4827,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 14628
+  },
+  "cd14_monocytes": {
+    "target_high": 3,
+    "target_moderate": 1,
+    "regulator_high": 3,
+    "regulator_moderate": 2,
+    "pagerank_high": 0.3061,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 1352
+  },
+  "cd16_monocytes": {
+    "target_high": 5,
+    "target_moderate": 1,
+    "regulator_high": 3,
+    "regulator_moderate": 2,
+    "pagerank_high": 0.3202,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 776
+  },
+  "cd20_b_cells": {
+    "target_high": 4,
+    "target_moderate": 1,
+    "regulator_high": 2,
+    "regulator_moderate": 1,
+    "pagerank_high": 0.2657,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 782
+  },
+  "cd4_t_cells": {
+    "target_high": 3,
+    "target_moderate": 1,
+    "regulator_high": 3,
+    "regulator_moderate": 2,
+    "pagerank_high": 0.1961,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 899
+  },
+  "cd8_t_cells": {
+    "target_high": 5,
+    "target_moderate": 1,
+    "regulator_high": 3,
+    "regulator_moderate": 2,
+    "pagerank_high": 0.2553,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 1722
+  },
+  "erythrocytes": {
+    "target_high": 8,
+    "target_moderate": 1,
+    "regulator_high": 17,
+    "regulator_moderate": 5,
+    "pagerank_high": 0.378,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 3086
+  },
+  "nk_cells": {
+    "target_high": 2,
+    "target_moderate": 1,
+    "regulator_high": 2,
+    "regulator_moderate": 1,
+    "pagerank_high": 0.281,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 411
+  },
+  "nkt_cells": {
+    "target_high": 5,
+    "target_moderate": 1,
+    "regulator_high": 5,
+    "regulator_moderate": 2,
+    "pagerank_high": 0.3292,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 1190
+  },
+  "monocyte-derived_dendritic_cells": {
+    "target_high": 3,
+    "target_moderate": 1,
+    "regulator_high": 7,
+    "regulator_moderate": 3,
+    "pagerank_high": 0.5119,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 1792
+  }
+}

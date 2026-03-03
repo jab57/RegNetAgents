@@ -80,9 +80,55 @@ class CellType(Enum):
 
 class RegNetAgentsCache:
     """Gene regulatory network cache for storing analysis results."""
+
+    # Fallback thresholds if threshold_config.json is missing or cell type not found.
+    # Values are calibrated to the epithelial cell network (the largest and most
+    # complete network in the GREmLN dataset) and represent the 90th percentile
+    # (high) and 75th percentile (moderate) of target/regulator count distributions.
+    DEFAULT_THRESHOLDS = {
+        "target_high": 16,
+        "target_moderate": 1,
+        "regulator_high": 32,
+        "regulator_moderate": 17,
+        "pagerank_high": 0.4827,
+    }
+
     def __init__(self):
         self.network_indices = {}
+        self.threshold_config = {}
         self.load_network_indices()
+        self._load_threshold_config()
+
+    def _load_threshold_config(self):
+        """Load per-cell-type empirical thresholds from models/threshold_config.json."""
+        config_path = os.path.join("models", "threshold_config.json")
+        if os.path.exists(config_path):
+            try:
+                with open(config_path) as f:
+                    self.threshold_config = json.load(f)
+                logger.info(f"Loaded threshold config for {len(self.threshold_config)} cell types")
+            except Exception as e:
+                logger.warning(f"Failed to load threshold_config.json: {e}. Using defaults.")
+        else:
+            logger.warning("threshold_config.json not found. Using default thresholds.")
+
+    def get_thresholds(self, cell_type_str: str) -> dict:
+        """
+        Return empirical thresholds for a cell type.
+
+        Thresholds are computed from the 90th (high) and 75th (moderate)
+        percentiles of target count, regulator count, and normalized PageRank
+        distributions for that specific network. Falls back to epithelial-based
+        defaults if the cell type is not found in threshold_config.json.
+
+        Args:
+            cell_type_str: Cell type name (e.g. 'epithelial_cell')
+
+        Returns:
+            Dict with keys: target_high, target_moderate, regulator_high,
+            regulator_moderate, pagerank_high
+        """
+        return self.threshold_config.get(cell_type_str, self.DEFAULT_THRESHOLDS)
 
     def load_network_indices(self):
         """Load network indices from pickle files."""
@@ -136,6 +182,8 @@ class RegNetAgentsModelingAgent:
         targets = []
         regulatory_role = "unknown"
 
+        thresholds = self.cache.get_thresholds(cell_type.value)
+
         if network_data and ensembl_id:
             # Access the actual network structure
             regulator_targets = network_data.get('regulator_targets', {})
@@ -147,15 +195,15 @@ class RegNetAgentsModelingAgent:
             # Find regulators (genes that regulate this gene)
             regulators = target_regulators.get(ensembl_id, [])
 
-            # Determine regulatory role - prioritize hub status over heavily regulated status
+            # Determine regulatory role using cell-type-specific empirical thresholds
             num_regulators = len(regulators)
             num_targets = len(targets)
 
-            if num_targets > 20:
+            if num_targets > thresholds["target_high"]:
                 regulatory_role = "hub_regulator"      # Regulates many genes (high priority)
-            elif num_regulators > 15:
+            elif num_regulators > thresholds["regulator_high"]:
                 regulatory_role = "heavily_regulated"  # Controlled by many regulators
-            elif num_targets > 5 and num_regulators > 5:
+            elif num_targets > thresholds["target_moderate"] and num_regulators > thresholds["regulator_moderate"]:
                 regulatory_role = "intermediate_node"  # Balanced regulatory role
             elif num_targets > 0:
                 regulatory_role = "regulator"          # Has downstream targets
@@ -184,6 +232,7 @@ class RegNetAgentsModelingAgent:
             "regulators": regulators[:10],  # Top 10 for brevity
             "targets": targets[:10],        # Top 10 for brevity
             "pagerank": pagerank,
+            "thresholds": thresholds,       # Cell-type-specific empirical thresholds
             "network_position": {
                 "in_degree": len(regulators),
                 "out_degree": len(targets),
@@ -1520,23 +1569,24 @@ Provide only the JSON, no additional text."""
         regulatory_role = gene_info.get('regulatory_role', 'unknown')
         num_regulators = gene_info.get('num_regulators', 0)
         num_targets = gene_info.get('num_targets', 0)
+        t = gene_info.get('thresholds', self.cache.DEFAULT_THRESHOLDS)
 
         # Build evidence factors (no invented floats)
         factors = []
         if regulatory_role in ['hub_regulator', 'master_regulator']:
             factors.append(f"hub/master regulator role ({regulatory_role})")
-        if num_targets > 20:
+        if num_targets > t["target_high"]:
             factors.append(f"high target count ({num_targets} downstream targets)")
-        elif num_targets > 5:
+        elif num_targets > t["target_moderate"]:
             factors.append(f"moderate target count ({num_targets} downstream targets)")
-        if num_regulators > 15:
+        if num_regulators > t["regulator_high"]:
             factors.append(f"highly regulated ({num_regulators} upstream regulators)")
 
         therapeutic_assessment = "high" if len(factors) >= 2 else "moderate" if len(factors) == 1 else "low"
 
         cancer_insights = {
-            "oncogenic_potential": "high" if num_targets > 20 else "moderate" if num_targets > 5 else "low",
-            "tumor_suppressor_likelihood": "high" if num_regulators > 15 else "moderate" if num_regulators > 5 else "low",
+            "oncogenic_potential": "high" if num_targets > t["target_high"] else "moderate" if num_targets > t["target_moderate"] else "low",
+            "tumor_suppressor_likelihood": "high" if num_regulators > t["regulator_high"] else "moderate" if num_regulators > t["regulator_moderate"] else "low",
             "therapeutic_assessment": therapeutic_assessment,
             "therapeutic_factors": factors,
             "mutation_impact": "high" if regulatory_role in ['hub_regulator', 'master_regulator'] else "moderate"
@@ -1660,14 +1710,15 @@ Provide only the JSON, no additional text."""
         num_regulators = gene_info.get('num_regulators', 0)
         regulatory_role = gene_info.get('regulatory_role', 'unknown')
         is_regulator = regulatory_role in ['hub_regulator', 'master_regulator', 'regulator']
+        t = gene_info.get('thresholds', self.cache.DEFAULT_THRESHOLDS)
 
         # Build evidence factors (no invented floats)
         factors = []
         if regulatory_role == 'hub_regulator':
             factors.append("hub regulator (broad network influence)")
-        if num_targets > 15:
+        if num_targets > t["target_high"]:
             factors.append(f"high target count ({num_targets} targets — significant cascade effects)")
-        elif num_targets > 5:
+        elif num_targets > t["target_moderate"]:
             factors.append(f"moderate target count ({num_targets} targets)")
         if is_regulator:
             factors.append("confirmed regulatory activity")
@@ -1677,9 +1728,9 @@ Provide only the JSON, no additional text."""
         drug_insights = {
             "druggability_assessment": druggability_assessment,
             "druggability_factors": factors,
-            "target_class": "kinase" if num_targets > 10 else "transcription_factor" if regulatory_role == "regulator" else "other",
-            "intervention_strategy": "inhibition" if num_targets > 15 else "activation" if num_regulators > 10 else "modulation",
-            "development_complexity": "high" if num_targets > 20 else "moderate" if num_targets > 5 else "low"
+            "target_class": "kinase" if num_targets > t["target_moderate"] else "transcription_factor" if regulatory_role == "regulator" else "other",
+            "intervention_strategy": "inhibition" if num_targets > t["target_high"] else "activation" if num_regulators > t["regulator_moderate"] else "modulation",
+            "development_complexity": "high" if num_targets > t["target_high"] else "moderate" if num_targets > t["target_moderate"] else "low"
         }
 
         # Cascade analysis for drug effects
@@ -1808,12 +1859,13 @@ Provide only the JSON, no additional text."""
         """Rule-based clinical relevance analysis (fallback)"""
         num_regulators = gene_info.get('num_regulators', 0)
         regulatory_role = gene_info.get('regulatory_role', 'unknown')
+        t = gene_info.get('thresholds', self.cache.DEFAULT_THRESHOLDS)
 
         # Clinical significance assessment
         clinical_insights = {
-            "disease_association_likelihood": "high" if num_regulators > 15 else "moderate" if num_regulators > 5 else "low",
+            "disease_association_likelihood": "high" if num_regulators > t["regulator_high"] else "moderate" if num_regulators > t["regulator_moderate"] else "low",
             "biomarker_utility": "diagnostic" if regulatory_role == "heavily_regulated" else "prognostic" if regulatory_role == "hub_regulator" else "predictive",
-            "clinical_actionability": "high" if (regulatory_role in ['hub_regulator', 'master_regulator'] or num_regulators > 10) else "moderate"
+            "clinical_actionability": "high" if (regulatory_role in ['hub_regulator', 'master_regulator'] or num_regulators > t["regulator_moderate"]) else "moderate"
         }
 
         # Cross-cell type clinical insights
@@ -1957,6 +2009,7 @@ Provide only the JSON, no additional text."""
         num_regulators = gene_info.get('num_regulators', 0)
         num_targets = gene_info.get('num_targets', 0)
         regulatory_role = gene_info.get('regulatory_role', 'unknown')
+        t = gene_info.get('thresholds', self.cache.DEFAULT_THRESHOLDS)
 
         # PageRank is algorithmically derived — keep it as a float
         pagerank = gene_info.get('pagerank', None)
@@ -1965,11 +2018,11 @@ Provide only the JSON, no additional text."""
         factors = []
         if regulatory_role in ['hub_regulator', 'master_regulator']:
             factors.append(f"hub/master role ({regulatory_role})")
-        if num_targets > 10:
+        if num_targets > t["target_moderate"]:
             factors.append(f"high out-degree ({num_targets} targets)")
-        if num_regulators > 10:
+        if num_regulators > t["regulator_moderate"]:
             factors.append(f"high in-degree ({num_regulators} regulators)")
-        if pagerank and pagerank > 0.01:
+        if pagerank and pagerank > t["pagerank_high"]:
             factors.append(f"elevated PageRank ({pagerank:.4f})")
 
         centrality_assessment = "high" if len(factors) >= 2 else "moderate" if len(factors) == 1 else "low"
@@ -1979,8 +2032,8 @@ Provide only the JSON, no additional text."""
             "centrality_factors": factors,
             "pagerank_centrality": pagerank,   # algorithmically derived — kept as float
             "regulatory_hierarchy": "master" if regulatory_role == "master_regulator" else "hub" if regulatory_role == "hub_regulator" else "intermediate",
-            "information_flow": "high" if num_regulators > 10 and num_targets > 10 else "moderate" if num_regulators + num_targets > 10 else "low",
-            "network_vulnerability": "critical" if regulatory_role in ['hub_regulator', 'master_regulator'] else "important" if num_targets > 5 else "minimal"
+            "information_flow": "high" if num_regulators > t["regulator_moderate"] and num_targets > t["target_moderate"] else "moderate" if num_regulators + num_targets > t["target_moderate"] else "low",
+            "network_vulnerability": "critical" if regulatory_role in ['hub_regulator', 'master_regulator'] else "important" if num_targets > t["target_moderate"] else "minimal"
         }
 
         # Regulatory network effects

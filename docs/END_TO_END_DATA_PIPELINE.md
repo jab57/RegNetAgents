@@ -59,8 +59,9 @@ This document provides a complete walkthrough of the data processing pipeline us
          │ (build_network_cache.py)
          ▼
 ┌─────────────────┐
-│ Optimized Cache │  network_index.pkl
-│ (Version 2)     │  Pre-computed PageRank
+│ Optimized Cache │  network_index.pkl (per cell type)
+│ + Thresholds    │  threshold_config.json (shared, updated)
+│ (Version 3)     │  Pre-computed PageRank + empirical thresholds
 └────────┬────────┘
          │
          │ Integration
@@ -468,6 +469,10 @@ pagerank_normalized = {
 }
 ```
 
+### Empirical Threshold Computation
+
+`build_network_cache.py` automatically computes cell-type-specific thresholds after building each cache. For each network it calculates the 90th percentile of target count, regulator count, and normalized PageRank as the **high** threshold, and the 75th percentile as the **moderate** threshold. These are stored in `models/threshold_config.json` (one entry per cell type) and loaded at runtime by the domain agents so that assessments (high/moderate/low) are calibrated to each network's topology rather than using global fixed values.
+
 ### Cache File Location
 
 ```
@@ -482,6 +487,8 @@ models/networks/
 │   ├── network.tsv
 │   └── network_index.pkl
 └── ... (other cell types)
+models/
+└── threshold_config.json        # Per-cell-type empirical thresholds (auto-generated)
 ```
 
 ### Cache Validation

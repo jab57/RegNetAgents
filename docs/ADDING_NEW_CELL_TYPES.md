@@ -25,8 +25,8 @@ This comprehensive guide documents the complete process for adding new cell type
 ### Complete Pipeline
 
 ```
-CellxGene Download → QC & Filtering → Metacells → ARACNe → Cache Generation → Integration
-    (1-2 days)         (2-4 hours)     (1-2 hours)  (12-14h)     (30 min)       (1 day)
+CellxGene Download → QC & Filtering → Metacells → ARACNe → Cache + Thresholds → Integration
+    (1-2 days)         (2-4 hours)     (1-2 hours)  (12-14h)      (30 min)         (1 day)
 ```
 
 ### Prerequisites ✅
@@ -331,6 +331,8 @@ for cell_type in hepatocytes cardiomyocytes neurons fibroblasts endothelial_cell
         cp models/networks/$cell_type/aracne_output/network.tsv models/networks/$cell_type/
 
         # Generate optimized cache with pre-computed PageRank
+        # Also automatically computes empirical thresholds (90th/75th percentile)
+        # and stores them in models/threshold_config.json
         python scripts/build_network_cache.py $cell_type
 
         echo "Cache generated for $cell_type"
