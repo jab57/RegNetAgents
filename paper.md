@@ -24,26 +24,19 @@ RegNetAgents is a Python package for automated downstream analysis of pre-comput
 
 The architecture separates workflow logic from LLM interpretation: a fixed directed acyclic graph (DAG) controls execution order and data flow, while an optional LLM layer adds natural-language narrative rationale to deterministic rule-based domain assessments. This separation ensures that identical inputs produce identical computational outputs, with LLM variability isolated to the interpretation layer. RegNetAgents thus provides a reproducible entry point for downstream GRN interpretation.
 
-Key features:
-
-- **Hybrid architecture**: Combines optional LLM-powered interpretation with a deterministic rule-based layer for reproducible, auditable assessments
-- **Parallel agents**: Four domain agents run concurrently for fast analysis
-- **Therapeutic prioritization**: Deterministic PageRank and centrality-based ranking of upstream regulators [@mora2021effects]
-- **Pathway enrichment**: Automated Reactome API queries with FDR correction [@gillespie2022reactome]
-
 # Statement of Need
 
 Researchers analyzing gene regulatory networks typically query multiple databases manually (STRING, BioGRID, Reactome), export data across platforms, and synthesize findings—a process requiring hours per gene and programming expertise. Established tools address individual components of this workflow: Cytoscape [@shannon2003cytoscape] provides interactive network visualization, pySCENIC [@aibar2017scenic] and CellOracle [@kamimoto2023dissecting] infer regulatory networks from expression data, and STRING [@szklarczyk2023string] catalogs known protein interactions. However, these tools operate on separate steps that must be manually connected, require programming expertise, and produce outputs that need expert interpretation across multiple biological contexts. They focus on network inference or visualization, whereas RegNetAgents operates downstream, automating multi-perspective interpretation of pre-computed networks with a fixed DAG that guarantees identical outputs for identical inputs. **No existing tool provides an integrated, conversational workflow combining multi-domain GRN interpretation with deterministic reproducibility.**
 
 RegNetAgents addresses this gap by combining a natural-language interface with a reproducible, multi-agent workflow that performs regulator/target identification, therapeutic prioritization, pathway enrichment, and domain-specific interpretation in a single automated pipeline, without requiring users to write code. In a five-gene colorectal cancer case study, the system analyzed 99 upstream regulators in 15–62 seconds; single-gene comprehensive analyses typically complete in under a minute on a standard laptop. The equivalent manual workflow—querying regulators and targets across 10 cell types, performing pathway enrichment for each, and synthesizing findings across four biological perspectives per gene—requires an estimated 8–16 hours, a speedup of three orders of magnitude.
 
-The software processes pre-computed ARACNe networks from the GREmLN project [@zhang2025gremln], covering 10 cell types—including epithelial, stromal, immune, and endothelial lineages relevant to colorectal cancer biology—derived from large single-cell RNA-seq datasets via the CELLxGENE Data Portal [@megill2021cellxgene]. ARACNe is a well-validated mutual-information method that produces high-confidence transcription factor regulons by applying the data-processing inequality to large expression datasets; the GREmLN networks represent a curated, cell-type-resolved regulatory atlas validated on the colorectal tissue atlas. Unlike general-purpose agent frameworks [@autogpt; @li2023camel; @hong2023metagpt], RegNetAgents provides domain-specific scientific workflow integration with deterministic fallback guarantees for reproducible research.
+RegNetAgents processes pre-computed ARACNe networks from the GREmLN project [@zhang2025gremln], covering 10 colorectal cancer cell types (epithelial, stromal, immune, endothelial) from large single-cell RNA-seq datasets [@megill2021cellxgene]. Unlike general-purpose agent frameworks [@autogpt; @li2023camel; @hong2023metagpt], it provides domain-specific scientific workflow integration with deterministic reproducibility.
 
 # Implementation
 
 RegNetAgents requires Python 3.10+ and uses NetworkX [@hagberg2008networkx] for graph algorithms. The workflow is implemented as a LangGraph DAG that enforces explicit stepwise execution, reduces agent autonomy in exchange for deterministic, auditable execution, and restricts input to pre-computed ARACNe networks to prioritize validated, curated data. The pipeline executes in seven deterministic steps: (1) **gene validation**—symbol normalization and network membership check; (2) **network lookup**—regulator and target retrieval per cell type; (3) **therapeutic prioritization**—PageRank- and centrality-based regulator ranking (conditional on >5 regulators); (4) **pathway enrichment**—Reactome API queries with FDR correction; (5) **cross-cell comparison**—multi-cell regulatory role and pathway consistency (conditional for hub and master regulators); (6) **parallel domain analysis**—concurrent execution of four specialized agents; and (7) **report synthesis**—cross-domain contradiction detection and narrative generation (\autoref{fig:architecture}).
 
-![RegNetAgents multi-agent architecture. The LangGraph DAG enforces a fixed execution order: gene validation, network lookup, therapeutic prioritization, pathway enrichment, cross-cell comparison (conditional for hub/master regulators), and parallel domain analysis, followed by report synthesis. The rule-based layer produces categorical evidence assessments (high/moderate/low); the optional LLM layer adds natural-language rationale without altering them.\label{fig:architecture}](figure1_architecture.png)
+![RegNetAgents multi-agent architecture. Seven-step LangGraph DAG with rule-based domain assessments (high/moderate/low) and optional LLM rationale layer.\label{fig:architecture}](figure1_architecture.png)
 
 Therapeutic prioritization uses NetworkX's deterministic PageRank and degree-based centrality metrics to rank upstream regulators by influence within the ARACNe-derived subnetwork. The four domain agents each produce an independent evidence assessment (high/moderate/low) for a specific biological dimension: oncogenic potential (cancer agent), druggability (drug discovery agent), clinical actionability (clinical relevance agent), and network centrality (systems biology agent). The rule-based layer—active by default (`USE_LLM_AGENTS=false`)—derives these assessments using empirically derived, cell-type-specific thresholds: the 90th and 75th percentiles of target count, regulator count, and normalized PageRank (computed across all nodes in each cell-type GRN) define the **high** and **moderate** tiers, respectively, so criteria adapt to each network's regulatory scale rather than using fixed values. **High** is assigned when a gene satisfies two or more domain-specific criteria; **moderate** when one is met; **low** when none apply. These thresholds are recomputed automatically when new cell types are added. A cross-domain contradiction checker automatically flags logical inconsistencies across the four domain assessments, including:
 
@@ -52,7 +45,7 @@ Therapeutic prioritization uses NetworkX's deterministic PageRank and degree-bas
 - an inhibition strategy conflicting with high tumor-suppressor likelihood
 - a critical network node classified as easy to drug
 
-The optional LLM layer (`USE_LLM_AGENTS=true`) adds natural-language rationales while preserving the same categorical output structure. An optional LLM narrative synthesis step (`USE_LLM_RECONCILIATION=true`) can synthesize cross-domain findings without introducing new assessments. All computational steps—network lookup, PageRank ranking, and pathway enrichment—are fully deterministic; LLM variability is isolated to the interpretation layer. The LLM abstraction layer supports Ollama (local or cloud), OpenAI, Anthropic, and any OpenAI-compatible API (e.g., Groq, Together, LM Studio), selected via the `LLM_PROVIDER` environment variable. The default Ollama path requires no API key, making the system self-contained.
+The optional LLM layer (`USE_LLM_AGENTS=true`) adds natural-language rationales while preserving the same categorical output structure. An optional LLM narrative synthesis step (`USE_LLM_RECONCILIATION=true`) can synthesize cross-domain findings without introducing new assessments. All computational steps—network lookup, PageRank ranking, and pathway enrichment—are fully deterministic; LLM variability is isolated to the interpretation layer.
 
 The MCP server exposes thirteen tools including gene validation (<100 ms), network queries (<50 ms) with ARACNe edge confidence filtering, and reverse-direction master regulator analysis (`find_master_regulators`, Fisher's exact test against each regulon). New cell types can be added through a documented pipeline; additional domain agents could be integrated by extending the parallel analysis step. RegNetAgents runs on Windows, macOS, and Linux. LLM-generated interpretations should be treated as hypotheses rather than validated conclusions. All deterministic outputs are reproducible from the v1.0.1 source archived on Zenodo (DOI: 10.5281/zenodo.18500028), with dependencies pinned and an eleven-module test suite validating determinism, MCP integration, and agent-level behavior.
 
@@ -87,7 +80,7 @@ Genes: MYC, CTNNB1, CCND1, TP53, KRAS | Cell Type: epithelial_cell
 [OK] KRAS:  weakly_reg.   | Regulators:  7 | Targets:   0 | Pathways: 141| Top regulator: GPBP1  (PageRank: 0.609)
 ```
 
-It can also be called programmatically without Claude Desktop. The repository includes `examples/quickstart.py`, a minimal single-gene entry point (2–5 seconds, no API keys required), and `demo_biomarker_analysis.py` for multi-gene panel analysis:
+The repository includes `examples/quickstart.py`, a minimal single-gene entry point (2–5 seconds, no API keys required), and `demo_biomarker_analysis.py` for multi-gene panel analysis:
 
 ```python
 import asyncio
@@ -104,8 +97,6 @@ async def main():
 
 asyncio.run(main())
 ```
-
-The `analysis_depth` parameter accepts `"focused"` (network and pathways), `"basic"` (adds rule-based domain insights), or `"comprehensive"` (adds therapeutic prioritization and parallel domain analysis).
 
 # Availability
 
