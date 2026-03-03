@@ -13,10 +13,10 @@ Before you begin, ensure you have:
 - **Python 3.10 or later** ([Download](https://www.python.org/downloads/))
 - **Git** ([Download](https://git-scm.com/downloads))
 - **Git LFS** ([Download](https://git-lfs.com)) - Required for large data files
-- **Claude Desktop** ([Download](https://claude.ai/download))
 - **4GB+ RAM** minimum; 8GB+ recommended if using a local LLM (Ollama)
 
 **Optional:**
+- **Claude Desktop** ([Download](https://claude.ai/download)) — required only for MCP/natural-language access; not needed for programmatic Python use
 - **Ollama** for local LLM rationales ([Download](https://ollama.com/download)) — or use OpenAI, Anthropic, or any OpenAI-compatible API
 
 ---
@@ -414,7 +414,38 @@ After completing installation, you have:
 
 ## Usage Examples
 
-Once installed, try these example queries in Claude Desktop:
+### Programmatic Python (no MCP client required)
+
+```bash
+# Minimal single-gene example (2–5 seconds, no API keys needed)
+python examples/quickstart.py
+```
+
+Or call the workflow directly:
+
+```python
+import asyncio
+from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
+
+async def main():
+    workflow = RegNetAgentsWorkflow()
+    result = await workflow.run_analysis(
+        gene="TP53",
+        cell_type="epithelial_cell",
+        analysis_depth="comprehensive"
+    )
+    print(result["network_summary"])
+
+asyncio.run(main())
+```
+
+For a multi-gene panel example: `python demo_biomarker_analysis.py`
+
+---
+
+### MCP Client (Claude Desktop, Cursor, Zed)
+
+Once Claude Desktop is configured (Step 4), try these example queries:
 
 ### Basic Network Analysis
 ```
@@ -535,4 +566,4 @@ After successful installation:
 
 **Installation complete!** 🎉
 
-You're ready to use RegNetAgents for gene regulatory network analysis through Claude Desktop.
+You're ready to use RegNetAgents for gene regulatory network analysis — via Python directly or through an MCP-compatible client.
