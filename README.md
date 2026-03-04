@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18500028.svg)](https://doi.org/10.5281/zenodo.18500028)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18732993.svg)](https://doi.org/10.5281/zenodo.18732993)
 
 **Multi-Agent LLM Framework for Gene Regulatory Network Analysis**
 
@@ -34,6 +34,8 @@ See [DATA_SOURCES.md](docs/DATA_SOURCES.md) for complete details.
 - Internet connection (for Reactome API)
 
 ### Installation
+
+The pre-computed ARACNe network files for all 10 cell types are included in the repository — no separate download is required.
 
 ```bash
 # Clone and setup
@@ -142,7 +144,7 @@ For a full multi-gene panel example:
 python demo_biomarker_analysis.py
 ```
 
-Example output (5-gene colorectal cancer panel, rule-based mode):
+Example output (5-gene colorectal cancer panel, LLM-powered mode):
 
 ```
 Genes: MYC, CTNNB1, CCND1, TP53, KRAS | Cell Type: epithelial_cell
@@ -282,8 +284,8 @@ most likely driving this signature in epithelial cells?
 
 | Mode | Single Gene | 5 Genes |
 |------|-------------|---------|
-| Rule-based | 0.6 sec | 15 sec |
-| LLM-powered | 15 sec | 62 sec |
+| Rule-based | 0.6 sec | ~10 sec |
+| LLM-powered | ~23 sec | ~110 sec |
 
 ---
 
@@ -329,13 +331,13 @@ If you use RegNetAgents in your research, please cite:
   title     = {RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis},
   year      = {2026},
   version   = {1.0.1},
-  doi       = {10.5281/zenodo.18500028},
+  doi       = {10.5281/zenodo.18732993},
   url       = {https://github.com/jab57/RegNetAgents},
   license   = {MIT}
 }
 ```
 
-Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.0.1). https://doi.org/10.5281/zenodo.18500028
+Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.0.1). https://doi.org/10.5281/zenodo.18732993
 
 ---
 

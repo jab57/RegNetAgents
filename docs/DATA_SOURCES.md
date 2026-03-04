@@ -116,9 +116,13 @@ These cell types were extracted from the `human_immune_cells.h5ad` dataset, whic
 
 ## How to Download the Cell Type Networks
 
-**📥 RECOMMENDED METHOD: Use the GREmLN Quickstart Tutorial**
+> **Note for standard users:** The pre-computed ARACNe network files for all 10 cell types (`network.tsv` and `network_index.pkl`) are already included in the GitHub repository. Cloning the repo is sufficient — no separate download is required.
+>
+> The instructions below document how these networks were originally obtained from the GREmLN project, and are provided for reproducibility and for users who wish to update or replace the network data.
 
-This is how the RegNetAgents networks were obtained. Follow these steps to get the same 10 pre-computed cell type networks.
+**📥 SOURCE: GREmLN Quickstart Tutorial**
+
+This is how the RegNetAgents networks were originally obtained. Follow these steps to get the same 10 pre-computed cell type networks.
 
 ### Quick Start (TL;DR)
 

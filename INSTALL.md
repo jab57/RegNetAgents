@@ -12,7 +12,7 @@ Before you begin, ensure you have:
 
 - **Python 3.10 or later** ([Download](https://www.python.org/downloads/))
 - **Git** ([Download](https://git-scm.com/downloads))
-- **Git LFS** ([Download](https://git-lfs.com)) - Required for large data files
+- **Git** ([Download](https://git-scm.com/downloads)) — network data files are included in the repository; Git LFS is not required
 - **4GB+ RAM** minimum; 8GB+ recommended if using a local LLM (Ollama)
 
 **Optional:**
@@ -48,31 +48,7 @@ For detailed instructions, continue reading below.
 
 ## Step 1: Clone Repository (2 minutes)
 
-### 1.1 Install Git LFS
-
-Git LFS is required to download large data files (network datasets).
-
-**Windows:**
-```bash
-winget install git-lfs
-git lfs install
-```
-
-**macOS:**
-```bash
-brew install git-lfs
-git lfs install
-```
-
-**Linux:**
-```bash
-sudo apt-get install git-lfs  # Debian/Ubuntu
-# or
-sudo yum install git-lfs      # RedHat/CentOS
-git lfs install
-```
-
-### 1.2 Clone the Repository
+### 1.1 Clone the Repository
 
 ```bash
 # Clone repository
