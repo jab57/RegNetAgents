@@ -713,6 +713,32 @@ Built on RegNetAgents pre-computed regulatory networks
 
 ---
 
+## Gene Annotation Database
+
+RegNetAgents includes a pre-built gene annotation database (`regnetagents/models/gene_embeddings/gene_annotations/NCBI_UniProt_summary_of_genes.json`) that provides protein function summaries for all genes in the 10 cell-type networks. This file is included in the repository — no download or rebuild is required for standard use.
+
+### How It Was Built
+
+The database was generated using `scripts/build_gene_annotation_database.py`, which:
+
+1. Extracts all unique gene symbols from the 10 cell-type `network_index.pkl` files
+2. Queries the [MyGene.info](https://mygene.info) API (an NCBI-backed service) in batches to retrieve gene name, protein summary, and Ensembl ID for each gene
+3. Saves the results as a JSON file mapping gene symbols to their annotated descriptions
+
+The file is loaded at runtime by `regnetagents/complete_gene_service.py` to provide gene function context during analysis.
+
+### Refreshing the Database
+
+If you add new cell types or want to update gene annotations with the latest NCBI data, re-run the script from the project root:
+
+```bash
+python scripts/build_gene_annotation_database.py
+```
+
+This will overwrite `NCBI_UniProt_summary_of_genes.json` with fresh annotations for all genes currently in the network files.
+
+---
+
 ## Contact and Support
 
 For questions about data sources or adding new cell types:
