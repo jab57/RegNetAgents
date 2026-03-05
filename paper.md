@@ -114,6 +114,6 @@ Network data were obtained from the GREmLN team's pre-computed ARACNe networks [
 
 # AI Usage Disclosure
 
-Claude Code (Anthropic) was used to assist with software implementation, including code generation, debugging, and iterative development. The paper was written by the human author. All scientific decisions, architectural choices, and conclusions are the author's own.
+Claude Code (Anthropic) was used to assist with software implementation (code generation, debugging, and iterative development) and paper drafting. All scientific decisions, architectural choices, and conclusions are the author's own.
 
 # References
