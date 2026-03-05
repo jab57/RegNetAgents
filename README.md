@@ -6,9 +6,19 @@
 
 **Multi-Agent LLM Framework for Gene Regulatory Network Analysis**
 
-RegNetAgents automates gene regulatory network analysis through Claude Desktop and other MCP-compatible clients (Cursor, Zed, and others). Built on pre-computed ARACNe networks from single-cell RNA-seq data and powered by LangGraph workflow orchestration, it deploys four specialized domain agents (cancer biology, drug discovery, clinical relevance, systems biology) that generate categorical evidence-based assessments (high/moderate/low) with supporting factors. LLM inference is optional and supports multiple backends: Ollama (local or cloud, default), OpenAI, Anthropic, and any OpenAI-compatible API (Groq, Together, LM Studio).
+Analyzing a gene regulatory network typically means hours of manual database queries across STRING, Reactome, and BioGRID — one gene at a time. RegNetAgents automates the entire workflow: ask a question in plain English through Claude Desktop or any MCP-compatible client, and get a full multi-domain regulatory analysis in seconds.
 
-Analyze **10 cell types** including immune cells, blood cells, and epithelial tissue—with AI-generated rationales and interpretations.
+Four specialized agents — cancer biology, drug discovery, clinical relevance, and systems biology — run in parallel and produce deterministic, reproducible assessments. LLM narrative is optional; the rule-based engine runs without any API keys or local models.
+
+![RegNetAgents in Claude Desktop — TP53 analysis in epithelial cells](docs/demo_screenshot.png)
+
+**Ask questions like:**
+```
+Analyze the TP53 gene in epithelial cells
+Compare MYC, TP53, and KRAS across different cell types
+These genes are upregulated in my RNA-seq experiment: TP53, CDKN1A, MDM2, BAX, CCND1.
+Which transcription factors are most likely driving this signature in epithelial cells?
+```
 
 ---
 
@@ -244,25 +254,6 @@ Guided prompt templates that scaffold common analysis workflows in the MCP clien
 **Epithelial**: Epithelial cells (183,247 edges - largest network)
 
 See [ADDING_NEW_CELL_TYPES.md](docs/ADDING_NEW_CELL_TYPES.md) to expand.
-
----
-
-## Example Queries
-
-```
-What regulates BRCA1 in epithelial cells?
-Compare MYC, TP53, and KRAS across different cell types
-What pathways is IL6 involved in for immune cells?
-```
-
-**Reverse-direction analysis** (master regulator identification):
-```
-These genes are upregulated in my RNA-seq experiment: TP53, CDKN1A, MDM2,
-BAX, CCND1, MYC, EGFR, KRAS, CTNNB1, APC. Which transcription factors are
-most likely driving this signature in epithelial cells?
-```
-
-**Popular genes**: TP53, BRCA1, APC, KRAS, MYC, IL6, TNF
 
 ---
 
