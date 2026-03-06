@@ -19,6 +19,8 @@ RegNetAgents currently supports **10 human cell types** with pre-computed gene r
 **Format**: Pre-computed networks as TSV files (network.tsv), converted to optimized pickle caches (network_index.pkl)
 **Publication**: bioRxiv 2025.07.03.663009
 
+**Important note on disease status**: The CellxGene Census corpus used by GREmLN includes both healthy and disease/cancer-infiltrating cells — disease status was not filtered to normal cells only (Zhang et al. 2025). The pre-computed networks therefore represent population-averaged regulatory relationships across heterogeneous cell states. These networks are appropriate for hypothesis generation and regulatory network analysis but should not be assumed to represent exclusively normal cell regulatory wiring.
+
 ### How Networks Were Obtained
 
 The 10 cell types were obtained from the **GREmLN Quickstart Tutorial**, which provides:
@@ -595,7 +597,8 @@ python scripts/build_network_cache.py cd14_monocytes
 2. Filter by:
    - Tissue: lung, breast, colon, etc.
    - Cell type contains: "epithelial"
-   - Disease: normal (unless cancer research)
+   - Disease: normal (unless cancer research) — note: the existing 10 networks
+     were NOT filtered this way; see Disease Status note in Data Source Overview above
 3. Download H5AD files
 ```
 
