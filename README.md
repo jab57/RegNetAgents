@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18732993.svg)](https://doi.org/10.5281/zenodo.18732993)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18500027.svg)](https://doi.org/10.5281/zenodo.18500027)
 
 **Multi-Agent LLM Framework for Gene Regulatory Network Analysis**
 
@@ -321,14 +321,14 @@ If you use RegNetAgents in your research, please cite:
   author    = {Bird, Jose A.},
   title     = {RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis},
   year      = {2026},
-  version   = {1.0.1},
-  doi       = {10.5281/zenodo.18732993},
+  version   = {1.0.2},
+  doi       = {10.5281/zenodo.18500027},
   url       = {https://github.com/jab57/RegNetAgents},
   license   = {MIT}
 }
 ```
 
-Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.0.1). https://doi.org/10.5281/zenodo.18732993
+Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.0.2). https://doi.org/10.5281/zenodo.18500027
 
 ---
 
