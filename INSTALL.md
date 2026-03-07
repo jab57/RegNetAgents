@@ -57,11 +57,7 @@ git clone https://github.com/jab57/RegNetAgents.git
 cd RegNetAgents
 ```
 
-Network data files and model checkpoint are tracked via Git LFS. They download automatically with the clone. If files appear as text pointers (small file size), run:
-
-```bash
-git lfs pull
-```
+All network data files are included as regular git files and download automatically with the clone. No Git LFS is required.
 
 ---
 
