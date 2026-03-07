@@ -1,6 +1,6 @@
 # Contributing to RegNetAgents
 
-Thank you for your interest in contributing to RegNetAgents.
+Thank you for your interest in contributing to RegNetAgents. Please note that this project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold it.
 
 ## How to Contribute
 
