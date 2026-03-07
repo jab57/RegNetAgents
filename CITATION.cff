@@ -20,7 +20,15 @@ keywords:
   - llm
   - langgraph
 abstract: >-
-  A multi-agent LLM system for gene regulatory network analysis.
-  Built on LangGraph, it coordinates specialized domain agents
-  to analyze ARACNe-inferred networks, perform pathway enrichment,
-  and prioritize therapeutic targets through a conversational interface.
+  RegNetAgents is a Python package for automated downstream analysis of
+  pre-computed gene regulatory networks (GRNs) using a multi-agent
+  architecture built on LangGraph. The software coordinates four specialized
+  domain agents (cancer biology, drug discovery, clinical relevance, systems
+  biology) to analyze regulatory relationships from ARACNe-inferred networks.
+  It can be used programmatically via Python or through MCP-compatible clients
+  (Claude Desktop, Cursor, Zed) via natural language. A fixed directed acyclic
+  graph (DAG) controls execution order and data flow, while an optional LLM
+  layer adds natural-language narrative rationale to deterministic rule-based
+  domain assessments, ensuring identical inputs produce identical computational
+  outputs. RegNetAgents is intended for computational biologists,
+  bioinformaticians, and researchers who need automated GRN analysis.
