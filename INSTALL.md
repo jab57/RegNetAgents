@@ -250,7 +250,7 @@ Compare MYC, TP53, and KRAS across all cell types
 
 **Expected behavior:**
 - Claude should invoke RegNetAgents tools
-- Results appear within seconds (rule-based) or ~15-60 seconds (LLM-powered)
+- Results appear within seconds (rule-based) or ~23 seconds per gene (LLM-powered)
 - Output includes network metrics, regulators, targets, and insights
 
 ---
@@ -332,7 +332,7 @@ ollama run llama3.1:8b "test"
 **Possible causes:**
 1. **First run:** Network caches loading for first time (~2-3 seconds)
 2. **LLM cold start:** Ollama loading model into memory (~10-20 seconds first query)
-3. **Comprehensive mode:** Running 4 domain agents in parallel takes 15-60 seconds (expected)
+3. **Comprehensive mode:** Running 4 domain agents in parallel takes ~23 seconds per gene (expected)
 
 **Solutions:**
 - Use focused mode for faster results: "Quick analysis of TP53"
@@ -450,10 +450,10 @@ Analyze these colorectal cancer biomarkers: MYC, CTNNB1, TP53, KRAS
 
 | Analysis Type | Rule-Based | LLM-Powered |
 |---------------|------------|-------------|
-| Single gene (focused) | 0.5-1 sec | 15-20 sec |
-| Single gene (comprehensive) | 0.5-1 sec | 15-20 sec |
-| Multi-gene (5 genes) | 5-10 sec | 60-90 sec |
-| Perturbation analysis | 1-2 sec | 20-30 sec |
+| Single gene (focused) | <1 sec | ~23 sec |
+| Single gene (comprehensive) | <1 sec | ~23 sec |
+| Multi-gene (5 genes) | ~10 sec | ~110 sec |
+| Perturbation analysis | 1-2 sec | ~25 sec |
 
 **Network cache loading:** <100ms (after first load)
 
