@@ -224,6 +224,7 @@ Key environment variables (set in `.env`):
 | `workflow_status` | Execution monitoring |
 | `workflow_insights` | Performance analytics |
 | `create_analysis_report` | Generate reports |
+| `list_prompts` | List available MCP prompt templates |
 
 ### MCP Resources
 
