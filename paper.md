@@ -49,7 +49,7 @@ Therapeutic prioritization uses NetworkX's deterministic PageRank and degree-bas
 
 The optional LLM layer (`USE_LLM_AGENTS=true`) adds natural-language rationales while preserving the same categorical output structure. An optional LLM narrative synthesis step (`USE_LLM_RECONCILIATION=true`) can synthesize cross-domain findings without introducing new assessments. All computational steps—network lookup, PageRank ranking, and pathway enrichment—are fully deterministic; LLM variability is isolated to the interpretation layer.
 
-The MCP server exposes thirteen tools including gene validation (<100 ms), network queries (<50 ms) with ARACNe edge confidence filtering, and reverse-direction master regulator analysis (`find_master_regulators`, Fisher's exact test against each regulon). New cell types can be added through a documented pipeline; additional domain agents could be integrated by extending the parallel analysis step. RegNetAgents runs on Windows, macOS, and Linux. LLM-generated interpretations should be treated as hypotheses rather than validated conclusions. All deterministic outputs are reproducible from the v1.0.1 source archived on Zenodo (DOI: 10.5281/zenodo.18732993), with dependencies pinned and a twelve-module test suite validating determinism, MCP integration, and agent-level behavior.
+The MCP server exposes thirteen tools including gene validation (<100 ms), network queries (<50 ms) with ARACNe edge confidence filtering, and reverse-direction master regulator analysis (`find_master_regulators`, Fisher's exact test against each regulon). New cell types can be added through a documented pipeline; additional domain agents could be integrated by extending the parallel analysis step. RegNetAgents runs on Windows, macOS, and Linux. LLM-generated interpretations should be treated as hypotheses rather than validated conclusions. All deterministic outputs are reproducible from the v1.0.2 source archived on Zenodo (DOI: 10.5281/zenodo.18500027), with dependencies pinned and a twelve-module test suite validating determinism, MCP integration, and agent-level behavior.
 
 # Usage
 
@@ -102,11 +102,11 @@ asyncio.run(main())
 
 # Research Impact Statement
 
-RegNetAgents is designed for immediate use by computational biologists and bioinformaticians working with cell-type-specific GRNs derived from single-cell RNA-seq data. In a five-gene colorectal cancer validation case study, the system recapitulated known regulatory relationships—identifying literature-supported TP53 regulators including WWTR1 and YAP1 (Hippo pathway effectors, FDR = 0.020 for Hippo signaling enrichment)—while completing analysis three orders of magnitude faster than equivalent manual workflows. The v1.0.1 release is archived on Zenodo with pinned dependencies and a twelve-module test suite, and the public repository has received community engagement through 14 tracked issues since its release in November 2025.
+RegNetAgents is designed for immediate use by computational biologists and bioinformaticians working with cell-type-specific GRNs derived from single-cell RNA-seq data. In a five-gene colorectal cancer validation case study, the system recapitulated known regulatory relationships—identifying literature-supported TP53 regulators including WWTR1 and YAP1 (Hippo pathway effectors, FDR = 0.020 for Hippo signaling enrichment)—while completing analysis three orders of magnitude faster than equivalent manual workflows. The v1.0.2 release is archived on Zenodo with pinned dependencies and a twelve-module test suite, and the public repository has received community engagement through 14 tracked issues since its release in November 2025.
 
 # Availability
 
-RegNetAgents is available at <https://github.com/jab57/RegNetAgents> under the MIT License. The v1.0.1 release is archived on Zenodo (DOI: [10.5281/zenodo.18732993](https://doi.org/10.5281/zenodo.18732993)). Contribution guidelines and issue tracking are provided via GitHub.
+RegNetAgents is available at <https://github.com/jab57/RegNetAgents> under the MIT License. The v1.0.2 release is archived on Zenodo (DOI: [10.5281/zenodo.18500027](https://doi.org/10.5281/zenodo.18500027)). Contribution guidelines and issue tracking are provided via GitHub.
 
 # Acknowledgements
 

@@ -11,7 +11,6 @@ Complete installation instructions for setting up RegNetAgents MCP Server with C
 Before you begin, ensure you have:
 
 - **Python 3.10 or later** ([Download](https://www.python.org/downloads/))
-- **Git** ([Download](https://git-scm.com/downloads))
 - **Git** ([Download](https://git-scm.com/downloads)) — network data files are included in the repository; Git LFS is not required
 - **4GB+ RAM** minimum; 8GB+ recommended if using a local LLM (Ollama)
 
@@ -56,14 +55,13 @@ git clone https://github.com/jab57/RegNetAgents.git
 
 # Navigate to directory
 cd RegNetAgents
-
-# Verify LFS files downloaded (should show ~320MB)
-git lfs ls-files
 ```
 
-**Expected LFS files:**
-- `models/networks/*/network_index.pkl` (10 cell type network caches)
-- `models/model.ckpt` (115 MB)
+Network data files and model checkpoint are tracked via Git LFS. They download automatically with the clone. If files appear as text pointers (small file size), run:
+
+```bash
+git lfs pull
+```
 
 ---
 
