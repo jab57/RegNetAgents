@@ -51,6 +51,7 @@ import json
 import logging
 import os
 import sys
+import time
 from typing import Any, Iterable, Sequence
 from mcp.server import Server, NotificationOptions
 from mcp.server.models import InitializationOptions
@@ -85,6 +86,10 @@ server = Server("regnetagents-langgraph-server")
 
 # Global workflow instance (initialized once for performance)
 workflow_instance = None
+
+# In-memory result cache: {(gene, cell_type, analysis_depth): (timestamp, result)}
+_result_cache = {}
+_CACHE_TTL_SECONDS = 600  # 10 minutes
 
 async def get_workflow():
     """
@@ -653,6 +658,11 @@ async def handle_list_tools() -> list[Tool]:
                         "enum": ["basic", "comprehensive", "focused"],
                         "description": "Depth of analysis to perform",
                         "default": "comprehensive"
+                    },
+                    "use_cache": {
+                        "type": "boolean",
+                        "description": "Return cached results if available (faster). Set to false to force fresh analysis.",
+                        "default": True
                     }
                 },
                 "required": ["gene"]
@@ -727,6 +737,11 @@ async def handle_list_tools() -> list[Tool]:
                         "enum": ["basic", "comprehensive", "focused"],
                         "description": "Depth of analysis for each gene (use 'basic' for fastest results without pathways)",
                         "default": "comprehensive"
+                    },
+                    "use_cache": {
+                        "type": "boolean",
+                        "description": "Return cached results for genes already analyzed recently. Set to false to force fresh analysis.",
+                        "default": True
                     }
                 },
                 "required": ["genes"]
@@ -1123,11 +1138,19 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             gene = arguments["gene"]
             cell_type = arguments.get("cell_type", "epithelial_cell")
             analysis_depth = arguments.get("analysis_depth", "comprehensive")
+            use_cache = arguments.get("use_cache", True)
+
+            cache_key = (gene, cell_type, analysis_depth)
+            if use_cache and cache_key in _result_cache:
+                cached_ts, cached_result = _result_cache[cache_key]
+                if time.time() - cached_ts < _CACHE_TTL_SECONDS:
+                    logger.info(f"Cache hit for {gene} ({cell_type}, {analysis_depth})")
+                    cached_result["workflow_info"]["source"] = "cache"
+                    return [TextContent(type="text", text=json.dumps(cached_result, indent=2))]
 
             logger.info(f"Starting comprehensive analysis for {gene} using LangGraph workflow")
             logger.info(f"Parameters: cell_type={cell_type}, analysis_depth={analysis_depth}")
 
-            import time
             start_time = time.time()
 
             # Simple wrapper around workflow
@@ -1145,8 +1168,11 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 "workflow_type": "langgraph",
                 "server_version": "regnetagents-mcp-v2.1",
                 "execution_mode": "thin_wrapper",
-                "execution_time_seconds": round(execution_time, 2)
+                "execution_time_seconds": round(execution_time, 2),
+                "source": "live"
             }
+
+            _result_cache[cache_key] = (time.time(), result)
 
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
 
@@ -1168,21 +1194,40 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             genes = arguments["genes"]
             cell_type = arguments.get("cell_type", "epithelial_cell")
             analysis_depth = arguments.get("analysis_depth", "focused")
+            use_cache = arguments.get("use_cache", True)
 
             logger.info(f"Starting multi-gene analysis for {len(genes)} genes")
 
-            import time
             start_time = time.time()
 
-            # Simple parallel execution wrapper with progress logging
-            tasks = [
-                workflow.run_analysis(gene=gene, cell_type=cell_type, analysis_depth=analysis_depth)
-                for gene in genes
-            ]
+            # Check cache per gene; only run analysis for misses
+            gene_results = {}
+            genes_to_run = []
+            for gene in genes:
+                cache_key = (gene, cell_type, analysis_depth)
+                if use_cache and cache_key in _result_cache:
+                    cached_ts, cached_result = _result_cache[cache_key]
+                    if time.time() - cached_ts < _CACHE_TTL_SECONDS:
+                        logger.info(f"Cache hit for {gene}")
+                        cached_result.setdefault("workflow_info", {})["source"] = "cache"
+                        gene_results[gene] = cached_result
+                        continue
+                genes_to_run.append(gene)
 
-            # Execute all analyses in parallel
-            logger.info(f"Executing {len(genes)} gene analyses in parallel...")
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+            if genes_to_run:
+                tasks = [
+                    workflow.run_analysis(gene=gene, cell_type=cell_type, analysis_depth=analysis_depth)
+                    for gene in genes_to_run
+                ]
+                logger.info(f"Executing {len(genes_to_run)} gene analyses in parallel...")
+                live_results = await asyncio.gather(*tasks, return_exceptions=True)
+                for gene, result in zip(genes_to_run, live_results):
+                    if not isinstance(result, Exception):
+                        result.setdefault("workflow_info", {})["source"] = "live"
+                        _result_cache[(gene, cell_type, analysis_depth)] = (time.time(), result)
+                    gene_results[gene] = result
+
+            results = [gene_results[gene] for gene in genes]
 
             execution_time = time.time() - start_time
             logger.info(f"Multi-gene analysis completed in {execution_time:.2f} seconds")
@@ -1211,7 +1256,6 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
 
             logger.info(f"Starting cross-cell comparison for {gene}")
 
-            import time
             start_time = time.time()
 
             # Use the modeling agent's cross-cell comparison method

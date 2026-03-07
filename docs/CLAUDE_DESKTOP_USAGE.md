@@ -83,7 +83,7 @@ How large is the epithelial cell network?
 ```
 
 ### 3. `comprehensive_gene_analysis`
-Run full analysis for a gene (triggers Ollama workflow).
+Run full analysis for a gene (triggers Ollama workflow). Results are cached in memory for 10 minutes — repeat queries return instantly. Pass `use_cache: false` to force fresh analysis.
 
 ### 4. `load_gene_results`
 Load previously saved analysis results without re-running analysis.
@@ -102,7 +102,7 @@ What gene analyses do I have?
 ```
 
 ### 6. `multi_gene_analysis`
-Analyze multiple genes in parallel.
+Analyze multiple genes in parallel. Per-gene cache check — only genes not already cached are re-run, so mixing cached and fresh genes in one call works seamlessly. Pass `use_cache: false` to force all genes to re-run.
 
 ### 7. `export_results`
 Export gene analysis as markdown (renders as tables in Claude Desktop) or CSV (for spreadsheets/manuscripts). Specify `format: "markdown"` or `format: "csv"` and optionally filter `sections`.
