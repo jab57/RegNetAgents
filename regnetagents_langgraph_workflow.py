@@ -39,7 +39,10 @@ from langgraph.checkpoint.memory import MemorySaver
 import asyncio
 import json
 import logging
-import ollama
+try:
+    import ollama
+except ImportError:
+    ollama = None
 from dotenv import load_dotenv
 
 # Configure logging
@@ -1163,6 +1166,8 @@ class DomainAnalysisAgents:
     def _initialize_ollama_provider(self):
         """Check if Ollama is available and running (auto-detects local vs cloud)"""
         try:
+            if ollama is None:
+                raise ImportError("ollama package not installed. Run: pip install ollama")
             # Auto-detect: Ollama Cloud (if API key exists) or Local Ollama (default)
             api_key = os.getenv('OLLAMA_API_KEY')
 

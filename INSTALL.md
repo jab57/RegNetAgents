@@ -257,16 +257,6 @@ Compare MYC, TP53, and KRAS across all cell types
 
 ## Troubleshooting
 
-### Issue: Git LFS files not downloading
-
-**Symptoms:** Data files show as text pointers instead of binary data
-
-**Solution:**
-```bash
-git lfs install
-git lfs pull
-```
-
 ### Issue: Import errors (ModuleNotFoundError)
 
 **Symptoms:** `ModuleNotFoundError: No module named 'langgraph'`

@@ -24,7 +24,7 @@ python-dotenv>=1.0.0
 # Statistical tests (Fisher's exact test for master regulator analysis)
 scipy>=1.10.0
 
-# Ollama Python SDK (required for import; Ollama application is optional)
-# Without the Ollama app running, system automatically uses rule-based fallback
-# To enable LLM agents: install from https://ollama.com/download, then: ollama pull llama3.1:8b
-ollama>=0.1.0
+# Optional: Ollama Python SDK (only needed for LLM-powered mode)
+# pip install ollama>=0.1.0
+# To enable: install from https://ollama.com/download, then: ollama pull llama3.1:8b
+# Rule-based mode (default) works without this package.
