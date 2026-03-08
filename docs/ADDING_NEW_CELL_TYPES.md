@@ -1,6 +1,6 @@
 # Complete Guide: Adding New Cell Types to RegNetAgents
 
-> **Note:** This guide is for users who have received access to the RegNetAgents software framework. The code is available from the corresponding author upon reasonable request for academic research purposes.
+> **Note:** RegNetAgents is open source (MIT License) and publicly available at <https://github.com/jab57/RegNetAgents>.
 
 **⚠️ STATUS: FUTURE IMPLEMENTATION GUIDE**
 
