@@ -332,11 +332,11 @@ def main():
     checks = [
         ("Python Version", check_python_version()),
         ("Required Packages", check_required_packages()),
-        ("Git LFS", check_git_lfs()),
         ("Network Data", check_network_data()),
         ("Cache Directory", check_cache_directory()),
+        ("Core Modules", check_core_modules()),
+        ("Git LFS (optional)", check_git_lfs()),
         ("Ollama (optional)", check_ollama()),
-        ("Core Modules", check_core_modules())
     ]
 
     total_time = time.time() - start_time
@@ -345,9 +345,9 @@ def main():
 
     passed = sum(1 for _, result in checks if result)
     total = len(checks)
-    required = total - 1  # Ollama is optional
+    required = total - 2  # Git LFS and Ollama are optional
 
-    print(f"\nTotal checks: {total} ({required} required, 1 optional)")
+    print(f"\nTotal checks: {total} ({required} required, 2 optional: Git LFS, Ollama)")
     print(f"Time taken: {total_time:.1f} seconds\n")
 
     for name, result in checks:

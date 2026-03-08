@@ -113,7 +113,7 @@ Replace path with your actual installation path. Restart your MCP client. Other 
 python verify_installation.py
 ```
 
-Expected: `7/7 checks passed`
+Expected: `5/7 checks passed` or better (Git LFS and Ollama are optional)
 
 ### Test It
 
