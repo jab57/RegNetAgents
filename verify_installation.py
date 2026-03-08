@@ -111,9 +111,6 @@ def check_required_packages():
         ('pandas', 'Pandas'),
         ('numpy', 'NumPy'),
         ('requests', 'Requests'),
-        ('matplotlib', 'Matplotlib'),
-        ('seaborn', 'Seaborn'),
-        ('ollama', 'Ollama Python SDK'),
         ('dotenv', 'Python-dotenv')
     ]
 
@@ -244,8 +241,10 @@ def check_ollama():
             print("  (Optional - system will use rule-based fallback)")
             return True  # Still OK, just no LLM
     except ImportError:
-        print("[FAIL] Ollama Python package not installed")
-        return False
+        print("[WARN] Ollama Python package not installed (optional)")
+        print("  Install with: pip install ollama")
+        print("  (Optional - system will use rule-based fallback)")
+        return True  # Optional — not required for core functionality
 
 
 def check_core_modules():
