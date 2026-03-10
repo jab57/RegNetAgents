@@ -267,11 +267,14 @@ async def handle_read_resource(uri: AnyUrl) -> Iterable[ReadResourceContents]:
 # Cancer gene panels used by the cancer_biomarker_panel prompt
 # ---------------------------------------------------------------------------
 _CANCER_PANELS = {
-    "colorectal": ["APC", "TP53", "KRAS", "MYC", "CTNNB1"],
-    "breast":     ["BRCA1", "BRCA2", "TP53", "ERBB2", "ESR1"],
-    "lung":       ["KRAS", "EGFR", "TP53", "ALK", "STK11"],
-    "prostate":   ["AR", "TP53", "PTEN", "MYC", "ERG"],
-    "general":    ["TP53", "MYC", "KRAS", "BRCA1", "EGFR"],
+    "colorectal":   ["APC", "TP53", "KRAS", "MYC", "CTNNB1"],
+    "breast":       ["BRCA1", "BRCA2", "TP53", "ERBB2", "ESR1"],
+    "lung":         ["KRAS", "EGFR", "TP53", "ALK", "STK11"],
+    "prostate":     ["AR", "TP53", "PTEN", "MYC", "ERG"],
+    "melanoma":     ["BRAF", "CDKN2A", "TP53", "PTEN", "MITF"],
+    "pancreatic":   ["KRAS", "TP53", "SMAD4", "CDKN2A", "BRCA2"],
+    "glioblastoma": ["EGFR", "TP53", "PTEN", "IDH1", "CDKN2A"],
+    "general":      ["TP53", "MYC", "KRAS", "BRCA1", "EGFR"],
 }
 
 _CELL_TYPES = [
