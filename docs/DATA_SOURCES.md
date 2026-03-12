@@ -484,6 +484,136 @@ with open('network_index.pkl', 'wb') as f:
 
 ---
 
+## TCGA Tumor-State ARACNe Networks (Optional)
+
+RegNetAgents optionally supports **8 TCGA cancer-type-specific ARACNe networks** derived from The Cancer Genome Atlas (TCGA) tumor expression data. These complement the GREmLN cell-type networks with tumor-state regulatory wiring and include **Mode of Action (MoA)** annotations (activation vs. repression) not present in the GREmLN networks.
+
+> **Note for standard users:** TCGA network PKL caches are included in the repository (`models/networks/tcga/`). No separate download is required unless you need to rebuild from source CSVs.
+
+### Supported Cancer Types
+
+| Key    | Cancer Type                              |
+|--------|------------------------------------------|
+| `brca` | Breast Invasive Carcinoma                |
+| `coad` | Colon Adenocarcinoma                     |
+| `hnsc` | Head/Neck Squamous Cell Carcinoma        |
+| `luad` | Lung Adenocarcinoma                      |
+| `lusc` | Lung Squamous Cell Carcinoma             |
+| `ov`   | Ovarian Carcinoma                        |
+| `prad` | Prostate Adenocarcinoma                  |
+| `ucec` | Uterine Corpus Endometrial Carcinoma     |
+
+GBM and LAML are intentionally excluded — no reference network of the appropriate cell lineage exists in RegNetAgents for these cancer types.
+
+### Data Source
+
+**Package**: Bioconductor `aracne.networks` (Lim & Califano, 2018)
+**Source paper**: Lim, W.K. & Califano, A. (2018). "Mapping the hallmarks of lung adenocarcinoma with massively parallel sequencing." *Cell Syst.* 6(4):446–460. doi:10.1016/j.cels.2018.02.011
+**Download URL**: `https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz`
+
+Networks are derived from TCGA tumor RNA-seq data processed through the ARACNe-AP algorithm at the Califano Lab (Columbia University).
+
+### File Format
+
+Each TCGA cancer type provides a CSV at `models/networks/tcga/{ct}/network.csv`:
+
+```
+Regulator,Target,MoA,Likelihood
+TP53,CDKN1A,1.0,0.312
+TP53,MDM2,-1.0,0.251
+...
+```
+
+| Column | Description |
+|--------|-------------|
+| `Regulator` | Gene symbol of the regulatory TF |
+| `Target` | Gene symbol of the target gene |
+| `MoA` | Mode of Action: +1 activation, -1 repression, 0 unknown |
+| `Likelihood` | Edge confidence score (0–1) |
+
+### How to Rebuild from Source (Reproducibility)
+
+The PKL caches are pre-built and included in the repo. To rebuild from scratch:
+
+#### Step 1: Download the Bioconductor tarball
+
+```bash
+# ~213 MB download
+curl -o /tmp/aracne.networks.tar.gz \
+  https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz
+```
+
+#### Step 2: Install required Python packages
+
+```bash
+pip install rdata networkx
+```
+
+#### Step 3: Extract network CSVs
+
+```bash
+python scripts/extract_tcga_networks.py \
+    --tarball /tmp/aracne.networks.tar.gz \
+    --output-dir models/networks/tcga
+```
+
+This reads the Bioconductor `.rda` regulon objects, converts Entrez IDs to gene symbols via [MyGene.info](https://mygene.info) (requires internet, ~5 min), and writes CSVs.
+
+#### Step 4: Build PKL caches
+
+```bash
+# All 8 cancer types
+python scripts/build_tcga_cache.py --all
+
+# Or a single cancer type (faster for testing)
+python scripts/build_tcga_cache.py --cancer-type brca
+```
+
+This computes PageRank, empirical thresholds, and writes `network_index.pkl` for each cancer type. The `--skip-validation` flag skips MyGene.info symbol validation (use for offline/CI builds).
+
+### Network Statistics
+
+| Cancer Type | Genes  | Edges   | Regulons |
+|-------------|--------|---------|----------|
+| brca        | 19,514 | 331,644 | 6,052    |
+| coad        | 19,795 | 413,481 | 6,054    |
+| hnsc        | 19,763 | 422,855 | 6,053    |
+| luad        | 19,742 | 399,216 | 6,053    |
+| lusc        | 19,752 | 454,680 | 6,052    |
+| ov          | 19,154 | 647,002 | 6,005    |
+| prad        | 19,797 | 330,709 | 6,051    |
+| ucec        | 19,735 | 469,523 | 6,053    |
+
+### Usage in RegNetAgents
+
+```python
+from regnetagents_langgraph_mcp_server import get_workflow
+import asyncio
+
+async def main():
+    workflow = await get_workflow()
+    agent = workflow.modeling_agent
+
+    # Network statistics
+    result = agent.query_network("network_stats",
+                                 network_source="tcga", tcga_network="brca")
+
+    # Gene neighbors with MoA
+    result = agent.query_network("gene_neighbors", gene="TP53",
+                                 network_source="tcga", tcga_network="brca")
+
+    # Master regulator analysis
+    result = agent.find_master_regulators(
+        gene_set=["CDKN1A", "MDM2", "BAX", "GADD45A"],
+        network_source="tcga", tcga_network="brca",
+        top_n=10,
+    )
+
+asyncio.run(main())
+```
+
+---
+
 # APPENDIX: For Advanced Users
 
 **⚠️ The following sections are for advanced users who want to generate networks for additional cell types not included in the RegNetAgents tutorial.**

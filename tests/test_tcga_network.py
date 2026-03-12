@@ -87,6 +87,10 @@ def test_load_network_raises_on_unknown_type():
         load_network("fake_cancer")
 
 
+_BRCA_CSV = os.path.join("models", "networks", "tcga", "brca", "network.csv")
+
+
+@pytest.mark.skipif(os.path.exists(_BRCA_CSV), reason="BRCA CSV is present on disk")
 def test_load_network_raises_filenotfound_when_csv_absent():
     from regnetagents.network_loader import load_network
     with pytest.raises(FileNotFoundError):
@@ -190,6 +194,8 @@ async def test_tcga_query_missing_network():
     workflow = await get_workflow()
     agent = workflow.modeling_agent
     _inject_fake_network(agent)
+    # Ensure "ov" is not in the cache (it may have been auto-loaded from disk)
+    agent.tcga_cache.tcga_indices.pop("ov", None)
 
     result = agent.query_network("network_stats",
                                  network_source="tcga", tcga_network="ov")

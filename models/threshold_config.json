@@ -118,5 +118,101 @@
       "moderate": 75
     },
     "n_genes": 1792
+  },
+  "tcga_brca": {
+    "target_high": 57,
+    "target_moderate": 21,
+    "regulator_high": 27,
+    "regulator_moderate": 21,
+    "pagerank_high": 0.4089,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19514
+  },
+  "tcga_coad": {
+    "target_high": 71,
+    "target_moderate": 30,
+    "regulator_high": 32,
+    "regulator_moderate": 25,
+    "pagerank_high": 0.465,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19795
+  },
+  "tcga_hnsc": {
+    "target_high": 72,
+    "target_moderate": 33,
+    "regulator_high": 32,
+    "regulator_moderate": 26,
+    "pagerank_high": 0.3604,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19763
+  },
+  "tcga_luad": {
+    "target_high": 69,
+    "target_moderate": 28,
+    "regulator_high": 31,
+    "regulator_moderate": 24,
+    "pagerank_high": 0.4791,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19742
+  },
+  "tcga_lusc": {
+    "target_high": 79,
+    "target_moderate": 33,
+    "regulator_high": 35,
+    "regulator_moderate": 28,
+    "pagerank_high": 0.3813,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19752
+  },
+  "tcga_ov": {
+    "target_high": 120,
+    "target_moderate": 62,
+    "regulator_high": 46,
+    "regulator_moderate": 40,
+    "pagerank_high": 0.4509,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19154
+  },
+  "tcga_prad": {
+    "target_high": 59,
+    "target_moderate": 21,
+    "regulator_high": 26,
+    "regulator_moderate": 21,
+    "pagerank_high": 0.4203,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19797
+  },
+  "tcga_ucec": {
+    "target_high": 82,
+    "target_moderate": 39,
+    "regulator_high": 36,
+    "regulator_moderate": 29,
+    "pagerank_high": 0.4451,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19735
   }
 }
