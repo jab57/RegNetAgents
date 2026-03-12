@@ -56,6 +56,7 @@ load_dotenv()
 
 # Import existing components
 from regnetagents import GeneIDMapper, CompleteGeneService
+from regnetagents.tcga_registry import TCGA_NETWORK_REGISTRY, TCGA_CANCER_TYPES
 from enum import Enum
 import pickle
 import os
@@ -156,12 +157,84 @@ class RegNetAgentsCache:
             logger.error(f"Models directory not found: {models_dir}")
             logger.error("Please run: python build_network_cache.py --all")
 
+
+class TCGACancerType(Enum):
+    """TCGA ARACNe cancer types supported by RegNetAgents (all epithelial-origin)."""
+    BRCA = "brca"   # Breast Invasive Carcinoma
+    COAD = "coad"   # Colon Adenocarcinoma
+    HNSC = "hnsc"   # Head/Neck Squamous Cell Carcinoma
+    LUAD = "luad"   # Lung Adenocarcinoma
+    LUSC = "lusc"   # Lung Squamous Cell Carcinoma
+    OV   = "ov"     # Ovarian Carcinoma
+    PRAD = "prad"   # Prostate Adenocarcinoma
+    UCEC = "ucec"   # Uterine Corpus Endometrial Carcinoma
+
+
+class TCGANetworkCache:
+    """
+    Cache for TCGA ARACNe tumor-state regulatory networks.
+
+    Loads symbol-keyed PKL files built by scripts/build_tcga_cache.py.
+    Networks are stored separately from GREmLN (RegNetAgentsCache) and are
+    never iterated alongside immune cell types.
+
+    TCGA caches are optional — missing PKL files are silently skipped so
+    that the system degrades gracefully when TCGA data has not been downloaded.
+    """
+
+    def __init__(self):
+        self.tcga_indices: dict = {}
+        self.threshold_config: dict = {}
+        self._load_threshold_config()
+        self._load_tcga_indices()
+
+    def _load_threshold_config(self) -> None:
+        config_path = os.path.join("models", "threshold_config.json")
+        if os.path.exists(config_path):
+            try:
+                with open(config_path) as fh:
+                    self.threshold_config = json.load(fh)
+            except Exception as exc:
+                logger.warning(f"Failed to load threshold_config.json: {exc}")
+
+    def _load_tcga_indices(self) -> None:
+        for cancer_type in TCGA_CANCER_TYPES:
+            pkl_path = os.path.join(
+                "models", "networks", "tcga", cancer_type, "network_index.pkl"
+            )
+            if not os.path.exists(pkl_path):
+                continue
+            try:
+                with open(pkl_path, "rb") as fh:
+                    self.tcga_indices[cancer_type] = pickle.load(fh)
+                logger.info(f"Loaded TCGA cache: {cancer_type}")
+            except Exception as exc:
+                logger.warning(f"Failed to load TCGA cache {pkl_path}: {exc}")
+
+        if self.tcga_indices:
+            logger.info(
+                f"TCGA networks loaded: {sorted(self.tcga_indices)} "
+                f"({len(self.tcga_indices)}/{len(TCGA_CANCER_TYPES)} types)"
+            )
+        else:
+            logger.info(
+                "No TCGA network caches found. "
+                "Download CSVs and run: python scripts/build_tcga_cache.py --all"
+            )
+
+    def get_thresholds(self, cancer_type: str) -> dict:
+        """Return empirical thresholds for a TCGA cancer type key (e.g. 'tcga_brca')."""
+        key = f"tcga_{cancer_type}" if not cancer_type.startswith("tcga_") else cancer_type
+        return self.threshold_config.get(key, RegNetAgentsCache.DEFAULT_THRESHOLDS)
+
+
 class RegNetAgentsModelingAgent:
     """Agent for gene network modeling and analysis."""
-    def __init__(self, cache):
+    def __init__(self, cache, tcga_cache=None):
         self.cache = cache
+        self.tcga_cache = tcga_cache
         self.gene_service = CompleteGeneService()
-        # Initialize gene mapper for ID conversion
+        # Initialize gene mapper for ID conversion (GREmLN networks only)
         self.gene_mapper = GeneIDMapper()
 
     def _convert_ensembl_to_symbol(self, ensembl_id: str) -> str:
@@ -393,21 +466,37 @@ class RegNetAgentsModelingAgent:
 
     def query_network(self, query_type: str, cell_type: str = "epithelial_cell",
                       gene: str = None, top_n: int = 10,
-                      confidence_level: str = "all") -> dict:
+                      confidence_level: str = "all",
+                      network_source: str = "cell_type",
+                      tcga_network: str = None) -> dict:
         """
         Query the pre-computed network cache for instant answers (<50ms).
 
         Args:
             query_type: One of 'top_regulators', 'top_targets', 'gene_neighbors', 'network_stats'
-            cell_type: Cell type network to query
+            cell_type: Cell type network to query (used when network_source='cell_type')
             gene: Gene symbol (required for 'gene_neighbors')
             top_n: Number of results to return for ranked queries
             confidence_level: Edge filter — 'all' (no filter), 'medium' (MI>0.05),
                               or 'high' (MI>0.1 AND bootstrap_count>=3)
+            network_source: 'cell_type' (default, GREmLN) or 'tcga' (tumor-state ARACNe)
+            tcga_network: TCGA cancer type key required when network_source='tcga'
+                          (e.g. 'brca', 'luad').  Ignored for network_source='cell_type'.
 
         Returns:
             dict with query results
         """
+        # --- TCGA path ---------------------------------------------------
+        if network_source == "tcga":
+            return self._query_tcga_network(
+                query_type=query_type,
+                tcga_network=tcga_network,
+                gene=gene,
+                top_n=top_n,
+                confidence_level=confidence_level,
+            )
+
+        # --- GREmLN path (original) --------------------------------------
         network_data = self.cache.network_indices.get(cell_type, {})
 
         if not network_data:
@@ -592,8 +681,201 @@ class RegNetAgentsModelingAgent:
                 "message": f"Unknown query_type '{query_type}'. Valid types: top_regulators, top_targets, gene_neighbors, network_stats"
             }
 
+    # ------------------------------------------------------------------
+    # TCGA network query (symbol-keyed, no GeneIDMapper)
+    # ------------------------------------------------------------------
+
+    def _query_tcga_network(
+        self,
+        query_type: str,
+        tcga_network: str = None,
+        gene: str = None,
+        top_n: int = 10,
+        confidence_level: str = "all",
+    ) -> dict:
+        """Query a TCGA tumor-state ARACNe network (symbol-keyed PKL)."""
+        if not tcga_network:
+            return {
+                "error": True,
+                "query_type": query_type,
+                "message": "tcga_network is required when network_source='tcga' "
+                           f"(e.g. 'brca', 'luad'). Valid types: {TCGA_CANCER_TYPES}",
+            }
+
+        if self.tcga_cache is None:
+            return {
+                "error": True,
+                "query_type": query_type,
+                "message": "TCGA cache is not initialised. "
+                           "Run: python scripts/build_tcga_cache.py --all",
+            }
+
+        network_data = self.tcga_cache.tcga_indices.get(tcga_network, {})
+        if not network_data:
+            return {
+                "error": True,
+                "query_type": query_type,
+                "tcga_network": tcga_network,
+                "message": (
+                    f"No TCGA network loaded for '{tcga_network}'. "
+                    f"Available: {sorted(self.tcga_cache.tcga_indices) or 'none — run build_tcga_cache.py'}. "
+                    f"Valid cancer types: {TCGA_CANCER_TYPES}"
+                ),
+            }
+
+        regulator_targets = network_data.get("regulator_targets", {})
+        target_regulators = network_data.get("target_regulators", {})
+        all_genes = network_data.get("all_genes", [])
+        pagerank = network_data.get("pagerank_normalized", {})
+        mi_scores = network_data.get("regulator_target_mi", {})
+        moa_scores = network_data.get("regulator_target_moa", {})
+
+        # TCGA PKLs store Likelihood as "mi" and have no bootstrap counts
+        # Confidence filtering uses Likelihood as the edge weight
+        valid_levels = ("all", "medium", "high")
+        if confidence_level not in valid_levels:
+            return {
+                "error": True,
+                "query_type": query_type,
+                "message": f"Invalid confidence_level '{confidence_level}'. Valid values: {valid_levels}",
+            }
+
+        def passes_filter(reg: str, tgt: str) -> bool:
+            if confidence_level == "all":
+                return True
+            likelihood = mi_scores.get(reg, {}).get(tgt, 0.0)
+            if confidence_level == "medium":
+                return likelihood > 0.05
+            # high — TCGA has no bootstrap counts; use likelihood threshold only
+            return likelihood > 0.1
+
+        context_label = f"tcga_{tcga_network}"
+
+        if query_type == "top_regulators":
+            items = [
+                (sym, [t for t in targets if passes_filter(sym, t)])
+                for sym, targets in regulator_targets.items()
+            ]
+            items.sort(key=lambda x: len(x[1]), reverse=True)
+            results = []
+            for sym, targets in items[:top_n]:
+                entry = {"gene": sym, "num_targets": len(targets)}
+                if pagerank:
+                    entry["pagerank"] = round(pagerank.get(sym, 0.0), 6)
+                results.append(entry)
+            return {
+                "query_type": query_type,
+                "network_source": "tcga",
+                "tcga_network": tcga_network,
+                "confidence_level": confidence_level,
+                "top_n": top_n,
+                "results": results,
+            }
+
+        elif query_type == "top_targets":
+            items = [
+                (sym, [r for r in regulators if passes_filter(r, sym)])
+                for sym, regulators in target_regulators.items()
+            ]
+            items.sort(key=lambda x: len(x[1]), reverse=True)
+            results = [
+                {"gene": sym, "num_regulators": len(regulators)}
+                for sym, regulators in items[:top_n]
+            ]
+            return {
+                "query_type": query_type,
+                "network_source": "tcga",
+                "tcga_network": tcga_network,
+                "confidence_level": confidence_level,
+                "top_n": top_n,
+                "results": results,
+            }
+
+        elif query_type == "gene_neighbors":
+            if not gene:
+                return {
+                    "error": True,
+                    "query_type": query_type,
+                    "message": "The 'gene' parameter is required for 'gene_neighbors' queries",
+                }
+            gene_upper = gene.strip().upper()
+            all_genes_set = set(all_genes)
+            if gene_upper not in all_genes_set:
+                return {
+                    "error": True,
+                    "query_type": query_type,
+                    "gene": gene_upper,
+                    "tcga_network": tcga_network,
+                    "message": f"Gene '{gene_upper}' not found in TCGA {tcga_network} network",
+                }
+
+            target_list = []
+            for tgt in regulator_targets.get(gene_upper, []):
+                if not passes_filter(gene_upper, tgt):
+                    continue
+                entry: dict = {"gene": tgt}
+                likelihood = mi_scores.get(gene_upper, {}).get(tgt)
+                if likelihood is not None:
+                    entry["likelihood"] = round(likelihood, 6)
+                moa = moa_scores.get(gene_upper, {}).get(tgt)
+                if moa is not None:
+                    entry["moa"] = moa
+                target_list.append(entry)
+
+            regulator_list = []
+            for reg in target_regulators.get(gene_upper, []):
+                if not passes_filter(reg, gene_upper):
+                    continue
+                entry = {"gene": reg}
+                likelihood = mi_scores.get(reg, {}).get(gene_upper)
+                if likelihood is not None:
+                    entry["likelihood"] = round(likelihood, 6)
+                moa = moa_scores.get(reg, {}).get(gene_upper)
+                if moa is not None:
+                    entry["moa"] = moa
+                regulator_list.append(entry)
+
+            return {
+                "query_type": query_type,
+                "gene": gene_upper,
+                "network_source": "tcga",
+                "tcga_network": tcga_network,
+                "confidence_level": confidence_level,
+                "num_targets": len(target_list),
+                "targets": target_list,
+                "num_regulators": len(regulator_list),
+                "regulators": regulator_list,
+            }
+
+        elif query_type == "network_stats":
+            num_genes = len(all_genes)
+            num_edges = sum(len(v) for v in regulator_targets.values())
+            num_regulons = len(regulator_targets)
+            return {
+                "query_type": query_type,
+                "network_source": "tcga",
+                "tcga_network": tcga_network,
+                "label": TCGA_NETWORK_REGISTRY.get(tcga_network, {}).get("label", tcga_network),
+                "num_genes": num_genes,
+                "num_edges": num_edges,
+                "num_regulons": num_regulons,
+                "avg_out_degree": round(num_edges / num_regulons, 2) if num_regulons else 0.0,
+                "avg_in_degree": round(num_edges / len(target_regulators), 2) if target_regulators else 0.0,
+                "density": round(num_edges / (num_genes * (num_genes - 1)), 6) if num_genes > 1 else 0.0,
+                "has_moa": bool(moa_scores),
+            }
+
+        else:
+            return {
+                "error": True,
+                "query_type": query_type,
+                "message": f"Unknown query_type '{query_type}'. Valid types: top_regulators, top_targets, gene_neighbors, network_stats",
+            }
+
     def find_master_regulators(self, gene_set: list, cell_type: str = "epithelial_cell",
-                               top_n: int = 10) -> dict:
+                               top_n: int = 10,
+                               network_source: str = "cell_type",
+                               tcga_network: str = None) -> dict:
         """
         Identify transcription factors that significantly drive a gene signature.
 
@@ -602,13 +884,22 @@ class RegNetAgentsModelingAgent:
 
         Args:
             gene_set: List of gene symbols (e.g., from an RNA-seq experiment)
-            cell_type: Cell type network to use
+            cell_type: Cell type network to use (when network_source='cell_type')
             top_n: Number of top master regulators to return
+            network_source: 'cell_type' (default, GREmLN) or 'tcga'
+            tcga_network: TCGA cancer type key required when network_source='tcga'
 
         Returns:
             dict with ranked master regulators and query summary
         """
         from scipy.stats import fisher_exact
+
+        if network_source == "tcga":
+            return self._find_master_regulators_tcga(
+                gene_set=gene_set,
+                tcga_network=tcga_network,
+                top_n=top_n,
+            )
 
         network_data = self.cache.network_indices.get(cell_type, {})
         if not network_data:
@@ -704,6 +995,114 @@ class RegNetAgentsModelingAgent:
                 "cell_type": cell_type,
                 "total_regulators_tested": len(results)
             }
+        }
+
+    def _find_master_regulators_tcga(
+        self,
+        gene_set: list,
+        tcga_network: str = None,
+        top_n: int = 10,
+    ) -> dict:
+        """Master regulator analysis against a TCGA tumor-state network (symbol-keyed)."""
+        from scipy.stats import fisher_exact
+
+        if not tcga_network:
+            return {
+                "error": True,
+                "message": "tcga_network is required when network_source='tcga'. "
+                           f"Valid types: {TCGA_CANCER_TYPES}",
+            }
+
+        if self.tcga_cache is None:
+            return {
+                "error": True,
+                "message": "TCGA cache is not initialised. "
+                           "Run: python scripts/build_tcga_cache.py --all",
+            }
+
+        network_data = self.tcga_cache.tcga_indices.get(tcga_network, {})
+        if not network_data:
+            return {
+                "error": True,
+                "message": (
+                    f"No TCGA network loaded for '{tcga_network}'. "
+                    f"Available: {sorted(self.tcga_cache.tcga_indices) or 'none'}."
+                ),
+            }
+
+        regulator_targets = network_data.get("regulator_targets", {})
+        all_genes = network_data.get("all_genes", [])
+        network_size = len(all_genes)
+        all_genes_set = set(all_genes)
+
+        # TCGA PKLs are symbol-keyed — no Ensembl conversion needed
+        gene_set_symbols: set = set()
+        not_found: list = []
+        for symbol in gene_set:
+            sym_upper = symbol.strip().upper()
+            if sym_upper in all_genes_set:
+                gene_set_symbols.add(sym_upper)
+            else:
+                not_found.append(sym_upper)
+
+        gene_set_found = len(gene_set_symbols)
+
+        if gene_set_found == 0:
+            return {
+                "error": True,
+                "message": "None of the input genes were found in the TCGA network.",
+                "genes_not_found": not_found,
+            }
+
+        results = []
+        for reg_sym, targets in regulator_targets.items():
+            targets_set = set(targets)
+            regulon_size = len(targets_set)
+            if regulon_size == 0:
+                continue
+
+            overlap = gene_set_symbols & targets_set
+            overlap_count = len(overlap)
+            if overlap_count == 0:
+                continue
+
+            a = overlap_count
+            b = regulon_size - overlap_count
+            c = gene_set_found - overlap_count
+            d = max(0, network_size - regulon_size - gene_set_found + overlap_count)
+
+            _, p_value = fisher_exact([[a, b], [c, d]], alternative="greater")
+
+            enrichment_score = (overlap_count / regulon_size) / (gene_set_found / network_size)
+
+            results.append({
+                "gene": reg_sym,
+                "regulon_size": regulon_size,
+                "overlap_count": overlap_count,
+                "enrichment_score": round(enrichment_score, 4),
+                "p_value": p_value,
+                "overlapping_genes": sorted(overlap),
+            })
+
+        results.sort(key=lambda x: (x["p_value"], -x["enrichment_score"]))
+
+        top_results = []
+        for i, r in enumerate(results[:top_n], start=1):
+            r["rank"] = i
+            r["p_value"] = round(r["p_value"], 6)
+            top_results.append(r)
+
+        return {
+            "master_regulators": top_results,
+            "query_summary": {
+                "gene_set_size": len(gene_set),
+                "genes_found_in_network": gene_set_found,
+                "genes_not_found": not_found,
+                "network_size": network_size,
+                "network_source": "tcga",
+                "tcga_network": tcga_network,
+                "total_regulators_tested": len(results),
+            },
         }
 
     async def compare_gene_across_cell_types(self, gene: str):
@@ -2146,7 +2545,8 @@ class RegNetAgentsWorkflow:
         and conditional routing logic.
         """
         self.cache = RegNetAgentsCache()
-        self.modeling_agent = RegNetAgentsModelingAgent(self.cache)
+        self.tcga_cache = TCGANetworkCache()
+        self.modeling_agent = RegNetAgentsModelingAgent(self.cache, self.tcga_cache)
         self.integration_agent = CrossSystemIntegrationAgent(self.cache)
         self.pathway_enricher = PathwayEnricherAgent()
         self.domain_agents = DomainAnalysisAgents(self.cache)

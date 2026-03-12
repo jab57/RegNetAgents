@@ -998,6 +998,12 @@ async def handle_list_tools() -> list[Tool]:
                         "enum": ["top_regulators", "top_targets", "gene_neighbors", "network_stats"],
                         "description": "Type of network query to run"
                     },
+                    "network_source": {
+                        "type": "string",
+                        "enum": ["cell_type", "tcga"],
+                        "description": "'cell_type' (default) queries population-averaged GREmLN networks. 'tcga' queries tumor-state ARACNe networks — also set tcga_network.",
+                        "default": "cell_type"
+                    },
                     "cell_type": {
                         "type": "string",
                         "enum": [
@@ -1006,8 +1012,13 @@ async def handle_list_tools() -> list[Tool]:
                             "erythrocytes", "nk_cells", "nkt_cells",
                             "monocyte-derived_dendritic_cells"
                         ],
-                        "description": "Cell type network to query",
+                        "description": "Cell type network to query (used when network_source='cell_type')",
                         "default": "epithelial_cell"
+                    },
+                    "tcga_network": {
+                        "type": "string",
+                        "enum": ["brca", "coad", "hnsc", "luad", "lusc", "ov", "prad", "ucec"],
+                        "description": "TCGA cancer type to query (required when network_source='tcga'). brca=breast, coad=colon, hnsc=head/neck, luad=lung adeno, lusc=lung squamous, ov=ovarian, prad=prostate, ucec=uterine."
                     },
                     "gene": {
                         "type": "string",
@@ -1021,7 +1032,7 @@ async def handle_list_tools() -> list[Tool]:
                     "confidence_level": {
                         "type": "string",
                         "enum": ["all", "medium", "high"],
-                        "description": "Edge confidence filter based on ARACNe MI score and bootstrap count. 'all' = no filter (default), 'medium' = MI>0.05, 'high' = MI>0.1 AND bootstrap_count>=3",
+                        "description": "Edge confidence filter. 'all' = no filter (default), 'medium' = likelihood>0.05, 'high' = likelihood>0.1. For TCGA networks bootstrap counts are unavailable; 'high' uses likelihood only.",
                         "default": "all"
                     }
                 },
@@ -1109,6 +1120,12 @@ async def handle_list_tools() -> list[Tool]:
                         "items": {"type": "string"},
                         "description": "List of gene symbols (e.g., differentially expressed genes)"
                     },
+                    "network_source": {
+                        "type": "string",
+                        "enum": ["cell_type", "tcga"],
+                        "description": "'cell_type' (default) uses population-averaged GREmLN networks. 'tcga' uses tumor-state ARACNe networks — also set tcga_network.",
+                        "default": "cell_type"
+                    },
                     "cell_type": {
                         "type": "string",
                         "enum": [
@@ -1117,8 +1134,13 @@ async def handle_list_tools() -> list[Tool]:
                             "erythrocytes", "nk_cells", "nkt_cells",
                             "monocyte-derived_dendritic_cells"
                         ],
-                        "description": "Cell type network to use",
+                        "description": "Cell type network to use (when network_source='cell_type')",
                         "default": "epithelial_cell"
+                    },
+                    "tcga_network": {
+                        "type": "string",
+                        "enum": ["brca", "coad", "hnsc", "luad", "lusc", "ov", "prad", "ucec"],
+                        "description": "TCGA cancer type (required when network_source='tcga')"
                     },
                     "top_n": {
                         "type": "integer",
@@ -1447,12 +1469,15 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
 
         elif name == "query_network":
             query_type = arguments["query_type"]
+            network_source = arguments.get("network_source", "cell_type")
             cell_type = arguments.get("cell_type", "epithelial_cell")
+            tcga_network = arguments.get("tcga_network", None)
             gene = arguments.get("gene", None)
             top_n = arguments.get("top_n", 10)
             confidence_level = arguments.get("confidence_level", "all")
 
-            logger.info(f"Network query: {query_type} in {cell_type}" +
+            context = f"tcga/{tcga_network}" if network_source == "tcga" else cell_type
+            logger.info(f"Network query: {query_type} in {context}" +
                         (f" for {gene}" if gene else "") +
                         (f" [{confidence_level} confidence]" if confidence_level != "all" else ""))
 
@@ -1461,7 +1486,9 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 cell_type=cell_type,
                 gene=gene,
                 top_n=top_n,
-                confidence_level=confidence_level
+                confidence_level=confidence_level,
+                network_source=network_source,
+                tcga_network=tcga_network,
             )
 
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
@@ -1532,15 +1559,20 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
 
         elif name == "find_master_regulators":
             gene_set = arguments["gene_set"]
+            network_source = arguments.get("network_source", "cell_type")
             cell_type = arguments.get("cell_type", "epithelial_cell")
+            tcga_network = arguments.get("tcga_network", None)
             top_n = arguments.get("top_n", 10)
 
-            logger.info(f"Finding master regulators for {len(gene_set)}-gene set in {cell_type}")
+            context = f"tcga/{tcga_network}" if network_source == "tcga" else cell_type
+            logger.info(f"Finding master regulators for {len(gene_set)}-gene set in {context}")
 
             result = workflow.modeling_agent.find_master_regulators(
                 gene_set=gene_set,
                 cell_type=cell_type,
-                top_n=top_n
+                top_n=top_n,
+                network_source=network_source,
+                tcga_network=tcga_network,
             )
 
             return [TextContent(type="text", text=json.dumps(result, indent=2))]

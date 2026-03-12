@@ -24,10 +24,11 @@ Which transcription factors are most likely driving this signature in epithelial
 
 ## Data Sources
 
-- **Primary Source**: [GREmLN Foundation Model](https://github.com/czi-ai/GREmLN) (Zhang et al. 2025)
-- **Networks**: 10 cell-type-specific ARACNe networks from 500K+ single cells
-- **Underlying Data**: CELLxGENE Census 2024-07-01
-- **Development**: CZ Biohub NY / Columbia University (Califano Lab)
+**Bundled (no download required):**
+- **GREmLN** (Zhang et al. 2025): 10 cell-type-specific ARACNe networks, population-averaged from 500K+ single cells (CELLxGENE Census 2024-07-01, CZ Biohub NY / Columbia University Califano Lab)
+
+**Optional — tumor-state networks:**
+- **TCGA ARACNe** (Lim & Califano): 8 cancer-type-specific networks (brca, coad, hnsc, luad, lusc, ov, prad, ucec). Download CSVs from [Figshare](https://figshare.com/s/5d1ffd9f8b2e86e37ed6), then run `python scripts/build_tcga_cache.py --all`.
 
 See [DATA_SOURCES.md](docs/DATA_SOURCES.md) for complete details.
 
@@ -212,8 +213,8 @@ Key environment variables (set in `.env`):
 | Tool | Description |
 |------|-------------|
 | `validate_gene` | Quick gene name check with fuzzy suggestions (<100ms) |
-| `query_network` | Instant network queries — top regulators, targets, neighbors, stats (<50ms); supports ARACNe edge confidence filtering (MI score, bootstrap count) |
-| `find_master_regulators` | Identify TFs driving a gene signature (Fisher's exact test enrichment) |
+| `query_network` | Instant network queries — top regulators, targets, neighbors, stats (<50ms); supports GREmLN (`network_source="cell_type"`) and TCGA tumor-state networks (`network_source="tcga"`) |
+| `find_master_regulators` | Identify TFs driving a gene signature (Fisher's exact test enrichment); works with both GREmLN and TCGA networks |
 | `comprehensive_gene_analysis` | Full analysis with domain insights |
 | `multi_gene_analysis` | Parallel processing of multiple genes |
 | `pathway_focused_analysis` | Reactome pathway enrichment |
@@ -289,8 +290,9 @@ RegNetAgents/
 ├── regnetagents_langgraph_workflow.py    # Core workflow
 ├── regnetagents/                          # Package
 ├── examples/                              # Minimal usage examples
-│   └── quickstart.py                     # Single-gene quick start
-├── models/networks/                       # Network data (10 cell types)
+│   ├── quickstart.py                     # Single-gene quick start
+│   └── tcga_query.py                     # TCGA tumor-state network example
+├── models/networks/                       # Network data (10 GREmLN cell types + optional TCGA)
 ├── tests/                                 # Test suite
 ├── docs/                                  # Documentation
 └── scripts/                               # Utilities

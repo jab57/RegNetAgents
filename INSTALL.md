@@ -369,6 +369,61 @@ After completing installation, you have:
 **Optional:**
 - Ollama with llama3.1:8b model (4.7GB)
 - 4 specialized domain analysis agents (cancer, drug, clinical, systems)
+- TCGA tumor-state ARACNe networks (8 cancer types — see below)
+
+---
+
+## Optional: TCGA Tumor-State Networks
+
+RegNetAgents supports a second set of regulatory networks derived from TCGA
+bulk RNA-seq data via ARACNe (Lim & Califano).  These are **not bundled** in
+the repository — they must be downloaded separately.
+
+**Supported cancer types:** brca, coad, hnsc, luad, lusc, ov, prad, ucec
+(all epithelial-origin; GBM and LAML excluded — see DATA_SOURCES.md)
+
+### Step 1: Download CSVs from Figshare (~100 MB total)
+
+```
+https://figshare.com/s/5d1ffd9f8b2e86e37ed6
+```
+
+Download the CSV files (e.g. `brca_regul.csv`) and place them — renamed to
+`network.csv` — at:
+
+```
+models/networks/tcga/brca/network.csv
+models/networks/tcga/coad/network.csv
+models/networks/tcga/hnsc/network.csv
+models/networks/tcga/luad/network.csv
+models/networks/tcga/lusc/network.csv
+models/networks/tcga/ov/network.csv
+models/networks/tcga/prad/network.csv
+models/networks/tcga/ucec/network.csv
+```
+
+### Step 2: Build the caches
+
+```bash
+# Build all 8 TCGA caches (requires internet for MyGene.info validation)
+python scripts/build_tcga_cache.py --all
+
+# Or build a single cancer type
+python scripts/build_tcga_cache.py --cancer-type brca
+```
+
+Each build takes ~30–60 seconds per cancer type (symbol validation + PageRank
++ threshold computation). Caches are written to
+`models/networks/tcga/{cancer_type}/network_index.pkl`.
+
+### Step 3: Verify
+
+```bash
+python examples/tcga_query.py
+```
+
+The example prints network stats, TP53 targets with Mode of Action, and a
+master regulator analysis for BRCA — confirming the TCGA networks loaded.
 
 ---
 
