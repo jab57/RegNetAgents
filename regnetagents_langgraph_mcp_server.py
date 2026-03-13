@@ -1151,6 +1151,57 @@ async def handle_list_tools() -> list[Tool]:
                 "required": ["gene_set"]
             }
         ),
+        Tool(
+            name="compare_network_contexts",
+            description="""
+            Compare regulatory wiring for a gene across population-averaged (GREmLN) and
+            tumor-state (TCGA) network contexts in a single call.
+
+            Instead of making two separate query_network calls and comparing manually, this
+            tool runs both queries internally, computes regulator and target overlap, and
+            returns a structured comparison showing:
+            - Which regulators are conserved across both contexts
+            - Which regulators appear only in population-averaged wiring (lost in tumor)
+            - Which regulators appear only in tumor-state wiring (emerge in tumor)
+            - A regulatory rewiring classification (low / moderate / high)
+
+            Rewiring is classified by Jaccard overlap of regulator sets:
+            - >= 0.6 conserved fraction → "low" rewiring (stable regulatory program)
+            - 0.3–0.6 → "moderate" rewiring
+            - < 0.3 → "high" rewiring (substantially different tumor-state program)
+
+            Example questions this answers:
+            - "Which MYC regulators are conserved in colorectal vs. epithelial context?"
+            - "How different is ESR1's regulatory wiring in BRCA vs. normal epithelium?"
+            - "What regulators emerge specifically in ovarian cancer for TP53?"
+            """,
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "gene": {
+                        "type": "string",
+                        "description": "Gene symbol (e.g. 'MYC', 'TP53', 'ESR1')"
+                    },
+                    "cancer_type": {
+                        "type": "string",
+                        "enum": ["brca", "coad", "hnsc", "luad", "lusc", "ov", "prad", "ucec"],
+                        "description": "TCGA cancer type for the tumor-state context"
+                    },
+                    "cell_type": {
+                        "type": "string",
+                        "enum": [
+                            "epithelial_cell", "cd14_monocytes", "cd16_monocytes",
+                            "cd20_b_cells", "cd4_t_cells", "cd8_t_cells",
+                            "erythrocytes", "nk_cells", "nkt_cells",
+                            "monocyte-derived_dendritic_cells"
+                        ],
+                        "description": "GREmLN reference context (default: epithelial_cell)",
+                        "default": "epithelial_cell"
+                    }
+                },
+                "required": ["gene", "cancer_type"]
+            }
+        ),
     ]
 
 @server.call_tool()
@@ -1597,6 +1648,23 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 text = _format_csv(gene.upper(), cell_type, result, sections)
 
             return [TextContent(type="text", text=text)]
+
+        elif name == "compare_network_contexts":
+            from regnetagents.context_comparison import compare_network_contexts
+            gene        = arguments["gene"]
+            cancer_type = arguments["cancer_type"]
+            cell_type   = arguments.get("cell_type", "epithelial_cell")
+
+            logger.info(f"Comparing network contexts for {gene}: {cell_type} vs tcga/{cancer_type}")
+
+            result = compare_network_contexts(
+                agent=workflow.modeling_agent,
+                gene=gene,
+                cancer_type=cancer_type,
+                cell_type=cell_type,
+            )
+
+            return [TextContent(type="text", text=json.dumps(result, indent=2))]
 
         else:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]
