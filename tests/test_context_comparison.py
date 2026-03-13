@@ -94,10 +94,8 @@ def test_rewiring_classification_low():
             # Both contexts return the same 10 regulators → fraction = 1.0
             return {
                 "error": False,
-                "gene_neighbors": {
-                    "regulators": [{"gene": f"TF{i}"} for i in range(10)],
-                    "targets":    [],
-                }
+                "regulators": [{"gene": f"TF{i}"} for i in range(10)],
+                "targets":    [],
             }
 
     result = _cmp(_FakeAgent(), "GENE", "brca")
@@ -119,10 +117,8 @@ def test_rewiring_classification_high():
             start = 0 if self._call == 1 else 10
             return {
                 "error": False,
-                "gene_neighbors": {
-                    "regulators": [{"gene": f"TF{i}"} for i in range(start, start + 10)],
-                    "targets":    [],
-                }
+                "regulators": [{"gene": f"TF{i}"} for i in range(start, start + 10)],
+                "targets":    [],
             }
 
     result = _cmp(_FakeAgent(), "GENE", "brca")

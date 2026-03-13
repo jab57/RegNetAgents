@@ -64,29 +64,19 @@ def compare_network_contexts(
         }
 
     # --- Extract regulator and target sets -----------------------------------
-    pop_neighbors   = pop_result.get("gene_neighbors", {})
-    tumor_neighbors = tumor_result.get("gene_neighbors", {})
-
-    # GREmLN gene_neighbors returns lists of dicts with "gene" key
-    def _extract_symbols_from_gremln(entries) -> set:
+    # Both GREmLN and TCGA gene_neighbors return regulators/targets at the
+    # top level of the result dict (not nested under a "gene_neighbors" key).
+    def _extract_symbols(entries) -> set:
         if not entries:
             return set()
         if isinstance(entries[0], dict):
             return {e["gene"] for e in entries if "gene" in e}
         return set(entries)
 
-    # TCGA gene_neighbors returns lists of dicts with "gene" key (same shape)
-    def _extract_symbols_from_tcga(entries) -> set:
-        if not entries:
-            return set()
-        if isinstance(entries[0], dict):
-            return {e["gene"] for e in entries if "gene" in e}
-        return set(entries)
-
-    pop_regulators   = _extract_symbols_from_gremln(pop_neighbors.get("regulators", []))
-    pop_targets      = _extract_symbols_from_gremln(pop_neighbors.get("targets", []))
-    tumor_regulators = _extract_symbols_from_tcga(tumor_neighbors.get("regulators", []))
-    tumor_targets    = _extract_symbols_from_tcga(tumor_neighbors.get("targets", []))
+    pop_regulators   = _extract_symbols(pop_result.get("regulators", []))
+    pop_targets      = _extract_symbols(pop_result.get("targets", []))
+    tumor_regulators = _extract_symbols(tumor_result.get("regulators", []))
+    tumor_targets    = _extract_symbols(tumor_result.get("targets", []))
 
     # --- Compute overlaps ----------------------------------------------------
     reg_conserved    = sorted(pop_regulators & tumor_regulators)
