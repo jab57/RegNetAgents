@@ -76,7 +76,7 @@ Compare MYC regulatory wiring between epithelial cells and colorectal tumor cont
 
 ## Example Application: Colorectal Cancer Gene Panel
 
-The following output is from a five-gene colorectal cancer panel (MYC, CTNNB1, CCND1, TP53, KRAS in epithelial cells). The system identified 99 upstream regulators across all five genes and characterized each gene's network role, top upstream regulator by PageRank, and enriched pathway count:
+The following output is from a five-gene colorectal cancer panel (MYC, CTNNB1, CCND1, TP53, KRAS) analyzed in the GREmLN epithelial cell network (population-averaged). The system identified 99 upstream regulators across all five genes and characterized each gene's network role, top upstream regulator by PageRank, and enriched pathway count:
 
 ```
 Genes: MYC, CTNNB1, CCND1, TP53, KRAS | Cell Type: epithelial_cell
