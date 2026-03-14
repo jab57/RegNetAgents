@@ -18,6 +18,7 @@ Analyze the TP53 gene in epithelial cells
 Compare MYC, TP53, and KRAS across different cell types
 These genes are upregulated in my RNA-seq experiment: TP53, CDKN1A, MDM2, BAX, CCND1.
 Which transcription factors are most likely driving this signature in epithelial cells?
+Compare MYC regulatory wiring between epithelial cells and colorectal tumor context
 ```
 
 ---
