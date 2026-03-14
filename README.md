@@ -149,6 +149,27 @@ For a minimal single-gene example (2–5 seconds, no API keys needed):
 python examples/quickstart.py
 ```
 
+```
+RegNetAgents Quick Start — analyzing TP53 in epithelial_cell
+------------------------------------------------------------
+
+Network topology (epithelial_cell):
+  Regulatory role        : hub_regulator
+  Upstream regulators    : 7
+  Downstream targets     : 163
+  Top upstream regulator : WWTR1 (PageRank: 0.473)
+
+Pathway enrichment:
+  Total pathways         : 16
+  Significant (FDR<0.05) : 16
+
+Domain insights (rule-based):
+  Oncogenic potential    : low
+  Druggability           : high
+------------------------------------------------------------
+Done.
+```
+
 For a full multi-gene panel example:
 
 ```bash
