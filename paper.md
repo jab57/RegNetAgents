@@ -1,5 +1,5 @@
 ---
-title: 'RegNetAgents: A Multi-Agent LLM System for Gene Regulatory Network Analysis'
+title: 'RegNetAgents: A Multi-Agent System for Gene Regulatory Network Interpretation'
 tags:
   - Python
   - multi-agent systems

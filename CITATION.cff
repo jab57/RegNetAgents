@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: RegNetAgents
+title: 'RegNetAgents: A Multi-Agent System for Gene Regulatory Network Interpretation'
 message: "If you use this software, please cite it as below."
 type: software
 authors:
@@ -17,7 +17,7 @@ keywords:
   - gene-regulatory-networks
   - multi-agent-systems
   - bioinformatics
-  - llm
+  - deterministic-workflows
   - langgraph
 abstract: >-
   RegNetAgents is a Python package for automated downstream analysis of

@@ -4,7 +4,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18500027.svg)](https://doi.org/10.5281/zenodo.18500027)
 
-**Multi-Agent LLM Framework for Gene Regulatory Network Analysis**
+**Multi-Agent System for Gene Regulatory Network Interpretation**
 
 Analyzing a gene regulatory network typically means hours of manual database queries across STRING, Reactome, and BioGRID — one gene at a time. RegNetAgents automates the entire workflow: ask a question in plain English through Claude Desktop or any MCP-compatible client, and get a full multi-domain regulatory analysis in seconds.
 
