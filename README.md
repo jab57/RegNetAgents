@@ -170,6 +170,34 @@ Domain insights (rule-based):
 Done.
 ```
 
+For cross-context comparison (GREmLN vs TCGA):
+
+```bash
+python examples/context_comparison.py
+```
+
+```
+Comparing MYC regulatory wiring:
+  Population-averaged context : epithelial_cell (GREmLN)
+  Tumor-state context         : tcga_coad (colorectal)
+
+Gene: MYC
+Regulatory rewiring: HIGH
+Regulator conserved fraction: 0.0%
+
+--- Regulators ---
+  Population-averaged total : 25
+  Tumor-state total         : 16
+  Conserved (0)             : none
+  Population-averaged only  : BCL11A, CHD2, EGR1, EGR2, FOS, HEY1, ID4, ...
+  Tumor-state only (16)     : CARM1, MEF2C, RNF43, TACSTD2, WT1, ...
+
+--- Targets ---
+  Population-averaged total : 427
+  Tumor-state total         : 189
+  Conserved                 : 5 (0.8%)
+```
+
 For a full multi-gene panel example:
 
 ```bash
