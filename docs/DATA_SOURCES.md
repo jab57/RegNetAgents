@@ -132,7 +132,7 @@ This is how the RegNetAgents networks were originally obtained. Follow these ste
 # 1. Install gdown
 pip install gdown
 
-# 2. Download the RegNetAgents tutorial folder
+# 2. Download the GREmLN tutorial folder
 gdown --folder https://drive.google.com/drive/folders/1cMR9HoAC22i6sKSWgfQUEQRf0UP_w3_m?usp=sharing
 
 # 3. Navigate into the downloaded folder and copy networks
@@ -155,7 +155,7 @@ Go to: [GREmLN Quickstart Tutorial](https://virtualcellmodels.cziscience.com/qui
 #### Step 2: Locate the Download Links
 
 On the tutorial page, find the Google Drive download links for:
-- RegNetAgents model weights (`model.ckpt`)
+- GREmLN model weights (`model.ckpt`)
 - Tutorial data package (includes networks and datasets)
 
 #### Step 3: Download Using gdown
@@ -163,7 +163,7 @@ On the tutorial page, find the Google Drive download links for:
 The tutorial provides a Google Drive folder link. Use this exact command:
 
 ```bash
-# Download the entire RegNetAgents tutorial folder from Google Drive
+# Download the entire GREmLN tutorial folder from Google Drive
 # This creates a folder named "GREmLN_tutorial" in your current directory
 gdown --folder https://drive.google.com/drive/folders/1cMR9HoAC22i6sKSWgfQUEQRf0UP_w3_m?usp=sharing
 ```
@@ -176,7 +176,7 @@ gdown --folder https://drive.google.com/drive/folders/1cMR9HoAC22i6sKSWgfQUEQRf0
 The downloaded folder contains:
 - `data/` - H5AD datasets (human_immune_cells.h5ad, epithelial_cells.h5ad)
 - `networks/` - Pre-computed ARACNe networks for all 10 cell types (network.tsv files)
-- `model.ckpt` - RegNetAgents model weights
+- `model.ckpt` - GREmLN model weights
 - `.DS_Store` - System file (can be ignored)
 
 #### Step 4: Verify What You Downloaded
@@ -211,7 +211,7 @@ GREmLN_tutorial/
     nkt_cells/network.tsv
     monocyte-derived_dendritic_cells/network.tsv
     epithelial_cell/network.tsv
-  model.ckpt              # RegNetAgents trained model weights
+  model.ckpt              # GREmLN trained model weights
   .DS_Store               # System file (ignore)
 ```
 
@@ -531,14 +531,13 @@ TP53,MDM2,-1.0,0.251
 | `MoA` | Mode of Action: +1 activation, -1 repression, 0 unknown |
 | `Likelihood` | Edge confidence score (0–1) |
 
-### How to Rebuild from Source (Reproducibility)
+### How to Rebuild from Source
 
-The PKL caches are pre-built and included in the repo. To rebuild from scratch:
+The PKL caches are pre-built and included in the repo. To rebuild from the authoritative Bioconductor source:
 
-#### Step 1: Download the Bioconductor tarball
+#### Step 1: Download the Bioconductor tarball (~213 MB)
 
 ```bash
-# ~213 MB download
 curl -o /tmp/aracne.networks.tar.gz \
   https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz
 ```
@@ -552,12 +551,11 @@ pip install rdata networkx
 #### Step 3: Extract network CSVs
 
 ```bash
+# Converts Entrez IDs → gene symbols via MyGene.info (~5 min, requires internet)
 python scripts/extract_tcga_networks.py \
     --tarball /tmp/aracne.networks.tar.gz \
     --output-dir models/networks/tcga
 ```
-
-This reads the Bioconductor `.rda` regulon objects, converts Entrez IDs to gene symbols via [MyGene.info](https://mygene.info) (requires internet, ~5 min), and writes CSVs.
 
 #### Step 4: Build PKL caches
 
@@ -799,7 +797,7 @@ Based on research applications and data availability:
 
 When using RegNetAgents, please acknowledge:
 
-1. **RegNetAgents Foundation Model**
+1. **GREmLN Foundation Model** (source of the 10 cell-type ARACNe networks)
    - Citation: Zhang, M., Swamy, V., Cassius, R., Dupire, L., Karaletsos, T., & Califano, A. (2025). "RegNetAgents: A Cellular Regulatory Network-Aware Transcriptomics Foundation Model." *bioRxiv*. doi:10.1101/2025.07.03.663009
    - GitHub: https://github.com/czi-ai/GREmLN
    - Virtual Cells Platform: https://virtualcellmodels.cziscience.com/model/gremln
@@ -815,7 +813,7 @@ When using RegNetAgents, please acknowledge:
 
 ```
 RegNetAgents: LLM-Powered Multi-Agent Framework for Gene Regulatory Network Analysis
-Built on RegNetAgents pre-computed regulatory networks
+Built on GREmLN pre-computed regulatory networks
 ```
 
 ---
@@ -881,5 +879,5 @@ For questions about data sources or adding new cell types:
 
 ---
 
-**Last Updated**: 2025-01-27
+**Last Updated**: 2026-03-15
 **Maintained by**: RegNetAgents Development Team

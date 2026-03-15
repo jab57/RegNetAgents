@@ -2,21 +2,25 @@
 """
 Convert TCGA ARACNe network CSVs to pickle cache format for RegNetAgents.
 
-Source data: Figshare pre-exported CSVs from the Bioconductor aracne.networks
-package (Lim & Califano).  Download from:
+Source data: Bioconductor aracne.networks package (Lim & Califano).
+Extract CSVs using scripts/extract_tcga_networks.py, then run this script.
 
-    https://figshare.com/s/5d1ffd9f8b2e86e37ed6
+Quick start:
 
-Rename each file (e.g. brca_regul.csv → network.csv) and place at:
+    # 1. Download the Bioconductor tarball (~213 MB)
+    curl -o /tmp/aracne.networks.tar.gz \
+      https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz
 
-    models/networks/tcga/{cancer_type}/network.csv
+    # 2. Extract network CSVs (requires: pip install rdata)
+    python scripts/extract_tcga_networks.py \
+        --tarball /tmp/aracne.networks.tar.gz \
+        --output-dir models/networks/tcga
 
-Then run this script:
-
+    # 3. Build PKL caches
     python scripts/build_tcga_cache.py --all
     python scripts/build_tcga_cache.py --cancer-type brca
 
-CSV column format (Figshare aracne.networks):
+CSV column format (aracne.networks):
     Regulator, Target, MoA, Likelihood
     - MoA      : mode of action  — +1 activation, -1 repression, 0 unknown
     - Likelihood: edge weight, 0–1
@@ -294,8 +298,11 @@ def build_tcga_cache(
     if not os.path.exists(csv_path):
         print(
             f"  SKIP — CSV not found: {csv_path}\n"
-            "  Download from https://figshare.com/s/5d1ffd9f8b2e86e37ed6 "
-            "and place at the path above."
+            "  Extract CSVs from the Bioconductor tarball:\n"
+            "    python scripts/extract_tcga_networks.py \\\n"
+            "        --tarball /tmp/aracne.networks.tar.gz \\\n"
+            "        --output-dir models/networks/tcga\n"
+            "  See docs/DATA_SOURCES.md for full instructions."
         )
         return
 

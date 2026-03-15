@@ -6,10 +6,14 @@ network CSV file paths and human-readable labels. GBM and LAML are
 intentionally excluded — no reference network of the appropriate cell
 lineage exists in RegNetAgents for these cancer types.
 
-Download CSVs from Figshare (https://figshare.com/s/5d1ffd9f8b2e86e37ed6)
-and place them at the paths listed below, then run:
+To rebuild CSVs from source, use the Bioconductor aracne.networks tarball:
 
+    python scripts/extract_tcga_networks.py \
+        --tarball /tmp/aracne.networks.tar.gz \
+        --output-dir models/networks/tcga
     python scripts/build_tcga_cache.py --all
+
+See docs/DATA_SOURCES.md for full instructions.
 """
 
 TCGA_NETWORK_REGISTRY = {

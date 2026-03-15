@@ -376,33 +376,32 @@ After completing installation, you have:
 ## Optional: TCGA Tumor-State Networks
 
 RegNetAgents supports a second set of regulatory networks derived from TCGA
-bulk RNA-seq data via ARACNe (Lim & Califano).  These are **not bundled** in
-the repository — they must be downloaded separately.
+bulk RNA-seq data via ARACNe (Lim & Califano). The pre-built PKL caches for
+all 8 cancer types are **included in the repository** — cloning the repo is
+sufficient for standard use. The instructions below are for reproducibility
+or rebuilding from scratch.
 
 **Supported cancer types:** brca, coad, hnsc, luad, lusc, ov, prad, ucec
 (all epithelial-origin; GBM and LAML excluded — see DATA_SOURCES.md)
 
-### Step 1: Download CSVs from Figshare (~100 MB total)
+### Step 1: Download the Bioconductor tarball (~213 MB)
 
-```
-https://figshare.com/s/5d1ffd9f8b2e86e37ed6
-```
-
-Download the CSV files (e.g. `brca_regul.csv`) and place them — renamed to
-`network.csv` — at:
-
-```
-models/networks/tcga/brca/network.csv
-models/networks/tcga/coad/network.csv
-models/networks/tcga/hnsc/network.csv
-models/networks/tcga/luad/network.csv
-models/networks/tcga/lusc/network.csv
-models/networks/tcga/ov/network.csv
-models/networks/tcga/prad/network.csv
-models/networks/tcga/ucec/network.csv
+```bash
+curl -o /tmp/aracne.networks.tar.gz \
+  https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz
 ```
 
-### Step 2: Build the caches
+### Step 2: Extract network CSVs
+
+Requires `pip install rdata`. Converts Entrez IDs to gene symbols via MyGene.info (~5 min, internet required):
+
+```bash
+python scripts/extract_tcga_networks.py \
+    --tarball /tmp/aracne.networks.tar.gz \
+    --output-dir models/networks/tcga
+```
+
+### Step 3: Build the caches
 
 ```bash
 # Build all 8 TCGA caches (requires internet for MyGene.info validation)

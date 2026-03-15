@@ -16,15 +16,19 @@ What this shows:
 
 Prerequisites:
 --------------
-1. Download the 8 TCGA ARACNe CSVs from Figshare:
-       https://figshare.com/s/5d1ffd9f8b2e86e37ed6
+1. Download the Bioconductor aracne.networks tarball (~213 MB):
+       curl -o /tmp/aracne.networks.tar.gz \
+         https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz
 
-2. Place each file (renamed to network.csv) at:
-       models/networks/tcga/{cancer_type}/network.csv
-   e.g. models/networks/tcga/brca/network.csv
+2. Extract network CSVs (requires: pip install rdata):
+       python scripts/extract_tcga_networks.py \
+           --tarball /tmp/aracne.networks.tar.gz \
+           --output-dir models/networks/tcga
 
 3. Build the PKL caches:
        python scripts/build_tcga_cache.py --all
+
+See docs/DATA_SOURCES.md for full instructions.
 
 Usage:
 ------
@@ -70,9 +74,14 @@ async def main():
         print(
             f"\nNo TCGA cache found for '{TCGA_CANCER}'.\n"
             "To use this example:\n"
-            "  1. Download CSVs from https://figshare.com/s/5d1ffd9f8b2e86e37ed6\n"
-            "  2. Place each as  models/networks/tcga/{cancer_type}/network.csv\n"
-            "  3. Run:  python scripts/build_tcga_cache.py --all\n"
+            "  1. Download the Bioconductor tarball:\n"
+            "     curl -o /tmp/aracne.networks.tar.gz \\\n"
+            "       https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz\n"
+            "  2. Extract CSVs (requires: pip install rdata):\n"
+            "     python scripts/extract_tcga_networks.py \\\n"
+            "         --tarball /tmp/aracne.networks.tar.gz --output-dir models/networks/tcga\n"
+            "  3. Build caches:  python scripts/build_tcga_cache.py --all\n"
+            "  See docs/DATA_SOURCES.md for full instructions.\n"
         )
         return
 
