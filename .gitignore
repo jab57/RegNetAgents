@@ -45,3 +45,7 @@ results/*.json
 # Git/GitHub specific
 .git/
 .gitattributes
+
+# Internal planning docs
+RESEARCH_PAPER_PLAN.md
+data/
