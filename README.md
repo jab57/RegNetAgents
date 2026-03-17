@@ -68,13 +68,24 @@ pip install -r requirements.txt
 
 LLM agents are **off by default** (`USE_LLM_AGENTS=false`). The system runs entirely on rule-based analysis without any LLM. This is the recommended mode for MCP clients (Claude Desktop, Cursor, Zed).
 
-To enable LLM-powered insights with Ollama:
+To enable LLM-powered insights with local Ollama:
 
 ```bash
 # Download from https://ollama.com/download
 ollama pull llama3.1:8b
 cp .env.example .env
 # Then set USE_LLM_AGENTS=true in .env
+```
+
+To use Ollama Cloud (no local install required, free tier available):
+
+```bash
+# In .env:
+USE_LLM_AGENTS=true
+LLM_PROVIDER=ollama
+OLLAMA_API_KEY=your-ollama-cloud-key-here   # from https://ollama.com/settings
+OLLAMA_MODEL=gemini-3-flash-preview         # or another cloud model
+# OLLAMA_HOST is ignored when OLLAMA_API_KEY is set
 ```
 
 To use a cloud LLM provider instead (OpenAI, Anthropic, or any OpenAI-compatible API):
@@ -255,8 +266,9 @@ Key environment variables (set in `.env`):
 | `LLM_MODEL` | — | Override model (e.g. `gpt-4o-mini`, `claude-haiku-4-5-20251001`) |
 | `LLM_API_BASE` | — | Base URL for `openai_compatible` providers (e.g. Groq, Together) |
 | `USE_LLM_RECONCILIATION` | `false` | Enable LLM cross-domain narrative synthesis |
-| `OLLAMA_MODEL` | `llama3.1:8b` | Ollama model name |
-| `OLLAMA_HOST` | `http://localhost:11434` | Ollama server URL |
+| `OLLAMA_MODEL` | `llama3.1:8b` | Ollama model name (local or cloud) |
+| `OLLAMA_HOST` | `http://localhost:11434` | Ollama server URL (local only) |
+| `OLLAMA_API_KEY` | — | Ollama Cloud API key (omit for local; get from ollama.com/settings) |
 
 ### MCP Tools
 
