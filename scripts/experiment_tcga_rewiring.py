@@ -229,7 +229,7 @@ def plot_or_heatmap(
         fmt="",
         xticklabels=ref_labels,
         yticklabels=genes,
-        cmap="RdYlGn",
+        cmap="RdBu",
         center=1.0,
         vmin=0,
         vmax=5,
