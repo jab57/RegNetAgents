@@ -13,7 +13,7 @@ This document provides a complete walkthrough of the data processing pipeline us
 ```
 ┌─────────────────┐
 │  CellxGene      │  Raw single-cell RNA-seq data
-│  Data Portal    │  (H5AD format, 500K+ cells)
+│  Data Portal    │  (H5AD format, 11M cells, 162 cell types)
 └────────┬────────┘
          │
          │ Download

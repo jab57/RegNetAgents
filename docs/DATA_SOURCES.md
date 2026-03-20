@@ -13,7 +13,7 @@ RegNetAgents currently supports **10 human cell types** with pre-computed gene r
 **Primary Source**: [GREmLN Foundation Model](https://github.com/czi-ai/GREmLN) (Chan Zuckerberg Initiative / CZ Biohub NY)
 **Download Location**: [GREmLN Quickstart Tutorial](https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart) (networks available via Google Drive)
 **Underlying Data**: [CellxGene Data Portal](https://cellxgene.cziscience.com/) (11M scRNA-seq profiles, 162 cell types from Census release 2024-07-01)
-**Networks Used**: 10 cell types (500,000+ cells subset)
+**Networks Used**: 10 cell types (drawn from 11M cells across 162 cell types)
 **Processing Method**: ARACNe algorithm via RegNetAgents framework
 **Development Team**: Zhang et al. (2025), Califano Lab (Columbia University / CZ Biohub NY)
 **Format**: Pre-computed networks as TSV files (network.tsv), converted to optimized pickle caches (network_index.pkl)
