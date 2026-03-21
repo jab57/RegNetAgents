@@ -1,31 +1,38 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-experiment_tcga_rewiring.py
-===========================
-Validation experiment for the RegNetAgents research paper (Briefings in
-Bioinformatics).
+experiment_regulatory_candidates.py
+====================================
+Cross-context regulatory candidate identification for the RegNetAgents research
+paper (Briefings in Bioinformatics).
 
-Two-cancer validation:
-  1. BRCA: tumor-specific regulators enriched in OncoKB
-  2. COAD: same test for colorectal cancer context (replication)
+For each focal gene in BRCA and COAD, queries both the GREmLN epithelial
+network and the TCGA tumor network, then generates a source-labeled candidate
+therapeutic target list filtered by OncoKB cancer driver annotation.
 
 Reference datasets (pre-downloaded to data/):
   - data/oncokb_cancer_genes.tsv   : OncoKB pan-cancer driver list
 
-Outputs (written to results/):
-  - results/experiment_rewiring_results.json       : full statistics
-  - results/experiment_rewiring_heatmap_brca.png   : OR heatmap, BRCA
-  - results/experiment_rewiring_heatmap_coad.png   : OR heatmap, COAD
-  - results/experiment_rewiring_barchart_brca.png  : regulator count bar chart, BRCA
-  - results/experiment_rewiring_barchart_coad.png  : regulator count bar chart, COAD
-  - results/experiment_rewiring_negcontrol_brca.png: negative controls, BRCA
-  - results/experiment_rewiring_negcontrol_coad.png: negative controls, COAD
+Outputs:
+  results/
+  - experiment_rewiring_results.json           : full statistics
+  - target_list_brca.csv                       : source-labeled candidate list, BRCA
+  - target_list_coad.csv                       : source-labeled candidate list, COAD
+  - target_list_brca.png                       : candidate counts by source, BRCA (NAR Fig 2A)
+  - target_list_coad.png                       : candidate counts by source, COAD (NAR Fig 2B)
+  - experiment_rewiring_barchart_brca.png      : regulator count bar chart, BRCA
+  - experiment_rewiring_barchart_coad.png      : regulator count bar chart, COAD
+
+  manuscript/  (NAR paper figures — overwrite in place)
+  - figure_heatmap_brca.png                    : OR enrichment heatmap, BRCA (NAR Fig 3A)
+  - figure_heatmap_coad.png                    : OR enrichment heatmap, COAD (NAR Fig 3B)
+  - figure_negcontrol_brca.png                 : negative controls, BRCA (NAR Fig 4A)
+  - figure_negcontrol_coad.png                 : negative controls, COAD (NAR Fig 4B)
 
 Background: all genes in each cancer type's TCGA network (symbol-native PKL).
 
 Usage:
-  python scripts/experiment_tcga_rewiring.py
+  python scripts/experiment_regulatory_candidates.py
 
 Dependencies (all in requirements.txt): scipy, numpy, matplotlib, seaborn
 """
@@ -68,8 +75,9 @@ CELL_TYPE   = "epithelial_cell"
 N_PERMUTATIONS = 1000
 RANDOM_SEED    = 42
 
-ONCOKB_PATH = "data/oncokb_cancer_genes.tsv"
-RESULTS_DIR = "results"
+ONCOKB_PATH    = "data/oncokb_cancer_genes.tsv"
+RESULTS_DIR    = "results"
+MANUSCRIPT_DIR = "manuscript"
 
 # ── Reference set loaders ──────────────────────────────────────────────────────
 
@@ -108,6 +116,17 @@ def load_oncokb(path: str) -> set:
             if row["Gene Type"] in {"ONCOGENE", "TSG", "ONCOGENE_AND_TSG"}:
                 genes.add(row["Hugo Symbol"].strip().upper())
     return genes
+
+
+def load_oncokb_roles(path: str) -> dict:
+    """Return {symbol: role} for ONCOGENE / TSG / ONCOGENE_AND_TSG genes."""
+    roles = {}
+    with open(path) as f:
+        for row in csv.DictReader(f, delimiter="\t"):
+            gt = row["Gene Type"]
+            if gt in {"ONCOGENE", "TSG", "ONCOGENE_AND_TSG"}:
+                roles[row["Hugo Symbol"].strip().upper()] = gt
+    return roles
 
 
 # ── Statistics ─────────────────────────────────────────────────────────────────
@@ -196,8 +215,100 @@ def stouffer_z(p_values: list, weights: list = None) -> dict:
 
 # ── Figures ────────────────────────────────────────────────────────────────────
 
+def plot_workflow_figure() -> None:
+    """Figure 1: NAR paper analysis pipeline schematic."""
+    from matplotlib.patches import FancyBboxPatch
+
+    C_INPUT    = "#E8F4F8"   # light blue
+    C_AGENT    = "#B8E6B8"   # light green
+    C_CLASS    = "#FFE6B8"   # light orange
+    C_CAND     = "#E8D4F8"   # light purple
+    C_ENRICH   = "#FFF0B8"   # light yellow
+    C_OUTPUT   = "#F4E8E8"   # light pink
+
+    fig, ax = plt.subplots(figsize=(7, 13))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 18)
+    ax.axis("off")
+
+    def box(y, h, color, title, lines=(), title_size=11):
+        patch = FancyBboxPatch((1, y), 8, h, boxstyle="round,pad=0.15",
+                               facecolor=color, edgecolor="#555555", linewidth=1.2)
+        ax.add_patch(patch)
+        ax.text(5, y + h - 0.38, title, ha="center", va="top",
+                fontsize=title_size, fontweight="bold")
+        for i, line in enumerate(lines):
+            ax.text(5, y + h - 0.78 - i * 0.42, line, ha="center", va="top",
+                    fontsize=9, color="#333333")
+
+    def arrow(y_top, y_bot, label=""):
+        ax.annotate("", xy=(5, y_bot), xytext=(5, y_top),
+                    arrowprops=dict(arrowstyle="->", color="#444444", lw=1.5))
+        if label:
+            ax.text(5.25, (y_top + y_bot) / 2, label, ha="left", va="center",
+                    fontsize=8, color="#555555", style="italic")
+
+    def sub_boxes(y, h, labels, colors):
+        n = len(labels)
+        w = 7.0 / n
+        for i, (lbl, c) in enumerate(zip(labels, colors)):
+            x0 = 1.5 + i * w
+            patch = FancyBboxPatch((x0, y), w - 0.15, h,
+                                   boxstyle="round,pad=0.1",
+                                   facecolor=c, edgecolor="#888888", linewidth=0.8)
+            ax.add_patch(patch)
+            ax.text(x0 + (w - 0.15) / 2, y + h / 2, lbl, ha="center", va="center",
+                    fontsize=9, fontweight="bold")
+
+    # ── boxes top→bottom ───────────────────────────────────────────────────────
+    box(15.5, 1.9, C_INPUT, "INPUT",
+        ("Focal gene  ·  GREmLN cell type  ·  TCGA cancer type",))
+
+    arrow(15.5, 14.7)
+
+    box(12.9, 1.9, C_AGENT, "compare_network_contexts  (RegNetAgents)",
+        ("Query focal gene in GREmLN epithelial_cell",
+         "and TCGA ARACNe tumor network"))
+
+    arrow(12.9, 12.1)
+
+    box(9.8, 2.8, C_CLASS, "REGULATOR CLASSIFICATION", ())
+    sub_boxes(10.15, 0.9,
+              ["Both", "GREmLN-only", "TCGA-only"],
+              ["#c8e6c8", "#ffe0b2", "#ffcccc"])
+    ax.text(5, 10.05,
+            "Context-specificity score = 1 − (Both / total regulators)",
+            ha="center", va="top", fontsize=8.5, color="#444444")
+
+    arrow(9.8, 9.0, "TCGA-only + GREmLN-only candidates")
+
+    box(7.0, 2.3, C_CAND, "SOURCE-LABELED CANDIDATE LIST",
+        ("Filter all candidates against OncoKB",
+         "Source (TCGA-only / GREmLN-only / Both)  ·  OncoKB role",
+         "MoA direction (activating / repressive)  for TCGA-only"))
+
+    arrow(7.0, 6.2, "TCGA-only candidates")
+
+    box(4.2, 2.1, C_ENRICH, "ENRICHMENT VALIDATION",
+        ("Fisher's exact test  ·  OncoKB reference",
+         "Permutation control (n=1,000)  ·  BH-FDR correction"))
+
+    arrow(4.2, 3.4)
+
+    box(1.5, 2.0, C_OUTPUT, "OUTPUT",
+        ("Source-labeled candidate list  ·  OR · BH-FDR per gene",
+         "Stouffer Z across panel"))
+
+    plt.tight_layout()
+    out = os.path.join(MANUSCRIPT_DIR, "figure_workflow.png")
+    plt.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"            {out}  (NAR Fig 1)")
+
+
+
 def plot_or_heatmap(
-    results: dict, genes: list, cancer_type: str, out_dir: str
+    results: dict, genes: list, cancer_type: str
 ) -> None:
     """Heatmap: rows = focal genes, columns = reference sets, values = OR."""
     ct = cancer_type.lower()
@@ -246,7 +357,7 @@ def plot_or_heatmap(
     ax.set_ylabel("Focal gene", fontsize=10)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(out_dir, f"experiment_rewiring_heatmap_{ct}.png"), dpi=150
+        os.path.join(MANUSCRIPT_DIR, f"figure_heatmap_{ct}.png"), dpi=150
     )
     plt.close()
 
@@ -299,7 +410,6 @@ def plot_neg_controls(
     focal_genes: list,
     neg_genes: list,
     cancer_type: str,
-    out_dir: str,
 ) -> None:
     """Bar chart: OncoKB OR for focal cancer genes vs. housekeeping negative controls."""
     ct = cancer_type.upper()
@@ -346,8 +456,106 @@ def plot_neg_controls(
     )
     plt.tight_layout()
     plt.savefig(
-        os.path.join(out_dir, f"experiment_rewiring_negcontrol_{cancer_type.lower()}.png"), dpi=150
+        os.path.join(MANUSCRIPT_DIR, f"figure_negcontrol_{cancer_type.lower()}.png"), dpi=150
     )
+    plt.close()
+
+
+# ── Target list (source-labeled) ───────────────────────────────────────────────
+
+def generate_target_list(comparison: dict, oncokb: set, moa_map: dict, oncokb_roles: dict) -> list:
+    """
+    Return all OncoKB-overlapping regulators from either network, labeled by source.
+
+    Source values:
+      "Both"         — present in both GREmLN and TCGA networks (highest confidence)
+      "TCGA-only"    — tumor-selective; MoA available
+      "GREmLN-only"  — present in normal epithelium only
+    """
+    conserved   = set(comparison["regulators"]["conserved"])
+    tumor_only  = set(comparison["regulators"]["tumor_state_only"])
+    normal_only = set(comparison["regulators"]["population_averaged_only"])
+
+    rows = []
+    for g in sorted(conserved & oncokb):
+        rows.append({"regulator": g, "source": "Both",
+                     "moa": moa_map.get(g), "direction": _direction(moa_map.get(g)),
+                     "oncokb_role": oncokb_roles.get(g, "")})
+    for g in sorted(tumor_only & oncokb):
+        rows.append({"regulator": g, "source": "TCGA-only",
+                     "moa": moa_map.get(g), "direction": _direction(moa_map.get(g)),
+                     "oncokb_role": oncokb_roles.get(g, "")})
+    for g in sorted(normal_only & oncokb):
+        rows.append({"regulator": g, "source": "GREmLN-only",
+                     "moa": None, "direction": "",
+                     "oncokb_role": oncokb_roles.get(g, "")})
+
+    # sort: Both first, then TCGA-only (activating before repressive), then GREmLN-only
+    order = {"Both": 0, "TCGA-only": 1, "GREmLN-only": 2}
+    rows.sort(key=lambda r: (order[r["source"]], -(r["moa"] or 0)))
+    return rows
+
+
+def _direction(moa) -> str:
+    if moa is None:
+        return ""
+    return "activating" if moa > 0 else ("repressive" if moa < 0 else "unknown")
+
+
+def save_target_table(all_targets: dict, cancer_type: str, out_dir: str) -> None:
+    """Write source-labeled target list to CSV."""
+    ct   = cancer_type.upper()
+    path = os.path.join(out_dir, f"target_list_{cancer_type.lower()}.csv")
+    fields = ["focal_gene", "regulator", "source", "oncokb_role", "moa", "direction"]
+    rows = []
+    for focal_gene, targets in all_targets.items():
+        for entry in targets:
+            rows.append({
+                "focal_gene":  focal_gene,
+                "regulator":   entry["regulator"],
+                "source":      entry["source"],
+                "oncokb_role": entry.get("oncokb_role", ""),
+                "moa":         round(entry["moa"], 3) if entry["moa"] is not None else "",
+                "direction":   entry["direction"],
+            })
+    with open(path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"[{ct}] Target list ({len(rows)} entries) -> {path}")
+
+
+def plot_target_list(all_targets: dict, cancer_type: str, out_dir: str) -> None:
+    """Stacked bar: OncoKB targets per source per focal gene."""
+    ct    = cancer_type.upper()
+    genes = [g for g, t in all_targets.items() if t]
+    if not genes:
+        return
+
+    def _count(g, src):
+        return sum(1 for r in all_targets[g] if r["source"] == src)
+
+    n_both  = [_count(g, "Both")        for g in genes]
+    n_tcga  = [_count(g, "TCGA-only")   for g in genes]
+    n_grem  = [_count(g, "GREmLN-only") for g in genes]
+    x = range(len(genes))
+
+    fig, ax = plt.subplots(figsize=(max(8, len(genes) * 0.9), 4))
+    ax.bar(x, n_both, label="Both networks",   color="#2166ac")
+    ax.bar(x, n_tcga, bottom=n_both,           label="TCGA-only",   color="#d6604d")
+    ax.bar(x, n_grem, bottom=[a+b for a,b in zip(n_both, n_tcga)],
+           label="GREmLN-only", color="#4dac26")
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(genes, fontsize=11)
+    ax.set_ylabel("OncoKB-overlapping regulators", fontsize=10)
+    ax.set_title(
+        f"{ct}: Candidate therapeutic regulators by network source\n"
+        "(OncoKB-filtered; source indicates which network context identified each regulator)",
+        fontsize=11,
+    )
+    ax.legend(fontsize=9)
+    plt.tight_layout()
+    plt.savefig(os.path.join(out_dir, f"target_list_{cancer_type.lower()}.png"), dpi=150)
     plt.close()
 
 
@@ -359,6 +567,7 @@ def run_cancer_analysis(
     cancer_type: str,
     focal_genes: list,
     oncokb_raw: set,
+    oncokb_roles: dict,
     out_dir: str,
 ) -> tuple:
     """
@@ -389,10 +598,10 @@ def run_cancer_analysis(
         comparisons[gene] = result
         r = result["regulators"]
         print(
-            f"conserved={r['conserved_count']}  "
-            f"epithelial_only={len(r['population_averaged_only'])}  "
+            f"both={r['conserved_count']}  "
+            f"gremln_only={len(r['population_averaged_only'])}  "
             f"{ct}_only={len(r['tumor_state_only'])}  "
-            f"rewiring={result['interpretation']['regulatory_rewiring']}"
+            f"context_specificity={result['interpretation']['regulatory_rewiring']}"
         )
 
     # Enrichment tests
@@ -420,6 +629,7 @@ def run_cancer_analysis(
         )
         moa_map = {r["gene"]: r.get("moa") for r in tcga_neighbors.get("regulators", [])}
         gene_res["moa_extension"] = {g: moa_map[g] for g in specific if g in moa_map}
+        gene_res["target_list"]   = generate_target_list(comp, oncokb, moa_map, oncokb_roles)
 
         if len(specific) < 3:
             print(f"  {gene}: skipping -- only {len(specific)} {ct}-specific regulators")
@@ -463,9 +673,14 @@ def run_cancer_analysis(
     for ref_name, s in combined_stats.items():
         print(f"  {ref_name:<32}: Z={s['combined_z']:6.3f}  p={s['combined_p']:.4f}")
 
+    # Source-labeled target table
+    all_targets = {g: results[g]["target_list"] for g in testable if "target_list" in results[g]}
+    save_target_table(all_targets, ct, out_dir)
+
     # Figures
-    plot_or_heatmap(results, testable, ct, out_dir)
+    plot_or_heatmap(results, testable, ct)
     plot_regulator_counts(comparisons, testable, results, ct, out_dir)
+    plot_target_list(all_targets, ct, out_dir)
 
     return comparisons, results, background, combined_stats, testable
 
@@ -499,9 +714,9 @@ def run_negative_controls(
         specific = set(result["regulators"]["tumor_state_only"])
         r = result["regulators"]
         print(
-            f"conserved={r['conserved_count']}  "
+            f"both={r['conserved_count']}  "
             f"{ct}_only={len(specific)}  "
-            f"rewiring={result['interpretation']['regulatory_rewiring']}"
+            f"context_specificity={result['interpretation']['regulatory_rewiring']}"
         )
         if len(specific) < 3:
             neg_results[gene] = {"skipped": True, "specific_count": len(specific)}
@@ -535,24 +750,25 @@ def run_experiment() -> None:
             sys.exit(1)
 
     download_oncokb_if_missing(ONCOKB_PATH)
-    oncokb_raw = load_oncokb(ONCOKB_PATH)
+    oncokb_raw   = load_oncokb(ONCOKB_PATH)
+    oncokb_roles = load_oncokb_roles(ONCOKB_PATH)
     print(f"OncoKB drivers: {len(oncokb_raw):,} total")
 
     # ── BRCA analysis ──────────────────────────────────────────────────────────
     (_, brca_res, brca_bg,
      brca_stouffer, brca_testable) = run_cancer_analysis(
-        agent, workflow, "brca", BRCA_GENES, oncokb_raw, RESULTS_DIR,
+        agent, workflow, "brca", BRCA_GENES, oncokb_raw, oncokb_roles, RESULTS_DIR,
     )
     brca_neg = run_negative_controls(agent, "brca", oncokb_raw, brca_bg)
-    plot_neg_controls(brca_res, brca_neg, brca_testable, HOUSEKEEPING_GENES, "brca", RESULTS_DIR)
+    plot_neg_controls(brca_res, brca_neg, brca_testable, HOUSEKEEPING_GENES, "brca")
 
     # ── COAD analysis ──────────────────────────────────────────────────────────
     (_, coad_res, coad_bg,
      coad_stouffer, coad_testable) = run_cancer_analysis(
-        agent, workflow, "coad", COAD_GENES, oncokb_raw, RESULTS_DIR,
+        agent, workflow, "coad", COAD_GENES, oncokb_raw, oncokb_roles, RESULTS_DIR,
     )
     coad_neg = run_negative_controls(agent, "coad", oncokb_raw, coad_bg)
-    plot_neg_controls(coad_res, coad_neg, coad_testable, HOUSEKEEPING_GENES, "coad", RESULTS_DIR)
+    plot_neg_controls(coad_res, coad_neg, coad_testable, HOUSEKEEPING_GENES, "coad")
 
     # ── Save combined JSON ─────────────────────────────────────────────────────
     output = {
@@ -577,16 +793,21 @@ def run_experiment() -> None:
             "coad": coad_neg,
         },
     }
+    plot_workflow_figure()
+
     out_json = os.path.join(RESULTS_DIR, "experiment_rewiring_results.json")
     with open(out_json, "w") as f:
         json.dump(output, f, indent=2)
     print(f"\nResults -> {out_json}")
-    print(f"Figures  -> {RESULTS_DIR}/experiment_rewiring_heatmap_brca.png")
-    print(f"            {RESULTS_DIR}/experiment_rewiring_heatmap_coad.png")
+    print(f"Figures  -> {MANUSCRIPT_DIR}/figure_workflow.png  (NAR Fig 1)")
+    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_brca.png  (NAR Fig 3A)")
+    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_coad.png  (NAR Fig 3B)")
+    print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_brca.png  (NAR Fig 4A)")
+    print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_coad.png  (NAR Fig 4B)")
+    print(f"            {RESULTS_DIR}/target_list_brca.png  (NAR Fig 2A)")
+    print(f"            {RESULTS_DIR}/target_list_coad.png  (NAR Fig 2B)")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_brca.png")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_coad.png")
-    print(f"            {RESULTS_DIR}/experiment_rewiring_negcontrol_brca.png")
-    print(f"            {RESULTS_DIR}/experiment_rewiring_negcontrol_coad.png")
     print("\nDone.")
 
 
