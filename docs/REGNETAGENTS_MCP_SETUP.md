@@ -43,10 +43,13 @@ Restart Claude Desktop and check that the RegNetAgents tools are available. You 
 - `pathway_focused_analysis`
 - `cross_cell_comparison`
 
-You should also see three **MCP Prompts** in the prompt picker:
+You should also see six **MCP Prompts** in the prompt picker:
 - `gene_deep_dive`
 - `cancer_biomarker_panel`
 - `cross_cell_comparison`
+- `tumor_context_analysis`
+- `network_context_comparison`
+- `candidate_prioritization`
 
 ---
 
@@ -296,7 +299,7 @@ Where does TP53 appear across cell types?
 
 ## MCP Prompts Available
 
-The server exposes three **guided prompt templates** that scaffold common analysis workflows. In Claude Desktop, these appear in the prompt picker and automatically fill in the conversation with step-by-step instructions.
+The server exposes six **guided prompt templates** that scaffold common analysis workflows. In Claude Desktop, these appear in the prompt picker and automatically fill in the conversation with step-by-step instructions.
 
 ### 1. `gene_deep_dive`
 **Arguments**: `gene` (required), `cell_type` (optional, default: epithelial_cell)
@@ -313,6 +316,21 @@ Runs multi-gene parallel analysis for a pre-defined cancer gene panel, identifie
 
 Compares a gene across all 10 cell-type networks, summarizes results in a table, and highlights differences between immune and epithelial contexts.
 
+### 4. `tumor_context_analysis`
+**Arguments**: `gene` (required), `cancer_type` (required: brca/coad/hnsc/luad/lusc/ov/prad/ucec)
+
+Full domain analysis against a TCGA tumor-state network. Includes MoA breakdown (activating/repressive), master regulator identification, and four-domain assessment (cancer biology, druggability, clinical actionability, systems biology).
+
+### 5. `network_context_comparison`
+**Arguments**: `gene` (required), `cancer_type` (required)
+
+Compares population-averaged (GREmLN epithelial) vs. tumor-state (TCGA) regulatory context for a gene. Returns conserved regulators, context-specific regulators, and a rewiring classification (low/moderate/high based on Jaccard overlap).
+
+### 6. `candidate_prioritization`
+**Arguments**: `gene` (required), `cancer_type` (required)
+
+Two-step prioritization workflow: (1) runs `compare_network_contexts` to generate a source-labeled candidate regulator shortlist (TCGA-only / GREmLN-only / Both), then (2) runs `comprehensive_gene_analysis` per candidate with source-driven network routing — TCGA-only candidates use `tcga_network`, GREmLN-only use `cell_type="epithelial_cell"`, Both default to `tcga_network`.
+
 ---
 
 ## Architecture Overview
@@ -323,9 +341,9 @@ Compares a gene across all 10 cell-type networks, summarizes results in a table,
 ┌─────────────────────────────────────────┐
 │   MCP Server (regnetagents_langgraph_mcp_server.py)
 │   • Protocol translation                │
-│   • Tool registration (13 tools)        │
+│   • Tool registration (15 tools)        │
 │   • Resource registration (3 resources) │
-│   • Prompt registration (3 prompts)     │
+│   • Prompt registration (6 prompts)     │
 │   • Claude Desktop integration          │
 └─────────────┬───────────────────────────┘
               ↓

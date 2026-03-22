@@ -61,7 +61,7 @@ Claude should respond with genes that have saved results.
 
 ## Available MCP Tools
 
-Claude Desktop can now use these tools (13 tools + 3 prompt templates):
+Claude Desktop can now use these tools (15 tools + 6 prompt templates):
 
 ### 1. `validate_gene`
 Quick gene name check (<100ms). Returns basic stats if found, or fuzzy-matched suggestions for misspelled names. Use before full analysis to catch typos.
@@ -124,24 +124,36 @@ Which transcription factors are most likely driving this signature in
 epithelial cells?
 ```
 
-### 9-13. Other tools
+### 9. `compare_network_contexts`
+Compare regulatory wiring for a gene across population-averaged (GREmLN) and tumor-state (TCGA) networks. Returns conserved regulators, context-specific regulators, and a rewiring classification (low/moderate/high).
+
+**Example**:
+```
+Compare MYC regulatory wiring between epithelial cells and colorectal tumor context
+```
+
+### 10-15. Other tools
 - `pathway_focused_analysis`
 - `cross_cell_comparison`
 - `workflow_status`
 - `workflow_insights`
 - `create_analysis_report`
+- `list_prompts`
 
 ---
 
 ## Available MCP Prompts
 
-The server exposes three **guided prompt templates** visible in the Claude Desktop prompt picker:
+The server exposes six **guided prompt templates** visible in the Claude Desktop prompt picker:
 
 | Prompt | Key Argument | What it does |
 |--------|-------------|--------------|
 | `gene_deep_dive` | `gene` | Full guided analysis: validate → comprehensive → neighbors → summary |
 | `cancer_biomarker_panel` | `cancer_type` | Parallel analysis of a pre-defined panel (colorectal, breast, lung, prostate, general) |
 | `cross_cell_comparison` | `gene` | Compares gene across all 10 cell types with immune vs. epithelial breakdown |
+| `tumor_context_analysis` | `gene`, `cancer_type` | Full domain analysis against a TCGA tumor-state network; MoA breakdown, master regulators, druggability, clinical actionability |
+| `network_context_comparison` | `gene`, `cancer_type` | Compares population-averaged (GREmLN epithelial) vs. tumor-state (TCGA) regulatory context; conserved vs. context-specific regulators |
+| `candidate_prioritization` | `gene`, `cancer_type` | Two-step workflow: source-labeled candidate shortlist via `compare_network_contexts`, then `comprehensive_gene_analysis` per candidate with source-driven network routing |
 
 Use these as starting points if you're not sure what to ask.
 
