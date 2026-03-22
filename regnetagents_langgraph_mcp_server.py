@@ -1766,14 +1766,61 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                             "vs. epithelial cells."
                         ),
                         "example": "Use the cross_cell_comparison prompt for MYC"
+                    },
+                    {
+                        "name": "tumor_context_analysis",
+                        "description": "Full domain analysis of a gene against a TCGA tumor-state network.",
+                        "arguments": {
+                            "gene": "required — gene symbol, e.g. YAP1, ESR1",
+                            "cancer_type": "required — one of: brca, coad, hnsc, luad, lusc, ov, prad, ucec"
+                        },
+                        "what_it_does": (
+                            "Queries tumor-state regulatory neighbors (with MoA), finds master regulators "
+                            "in tumor context, runs comprehensive_gene_analysis with tcga_network, and "
+                            "summarizes regulatory role, MoA breakdown, druggability, and clinical actionability."
+                        ),
+                        "example": "Use the tumor_context_analysis prompt for YAP1 in brca"
+                    },
+                    {
+                        "name": "network_context_comparison",
+                        "description": "Compare a gene's regulatory context between population-averaged GREmLN and TCGA tumor-state networks.",
+                        "arguments": {
+                            "gene": "required — gene symbol, e.g. MYC, TP53",
+                            "cancer_type": "required — one of: brca, coad, hnsc, luad, lusc, ov, prad, ucec"
+                        },
+                        "what_it_does": (
+                            "Runs compare_network_contexts, returns conserved regulators, "
+                            "population-averaged-only regulators, and tumor-state-only regulators "
+                            "with biological interpretation. Frames output as population-averaged "
+                            "vs. tumor-state context (not 'rewiring')."
+                        ),
+                        "example": "Use the network_context_comparison prompt for MYC in coad"
+                    },
+                    {
+                        "name": "candidate_prioritization",
+                        "description": "Two-step regulatory candidate prioritization workflow.",
+                        "arguments": {
+                            "gene": "required — focal gene, e.g. CTNNB1, MYC",
+                            "cancer_type": "required — one of: brca, coad, hnsc, luad, lusc, ov, prad, ucec"
+                        },
+                        "what_it_does": (
+                            "Step 1: compare_network_contexts → source-labeled OncoKB-filtered candidate shortlist. "
+                            "Step 2: comprehensive_gene_analysis per candidate with source-driven network routing "
+                            "(TCGA-only→tcga_network, GREmLN-only→cell_type, Both→tcga_network). "
+                            "Returns structured summary table: candidate | source | MoA | oncogenic potential | "
+                            "druggability | clinical actionability | network vulnerability | PageRank."
+                        ),
+                        "example": "Use the candidate_prioritization prompt for CTNNB1 in brca"
                     }
                 ],
                 "how_to_use": (
                     "These prompts scaffold common workflows. "
                     "You can trigger them by describing what you want in plain language — "
                     "for example: 'Do a deep dive on TP53', "
-                    "'Analyze the colorectal cancer panel', or "
-                    "'Compare BRCA1 across all cell types'."
+                    "'Analyze the colorectal cancer panel', "
+                    "'Compare BRCA1 across all cell types', "
+                    "'Analyze YAP1 in the BRCA tumor network', or "
+                    "'Prioritize CTNNB1 regulatory candidates in BRCA'."
                 )
             }
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
