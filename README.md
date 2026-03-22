@@ -397,7 +397,7 @@ If you use RegNetAgents in your research, please cite:
 }
 ```
 
-Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.0.3). https://doi.org/10.5281/zenodo.18500027
+Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.1.1). https://doi.org/10.5281/zenodo.18500027
 
 ---
 

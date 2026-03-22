@@ -112,7 +112,7 @@ RegNetAgents is designed for immediate use by computational biologists and bioin
 
 # Availability
 
-RegNetAgents is available at <https://github.com/jab57/RegNetAgents> under the MIT License. The v1.0.3 release is archived on Zenodo (DOI: [10.5281/zenodo.18500027](https://doi.org/10.5281/zenodo.18500027)). Contribution guidelines and issue tracking are provided via GitHub.
+RegNetAgents is available at <https://github.com/jab57/RegNetAgents> under the MIT License. The v1.1.1 release is archived on Zenodo (DOI: [10.5281/zenodo.18500027](https://doi.org/10.5281/zenodo.18500027)). Contribution guidelines and issue tracking are provided via GitHub.
 
 # Acknowledgements
 
