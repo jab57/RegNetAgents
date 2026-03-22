@@ -155,7 +155,16 @@ Therapeutic target prioritization automatically runs for genes with >5 regulator
 ```json
 {
   "gene": "APC",
-  "cell_type": "epithelial_cell",  // Tissue barriers (skin, lung, intestine)
+  "cell_type": "epithelial_cell",  // GREmLN population-averaged network
+  "analysis_depth": "comprehensive"
+}
+```
+
+To analyze a gene against a TCGA tumor-state network instead, use `tcga_network` in place of `cell_type`:
+```json
+{
+  "gene": "YAP1",
+  "tcga_network": "brca",  // TCGA BRCA tumor-state network
   "analysis_depth": "comprehensive"
 }
 ```

@@ -278,7 +278,7 @@ Key environment variables (set in `.env`):
 | `query_network` | Instant network queries — top regulators, targets, neighbors, stats (<50ms); supports GREmLN (`network_source="cell_type"`) and TCGA tumor-state networks (`network_source="tcga"`) |
 | `find_master_regulators` | Identify TFs driving a gene signature (Fisher's exact test enrichment); works with both GREmLN and TCGA networks |
 | `compare_network_contexts` | Compare regulatory wiring for a gene across population-averaged (GREmLN) and tumor-state (TCGA) networks; returns conserved/context-specific regulators and rewiring classification |
-| `comprehensive_gene_analysis` | Full analysis with domain insights |
+| `comprehensive_gene_analysis` | Full multi-agent domain analysis (cancer biology, druggability, clinical actionability, systems biology); accepts GREmLN cell-type (`cell_type`) or TCGA cancer-type (`tcga_network`) as network source |
 | `multi_gene_analysis` | Parallel processing of multiple genes |
 | `pathway_focused_analysis` | Reactome pathway enrichment |
 | `cross_cell_comparison` | Gene behavior across cell types |

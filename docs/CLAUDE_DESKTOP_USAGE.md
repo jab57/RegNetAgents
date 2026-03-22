@@ -83,7 +83,7 @@ How large is the epithelial cell network?
 ```
 
 ### 3. `comprehensive_gene_analysis`
-Run full analysis for a gene (triggers Ollama workflow). Results are cached in memory for 10 minutes — repeat queries return instantly. Pass `use_cache: false` to force fresh analysis.
+Run full multi-agent domain analysis for a gene. Specify either a GREmLN cell-type network (`cell_type: "epithelial_cell"`) or a TCGA cancer-type network (`tcga_network: "brca"`). Results are cached in memory for 10 minutes — repeat queries return instantly. Pass `use_cache: false` to force fresh analysis.
 
 ### 4. `load_gene_results`
 Load previously saved analysis results without re-running analysis.
