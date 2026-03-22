@@ -342,6 +342,68 @@ async def handle_list_prompts() -> list[types.Prompt]:
                 ),
             ]
         ),
+        types.Prompt(
+            name="tumor_context_analysis",
+            description=(
+                "Full domain analysis of a gene against a TCGA tumor-state ARACNe network. "
+                "Mirrors gene_deep_dive but uses tumor-state topology instead of population-averaged GREmLN networks. "
+                "Includes MoA breakdown (activating vs. repressive regulators), master regulator identification, "
+                "druggability, and clinical actionability."
+            ),
+            arguments=[
+                types.PromptArgument(
+                    name="gene",
+                    description="Gene symbol to analyze (e.g. YAP1, ESR1, MYC)",
+                    required=True
+                ),
+                types.PromptArgument(
+                    name="cancer_type",
+                    description="TCGA cancer type: brca, coad, hnsc, luad, lusc, ov, prad, ucec",
+                    required=True
+                ),
+            ]
+        ),
+        types.Prompt(
+            name="network_context_comparison",
+            description=(
+                "Compare a gene's regulatory context between population-averaged (GREmLN epithelial) "
+                "and tumor-state (TCGA) networks. Returns conserved regulators, population-averaged-only "
+                "regulators, and tumor-state-only regulators with biological interpretation."
+            ),
+            arguments=[
+                types.PromptArgument(
+                    name="gene",
+                    description="Gene symbol to compare across network contexts (e.g. MYC, TP53)",
+                    required=True
+                ),
+                types.PromptArgument(
+                    name="cancer_type",
+                    description="TCGA cancer type: brca, coad, hnsc, luad, lusc, ov, prad, ucec",
+                    required=True
+                ),
+            ]
+        ),
+        types.Prompt(
+            name="candidate_prioritization",
+            description=(
+                "Two-step regulatory candidate prioritization workflow from the RegNetAgents NAR paper. "
+                "Step 1: identifies source-labeled regulatory candidates (TCGA-only / GREmLN-only / Both) "
+                "filtered against OncoKB. Step 2: runs comprehensive domain analysis per candidate with "
+                "source-driven network routing. Returns a structured summary table."
+            ),
+            arguments=[
+                types.PromptArgument(
+                    name="gene",
+                    description="Focal gene to find regulatory candidates for (e.g. CTNNB1, MYC)",
+                    required=True
+                ),
+                types.PromptArgument(
+                    name="cancer_type",
+                    description="TCGA cancer type: brca, coad, hnsc, luad, lusc, ov, prad, ucec",
+                    required=True
+                ),
+            ]
+        ),
     ]
 
 
@@ -441,6 +503,105 @@ async def handle_get_prompt(name: str, arguments: dict | None) -> types.GetPromp
             ]
         )
 
+    elif name == "tumor_context_analysis":
+        gene = args.get("gene", "").upper() or "YAP1"
+        cancer_type = args.get("cancer_type", "brca").lower()
+
+        text = (
+            f"Please perform a comprehensive tumor-context analysis of **{gene}** "
+            f"in the **TCGA {cancer_type.upper()} tumor-state network** using the following steps:\n\n"
+            f"1. Use `query_network` with `network_source=\"tcga\"`, `tcga_network=\"{cancer_type}\"`, "
+            f"`gene=\"{gene}\"`, and `query_type=\"gene_neighbors\"` to retrieve tumor-state regulatory neighbors, "
+            f"including MoA (mode of action: activating vs. repressive).\n"
+            f"2. Use `find_master_regulators` with `network_source=\"tcga\"` and `tcga_network=\"{cancer_type}\"` "
+            f"to identify transcription factors driving {gene}'s regulon in the tumor context.\n"
+            f"3. Run `comprehensive_gene_analysis` with `gene=\"{gene}\"` and `tcga_network=\"{cancer_type}\"` "
+            f"for full domain analysis (oncogenic potential, druggability, clinical actionability, network vulnerability).\n"
+            f"4. Summarize:\n"
+            f"   - Regulatory role in the {cancer_type.upper()} tumor network\n"
+            f"   - MoA breakdown: how many upstream regulators are activating vs. repressive\n"
+            f"   - Top upstream regulators by PageRank\n"
+            f"   - Druggability and clinical actionability assessment\n"
+            f"   - Network vulnerability (is {gene} a critical hub in the tumor network?)\n"
+        )
+        return types.GetPromptResult(
+            description=f"Tumor-context analysis of {gene} in TCGA {cancer_type.upper()}",
+            messages=[
+                types.PromptMessage(
+                    role="user",
+                    content=types.TextContent(type="text", text=text)
+                )
+            ]
+        )
+
+    elif name == "network_context_comparison":
+        gene = args.get("gene", "").upper() or "MYC"
+        cancer_type = args.get("cancer_type", "brca").lower()
+
+        text = (
+            f"Please compare the regulatory context of **{gene}** between the "
+            f"population-averaged GREmLN epithelial network and the TCGA {cancer_type.upper()} "
+            f"tumor-state network using the following steps:\n\n"
+            f"1. Use `compare_network_contexts` with `gene=\"{gene}\"` and `cancer_type=\"{cancer_type}\"` "
+            f"to retrieve conserved, population-averaged-only, and tumor-state-only regulator sets.\n"
+            f"2. Summarize the results:\n"
+            f"   - Conserved regulators (present in both networks)\n"
+            f"   - Population-averaged-only regulators (present in GREmLN epithelial, absent in TCGA {cancer_type.upper()})\n"
+            f"   - Tumor-state-only regulators (present in TCGA {cancer_type.upper()}, absent in GREmLN epithelial)\n"
+            f"   - Conserved fraction (what proportion of regulators are shared?)\n"
+            f"3. Provide a biological interpretation:\n"
+            f"   - What does the conserved regulator set suggest about {gene}'s core regulatory program?\n"
+            f"   - Are the tumor-state-only regulators known cancer drivers or oncogenes?\n"
+            f"   - Note: GREmLN networks represent population-averaged mixed cell states "
+            f"(not purely normal tissue) — interpret differences as reflecting both technical "
+            f"(single-cell vs. bulk) and biological (cell state) factors.\n"
+        )
+        return types.GetPromptResult(
+            description=f"Network context comparison of {gene}: GREmLN epithelial vs. TCGA {cancer_type.upper()}",
+            messages=[
+                types.PromptMessage(
+                    role="user",
+                    content=types.TextContent(type="text", text=text)
+                )
+            ]
+        )
+
+    elif name == "candidate_prioritization":
+        gene = args.get("gene", "").upper() or "CTNNB1"
+        cancer_type = args.get("cancer_type", "brca").lower()
+
+        text = (
+            f"Please run the regulatory candidate prioritization workflow for **{gene}** "
+            f"in **TCGA {cancer_type.upper()}** using the following two-step process:\n\n"
+            f"**Step 1 — Identify source-labeled candidates:**\n"
+            f"Use `compare_network_contexts` with `gene=\"{gene}\"` and `cancer_type=\"{cancer_type}\"` "
+            f"to retrieve the OncoKB-filtered candidate shortlist. Note the source label for each candidate "
+            f"(TCGA-only, GREmLN-only, or Both) and MoA where available.\n\n"
+            f"**Step 2 — Comprehensive domain analysis per candidate:**\n"
+            f"For each candidate returned in Step 1, run `comprehensive_gene_analysis` with "
+            f"source-driven network routing:\n"
+            f"   - TCGA-only candidates → use `tcga_network=\"{cancer_type}\"`\n"
+            f"   - GREmLN-only candidates → use `cell_type=\"epithelial_cell\"`\n"
+            f"   - Both-source candidates → use `tcga_network=\"{cancer_type}\"` (tumor-state default)\n\n"
+            f"**Step 3 — Summarize as a table:**\n"
+            f"Present results with columns: "
+            f"Candidate | Source | MoA | Oncogenic Potential | Druggability | "
+            f"Clinical Actionability | Network Vulnerability | PageRank\n\n"
+            f"**Step 4 — Interpret:**\n"
+            f"   - Which candidates are highest priority for therapeutic follow-up "
+            f"(activating regulators upstream of oncogenes, or repressive regulators upstream of tumor suppressors)?\n"
+            f"   - Do TCGA-only candidates differ meaningfully from Both-source candidates in their domain profiles?\n"
+        )
+        return types.GetPromptResult(
+            description=f"Candidate prioritization for {gene} in TCGA {cancer_type.upper()}",
+            messages=[
+                types.PromptMessage(
+                    role="user",
+                    content=types.TextContent(type="text", text=text)
+                )
+            ]
+        )
+
     else:
         return types.GetPromptResult(
             description="Unknown prompt",
@@ -449,7 +610,7 @@ async def handle_get_prompt(name: str, arguments: dict | None) -> types.GetPromp
                     role="user",
                     content=types.TextContent(
                         type="text",
-                        text=f"Unknown prompt '{name}'. Available prompts: gene_deep_dive, cancer_biomarker_panel, cross_cell_comparison."
+                        text=f"Unknown prompt '{name}'. Available prompts: gene_deep_dive, cancer_biomarker_panel, cross_cell_comparison, tumor_context_analysis, network_context_comparison, candidate_prioritization."
                     )
                 )
             ]

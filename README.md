@@ -309,6 +309,9 @@ Guided prompt templates that scaffold common analysis workflows in the MCP clien
 | `gene_deep_dive` | `gene`, `cell_type` | Validates gene, runs full analysis, queries neighbors, summarizes regulatory role and clinical relevance |
 | `cancer_biomarker_panel` | `cancer_type`, `cell_type` | Runs multi-gene parallel analysis for a pre-defined cancer panel (colorectal, breast, lung, prostate, general) |
 | `cross_cell_comparison` | `gene` | Compares gene behavior across all 10 cell types, highlighting immune vs. epithelial differences |
+| `tumor_context_analysis` | `gene`, `cancer_type` | Full domain analysis against a TCGA tumor-state network; MoA breakdown, master regulators, druggability, clinical actionability |
+| `network_context_comparison` | `gene`, `cancer_type` | Compares population-averaged (GREmLN epithelial) vs. tumor-state (TCGA) regulatory context; conserved vs. context-specific regulators |
+| `candidate_prioritization` | `gene`, `cancer_type` | Two-step workflow: source-labeled candidate shortlist via `compare_network_contexts`, then `comprehensive_gene_analysis` per candidate with source-driven network routing |
 
 ---
 
