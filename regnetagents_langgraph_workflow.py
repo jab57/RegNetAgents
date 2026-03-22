@@ -2469,6 +2469,7 @@ class GeneAnalysisState(TypedDict):
     gene: str
     cell_type: str
     analysis_depth: str  # "basic", "comprehensive", "focused"
+    tcga_network: Optional[str]  # e.g. 'brca', 'luad' — if set, use TCGA topology
 
     # Current workflow state
     current_step: str
@@ -2671,6 +2672,17 @@ class RegNetAgentsWorkflow:
             if not state.get('analysis_depth'):
                 state['analysis_depth'] = 'comprehensive'
 
+            # Validate tcga_network if provided
+            tcga_network = state.get('tcga_network')
+            if tcga_network:
+                from regnetagents.tcga_registry import TCGA_CANCER_TYPES
+                if tcga_network not in TCGA_CANCER_TYPES:
+                    raise ValueError(
+                        f"Invalid tcga_network '{tcga_network}'. "
+                        f"Valid types: {TCGA_CANCER_TYPES}"
+                    )
+                logger.info(f"TCGA network mode: {tcga_network}")
+
             # Initialize workflow state
             state['current_step'] = 'initialization'
             state['workflow_complete'] = False
@@ -2696,12 +2708,15 @@ class RegNetAgentsWorkflow:
         try:
             state['current_step'] = 'gene_network_analysis'
 
-            # Use existing MCP server logic
-            cell_type = CellType(state['cell_type'])
-            result = await self.modeling_agent.analyze_gene_network_context(
-                state['gene'],
-                cell_type
-            )
+            tcga_network = state.get('tcga_network')
+            if tcga_network:
+                result = await self._analyze_gene_network_tcga(state['gene'], tcga_network)
+            else:
+                cell_type = CellType(state['cell_type'])
+                result = await self.modeling_agent.analyze_gene_network_context(
+                    state['gene'],
+                    cell_type
+                )
 
             state['gene_info'] = result
             state['analysis_metadata']['steps_completed'].append('gene_network_analysis')
@@ -2713,6 +2728,75 @@ class RegNetAgentsWorkflow:
             state['error_message'] = f"Gene network analysis failed: {str(e)}"
             state['current_step'] = 'error'
             return state
+
+    async def _analyze_gene_network_tcga(self, gene: str, tcga_network: str) -> Dict:
+        """Build a gene_info dict from TCGA network topology, compatible with GREmLN gene_info structure."""
+        gene_upper = gene.strip().upper()
+        network_data = self.tcga_cache.tcga_indices.get(tcga_network, {}) if self.tcga_cache else {}
+
+        if not network_data:
+            return {
+                "gene": gene_upper,
+                "network_source": "tcga",
+                "tcga_network": tcga_network,
+                "regulatory_role": "unknown",
+                "error": True,
+                "message": f"No TCGA network loaded for '{tcga_network}'"
+            }
+
+        regulator_targets = network_data.get("regulator_targets", {})
+        target_regulators = network_data.get("target_regulators", {})
+        pagerank = network_data.get("pagerank_normalized", {})
+        moa_scores = network_data.get("regulator_target_moa", {})
+
+        regulators = list(target_regulators.get(gene_upper, []))
+        targets = list(regulator_targets.get(gene_upper, []))
+        num_regulators = len(regulators)
+        num_targets = len(targets)
+        pagerank_val = pagerank.get(gene_upper, 0.0)
+
+        thresholds = self.tcga_cache.get_thresholds(tcga_network) if self.tcga_cache else {}
+        high_pr = thresholds.get("pagerank_high", 0.001)
+        high_deg = thresholds.get("degree_high", 50)
+        mod_deg = thresholds.get("degree_moderate", 20)
+        total_degree = num_regulators + num_targets
+
+        if num_targets >= high_deg and pagerank_val >= high_pr:
+            regulatory_role = "master_regulator"
+        elif num_targets >= mod_deg or pagerank_val >= high_pr:
+            regulatory_role = "hub_regulator"
+        elif num_targets > 0:
+            regulatory_role = "regulator"
+        elif num_regulators > 0:
+            regulatory_role = "target_gene"
+        else:
+            regulatory_role = "weakly_regulated"
+
+        # MoA summary for targets
+        targets_with_moa = []
+        for tgt in targets[:25]:
+            moa = moa_scores.get(gene_upper, {}).get(tgt)
+            entry = {"gene_symbol": tgt}
+            if moa is not None:
+                entry["moa"] = moa
+                entry["direction"] = "activating" if moa > 0 else "repressive"
+            targets_with_moa.append(entry)
+
+        return {
+            "gene": gene_upper,
+            "network_source": "tcga",
+            "tcga_network": tcga_network,
+            "regulatory_role": regulatory_role,
+            "num_regulators": num_regulators,
+            "num_targets": num_targets,
+            "pagerank_normalized": round(pagerank_val, 6),
+            "total_degree": total_degree,
+            "is_regulator": num_targets > 0,
+            "is_target": num_regulators > 0,
+            "regulators": regulators[:25],
+            "targets": targets_with_moa,
+            "thresholds": thresholds,
+        }
 
     def _route_next_action(self, state: GeneAnalysisState) -> str:
         """Smart routing logic based on gene characteristics"""
@@ -2825,12 +2909,20 @@ class RegNetAgentsWorkflow:
         tasks = []
         task_names = []
 
+        tcga_network = state.get('tcga_network')
+
         if num_regulators > 5 and 'regulators_analysis' not in completed_steps:
-            tasks.append(self.modeling_agent.analyze_regulators_detailed(state['gene'], cell_type, max_regulators=100))
+            if tcga_network:
+                tasks.append(self._analyze_regulators_tcga(state['gene'], tcga_network, max_regulators=100))
+            else:
+                tasks.append(self.modeling_agent.analyze_regulators_detailed(state['gene'], cell_type, max_regulators=100))
             task_names.append('regulators')
 
         if is_regulator and num_targets > 5 and 'targets_analysis' not in completed_steps:
-            tasks.append(self.modeling_agent.analyze_targets_detailed(state['gene'], cell_type, max_targets=25))
+            if tcga_network:
+                tasks.append(self._analyze_targets_tcga(state['gene'], tcga_network, max_targets=25))
+            else:
+                tasks.append(self.modeling_agent.analyze_targets_detailed(state['gene'], cell_type, max_targets=25))
             task_names.append('targets')
 
         # Run analyses in parallel
@@ -2855,6 +2947,58 @@ class RegNetAgentsWorkflow:
 
         logger.info(f"Batch core analyses complete. Completed: {task_names}")
         return state
+
+    async def _analyze_regulators_tcga(self, gene: str, tcga_network: str, max_regulators: int = 100) -> Dict:
+        """Return detailed regulator list for a gene from the TCGA network."""
+        gene_upper = gene.strip().upper()
+        network_data = self.tcga_cache.tcga_indices.get(tcga_network, {}) if self.tcga_cache else {}
+        target_regulators = network_data.get("target_regulators", {})
+        moa_scores = network_data.get("regulator_target_moa", {})
+        regulators = list(target_regulators.get(gene_upper, []))[:max_regulators]
+        hub_regulators = []
+        for reg in regulators:
+            entry = {"gene_symbol": reg, "regulatory_strength": "moderate"}
+            moa = moa_scores.get(reg, {}).get(gene_upper)
+            if moa is not None:
+                entry["moa"] = moa
+                entry["direction"] = "activating" if moa > 0 else "repressive"
+            hub_regulators.append(entry)
+        return {
+            "gene": gene_upper,
+            "network_source": "tcga",
+            "tcga_network": tcga_network,
+            "regulator_summary": {
+                "total_regulators": len(target_regulators.get(gene_upper, [])),
+                "analyzed_regulators": len(regulators)
+            },
+            "hub_regulators": hub_regulators
+        }
+
+    async def _analyze_targets_tcga(self, gene: str, tcga_network: str, max_targets: int = 25) -> Dict:
+        """Return detailed target list for a gene from the TCGA network."""
+        gene_upper = gene.strip().upper()
+        network_data = self.tcga_cache.tcga_indices.get(tcga_network, {}) if self.tcga_cache else {}
+        regulator_targets = network_data.get("regulator_targets", {})
+        moa_scores = network_data.get("regulator_target_moa", {})
+        targets = list(regulator_targets.get(gene_upper, []))[:max_targets]
+        cascade_targets = []
+        for tgt in targets:
+            entry = {"gene_symbol": tgt}
+            moa = moa_scores.get(gene_upper, {}).get(tgt)
+            if moa is not None:
+                entry["moa"] = moa
+                entry["direction"] = "activating" if moa > 0 else "repressive"
+            cascade_targets.append(entry)
+        return {
+            "gene": gene_upper,
+            "network_source": "tcga",
+            "tcga_network": tcga_network,
+            "target_summary": {
+                "total_targets": len(regulator_targets.get(gene_upper, [])),
+                "analyzed_targets": len(targets)
+            },
+            "cascade_targets": cascade_targets
+        }
 
     async def _batch_secondary_analyses(self, state: GeneAnalysisState) -> GeneAnalysisState:
         """Run secondary analyses in parallel (pathways + cross-cell)"""
@@ -2892,7 +3036,9 @@ class RegNetAgentsWorkflow:
             tasks.append(self.pathway_enricher.enrich_pathways_reactome(gene_list))
             task_names.append('pathways')
 
-        if ((regulatory_role in ['hub_regulator', 'master_regulator'] or num_regulators > 15)
+        # cross_cell comparison is GREmLN-specific — skip when using TCGA network
+        if (not state.get('tcga_network')
+            and (regulatory_role in ['hub_regulator', 'master_regulator'] or num_regulators > 15)
             and 'cross_cell_analysis' not in completed_steps):
             tasks.append(self.modeling_agent.compare_gene_across_cell_types(state['gene']))
             task_names.append('cross_cell')
@@ -3490,14 +3636,26 @@ Do NOT invent numerical scores or assessments beyond what is stated above. Synth
         return state
 
     async def run_analysis(self, gene: str, cell_type: str = "epithelial_cell",
-                          analysis_depth: str = "comprehensive") -> Dict:
-        """Run the complete gene analysis workflow"""
+                          analysis_depth: str = "comprehensive",
+                          tcga_network: str = None) -> Dict:
+        """Run the complete gene analysis workflow.
+
+        Args:
+            gene: Gene symbol to analyze.
+            cell_type: GREmLN cell-type network (default 'epithelial_cell').
+                       Ignored when tcga_network is provided.
+            analysis_depth: 'basic', 'comprehensive', or 'focused'.
+            tcga_network: TCGA cancer-type key (e.g. 'brca', 'luad').
+                          When provided, TCGA network topology is used instead
+                          of GREmLN for all network-based assessments.
+        """
 
         # Initialize state
         initial_state = GeneAnalysisState(
             gene=gene,
             cell_type=cell_type,
             analysis_depth=analysis_depth,
+            tcga_network=tcga_network,
             current_step="",
             workflow_complete=False,
             error_message=None,

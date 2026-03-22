@@ -662,6 +662,13 @@ async def handle_list_tools() -> list[Tool]:
                         "description": "Depth of analysis to perform",
                         "default": "comprehensive"
                     },
+                    "tcga_network": {
+                        "type": "string",
+                        "enum": ["brca", "coad", "hnsc", "luad", "lusc", "ov", "prad", "ucec"],
+                        "description": "TCGA cancer-type network to use for topology analysis (e.g. 'brca'). "
+                                       "When provided, TCGA network topology is used instead of the GREmLN cell-type network. "
+                                       "Useful for analyzing candidates identified from TCGA ARACNe networks."
+                    },
                     "use_cache": {
                         "type": "boolean",
                         "description": "Return cached results if available (faster). Set to false to force fresh analysis.",
@@ -1214,18 +1221,19 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             gene = arguments["gene"]
             cell_type = arguments.get("cell_type", "epithelial_cell")
             analysis_depth = arguments.get("analysis_depth", "comprehensive")
+            tcga_network = arguments.get("tcga_network", None)
             use_cache = arguments.get("use_cache", True)
 
-            cache_key = (gene, cell_type, analysis_depth)
+            cache_key = (gene, cell_type, analysis_depth, tcga_network)
             if use_cache and cache_key in _result_cache:
                 cached_ts, cached_result = _result_cache[cache_key]
                 if time.time() - cached_ts < _CACHE_TTL_SECONDS:
-                    logger.info(f"Cache hit for {gene} ({cell_type}, {analysis_depth})")
+                    logger.info(f"Cache hit for {gene} ({cell_type}, {analysis_depth}, tcga={tcga_network})")
                     cached_result["workflow_info"]["source"] = "cache"
                     return [TextContent(type="text", text=json.dumps(cached_result, indent=2))]
 
             logger.info(f"Starting comprehensive analysis for {gene} using LangGraph workflow")
-            logger.info(f"Parameters: cell_type={cell_type}, analysis_depth={analysis_depth}")
+            logger.info(f"Parameters: cell_type={cell_type}, analysis_depth={analysis_depth}, tcga_network={tcga_network}")
 
             start_time = time.time()
 
@@ -1233,6 +1241,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             result = await workflow.run_analysis(
                 gene=gene,
                 cell_type=cell_type,
+                tcga_network=tcga_network,
                 analysis_depth=analysis_depth
             )
 
