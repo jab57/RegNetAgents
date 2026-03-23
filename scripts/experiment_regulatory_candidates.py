@@ -343,13 +343,13 @@ def plot_or_heatmap(
         cmap="RdBu",
         center=1.0,
         vmin=0,
-        vmax=5,
+        vmax=16,
         ax=ax,
         linewidths=0.5,
         cbar_kws={"label": "Odds Ratio"},
     )
     ax.set_title(
-        f"Enrichment of {CT}-specific regulators in cancer driver gene sets\n"
+        f"Enrichment of {CT}-specific regulators in cancer driver gene set\n"
         "(* BH-FDR < 0.05, ** BH-FDR < 0.01; primary test = OncoKB)",
         fontsize=11,
     )
