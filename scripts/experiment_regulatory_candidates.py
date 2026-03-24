@@ -734,6 +734,98 @@ def run_negative_controls(
     return neg_results
 
 
+# ── Exploratory: GREmLN-only vs TCGA-only enrichment comparison ────────────────
+
+def run_gremln_comparison(
+    agent,
+    brca_comparisons: dict,
+    coad_comparisons: dict,
+    oncokb_raw: set,
+    brca_bg: set,
+    coad_bg: set,
+) -> dict:
+    """
+    Exploratory comparison: GREmLN-only vs TCGA-only OncoKB enrichment.
+
+    Uses the GREmLN epithelial_cell gene universe as background (translated from
+    ENSG via the pre-built gene ID cache). Only ~35% of ENSG IDs resolve to gene
+    symbols via the cache, so this is presented as qualitative support rather than
+    a formal statistical comparison (see Discussion). Results are included in the
+    output JSON for reproducibility.
+    """
+    print("\n" + "=" * 70)
+    print("EXPLORATORY: GREmLN-only vs TCGA-only OncoKB enrichment comparison")
+    print("NOTE: GREmLN background derived from ~35% ENSG-to-symbol resolution.")
+    print("      Results are qualitative support, not formal statistics.")
+    print("=" * 70)
+
+    import pickle as _pickle
+    cache_path = "cache/gene_id_cache.pkl"
+    try:
+        with open(cache_path, "rb") as f:
+            id_cache = _pickle.load(f)
+        e2s = id_cache.get("ensembl_to_symbol", {})
+    except Exception as exc:
+        print(f"WARNING: Could not load gene ID cache ({exc}). Skipping GREmLN comparison.")
+        return {}
+
+    gremln_idx = agent.cache.network_indices.get(CELL_TYPE, {})
+    ensg_ids   = gremln_idx.get("all_genes", set())
+    gremln_bg  = {e2s[e].upper() for e in ensg_ids if e in e2s}
+    oncokb_g   = oncokb_raw & gremln_bg
+    coverage   = 100 * len(gremln_bg) / max(len(ensg_ids), 1)
+
+    print(f"\nGREmLN background: {len(gremln_bg):,} symbols from {len(ensg_ids):,} "
+          f"ENSG IDs ({coverage:.0f}% coverage)")
+    print(f"OncoKB in GREmLN background: {len(oncokb_g):,}")
+
+    print(f"\n{'Gene':<10} {'Cancer':<6} {'TCGA-OR':>8} {'TCGA-n':>7} {'TCGA-ov':>8} "
+          f"{'GREmLN-OR':>10} {'GREmLN-n':>9} {'GREmLN-ov':>10}")
+    print("-" * 80)
+
+    out: dict = {}
+    for cancer, comparisons, bg, focal_genes in [
+        ("brca", brca_comparisons, brca_bg, BRCA_GENES),
+        ("coad", coad_comparisons, coad_bg, COAD_GENES),
+    ]:
+        oncokb_t = oncokb_raw & bg
+        out[cancer] = {}
+        for gene in focal_genes:
+            if gene not in comparisons:
+                continue
+            comp        = comparisons[gene]
+            tcga_only   = set(comp["regulators"]["tumor_state_only"])
+            gremln_only = set(comp["regulators"]["population_averaged_only"])
+
+            if len(tcga_only) >= 3:
+                t    = fisher_enrichment(tcga_only, oncokb_t, bg)
+                t_or, t_n, t_ov = t["odds_ratio"], t["query_size"], t["ref_overlap"]
+            else:
+                t_or, t_n, t_ov = 0.0, len(tcga_only), 0
+
+            if len(gremln_only) >= 3:
+                g    = fisher_enrichment(gremln_only, oncokb_g, gremln_bg)
+                g_or, g_n, g_ov = g["odds_ratio"], g["query_size"], g["ref_overlap"]
+            else:
+                g_or, g_n, g_ov = 0.0, len(gremln_only), 0
+
+            print(f"{gene:<10} {cancer:<6} {t_or:>8.2f} {t_n:>7} {t_ov:>8} "
+                  f"{g_or:>10.2f} {g_n:>9} {g_ov:>10}")
+            out[cancer][gene] = {
+                "tcga_only_or":             t_or,
+                "tcga_only_n":              t_n,
+                "tcga_only_oncokb_overlap": t_ov,
+                "gremln_only_or":           g_or,
+                "gremln_only_n":            g_n,
+                "gremln_only_oncokb_overlap": g_ov,
+            }
+
+    print(f"\nCoverage note: {len(gremln_bg):,}/{len(ensg_ids):,} ENSG IDs resolved to gene "
+          f"symbols via pre-built cache. Incomplete coverage may affect GREmLN background "
+          f"size and OR estimates; treat as exploratory.")
+    return out
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def run_experiment() -> None:
@@ -755,7 +847,7 @@ def run_experiment() -> None:
     print(f"OncoKB drivers: {len(oncokb_raw):,} total")
 
     # ── BRCA analysis ──────────────────────────────────────────────────────────
-    (_, brca_res, brca_bg,
+    (brca_comp, brca_res, brca_bg,
      brca_stouffer, brca_testable) = run_cancer_analysis(
         agent, workflow, "brca", BRCA_GENES, oncokb_raw, oncokb_roles, RESULTS_DIR,
     )
@@ -763,12 +855,22 @@ def run_experiment() -> None:
     plot_neg_controls(brca_res, brca_neg, brca_testable, HOUSEKEEPING_GENES, "brca")
 
     # ── COAD analysis ──────────────────────────────────────────────────────────
-    (_, coad_res, coad_bg,
+    (coad_comp, coad_res, coad_bg,
      coad_stouffer, coad_testable) = run_cancer_analysis(
         agent, workflow, "coad", COAD_GENES, oncokb_raw, oncokb_roles, RESULTS_DIR,
     )
     coad_neg = run_negative_controls(agent, "coad", oncokb_raw, coad_bg)
     plot_neg_controls(coad_res, coad_neg, coad_testable, HOUSEKEEPING_GENES, "coad")
+
+    # ── Exploratory: GREmLN-only vs TCGA-only enrichment comparison ────────────
+    gremln_comparison = run_gremln_comparison(
+        agent,
+        brca_comparisons=brca_comp,
+        coad_comparisons=coad_comp,
+        oncokb_raw=oncokb_raw,
+        brca_bg=brca_bg,
+        coad_bg=coad_bg,
+    )
 
     # ── Save combined JSON ─────────────────────────────────────────────────────
     output = {
@@ -792,6 +894,7 @@ def run_experiment() -> None:
             "brca": brca_neg,
             "coad": coad_neg,
         },
+        "gremln_comparison_exploratory": gremln_comparison,
     }
     plot_workflow_figure()
 
