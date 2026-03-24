@@ -362,6 +362,59 @@ def plot_or_heatmap(
     plt.close()
 
 
+def plot_gremln_heatmap(
+    gremln_comparison: dict, cancer_type: str, genes: list
+) -> None:
+    """Heatmap of GREmLN-only enrichment ORs (Figure 3C/3D)."""
+    ct = cancer_type.lower()
+    CT = cancer_type.upper()
+    ct_data = gremln_comparison.get(ct, {})
+    gene_results = ct_data.get("gene_results", {})
+
+    or_matrix, annot_matrix = [], []
+    for gene in genes:
+        gr = gene_results.get(gene, {})
+        if gr.get("skipped") or gene not in gene_results:
+            or_matrix.append([float("nan")])
+            annot_matrix.append(["n/a"])
+        else:
+            or_v  = gr.get("gremln_only_or", float("nan"))
+            adj_p = gr.get("gremln_only_fdr", gr.get("gremln_only_p", 1.0))
+            star  = "**" if adj_p < 0.01 else ("*" if adj_p < 0.05 else "")
+            safe_or = or_v if (or_v != float("inf") and not math.isnan(or_v)) else 5.0
+            or_matrix.append([safe_or])
+            annot_matrix.append([f"{or_v:.1f}{star}" if not math.isnan(or_v) else "n/a"])
+
+    fig, ax = plt.subplots(figsize=(9, len(genes) * 0.9 + 1.5))
+    sns.heatmap(
+        or_matrix,
+        annot=annot_matrix,
+        fmt="",
+        xticklabels=["OncoKB\n(pan-cancer)"],
+        yticklabels=genes,
+        cmap="RdBu",
+        center=1.0,
+        vmin=0,
+        vmax=16,
+        ax=ax,
+        linewidths=0.5,
+        cbar_kws={"label": "Odds Ratio"},
+        mask=np.array([[math.isnan(row[0])] for row in or_matrix]),
+    )
+    ax.set_title(
+        f"Enrichment of {CT} GREmLN-only candidates in cancer driver gene set\n"
+        "(* BH-FDR < 0.05, ** BH-FDR < 0.01; GREmLN epithelial_cell background)",
+        fontsize=11,
+    )
+    ax.set_xlabel("Reference gene set", fontsize=10)
+    ax.set_ylabel("Focal gene", fontsize=10)
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(MANUSCRIPT_DIR, f"figure_heatmap_gremln_{ct}.png"), dpi=150
+    )
+    plt.close()
+
+
 def plot_regulator_counts(
     comparisons: dict,
     genes: list,
@@ -734,7 +787,7 @@ def run_negative_controls(
     return neg_results
 
 
-# ── Exploratory: GREmLN-only vs TCGA-only enrichment comparison ────────────────
+# ── GREmLN formal enrichment analysis ─────────────────────────────────────────
 
 def run_gremln_comparison(
     agent,
@@ -745,19 +798,24 @@ def run_gremln_comparison(
     coad_bg: set,
 ) -> dict:
     """
-    Exploratory comparison: GREmLN-only vs TCGA-only OncoKB enrichment.
+    Formal enrichment analysis of GREmLN-only candidates vs OncoKB, mirroring
+    the TCGA analysis in run_cancer_analysis().
 
-    Uses the GREmLN epithelial_cell gene universe as background (translated from
-    ENSG via the pre-built gene ID cache; run scripts/build_network_cache.py
-    --enrich-gene-cache to populate near-complete ENSG coverage). This comparison
-    is exploratory because GREmLN formal statistics are not computed here, and the
-    single-cell epithelial_cell network does not directly correspond to the
-    BRCA/COAD tumor context. Results are included in the output JSON for
-    reproducibility.
+    Background: GREmLN epithelial_cell gene universe (ENSG->symbol via pre-built
+    gene ID cache; run build_network_cache.py --enrich-gene-cache for full coverage).
+    Reference: OncoKB cancer genes intersected with GREmLN background.
+
+    Runs per-gene Fisher's exact test + permutation control (n=1,000), BH-FDR
+    correction across testable genes, and Stouffer Z per cancer type.
+
+    Note: the GREmLN epithelial_cell network is not cancer-type-specific (it is a
+    pan-tissue healthy epithelial network), so the background is the same for BRCA
+    and COAD. Results should be interpreted as measuring enrichment of normal
+    epithelial regulatory candidates in OncoKB, not tumor-specific enrichment.
     """
     print("\n" + "=" * 70)
-    print("EXPLORATORY: GREmLN-only vs TCGA-only OncoKB enrichment comparison")
-    print("NOTE: GREmLN formal statistics not computed; results are exploratory.")
+    print("GREmLN-only OncoKB enrichment analysis (formal statistics)")
+    print("Background: GREmLN epithelial_cell gene universe")
     print("=" * 70)
 
     import pickle as _pickle
@@ -767,7 +825,7 @@ def run_gremln_comparison(
             id_cache = _pickle.load(f)
         e2s = id_cache.get("ensembl_to_symbol", {})
     except Exception as exc:
-        print(f"WARNING: Could not load gene ID cache ({exc}). Skipping GREmLN comparison.")
+        print(f"WARNING: Could not load gene ID cache ({exc}). Skipping GREmLN analysis.")
         return {}
 
     gremln_idx = agent.cache.network_indices.get(CELL_TYPE, {})
@@ -780,17 +838,18 @@ def run_gremln_comparison(
           f"ENSG IDs ({coverage:.0f}% coverage)")
     print(f"OncoKB in GREmLN background: {len(oncokb_g):,}")
 
-    print(f"\n{'Gene':<10} {'Cancer':<6} {'TCGA-OR':>8} {'TCGA-n':>7} {'TCGA-ov':>8} "
-          f"{'GREmLN-OR':>10} {'GREmLN-n':>9} {'GREmLN-ov':>10}")
-    print("-" * 80)
-
     out: dict = {}
-    for cancer, comparisons, bg, focal_genes in [
+    for cancer, comparisons, tcga_bg, focal_genes in [
         ("brca", brca_comparisons, brca_bg, BRCA_GENES),
         ("coad", coad_comparisons, coad_bg, COAD_GENES),
     ]:
-        oncokb_t = oncokb_raw & bg
+        CT = cancer.upper()
+        oncokb_t = oncokb_raw & tcga_bg
         out[cancer] = {}
+
+        print(f"\n[GREmLN / {CT}] Fisher's exact tests + permutation controls ...")
+        gene_results: dict = {}
+
         for gene in focal_genes:
             if gene not in comparisons:
                 continue
@@ -798,32 +857,83 @@ def run_gremln_comparison(
             tcga_only   = set(comp["regulators"]["tumor_state_only"])
             gremln_only = set(comp["regulators"]["population_averaged_only"])
 
+            # TCGA-only enrichment (against TCGA background, for reference)
             if len(tcga_only) >= 3:
-                t    = fisher_enrichment(tcga_only, oncokb_t, bg)
+                t = fisher_enrichment(tcga_only, oncokb_t, tcga_bg)
                 t_or, t_n, t_ov = t["odds_ratio"], t["query_size"], t["ref_overlap"]
             else:
                 t_or, t_n, t_ov = 0.0, len(tcga_only), 0
 
-            if len(gremln_only) >= 3:
-                g    = fisher_enrichment(gremln_only, oncokb_g, gremln_bg)
-                g_or, g_n, g_ov = g["odds_ratio"], g["query_size"], g["ref_overlap"]
-            else:
-                g_or, g_n, g_ov = 0.0, len(gremln_only), 0
-
-            print(f"{gene:<10} {cancer:<6} {t_or:>8.2f} {t_n:>7} {t_ov:>8} "
-                  f"{g_or:>10.2f} {g_n:>9} {g_ov:>10}")
-            out[cancer][gene] = {
-                "tcga_only_or":             t_or,
-                "tcga_only_n":              t_n,
-                "tcga_only_oncokb_overlap": t_ov,
-                "gremln_only_or":           g_or,
-                "gremln_only_n":            g_n,
-                "gremln_only_oncokb_overlap": g_ov,
+            # GREmLN-only enrichment (against GREmLN background)
+            gene_res: dict = {
+                "tcga_only_or":               t_or,
+                "tcga_only_n":                t_n,
+                "tcga_only_oncokb_overlap":   t_ov,
+                "gremln_only_n":              len(gremln_only),
+                "gremln_only_oncokb_overlap": 0,
+                "gremln_only_or":             0.0,
+                "gremln_only_p":              1.0,
+                "gremln_only_emp_p":          1.0,
+                "gremln_only_fdr":            1.0,
+                "skipped": False,
             }
 
-    print(f"\nCoverage note: {len(gremln_bg):,}/{len(ensg_ids):,} ENSG IDs resolved to gene "
-          f"symbols via pre-built cache (run build_network_cache.py --enrich-gene-cache "
-          f"to populate). GREmLN comparison is exploratory — no formal statistics computed.")
+            if len(gremln_only) < 3:
+                print(f"  {gene}: skipping -- only {len(gremln_only)} GREmLN-only regulators")
+                gene_res["skipped"] = True
+                gene_results[gene] = gene_res
+                continue
+
+            g_fisher = fisher_enrichment(gremln_only, oncokb_g, gremln_bg)
+            g_perm   = permutation_test(
+                gremln_only, oncokb_g, gremln_bg,
+                n=N_PERMUTATIONS, seed=RANDOM_SEED,
+            )
+            gene_res.update({
+                "gremln_only_or":             g_fisher["odds_ratio"],
+                "gremln_only_p":              g_fisher["p_value"],
+                "gremln_only_emp_p":          g_perm["empirical_p"],
+                "gremln_only_oncokb_overlap": g_fisher["ref_overlap"],
+            })
+            gene_results[gene] = gene_res
+
+            print(
+                f"  {gene:7s} vs oncokb (GREmLN)              : "
+                f"OR={g_fisher['odds_ratio']:5.2f}  p={g_fisher['p_value']:.4f}  "
+                f"emp_p={g_perm['empirical_p']:.4f}  "
+                f"overlap={g_fisher['ref_overlap']}/{g_fisher['query_size']}"
+            )
+
+        # BH-FDR across testable GREmLN genes
+        testable = [g for g in focal_genes
+                    if g in gene_results and not gene_results[g]["skipped"]]
+        if testable:
+            gremln_ps  = [gene_results[g]["gremln_only_p"] for g in testable]
+            fdr_vals   = bh_fdr(gremln_ps)
+            for gene, adj_p in zip(testable, fdr_vals):
+                gene_results[gene]["gremln_only_fdr"] = round(adj_p, 6)
+
+            # Stouffer Z for GREmLN-only panel
+            ws = [gene_results[g]["gremln_only_n"] for g in testable]
+            gremln_stouffer = stouffer_z(gremln_ps, ws)
+            print(f"\n[GREmLN / {CT}] Stouffer combined Z (GREmLN-only, all testable):")
+            print(f"  oncokb (GREmLN background)      : "
+                  f"Z={gremln_stouffer['combined_z']:6.3f}  "
+                  f"p={gremln_stouffer['combined_p']:.4f}")
+        else:
+            gremln_stouffer = {"combined_z": float("nan"), "combined_p": float("nan")}
+
+        out[cancer] = {
+            "gene_results":      gene_results,
+            "combined_stouffer": gremln_stouffer,
+            "background_size":   len(gremln_bg),
+            "oncokb_in_bg":      len(oncokb_g),
+            "coverage_pct":      round(coverage, 1),
+        }
+
+    print(f"\nGREmLN background note: {len(gremln_bg):,}/{len(ensg_ids):,} ENSG IDs "
+          f"resolved via pre-built cache ({coverage:.0f}% coverage). "
+          f"epithelial_cell network is pan-tissue (not cancer-type-specific).")
     return out
 
 
@@ -895,8 +1005,10 @@ def run_experiment() -> None:
             "brca": brca_neg,
             "coad": coad_neg,
         },
-        "gremln_comparison_exploratory": gremln_comparison,
+        "gremln_comparison": gremln_comparison,
     }
+    plot_gremln_heatmap(gremln_comparison, "brca", BRCA_GENES)
+    plot_gremln_heatmap(gremln_comparison, "coad", COAD_GENES)
     plot_workflow_figure()
 
     out_json = os.path.join(RESULTS_DIR, "experiment_rewiring_results.json")
@@ -906,6 +1018,8 @@ def run_experiment() -> None:
     print(f"Figures  -> {MANUSCRIPT_DIR}/figure_workflow.png  (NAR Fig 1)")
     print(f"            {MANUSCRIPT_DIR}/figure_heatmap_brca.png  (NAR Fig 3A)")
     print(f"            {MANUSCRIPT_DIR}/figure_heatmap_coad.png  (NAR Fig 3B)")
+    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_gremln_brca.png  (NAR Fig 3C)")
+    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_gremln_coad.png  (NAR Fig 3D)")
     print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_brca.png  (NAR Fig 4A)")
     print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_coad.png  (NAR Fig 4B)")
     print(f"            {RESULTS_DIR}/target_list_brca.png  (NAR Fig 2A)")
