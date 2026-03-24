@@ -277,7 +277,7 @@ def plot_workflow_figure() -> None:
               ["Both", "GREmLN-only", "TCGA-only"],
               ["#c8e6c8", "#ffe0b2", "#ffcccc"])
     ax.text(5, 10.05,
-            "Context-specificity score = 1 − (Both / total regulators)",
+            "Context-specificity = 1 − J,  J = |GREmLN ∩ TCGA| / |GREmLN ∪ TCGA|",
             ha="center", va="top", fontsize=8.5, color="#444444")
 
     arrow(9.8, 9.0, "TCGA-only + GREmLN-only candidates")
