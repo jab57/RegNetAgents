@@ -6,12 +6,13 @@ The RegNetAgents system uses **Ensembl Gene IDs** (ENSG format) internally, but 
 ## Storage Layers
 
 ### 1. Local Cache (Primary)
-- **File**: `gene_id_cache.pkl`
-- **Location**: `/c/Users/josea/OneDrive/Desktop/RegNetAgents/gene_id_cache.pkl`
+- **File**: `cache/gene_id_cache.pkl`
 - **Format**: Python pickle (binary)
-- **Content**: Bidirectional mapping dictionaries
+- **Content**: Bidirectional mapping dictionaries (`symbol_to_ensembl`, `ensembl_to_symbol`)
 - **Persistence**: Saved between sessions
 - **Speed**: Instant lookup (no network calls)
+- **Pre-populated**: `scripts/build_network_cache.py --enrich-gene-cache` bulk-resolves all
+  GREmLN ENSG IDs via MyGene.info at cache build time (~100% coverage, 29,000+ entries)
 
 ### 2. Ensembl REST API (Fallback)
 - **URL**: `https://rest.ensembl.org/lookup/`
@@ -60,10 +61,11 @@ The RegNetAgents system uses **Ensembl Gene IDs** (ENSG format) internally, but 
 ## Cache Management
 
 - **Auto-saving**: Every successful API lookup
+- **Bulk enrichment**: Run `python scripts/build_network_cache.py --enrich-gene-cache` to
+  pre-populate all GREmLN ENSG IDs via MyGene.info (done automatically with `--all`)
 - **Error handling**: Graceful fallback if API fails
-- **Cache location**: Same directory as server
-- **File size**: ~1KB per 100 gene mappings
-- **Growth**: Expands as new genes are queried
+- **Cache location**: `cache/gene_id_cache.pkl` (project root)
+- **Growth**: Expands as new genes are queried at runtime
 
 ## Benefits
 

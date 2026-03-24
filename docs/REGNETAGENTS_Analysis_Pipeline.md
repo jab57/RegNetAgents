@@ -511,11 +511,14 @@ The RegNetAgents system uses pre-computed network indices for optimal performanc
 
 #### **Quick Start**
 ```bash
-# Process all cell types from TSV files
+# Process all cell types from TSV files (also auto-enriches gene ID cache)
 python scripts/build_network_cache.py --all
 
 # Process specific cell type
 python scripts/build_network_cache.py epithelial_cell
+
+# Enrich gene_id_cache.pkl only (bulk ENSG->symbol via MyGene.info, no PKL rebuild)
+python scripts/build_network_cache.py --enrich-gene-cache
 ```
 
 #### **Data Sources**
