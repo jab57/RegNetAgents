@@ -381,14 +381,23 @@ ENSG00000168610     ENSG00000183742  0.312        0.201         92              
 # Process single cell type
 python scripts/build_network_cache.py cd14_monocytes
 
-# Process all cell types
+# Process all cell types (also auto-enriches cache/gene_id_cache.pkl)
 python scripts/build_network_cache.py --all
 
 # Custom directories
 python scripts/build_network_cache.py cd14_monocytes \
     --input-dir path/to/aracne/output \
     --output-dir path/to/cache
+
+# Enrich gene_id_cache.pkl only (bulk ENSG->symbol via MyGene.info, no PKL rebuild)
+python scripts/build_network_cache.py --enrich-gene-cache
 ```
+
+> **Note:** `--all` automatically runs `--enrich-gene-cache` at the end, resolving all GREmLN
+> ENSG IDs to gene symbols via MyGene.info (requires internet). This populates
+> `cache/gene_id_cache.pkl` with near-complete ENSG→symbol coverage (~100%) across all
+> GREmLN cell types, enabling accurate background gene universe computation for
+> cross-network comparisons.
 
 ### Cache Data Structure (Version 2)
 

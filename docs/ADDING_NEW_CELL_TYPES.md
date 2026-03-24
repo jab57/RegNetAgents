@@ -338,7 +338,15 @@ for cell_type in hepatocytes cardiomyocytes neurons fibroblasts endothelial_cell
         echo "Cache generated for $cell_type"
     fi
 done
+
+# After adding new cell types, enrich the gene ID cache with their ENSG IDs
+python scripts/build_network_cache.py --enrich-gene-cache
 ```
+
+> **Note:** The `--enrich-gene-cache` step resolves all ENSG IDs from the new cell type's
+> network to gene symbols via MyGene.info and updates `cache/gene_id_cache.pkl`. This ensures
+> accurate background gene universe computation for cross-network comparisons. Requires internet
+> access. Run `--all` instead of per-cell-type builds to do this automatically.
 
 ### Step 4.2: Validate Network Quality
 
