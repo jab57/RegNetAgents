@@ -23,18 +23,29 @@ Usage:
 
     # Custom input/output directories
     python build_network_cache.py epithelial_cell --input-dir /path/to/tsv --output-dir /path/to/output
+
+    # Enrich gene_id_cache.pkl only (no PKL rebuild, requires processed PKLs already present)
+    python build_network_cache.py --enrich-gene-cache
+
+Note: --all automatically enriches cache/gene_id_cache.pkl with ENSG→symbol mappings
+for all GREmLN genes via MyGene.info (requires internet access).
 """
 
 import os
 import pickle
 import argparse
 import json
+import time
+import urllib.request
+import urllib.error
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Set, Tuple
 import sys
 import numpy as np
 import networkx as nx
+
+MYGENE_URL = "https://mygene.info/v3/query"
 
 # Cell types supported by RegNetAgents (with available network data)
 SUPPORTED_CELL_TYPES = [
@@ -424,6 +435,126 @@ def process_cell_type(cell_type: str, input_dir: str, output_dir: str) -> bool:
         print(f"ERROR processing {cell_type}: {e}")
         return False
 
+def ensg_to_symbol_batch(ensg_ids: list, batch_size: int = 500) -> dict:
+    """
+    Convert Ensembl gene IDs to gene symbols via MyGene.info batch POST.
+    Returns dict: ensg_id -> symbol (upper-cased).
+    Requires internet access.
+    """
+    print(f"  Converting {len(ensg_ids):,} ENSG IDs to symbols via MyGene.info ...")
+    id_to_symbol = {}
+    unresolved = []
+
+    for i in range(0, len(ensg_ids), batch_size):
+        batch = ensg_ids[i:i + batch_size]
+        batch_num = i // batch_size + 1
+        total_batches = (len(ensg_ids) + batch_size - 1) // batch_size
+        print(f"    Batch {batch_num}/{total_batches} ({len(batch)} IDs) ...", end=" ", flush=True)
+
+        payload = json.dumps({
+            "q": batch,
+            "scopes": "ensembl.gene",
+            "fields": "symbol",
+            "species": "human",
+        }).encode("utf-8")
+
+        req = urllib.request.Request(
+            MYGENE_URL,
+            data=payload,
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            method="POST",
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                hits = json.loads(resp.read().decode("utf-8"))
+        except (urllib.error.URLError, Exception) as e:
+            print(f"ERROR: {e}")
+            unresolved.extend(batch)
+            continue
+
+        resolved_this_batch = 0
+        for hit in hits:
+            ensg = hit.get("query", "")
+            if hit.get("notfound") or not ensg:
+                unresolved.append(ensg)
+                continue
+            symbol = hit.get("symbol", "")
+            if symbol:
+                id_to_symbol[ensg] = symbol.upper()
+                resolved_this_batch += 1
+            else:
+                unresolved.append(ensg)
+
+        print(f"resolved {resolved_this_batch}/{len(batch)}")
+
+        if i + batch_size < len(ensg_ids):
+            time.sleep(0.3)
+
+    total = len(ensg_ids)
+    n_resolved = len(id_to_symbol)
+    print(f"  Total resolved: {n_resolved:,}/{total:,} ({n_resolved/total:.1%})")
+    return id_to_symbol
+
+
+def update_gene_id_cache(output_dir: str, cache_path: str = "cache/gene_id_cache.pkl") -> None:
+    """
+    Collect all ENSG IDs from processed GREmLN network PKLs, resolve any that
+    are missing from gene_id_cache.pkl via MyGene.info, and update the cache.
+
+    Run automatically after --all, or manually with --enrich-gene-cache.
+    """
+    print("\n=== Enriching gene_id_cache.pkl with GREmLN ENSG IDs ===")
+
+    # Load existing cache
+    id_cache = {"symbol_to_ensembl": {}, "ensembl_to_symbol": {}}
+    if os.path.exists(cache_path):
+        with open(cache_path, "rb") as f:
+            id_cache = pickle.load(f)
+    e2s = id_cache.get("ensembl_to_symbol", {})
+    s2e = id_cache.get("symbol_to_ensembl", {})
+    print(f"  Existing cache: {len(e2s):,} ENSG->symbol entries")
+
+    # Collect all ENSG IDs from all processed PKLs
+    all_ensg: set = set()
+    for ct in SUPPORTED_CELL_TYPES:
+        pkl_path = os.path.join(output_dir, ct, "network_index.pkl")
+        if not os.path.exists(pkl_path):
+            continue
+        with open(pkl_path, "rb") as f:
+            data = pickle.load(f)
+        genes = data.get("all_genes", [])
+        ensg_in_ct = {g for g in genes if str(g).startswith("ENSG")}
+        all_ensg.update(ensg_in_ct)
+
+    print(f"  Total unique ENSG IDs across all cell types: {len(all_ensg):,}")
+
+    missing = sorted(all_ensg - set(e2s.keys()))
+    print(f"  Missing from cache: {len(missing):,}")
+
+    if not missing:
+        print("  Cache already complete — nothing to do.")
+        return
+
+    new_mappings = ensg_to_symbol_batch(missing)
+
+    # Update both directions
+    for ensg, symbol in new_mappings.items():
+        e2s[ensg] = symbol
+        if symbol not in s2e:
+            s2e[symbol] = ensg
+
+    id_cache["ensembl_to_symbol"] = e2s
+    id_cache["symbol_to_ensembl"] = s2e
+
+    os.makedirs(os.path.dirname(cache_path) if os.path.dirname(cache_path) else ".", exist_ok=True)
+    with open(cache_path, "wb") as f:
+        pickle.dump(id_cache, f)
+
+    print(f"  Updated cache saved to {cache_path}")
+    print(f"  New totals: {len(e2s):,} ENSG->symbol, {len(s2e):,} symbol->ENSG")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Convert TSV network files to pickle cache format")
     parser.add_argument('cell_type', nargs='?', help='Cell type to process, or --all for all types')
@@ -431,6 +562,10 @@ def main():
     parser.add_argument('--input-dir', default='models/networks', help='Input directory containing TSV files')
     parser.add_argument('--output-dir', default='models/networks', help='Output directory for pickle files')
     parser.add_argument('--list-types', action='store_true', help='List supported cell types and exit')
+    parser.add_argument('--enrich-gene-cache', action='store_true',
+                        help='Bulk-resolve all GREmLN ENSG IDs to symbols and update cache/gene_id_cache.pkl')
+    parser.add_argument('--gene-cache-path', default='cache/gene_id_cache.pkl',
+                        help='Path to gene_id_cache.pkl (default: cache/gene_id_cache.pkl)')
 
     args = parser.parse_args()
 
@@ -438,6 +573,11 @@ def main():
         print("Supported cell types:")
         for cell_type in SUPPORTED_CELL_TYPES:
             print(f"  - {cell_type}")
+        return
+
+    if args.enrich_gene_cache and not (args.all or args.cell_type):
+        # Standalone: just update the gene ID cache without rebuilding PKLs
+        update_gene_id_cache(args.output_dir, args.gene_cache_path)
         return
 
     if args.all or args.cell_type == '--all':
@@ -450,6 +590,9 @@ def main():
 
         print(f"\n=== Summary ===")
         print(f"Successfully processed: {success_count}/{len(SUPPORTED_CELL_TYPES)} cell types")
+
+        # Always enrich gene ID cache after rebuilding all cell types
+        update_gene_id_cache(args.output_dir, args.gene_cache_path)
 
     elif args.cell_type:
         # Process single cell type

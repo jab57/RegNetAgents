@@ -748,15 +748,16 @@ def run_gremln_comparison(
     Exploratory comparison: GREmLN-only vs TCGA-only OncoKB enrichment.
 
     Uses the GREmLN epithelial_cell gene universe as background (translated from
-    ENSG via the pre-built gene ID cache). Only ~35% of ENSG IDs resolve to gene
-    symbols via the cache, so this is presented as qualitative support rather than
-    a formal statistical comparison (see Discussion). Results are included in the
-    output JSON for reproducibility.
+    ENSG via the pre-built gene ID cache; run scripts/build_network_cache.py
+    --enrich-gene-cache to populate near-complete ENSG coverage). This comparison
+    is exploratory because GREmLN formal statistics are not computed here, and the
+    single-cell epithelial_cell network does not directly correspond to the
+    BRCA/COAD tumor context. Results are included in the output JSON for
+    reproducibility.
     """
     print("\n" + "=" * 70)
     print("EXPLORATORY: GREmLN-only vs TCGA-only OncoKB enrichment comparison")
-    print("NOTE: GREmLN background derived from ~35% ENSG-to-symbol resolution.")
-    print("      Results are qualitative support, not formal statistics.")
+    print("NOTE: GREmLN formal statistics not computed; results are exploratory.")
     print("=" * 70)
 
     import pickle as _pickle
@@ -821,8 +822,8 @@ def run_gremln_comparison(
             }
 
     print(f"\nCoverage note: {len(gremln_bg):,}/{len(ensg_ids):,} ENSG IDs resolved to gene "
-          f"symbols via pre-built cache. Incomplete coverage may affect GREmLN background "
-          f"size and OR estimates; treat as exploratory.")
+          f"symbols via pre-built cache (run build_network_cache.py --enrich-gene-cache "
+          f"to populate). GREmLN comparison is exploratory — no formal statistics computed.")
     return out
 
 
