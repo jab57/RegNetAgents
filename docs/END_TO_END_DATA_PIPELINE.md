@@ -1,6 +1,6 @@
 # End-to-End Data Pipeline: From CellxGene to RegNetAgents
 
-> **Note:** This guide is for users who have received access to the RegNetAgents software framework. The code is available from the corresponding author upon reasonable request for academic research purposes.
+> **Note:** This guide is for users who have received access to the RegNetAgents software framework. The software is publicly available at https://github.com/jab57/RegNetAgents.
 
 ---
 
