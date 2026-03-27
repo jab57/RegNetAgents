@@ -578,7 +578,7 @@ def save_target_table(all_targets: dict, cancer_type: str, out_dir: str) -> None
     print(f"[{ct}] Target list ({len(rows)} entries) -> {path}")
 
 
-def plot_target_list(all_targets: dict, cancer_type: str, out_dir: str) -> None:
+def plot_target_list(all_targets: dict, cancer_type: str) -> None:
     """Stacked bar: OncoKB targets per source per focal gene."""
     ct    = cancer_type.upper()
     genes = [g for g, t in all_targets.items() if t]
@@ -608,7 +608,7 @@ def plot_target_list(all_targets: dict, cancer_type: str, out_dir: str) -> None:
     )
     ax.legend(fontsize=9)
     plt.tight_layout()
-    plt.savefig(os.path.join(out_dir, f"target_list_{cancer_type.lower()}.png"), dpi=150)
+    plt.savefig(os.path.join(MANUSCRIPT_DIR, f"target_list_{cancer_type.lower()}.png"), dpi=150)
     plt.close()
 
 
@@ -733,7 +733,7 @@ def run_cancer_analysis(
     # Figures
     plot_or_heatmap(results, testable, ct)
     plot_regulator_counts(comparisons, testable, results, ct, out_dir)
-    plot_target_list(all_targets, ct, out_dir)
+    plot_target_list(all_targets, ct)
 
     return comparisons, results, background, combined_stats, testable
 
@@ -1022,8 +1022,8 @@ def run_experiment() -> None:
     print(f"            {MANUSCRIPT_DIR}/figure_heatmap_gremln_coad.png  (NAR Fig 3D)")
     print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_brca.png  (NAR Fig 4A)")
     print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_coad.png  (NAR Fig 4B)")
-    print(f"            {RESULTS_DIR}/target_list_brca.png  (NAR Fig 2A)")
-    print(f"            {RESULTS_DIR}/target_list_coad.png  (NAR Fig 2B)")
+    print(f"            {MANUSCRIPT_DIR}/target_list_brca.png  (NAR Fig 2A)")
+    print(f"            {MANUSCRIPT_DIR}/target_list_coad.png  (NAR Fig 2B)")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_brca.png")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_coad.png")
     print("\nDone.")
