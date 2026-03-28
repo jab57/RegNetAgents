@@ -798,8 +798,7 @@ Based on research applications and data availability:
 When using RegNetAgents, please acknowledge:
 
 1. **GREmLN Foundation Model** (source of the 10 cell-type ARACNe networks)
-   - Citation: Zhang, M., Swamy, V., Cassius, R., Dupire, L., Karaletsos, T., & Califano, A. (2025). "GREmLN: A Cellular Regulatory Network-Aware Transcriptomics Foundation Model." *bioRxiv*. doi:10.1101/2025.07.03.663009
-   - Note: The GREmLN preprint title uses "RegNetAgents" as the model name internally; this is the CZI/Califano lab's foundation model, distinct from this software package.
+   - Citation: Zhang M, Swamy V, Cassius R, Dupire L, Kanatsoulis C, Paull E, AlQuraishi M, Karaletsos T, Califano A. (2026). "GREmLN: A Cellular Graph Structure Aware Transcriptomics Foundation Model." *ICLR 2026*. https://openreview.net/forum?id=HdvI8bkdDG
    - GitHub: https://github.com/czi-ai/GREmLN
    - Virtual Cells Platform: https://virtualcellmodels.cziscience.com/model/gremln
 
