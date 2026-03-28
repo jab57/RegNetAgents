@@ -798,7 +798,8 @@ Based on research applications and data availability:
 When using RegNetAgents, please acknowledge:
 
 1. **GREmLN Foundation Model** (source of the 10 cell-type ARACNe networks)
-   - Citation: Zhang, M., Swamy, V., Cassius, R., Dupire, L., Karaletsos, T., & Califano, A. (2025). "RegNetAgents: A Cellular Regulatory Network-Aware Transcriptomics Foundation Model." *bioRxiv*. doi:10.1101/2025.07.03.663009
+   - Citation: Zhang, M., Swamy, V., Cassius, R., Dupire, L., Karaletsos, T., & Califano, A. (2025). "GREmLN: A Cellular Regulatory Network-Aware Transcriptomics Foundation Model." *bioRxiv*. doi:10.1101/2025.07.03.663009
+   - Note: The GREmLN preprint title uses "RegNetAgents" as the model name internally; this is the CZI/Califano lab's foundation model, distinct from this software package.
    - GitHub: https://github.com/czi-ai/GREmLN
    - Virtual Cells Platform: https://virtualcellmodels.cziscience.com/model/gremln
 
@@ -811,10 +812,19 @@ When using RegNetAgents, please acknowledge:
 
 ### RegNetAgents Software Citation
 
+```bibtex
+@software{bird_2026_regnetagents,
+  author  = {Bird, Jose A.},
+  title   = {RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis},
+  year    = {2026},
+  version = {1.1.2},
+  doi     = {10.5281/zenodo.18500027},
+  url     = {https://github.com/jab57/RegNetAgents},
+  license = {MIT}
+}
 ```
-RegNetAgents: LLM-Powered Multi-Agent Framework for Gene Regulatory Network Analysis
-Built on GREmLN pre-computed regulatory networks
-```
+
+Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory Network Analysis* (v1.1.2). https://doi.org/10.5281/zenodo.18500027
 
 ---
 

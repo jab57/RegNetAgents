@@ -265,6 +265,27 @@ Once installed, you can ask Claude Desktop natural language questions:
     - Parameters: gene, format (markdown/csv), cell_type, sections (summary/regulators/targets/pathways/all)
     - Returns plain text, not JSON — markdown renders natively in Claude Desktop
 
+### Network Comparison & Master Regulator Tools
+
+13. **find_master_regulators**
+    - Identify which TFs drive a gene signature (reverse ARACNe analysis)
+    - Given a list of differentially expressed genes, ranks TFs by Fisher's exact test enrichment
+    - Returns overlap count, regulon size, fold enrichment, p-value, and overlapping gene symbols
+    - Supports both GREmLN (cell_type) and TCGA (network_source="tcga") networks
+    - Parameters: gene_set, cell_type, network_source, tcga_network, top_n
+
+14. **compare_network_contexts**
+    - Compare regulatory wiring for a gene across population-averaged (GREmLN) and tumor-state (TCGA) networks in a single call
+    - Returns conserved regulators, regulators lost in tumor, regulators gained in tumor
+    - Classifies rewiring level (low / moderate / high) by Jaccard overlap of regulator sets
+    - Parameters: gene, cancer_type, cell_type
+
+### Utility Tools
+
+15. **list_prompts**
+    - List the available MCP prompt templates and how to use them
+    - No parameters required
+
 ---
 
 ## MCP Resources Available
@@ -353,7 +374,7 @@ Two-step prioritization workflow: (1) runs `compare_network_contexts` to generat
 │   • Intelligent routing                 │
 │   • State management                    │
 │   • Domain analysis logic               │
-│   • ~1370 lines                          │
+│   • ~3700 lines                          │
 └─────────────────────────────────────────┘
 ```
 
@@ -438,4 +459,4 @@ For issues, questions, or support:
 
 ---
 
-**Last Updated**: 2026-02-26
+**Last Updated**: 2026-03-28

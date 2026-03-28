@@ -30,7 +30,7 @@ The RegNetAgents system uses a **single, advanced MCP server** with intelligent 
 
 **LangGraph MCP Server** (`regnetagents_langgraph_mcp_server.py`)
 - Visual workflow orchestration with LangGraph
-- 11 intelligent tools with advanced capabilities
+- 15 intelligent tools with advanced capabilities
 - State management and execution insights
 - Production-ready logging and error handling
 - Complete data processing pipeline integration
