@@ -26,7 +26,7 @@ Compare MYC regulatory wiring between epithelial cells and colorectal tumor cont
 ## Data Sources
 
 **Bundled (no download required):**
-- **GREmLN** (Zhang et al. 2025): 10 cell-type-specific ARACNe networks, population-averaged from 11M cells across 162 cell types (CELLxGENE Census 2024-07-01, CZ Biohub NY / Columbia University Califano Lab)
+- **GREmLN** (Zhang et al. 2026): 10 cell-type-specific ARACNe networks, population-averaged from 11M cells across 162 cell types (CELLxGENE Census 2024-07-01, CZ Biohub NY / Columbia University Califano Lab)
 - **TCGA ARACNe** (Lim & Califano): 8 cancer-type-specific tumor-state networks (brca, coad, hnsc, luad, lusc, ov, prad, ucec) — pre-built PKL caches included in the repo
 
 To rebuild TCGA caches from source, see [INSTALL.md](INSTALL.md) for instructions using the Bioconductor `aracne.networks` package.
@@ -315,7 +315,7 @@ Guided prompt templates that scaffold common analysis workflows in the MCP clien
 
 ---
 
-## Cell Types (10 Available)
+## Cell Types (10 Available — GREmLN ARACNe Networks)
 
 **Immune & Blood**: CD4/CD8 T cells, CD14/CD16 Monocytes, CD20 B cells, NK/NKT cells, Erythrocytes, Dendritic cells
 
