@@ -3,26 +3,26 @@
 # Python 3.10+ required
 
 # Multi-agent workflow orchestration
-langgraph>=0.2.0
+langgraph==1.0.7
 
 # Model Context Protocol (Claude Desktop integration)
-mcp>=1.0.0
+mcp==1.25.0
 
 # Network analysis and centrality metrics
-networkx>=3.0
+networkx==3.6.1
 
 # Data manipulation
-pandas>=2.0.0
-numpy>=1.24.0
+pandas==3.0.0
+numpy==2.4.1
 
 # HTTP requests (Reactome API, Ensembl API)
-requests>=2.31.0
+requests==2.32.5
 
 # Environment configuration
-python-dotenv>=1.0.0
+python-dotenv==1.2.1
 
 # Statistical tests (Fisher's exact test for master regulator analysis)
-scipy>=1.10.0
+scipy==1.17.1
 
 # Optional: Ollama Python SDK (only needed for LLM-powered mode)
 # pip install ollama>=0.1.0
