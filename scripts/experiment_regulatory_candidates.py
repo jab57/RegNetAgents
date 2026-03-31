@@ -948,6 +948,24 @@ def run_gremln_comparison(
           f"ENSG IDs ({coverage:.0f}% coverage)")
     print(f"OncoKB in GREmLN background: {len(oncokb_g):,}")
 
+    # Gene universe overlap between GREmLN and each TCGA network
+    print("\nGene universe overlap (GREmLN epithelial_cell vs TCGA):")
+    universe_overlap: dict = {}
+    for cancer, tcga_bg in [("brca", brca_bg), ("coad", coad_bg)]:
+        overlap = gremln_bg & tcga_bg
+        pct_tcga = 100 * len(overlap) / max(len(tcga_bg), 1)
+        pct_gremln = 100 * len(overlap) / max(len(gremln_bg), 1)
+        universe_overlap[cancer] = {
+            "gremln_size":    len(gremln_bg),
+            "tcga_size":      len(tcga_bg),
+            "overlap":        len(overlap),
+            "pct_tcga_in_gremln":  round(pct_tcga, 1),
+            "pct_gremln_in_tcga":  round(pct_gremln, 1),
+        }
+        print(f"  {cancer.upper()}: overlap={len(overlap):,}  "
+              f"{pct_tcga:.1f}% of TCGA in GREmLN  "
+              f"{pct_gremln:.1f}% of GREmLN in TCGA")
+
     out: dict = {}
     for cancer, comparisons, tcga_bg, focal_genes in [
         ("brca", brca_comparisons, brca_bg, BRCA_GENES),
@@ -955,7 +973,7 @@ def run_gremln_comparison(
     ]:
         CT = cancer.upper()
         oncokb_t = oncokb_raw & tcga_bg
-        out[cancer] = {}
+        out[cancer] = {"universe_overlap": universe_overlap[cancer]}
 
         print(f"\n[GREmLN / {CT}] Fisher's exact tests + permutation controls ...")
         gene_results: dict = {}
@@ -1044,6 +1062,7 @@ def run_gremln_comparison(
     print(f"\nGREmLN background note: {len(gremln_bg):,}/{len(ensg_ids):,} ENSG IDs "
           f"resolved via pre-built cache ({coverage:.0f}% coverage). "
           f"epithelial_cell network is pan-tissue (not cancer-type-specific).")
+    out["universe_overlap"] = universe_overlap
     return out
 
 
