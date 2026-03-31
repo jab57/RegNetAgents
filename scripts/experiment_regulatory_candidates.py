@@ -71,6 +71,7 @@ COAD_GENES  = [
     "FBXW7", "TCF7L2", "RNF43",                 # additional CRC drivers
 ]
 HOUSEKEEPING_GENES = ["ACTB", "GAPDH", "HPRT1", "LDHA", "TUBB"]
+NEUTRAL_GENES      = ["FASN", "PCNA", "PKM", "PABPC1", "VIM"]
 CELL_TYPE   = "epithelial_cell"
 N_PERMUTATIONS = 1000
 RANDOM_SEED    = 42
@@ -514,6 +515,63 @@ def plot_neg_controls(
     plt.close()
 
 
+def plot_neutral_controls(
+    focal_results: dict,
+    neutral_results: dict,
+    focal_genes: list,
+    neutral_genes: list,
+    cancer_type: str,
+) -> None:
+    """Bar chart: OncoKB OR for focal cancer genes vs. tumor-expressed neutral controls."""
+    ct = cancer_type.upper()
+
+    focal_ors  = []
+    focal_lbls = []
+    for g in focal_genes:
+        if g in focal_results and not focal_results[g].get("skipped"):
+            v = focal_results[g]["enrichment"].get("oncokb", {}).get("odds_ratio", 0)
+            focal_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
+            focal_lbls.append(g)
+
+    neutral_ors  = []
+    neutral_lbls = []
+    for g in neutral_genes:
+        if g in neutral_results and not neutral_results[g].get("skipped", True):
+            v = neutral_results[g]["enrichment"].get("oncokb", {}).get("odds_ratio", 0)
+            neutral_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
+            neutral_lbls.append(g)
+
+    all_ors  = focal_ors  + [None] + neutral_ors
+    all_lbls = focal_lbls + [""]   + neutral_lbls
+    colors   = (["#e15759"] * len(focal_ors)) + ["white"] + (["#f28e2b"] * len(neutral_ors))
+
+    x   = np.arange(len(all_ors))
+    fig, ax = plt.subplots(figsize=(max(9, len(all_ors) * 0.9), 4))
+    for i, (v, c) in enumerate(zip(all_ors, colors)):
+        if v is not None:
+            ax.bar(i, v, color=c)
+    ax.axhline(1.0, color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
+    ax.set_xticks(x)
+    ax.set_xticklabels(all_lbls, fontsize=10)
+    ax.set_ylabel("Odds Ratio vs. OncoKB", fontsize=10)
+    ax.set_title(
+        f"Neutral control validation ({ct}): cancer driver genes vs. tumor-expressed non-driver genes\n"
+        "Red = cancer focal genes; orange = neutral controls (tumor-expressed, non-OncoKB; expected OR ~1)",
+        fontsize=11,
+    )
+    from matplotlib.patches import Patch
+    ax.legend(
+        handles=[Patch(color="#e15759", label="Cancer driver genes"),
+                 Patch(color="#f28e2b", label="Neutral (tumor-expressed, non-OncoKB)")],
+        fontsize=9,
+    )
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(MANUSCRIPT_DIR, f"figure_neutralcontrol_{cancer_type.lower()}.png"), dpi=150
+    )
+    plt.close()
+
+
 # ── Target list (source-labeled) ───────────────────────────────────────────────
 
 def generate_target_list(comparison: dict, oncokb: set, moa_map: dict, oncokb_roles: dict) -> list:
@@ -787,6 +845,58 @@ def run_negative_controls(
     return neg_results
 
 
+def run_neutral_controls(
+    agent,
+    cancer_type: str,
+    oncokb_raw: set,
+    background: set,
+) -> dict:
+    """
+    Run the same enrichment test on tumor-expressed, non-OncoKB, non-housekeeping
+    genes (FASN, PCNA, EEF2, PABPC1, VIM).
+
+    These genes are present in the TCGA network (tumor-expressed) and have
+    substantial network connectivity, but have no cancer-driver annotation in
+    OncoKB. Expected result: OR ≈ 1 — validates that the enrichment seen for
+    cancer driver genes requires cancer-specific biology, not merely tumor-network
+    membership or high network degree.
+    """
+    ct = cancer_type.lower()
+    CT = cancer_type.upper()
+    oncokb = oncokb_raw & background
+    ref_sets = {"oncokb": oncokb}
+
+    print(f"\n[NEUTRAL CTRL / {CT}] Running tumor-expressed neutral gene controls: {NEUTRAL_GENES}")
+    neutral_results: dict = {}
+    for gene in NEUTRAL_GENES:
+        print(f"  {gene} ...", end=" ", flush=True)
+        result = compare_network_contexts(agent, gene, ct, CELL_TYPE)
+        if result.get("error"):
+            print(f"SKIP ({result.get('message', 'unknown error')})")
+            continue
+        specific = set(result["regulators"]["tumor_state_only"])
+        r = result["regulators"]
+        print(
+            f"both={r['conserved_count']}  "
+            f"{ct}_only={len(specific)}  "
+            f"context_specificity={result['interpretation']['regulatory_rewiring']}"
+        )
+        if len(specific) < 3:
+            neutral_results[gene] = {"skipped": True, "specific_count": len(specific)}
+            continue
+        gene_res: dict = {"skipped": False, "specific_count": len(specific), "enrichment": {}}
+        for ref_name, ref_set in ref_sets.items():
+            fisher = fisher_enrichment(specific, ref_set, background)
+            gene_res["enrichment"][ref_name] = fisher
+            print(
+                f"    vs {ref_name:<32}: "
+                f"OR={fisher['odds_ratio']:5.2f}  p={fisher['p_value']:.4f}  "
+                f"overlap={fisher['ref_overlap']}/{fisher['query_size']}"
+            )
+        neutral_results[gene] = gene_res
+    return neutral_results
+
+
 # ── GREmLN formal enrichment analysis ─────────────────────────────────────────
 
 def run_gremln_comparison(
@@ -962,16 +1072,20 @@ def run_experiment() -> None:
      brca_stouffer, brca_testable) = run_cancer_analysis(
         agent, workflow, "brca", BRCA_GENES, oncokb_raw, oncokb_roles, RESULTS_DIR,
     )
-    brca_neg = run_negative_controls(agent, "brca", oncokb_raw, brca_bg)
+    brca_neg     = run_negative_controls(agent, "brca", oncokb_raw, brca_bg)
+    brca_neutral = run_neutral_controls(agent, "brca", oncokb_raw, brca_bg)
     plot_neg_controls(brca_res, brca_neg, brca_testable, HOUSEKEEPING_GENES, "brca")
+    plot_neutral_controls(brca_res, brca_neutral, brca_testable, NEUTRAL_GENES, "brca")
 
     # ── COAD analysis ──────────────────────────────────────────────────────────
     (coad_comp, coad_res, coad_bg,
      coad_stouffer, coad_testable) = run_cancer_analysis(
         agent, workflow, "coad", COAD_GENES, oncokb_raw, oncokb_roles, RESULTS_DIR,
     )
-    coad_neg = run_negative_controls(agent, "coad", oncokb_raw, coad_bg)
+    coad_neg     = run_negative_controls(agent, "coad", oncokb_raw, coad_bg)
+    coad_neutral = run_neutral_controls(agent, "coad", oncokb_raw, coad_bg)
     plot_neg_controls(coad_res, coad_neg, coad_testable, HOUSEKEEPING_GENES, "coad")
+    plot_neutral_controls(coad_res, coad_neutral, coad_testable, NEUTRAL_GENES, "coad")
 
     # ── Exploratory: GREmLN-only vs TCGA-only enrichment comparison ────────────
     gremln_comparison = run_gremln_comparison(
@@ -1005,6 +1119,10 @@ def run_experiment() -> None:
             "brca": brca_neg,
             "coad": coad_neg,
         },
+        "neutral_controls": {
+            "brca": brca_neutral,
+            "coad": coad_neutral,
+        },
         "gremln_comparison": gremln_comparison,
     }
     plot_gremln_heatmap(gremln_comparison, "brca", BRCA_GENES)
@@ -1022,6 +1140,8 @@ def run_experiment() -> None:
     print(f"            {MANUSCRIPT_DIR}/figure_heatmap_gremln_coad.png  (NAR Fig 3D)")
     print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_brca.png  (NAR Fig 4A)")
     print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_coad.png  (NAR Fig 4B)")
+    print(f"            {MANUSCRIPT_DIR}/figure_neutralcontrol_brca.png  (neutral ctrl BRCA)")
+    print(f"            {MANUSCRIPT_DIR}/figure_neutralcontrol_coad.png  (neutral ctrl COAD)")
     print(f"            {MANUSCRIPT_DIR}/target_list_brca.png  (NAR Fig 2A)")
     print(f"            {MANUSCRIPT_DIR}/target_list_coad.png  (NAR Fig 2B)")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_brca.png")
