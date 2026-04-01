@@ -12,7 +12,7 @@ authors:
     orcid: 0009-0006-2744-0606
     affiliation: 1
 affiliations:
-  - name: Bird AI Solutions
+  - name: Independent Researcher
     index: 1
 date: "08 March 2026"
 bibliography: paper.bib
