@@ -853,7 +853,7 @@ def run_neutral_controls(
 ) -> dict:
     """
     Run the same enrichment test on tumor-expressed, non-OncoKB, non-housekeeping
-    genes (FASN, PCNA, EEF2, PABPC1, VIM).
+    genes (FASN, PCNA, PKM, PABPC1, VIM).
 
     These genes are present in the TCGA network (tumor-expressed) and have
     substantial network connectivity, but have no cancer-driver annotation in
