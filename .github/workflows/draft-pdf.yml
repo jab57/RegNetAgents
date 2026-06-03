@@ -6,7 +6,7 @@ on:
     paths:
       - 'paper.md'
       - 'paper.bib'
-      - 'figure*.png'
+      - 'fig*.png'
       - '.github/workflows/draft-pdf.yml'
   pull_request:
     branches:
