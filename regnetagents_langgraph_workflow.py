@@ -1398,12 +1398,15 @@ class PathwayEnricherAgent:
     def __init__(self):
         try:
             import requests
+            import certifi
             self.requests = requests
+            self.certifi = certifi
             self.reactome_base_url = "https://reactome.org/AnalysisService"
             logger.info("PathwayEnricherAgent initialized with Reactome API")
         except ImportError:
             logger.warning("requests library not available. Install with: pip install requests")
             self.requests = None
+            self.certifi = None
 
     async def enrich_pathways_reactome(self, gene_list: list, species: str = "Homo sapiens") -> Dict:
         """
@@ -1435,7 +1438,7 @@ class PathwayEnricherAgent:
             loop = asyncio.get_event_loop()
             response = await loop.run_in_executor(
                 None,
-                lambda: self.requests.post(url, data=genes_str, headers=headers)
+                lambda: self.requests.post(url, data=genes_str, headers=headers, verify=self.certifi.where() if self.certifi else True)
             )
 
             if response.status_code != 200:
