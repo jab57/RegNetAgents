@@ -4,15 +4,12 @@ Gene ID Mapper for RegNetAgents
 Converts between gene symbols and Ensembl IDs
 """
 
-import requests
-import json
-import pandas as pd
 from typing import Dict, List, Optional
 import pickle
 import os
 
 class GeneIDMapper:
-    """Maps between gene symbols and Ensembl IDs using Ensembl REST API"""
+    """Maps between gene symbols and Ensembl IDs using the local gene_id_cache.pkl."""
     
     def __init__(self, cache_file: str = "cache/gene_id_cache.pkl"):
         self.cache_file = cache_file
@@ -79,59 +76,19 @@ class GeneIDMapper:
             print(f"Error loading UniProt data: {e}, using API fallback")
     
     def symbol_to_ensembl(self, gene_symbol: str) -> Optional[str]:
-        """Convert gene symbol to Ensembl ID - now with fast local lookup first"""
-        # Check cache first (should be instant now with pre-populated data)
+        """Convert gene symbol to Ensembl ID via local cache only.
+
+        Any gene present in the GREmLN network is already in gene_id_cache.pkl
+        (populated by build_network_cache.py), so a gene missing from the cache
+        cannot be in all_genes_set either — the REST API fallback was unreachable
+        in practice and blocked indefinitely under SSL-inspecting proxies.
+        """
         gene_upper = gene_symbol.upper()
-        if gene_upper in self.cache["symbol_to_ensembl"]:
-            # Fast local lookup - no API call needed!
-            return self.cache["symbol_to_ensembl"][gene_upper]
-        
-        # Fallback to Ensembl API (should rarely be needed now)
-        print(f"Gene {gene_symbol} not in local cache, falling back to API (this may be slow)")
-        try:
-            url = f"https://rest.ensembl.org/lookup/symbol/homo_sapiens/{gene_symbol}"
-            headers = {"Content-Type": "application/json"}
-            response = requests.get(url, headers=headers, timeout=10)
-            
-            if response.status_code == 200:
-                data = response.json()
-                ensembl_id = data.get("id")
-                if ensembl_id:
-                    # Cache the result
-                    self.cache["symbol_to_ensembl"][gene_symbol.upper()] = ensembl_id
-                    self.cache["ensembl_to_symbol"][ensembl_id] = gene_symbol.upper()
-                    self._save_cache()
-                    return ensembl_id
-        except Exception as e:
-            print(f"Error querying Ensembl API for {gene_symbol}: {e}")
-        
-        return None
+        return self.cache["symbol_to_ensembl"].get(gene_upper)
     
     def ensembl_to_symbol(self, ensembl_id: str) -> Optional[str]:
-        """Convert Ensembl ID to gene symbol"""
-        # Check cache first
-        if ensembl_id in self.cache["ensembl_to_symbol"]:
-            return self.cache["ensembl_to_symbol"][ensembl_id]
-        
-        # Query Ensembl API
-        try:
-            url = f"https://rest.ensembl.org/lookup/id/{ensembl_id}"
-            headers = {"Content-Type": "application/json"}
-            response = requests.get(url, headers=headers, timeout=10)
-            
-            if response.status_code == 200:
-                data = response.json()
-                gene_symbol = data.get("display_name")
-                if gene_symbol:
-                    # Cache the result
-                    self.cache["ensembl_to_symbol"][ensembl_id] = gene_symbol.upper()
-                    self.cache["symbol_to_ensembl"][gene_symbol.upper()] = ensembl_id
-                    self._save_cache()
-                    return gene_symbol.upper()
-        except Exception as e:
-            print(f"Error querying Ensembl API for {ensembl_id}: {e}")
-        
-        return None
+        """Convert Ensembl ID to gene symbol via local cache only."""
+        return self.cache["ensembl_to_symbol"].get(ensembl_id)
     
     def batch_symbol_to_ensembl(self, gene_symbols: List[str]) -> Dict[str, str]:
         """Convert multiple gene symbols to Ensembl IDs"""
