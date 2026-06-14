@@ -1832,19 +1832,24 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             tcga_network = arguments.get("tcga_network", None)
             top_n = arguments.get("top_n", 10)
 
+            import time as _time
             context = f"tcga/{tcga_network}" if network_source == "tcga" else cell_type
             logger.info(f"Finding master regulators for {len(gene_set)}-gene set in {context}")
+            _t_mr = _time.time()
 
-            result = await asyncio.to_thread(
-                workflow.modeling_agent.find_master_regulators,
+            result = workflow.modeling_agent.find_master_regulators(
                 gene_set,
                 cell_type,
                 top_n,
                 network_source,
                 tcga_network,
             )
+            logger.info(f"find_master_regulators returned in {_time.time()-_t_mr:.2f}s")
 
-            return [TextContent(type="text", text=json.dumps(result, indent=2))]
+            json_str = json.dumps(result, indent=2)
+            logger.info(f"json.dumps done: {len(json_str)} chars")
+
+            return [TextContent(type="text", text=json_str)]
 
         elif name == "export_results":
             gene = arguments["gene"]

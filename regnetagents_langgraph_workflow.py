@@ -60,6 +60,7 @@ from regnetagents.tcga_registry import TCGA_NETWORK_REGISTRY, TCGA_CANCER_TYPES
 from enum import Enum
 import pickle
 import os
+from scipy.stats import fisher_exact  # module-level: avoids 60s hang on lazy import inside async handler
 
 # Define the essential classes that were in the old MCP server
 class CellType(Enum):
@@ -892,8 +893,6 @@ class RegNetAgentsModelingAgent:
         Returns:
             dict with ranked master regulators and query summary
         """
-        from scipy.stats import fisher_exact
-
         if network_source == "tcga":
             return self._find_master_regulators_tcga(
                 gene_set=gene_set,
@@ -1004,7 +1003,6 @@ class RegNetAgentsModelingAgent:
         top_n: int = 10,
     ) -> dict:
         """Master regulator analysis against a TCGA tumor-state network (symbol-keyed)."""
-        from scipy.stats import fisher_exact
 
         if not tcga_network:
             return {
