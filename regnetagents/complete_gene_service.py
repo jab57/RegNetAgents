@@ -61,10 +61,11 @@ class CompleteGeneService:
                 }
             
             self.total_genes = len(self.database)
-            print(f"Loaded HIGH-QUALITY UniProt gene database: {self.total_genes} genes")
-            print(f"  - Source: NCBI+UniProt annotations")
-            print(f"  - Quality: Professional curation")
-            print(f"  - Coverage: Comprehensive")
+            import sys as _sys
+            print(f"Loaded HIGH-QUALITY UniProt gene database: {self.total_genes} genes", file=_sys.stderr)
+            print(f"  - Source: NCBI+UniProt annotations", file=_sys.stderr)
+            print(f"  - Quality: Professional curation", file=_sys.stderr)
+            print(f"  - Coverage: Comprehensive", file=_sys.stderr)
             
         except Exception as e:
             # UniProt database is optional - system works without it

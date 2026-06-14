@@ -7,6 +7,7 @@ Converts between gene symbols and Ensembl IDs
 from typing import Dict, List, Optional
 import pickle
 import os
+import sys
 
 class GeneIDMapper:
     """Maps between gene symbols and Ensembl IDs using the local gene_id_cache.pkl."""
@@ -15,7 +16,7 @@ class GeneIDMapper:
         self.cache_file = cache_file
         self.cache = self._load_cache()
         self._populate_from_uniprot()  # Pre-populate with local data
-        print(f"Fast gene mapping initialized: {len(self.cache['symbol_to_ensembl'])} genes cached")
+        print(f"Fast gene mapping initialized: {len(self.cache['symbol_to_ensembl'])} genes cached", file=sys.stderr)
         
     def _load_cache(self) -> Dict:
         """Load cached mappings from file"""
@@ -33,7 +34,7 @@ class GeneIDMapper:
             with open(self.cache_file, 'wb') as f:
                 pickle.dump(self.cache, f)
         except Exception as e:
-            print(f"Warning: Could not save cache: {e}")
+            print(f"Warning: Could not save cache: {e}", file=sys.stderr)
 
     def _populate_from_uniprot(self):
         """Pre-populate cache with genes from UniProt database to avoid API calls"""
@@ -44,7 +45,7 @@ class GeneIDMapper:
             service = get_complete_gene_service()
 
             if not service or not hasattr(service, 'get_all_gene_ids'):
-                print("UniProt service not available, using API fallback")
+                print("UniProt service not available, using API fallback", file=sys.stderr)
                 return
 
             all_genes = service.get_all_gene_ids()
@@ -65,15 +66,15 @@ class GeneIDMapper:
                     genes_added += 1
 
             if genes_added > 0:
-                print(f"Pre-populated {genes_added} genes from UniProt database")
+                print(f"Pre-populated {genes_added} genes from UniProt database", file=sys.stderr)
                 self._save_cache()
             else:
-                print("All genes already cached")
+                print("All genes already cached", file=sys.stderr)
 
         except ImportError:
-            print("complete_gene_service not found, using API fallback")
+            print("complete_gene_service not found, using API fallback", file=sys.stderr)
         except Exception as e:
-            print(f"Error loading UniProt data: {e}, using API fallback")
+            print(f"Error loading UniProt data: {e}, using API fallback", file=sys.stderr)
     
     def symbol_to_ensembl(self, gene_symbol: str) -> Optional[str]:
         """Convert gene symbol to Ensembl ID via local cache only.
