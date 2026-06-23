@@ -1,7 +1,7 @@
 """
 TCGA ARACNe network registry for RegNetAgents.
 
-Maps the 8 supported TCGA cancer types (all epithelial-origin) to their
+Maps the 14 supported TCGA cancer types (all epithelial-origin) to their
 network CSV file paths and human-readable labels. GBM and LAML are
 intentionally excluded — no reference network of the appropriate cell
 lineage exists in RegNetAgents for these cancer types.
@@ -17,9 +17,17 @@ See docs/DATA_SOURCES.md for full instructions.
 """
 
 TCGA_NETWORK_REGISTRY = {
+    "blca": {
+        "label": "Bladder Urothelial Carcinoma",
+        "csv": "models/networks/tcga/blca/network.csv",
+    },
     "brca": {
         "label": "Breast Invasive Carcinoma",
         "csv": "models/networks/tcga/brca/network.csv",
+    },
+    "cesc": {
+        "label": "Cervical Squamous Cell Carcinoma",
+        "csv": "models/networks/tcga/cesc/network.csv",
     },
     "coad": {
         "label": "Colon Adenocarcinoma",
@@ -28,6 +36,14 @@ TCGA_NETWORK_REGISTRY = {
     "hnsc": {
         "label": "Head/Neck Squamous Cell Carcinoma",
         "csv": "models/networks/tcga/hnsc/network.csv",
+    },
+    "kirc": {
+        "label": "Kidney Renal Clear Cell Carcinoma",
+        "csv": "models/networks/tcga/kirc/network.csv",
+    },
+    "lihc": {
+        "label": "Liver Hepatocellular Carcinoma",
+        "csv": "models/networks/tcga/lihc/network.csv",
     },
     "luad": {
         "label": "Lung Adenocarcinoma",
@@ -41,9 +57,17 @@ TCGA_NETWORK_REGISTRY = {
         "label": "Ovarian Carcinoma",
         "csv": "models/networks/tcga/ov/network.csv",
     },
+    "paad": {
+        "label": "Pancreatic Adenocarcinoma",
+        "csv": "models/networks/tcga/paad/network.csv",
+    },
     "prad": {
         "label": "Prostate Adenocarcinoma",
         "csv": "models/networks/tcga/prad/network.csv",
+    },
+    "stad": {
+        "label": "Stomach Adenocarcinoma",
+        "csv": "models/networks/tcga/stad/network.csv",
     },
     "ucec": {
         "label": "Uterine Corpus Endometrial Carcinoma",

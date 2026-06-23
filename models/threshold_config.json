@@ -214,5 +214,77 @@
       "moderate": 75
     },
     "n_genes": 19735
+  },
+  "tcga_blca": {
+    "target_high": 85,
+    "target_moderate": 41,
+    "regulator_high": 35,
+    "regulator_moderate": 30,
+    "pagerank_high": 0.3641,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19764
+  },
+  "tcga_cesc": {
+    "target_high": 100,
+    "target_moderate": 56,
+    "regulator_high": 41,
+    "regulator_moderate": 35,
+    "pagerank_high": 0.494,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19807
+  },
+  "tcga_kirc": {
+    "target_high": 57,
+    "target_moderate": 23,
+    "regulator_high": 29,
+    "regulator_moderate": 22,
+    "pagerank_high": 0.4692,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19807
+  },
+  "tcga_lihc": {
+    "target_high": 81,
+    "target_moderate": 38,
+    "regulator_high": 35,
+    "regulator_moderate": 28,
+    "pagerank_high": 0.4593,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19804
+  },
+  "tcga_paad": {
+    "target_high": 88,
+    "target_moderate": 48,
+    "regulator_high": 38,
+    "regulator_moderate": 31,
+    "pagerank_high": 0.6432,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 19818
+  },
+  "tcga_stad": {
+    "target_high": 98,
+    "target_moderate": 34,
+    "regulator_high": 38,
+    "regulator_moderate": 31,
+    "pagerank_high": 0.5752,
+    "percentiles_used": {
+      "high": 90,
+      "moderate": 75
+    },
+    "n_genes": 21616
   }
 }

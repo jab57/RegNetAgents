@@ -27,7 +27,7 @@ Compare MYC regulatory wiring between epithelial cells and colorectal tumor cont
 
 **Bundled (no download required):**
 - **GREmLN** (Zhang et al. 2026): 10 cell-type-specific ARACNe networks, population-averaged from 11M cells across 162 cell types (CELLxGENE Census 2024-07-01, CZ Biohub NY / Columbia University Califano Lab)
-- **TCGA ARACNe** (Lim & Califano): 8 cancer-type-specific tumor-state networks (brca, coad, hnsc, luad, lusc, ov, prad, ucec) — pre-built PKL caches included in the repo
+- **TCGA ARACNe** (Lim & Califano): 14 cancer-type-specific tumor-state networks (blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec) — pre-built PKL caches included in the repo
 
 To rebuild TCGA caches from source, see [INSTALL.md](INSTALL.md) for instructions using the Bioconductor `aracne.networks` package.
 

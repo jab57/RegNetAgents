@@ -9,7 +9,7 @@ Quick start:
 
     # 1. Download the Bioconductor tarball (~213 MB)
     curl -o /tmp/aracne.networks.tar.gz \
-      https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz
+      https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz
 
     # 2. Extract network CSVs (requires: pip install rdata)
     python scripts/extract_tcga_networks.py \
@@ -384,7 +384,7 @@ def main() -> None:
     group.add_argument(
         "--all",
         action="store_true",
-        help="Build caches for all 8 TCGA cancer types",
+        help="Build caches for all 14 TCGA cancer types",
     )
     group.add_argument(
         "--cancer-type",

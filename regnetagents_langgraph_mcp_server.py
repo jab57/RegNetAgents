@@ -358,7 +358,7 @@ async def handle_list_prompts() -> list[types.Prompt]:
                 ),
                 types.PromptArgument(
                     name="cancer_type",
-                    description="TCGA cancer type: brca, coad, hnsc, luad, lusc, ov, prad, ucec",
+                    description="TCGA cancer type: blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec",
                     required=True
                 ),
             ]
@@ -378,7 +378,7 @@ async def handle_list_prompts() -> list[types.Prompt]:
                 ),
                 types.PromptArgument(
                     name="cancer_type",
-                    description="TCGA cancer type: brca, coad, hnsc, luad, lusc, ov, prad, ucec",
+                    description="TCGA cancer type: blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec",
                     required=True
                 ),
             ]
@@ -399,7 +399,7 @@ async def handle_list_prompts() -> list[types.Prompt]:
                 ),
                 types.PromptArgument(
                     name="cancer_type",
-                    description="TCGA cancer type: brca, coad, hnsc, luad, lusc, ov, prad, ucec",
+                    description="TCGA cancer type: blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec",
                     required=True
                 ),
             ]
@@ -825,7 +825,7 @@ async def handle_list_tools() -> list[Tool]:
                     },
                     "tcga_network": {
                         "type": "string",
-                        "enum": ["brca", "coad", "hnsc", "luad", "lusc", "ov", "prad", "ucec"],
+                        "enum": ["blca", "brca", "cesc", "coad", "hnsc", "kirc", "lihc", "luad", "lusc", "ov", "paad", "prad", "stad", "ucec"],
                         "description": "TCGA cancer-type network to use for topology analysis (e.g. 'brca'). "
                                        "When provided, TCGA network topology is used instead of the GREmLN cell-type network. "
                                        "Useful for analyzing candidates identified from TCGA ARACNe networks."
@@ -1185,8 +1185,8 @@ async def handle_list_tools() -> list[Tool]:
                     },
                     "tcga_network": {
                         "type": "string",
-                        "enum": ["brca", "coad", "hnsc", "luad", "lusc", "ov", "prad", "ucec"],
-                        "description": "TCGA cancer type to query (required when network_source='tcga'). brca=breast, coad=colon, hnsc=head/neck, luad=lung adeno, lusc=lung squamous, ov=ovarian, prad=prostate, ucec=uterine."
+                        "enum": ["blca", "brca", "cesc", "coad", "hnsc", "kirc", "lihc", "luad", "lusc", "ov", "paad", "prad", "stad", "ucec"],
+                        "description": "TCGA cancer type to query (required when network_source='tcga'). blca=bladder, brca=breast, cesc=cervical, coad=colon, hnsc=head/neck, kirc=kidney, lihc=liver, luad=lung adeno, lusc=lung squamous, ov=ovarian, paad=pancreatic, prad=prostate, stad=stomach, ucec=uterine."
                     },
                     "gene": {
                         "type": "string",
@@ -1307,7 +1307,7 @@ async def handle_list_tools() -> list[Tool]:
                     },
                     "tcga_network": {
                         "type": "string",
-                        "enum": ["brca", "coad", "hnsc", "luad", "lusc", "ov", "prad", "ucec"],
+                        "enum": ["blca", "brca", "cesc", "coad", "hnsc", "kirc", "lihc", "luad", "lusc", "ov", "paad", "prad", "stad", "ucec"],
                         "description": "TCGA cancer type (required when network_source='tcga')"
                     },
                     "top_n": {
@@ -1352,7 +1352,7 @@ async def handle_list_tools() -> list[Tool]:
                     },
                     "cancer_type": {
                         "type": "string",
-                        "enum": ["brca", "coad", "hnsc", "luad", "lusc", "ov", "prad", "ucec"],
+                        "enum": ["blca", "brca", "cesc", "coad", "hnsc", "kirc", "lihc", "luad", "lusc", "ov", "paad", "prad", "stad", "ucec"],
                         "description": "TCGA cancer type for the tumor-state context"
                     },
                     "cell_type": {

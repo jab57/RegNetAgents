@@ -18,7 +18,7 @@ Prerequisites:
 --------------
 1. Download the Bioconductor aracne.networks tarball (~213 MB):
        curl -o /tmp/aracne.networks.tar.gz \
-         https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz
+         https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz
 
 2. Extract network CSVs (requires: pip install rdata):
        python scripts/extract_tcga_networks.py \
@@ -76,7 +76,7 @@ async def main():
             "To use this example:\n"
             "  1. Download the Bioconductor tarball:\n"
             "     curl -o /tmp/aracne.networks.tar.gz \\\n"
-            "       https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz\n"
+            "       https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz\n"
             "  2. Extract CSVs (requires: pip install rdata):\n"
             "     python scripts/extract_tcga_networks.py \\\n"
             "         --tarball /tmp/aracne.networks.tar.gz --output-dir models/networks/tcga\n"

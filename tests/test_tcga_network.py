@@ -66,11 +66,12 @@ def _inject_fake_network(agent, cancer_type: str = "fake") -> None:
 # Unit tests — registry and loader
 # ---------------------------------------------------------------------------
 
-def test_tcga_registry_has_8_types():
+def test_tcga_registry_has_14_types():
     from regnetagents.tcga_registry import TCGA_NETWORK_REGISTRY, TCGA_CANCER_TYPES
-    assert len(TCGA_NETWORK_REGISTRY) == 8
-    assert sorted(TCGA_CANCER_TYPES) == ["brca", "coad", "hnsc", "luad",
-                                          "lusc", "ov", "prad", "ucec"]
+    assert len(TCGA_NETWORK_REGISTRY) == 14
+    assert sorted(TCGA_CANCER_TYPES) == ["blca", "brca", "cesc", "coad", "hnsc",
+                                          "kirc", "lihc", "luad", "lusc", "ov",
+                                          "paad", "prad", "stad", "ucec"]
 
 
 def test_tcga_registry_paths_are_correct_format():
@@ -100,7 +101,8 @@ def test_load_network_raises_filenotfound_when_csv_absent():
 def test_tcga_cancer_type_enum():
     from regnetagents_langgraph_workflow import TCGACancerType
     values = {t.value for t in TCGACancerType}
-    assert values == {"brca", "coad", "hnsc", "luad", "lusc", "ov", "prad", "ucec"}
+    assert values == {"blca", "brca", "cesc", "coad", "hnsc", "kirc", "lihc",
+                      "luad", "lusc", "ov", "paad", "prad", "stad", "ucec"}
 
 
 # ---------------------------------------------------------------------------

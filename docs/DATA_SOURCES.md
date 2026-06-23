@@ -486,7 +486,7 @@ with open('network_index.pkl', 'wb') as f:
 
 ## TCGA Tumor-State ARACNe Networks (Optional)
 
-RegNetAgents optionally supports **8 TCGA cancer-type-specific ARACNe networks** derived from The Cancer Genome Atlas (TCGA) tumor expression data. These complement the GREmLN cell-type networks with tumor-state regulatory wiring and include **Mode of Action (MoA)** annotations (activation vs. repression) not present in the GREmLN networks.
+RegNetAgents optionally supports **14 TCGA cancer-type-specific ARACNe networks** derived from The Cancer Genome Atlas (TCGA) tumor expression data. These complement the GREmLN cell-type networks with tumor-state regulatory wiring and include **Mode of Action (MoA)** annotations (activation vs. repression) not present in the GREmLN networks.
 
 > **Note for standard users:** TCGA network PKL caches are included in the repository (`models/networks/tcga/`). No separate download is required unless you need to rebuild from source CSVs.
 
@@ -494,13 +494,19 @@ RegNetAgents optionally supports **8 TCGA cancer-type-specific ARACNe networks**
 
 | Key    | Cancer Type                              |
 |--------|------------------------------------------|
+| `blca` | Bladder Urothelial Carcinoma             |
 | `brca` | Breast Invasive Carcinoma                |
+| `cesc` | Cervical Squamous Cell Carcinoma         |
 | `coad` | Colon Adenocarcinoma                     |
 | `hnsc` | Head/Neck Squamous Cell Carcinoma        |
+| `kirc` | Kidney Renal Clear Cell Carcinoma        |
+| `lihc` | Liver Hepatocellular Carcinoma           |
 | `luad` | Lung Adenocarcinoma                      |
 | `lusc` | Lung Squamous Cell Carcinoma             |
 | `ov`   | Ovarian Carcinoma                        |
+| `paad` | Pancreatic Adenocarcinoma                |
 | `prad` | Prostate Adenocarcinoma                  |
+| `stad` | Stomach Adenocarcinoma                   |
 | `ucec` | Uterine Corpus Endometrial Carcinoma     |
 
 GBM and LAML are intentionally excluded — no reference network of the appropriate cell lineage exists in RegNetAgents for these cancer types.
@@ -509,7 +515,7 @@ GBM and LAML are intentionally excluded — no reference network of the appropri
 
 **Package**: Bioconductor `aracne.networks` (Lim & Califano, 2018)
 **Source paper**: Lim, W.K. & Califano, A. (2018). "Mapping the hallmarks of lung adenocarcinoma with massively parallel sequencing." *Cell Syst.* 6(4):446–460. doi:10.1016/j.cels.2018.02.011
-**Download URL**: `https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz`
+**Download URL**: `https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz`
 
 Networks are derived from TCGA tumor RNA-seq data processed through the ARACNe-AP algorithm at the Califano Lab (Columbia University).
 
@@ -539,7 +545,7 @@ The PKL caches are pre-built and included in the repo. To rebuild from the autho
 
 ```bash
 curl -o /tmp/aracne.networks.tar.gz \
-  https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz
+  https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz
 ```
 
 #### Step 2: Install required Python packages
@@ -560,7 +566,7 @@ python scripts/extract_tcga_networks.py \
 #### Step 4: Build PKL caches
 
 ```bash
-# All 8 cancer types
+# All 14 cancer types
 python scripts/build_tcga_cache.py --all
 
 # Or a single cancer type (faster for testing)

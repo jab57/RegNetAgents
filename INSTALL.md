@@ -369,7 +369,7 @@ After completing installation, you have:
 **Optional:**
 - Ollama with llama3.1:8b model (4.7GB)
 - 4 specialized domain analysis agents (cancer, drug, clinical, systems)
-- TCGA tumor-state ARACNe networks (8 cancer types — see below)
+- TCGA tumor-state ARACNe networks (14 cancer types — see below)
 
 ---
 
@@ -377,18 +377,18 @@ After completing installation, you have:
 
 RegNetAgents supports a second set of regulatory networks derived from TCGA
 bulk RNA-seq data via ARACNe (Lim & Califano). The pre-built PKL caches for
-all 8 cancer types are **included in the repository** — cloning the repo is
+all 14 cancer types are **included in the repository** — cloning the repo is
 sufficient for standard use. The instructions below are for reproducibility
 or rebuilding from scratch.
 
-**Supported cancer types:** brca, coad, hnsc, luad, lusc, ov, prad, ucec
+**Supported cancer types:** blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec
 (all epithelial-origin; GBM and LAML excluded — see DATA_SOURCES.md)
 
 ### Step 1: Download the Bioconductor tarball (~213 MB)
 
 ```bash
 curl -o /tmp/aracne.networks.tar.gz \
-  https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz
+  https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz
 ```
 
 ### Step 2: Extract network CSVs
@@ -404,7 +404,7 @@ python scripts/extract_tcga_networks.py \
 ### Step 3: Build the caches
 
 ```bash
-# Build all 8 TCGA caches (requires internet for MyGene.info validation)
+# Build all 14 TCGA caches (requires internet for MyGene.info validation)
 python scripts/build_tcga_cache.py --all
 
 # Or build a single cancer type

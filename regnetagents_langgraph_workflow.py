@@ -161,13 +161,19 @@ class RegNetAgentsCache:
 
 class TCGACancerType(Enum):
     """TCGA ARACNe cancer types supported by RegNetAgents (all epithelial-origin)."""
+    BLCA = "blca"   # Bladder Urothelial Carcinoma
     BRCA = "brca"   # Breast Invasive Carcinoma
+    CESC = "cesc"   # Cervical Squamous Cell Carcinoma
     COAD = "coad"   # Colon Adenocarcinoma
     HNSC = "hnsc"   # Head/Neck Squamous Cell Carcinoma
+    KIRC = "kirc"   # Kidney Renal Clear Cell Carcinoma
+    LIHC = "lihc"   # Liver Hepatocellular Carcinoma
     LUAD = "luad"   # Lung Adenocarcinoma
     LUSC = "lusc"   # Lung Squamous Cell Carcinoma
     OV   = "ov"     # Ovarian Carcinoma
+    PAAD = "paad"   # Pancreatic Adenocarcinoma
     PRAD = "prad"   # Prostate Adenocarcinoma
+    STAD = "stad"   # Stomach Adenocarcinoma
     UCEC = "ucec"   # Uterine Corpus Endometrial Carcinoma
 
 
