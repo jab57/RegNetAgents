@@ -353,15 +353,29 @@ class RegNetAgentsModelingAgent:
 
     async def analyze_targets_detailed(self, gene: str, cell_type: CellType, max_targets: int = 200):
         """Detailed analysis of gene targets."""
-        gene_context = await self.analyze_gene_network_context(gene, cell_type)
-        targets = gene_context.get('targets', [])
+        # Go directly to the network cache — same pattern as analyze_regulators_detailed.
+        # analyze_gene_network_context hardcodes targets[:10] in insertion order, which
+        # truncates hub TFs severely and loses MI-score ranking entirely.
+        network_data = self.cache.network_indices.get(cell_type.value, {})
+        gene_ensembl = self.gene_mapper.symbol_to_ensembl(gene)
+        regulator_targets = network_data.get('regulator_targets', {})
+        mi_scores = network_data.get('regulator_target_mi', {})
+
+        raw_targets = regulator_targets.get(gene_ensembl, []) if (network_data and gene_ensembl) else []
+
+        # Sort by MI score descending so highest-confidence edges come first
+        if mi_scores and gene_ensembl:
+            gene_mi = mi_scores.get(gene_ensembl, {})
+            raw_targets = sorted(raw_targets, key=lambda t: gene_mi.get(t, 0.0), reverse=True)
+
+        total_targets = len(raw_targets)
 
         return {
             "gene": gene,
             "cell_type": cell_type.value,
             "target_summary": {
-                "total_targets": len(targets),
-                "analyzed_targets": min(len(targets), max_targets)
+                "total_targets": total_targets,
+                "analyzed_targets": min(total_targets, max_targets)
             },
             "cascade_targets": [
                 {
@@ -369,7 +383,7 @@ class RegNetAgentsModelingAgent:
                     "ensembl_id": target,
                     "cascade_level": 1
                 }
-                for target in targets[:max_targets]
+                for target in raw_targets[:max_targets]
                 if (sym := self._convert_ensembl_to_symbol(target)) is not None
             ]
         }
