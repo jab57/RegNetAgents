@@ -244,13 +244,13 @@ class RegNetAgentsModelingAgent:
         # Initialize gene mapper for ID conversion (GREmLN networks only)
         self.gene_mapper = GeneIDMapper()
 
-    def _convert_ensembl_to_symbol(self, ensembl_id: str) -> str:
-        """Convert Ensembl ID to gene symbol, with fallback to original ID."""
+    def _convert_ensembl_to_symbol(self, ensembl_id: str) -> Optional[str]:
+        """Convert Ensembl ID to gene symbol. Returns None when lookup fails."""
         if not ensembl_id:
-            return "Unknown"
+            return None
 
         symbol = self.gene_mapper.ensembl_to_symbol(ensembl_id)
-        return symbol if symbol else ensembl_id
+        return symbol or None
 
     async def analyze_gene_network_context(self, gene: str, cell_type: CellType):
         """Analyze gene network context."""
@@ -342,15 +342,16 @@ class RegNetAgentsModelingAgent:
             },
             "hub_regulators": [
                 {
-                    "gene_symbol": self._convert_ensembl_to_symbol(reg),
+                    "gene_symbol": sym,
                     "ensembl_id": reg,
                     "regulatory_strength": "moderate"
                 }
                 for reg in regulators[:max_regulators]
+                if (sym := self._convert_ensembl_to_symbol(reg)) is not None
             ]
         }
 
-    async def analyze_targets_detailed(self, gene: str, cell_type: CellType, max_targets: int = 25):
+    async def analyze_targets_detailed(self, gene: str, cell_type: CellType, max_targets: int = 200):
         """Detailed analysis of gene targets."""
         gene_context = await self.analyze_gene_network_context(gene, cell_type)
         targets = gene_context.get('targets', [])
@@ -364,11 +365,12 @@ class RegNetAgentsModelingAgent:
             },
             "cascade_targets": [
                 {
-                    "gene_symbol": self._convert_ensembl_to_symbol(target),
+                    "gene_symbol": sym,
                     "ensembl_id": target,
                     "cascade_level": 1
                 }
                 for target in targets[:max_targets]
+                if (sym := self._convert_ensembl_to_symbol(target)) is not None
             ]
         }
 
@@ -1306,7 +1308,7 @@ class RegNetAgentsModelingAgent:
             "regulator_ensembl_id": regulator_id,
             "regulator_downstream_targets": len(regulator_targets),
             "cascade_overlap": cascade_overlap,
-            "affected_cascades": [self._convert_ensembl_to_symbol(t) for t in regulator_targets[:5]],
+            "affected_cascades": [s for t in regulator_targets[:5] if (s := self._convert_ensembl_to_symbol(t)) is not None],
             # Network centrality metrics
             "centrality_metrics": {
                 "degree_centrality": round(degree_cent, 4),
@@ -2927,9 +2929,9 @@ class RegNetAgentsWorkflow:
 
         if is_regulator and num_targets > 5 and 'targets_analysis' not in completed_steps:
             if tcga_network:
-                tasks.append(self._analyze_targets_tcga(state['gene'], tcga_network, max_targets=25))
+                tasks.append(self._analyze_targets_tcga(state['gene'], tcga_network, max_targets=200))
             else:
-                tasks.append(self.modeling_agent.analyze_targets_detailed(state['gene'], cell_type, max_targets=25))
+                tasks.append(self.modeling_agent.analyze_targets_detailed(state['gene'], cell_type, max_targets=200))
             task_names.append('targets')
 
         # Run analyses in parallel
@@ -2981,7 +2983,7 @@ class RegNetAgentsWorkflow:
             "hub_regulators": hub_regulators
         }
 
-    async def _analyze_targets_tcga(self, gene: str, tcga_network: str, max_targets: int = 25) -> Dict:
+    async def _analyze_targets_tcga(self, gene: str, tcga_network: str, max_targets: int = 200) -> Dict:
         """Return detailed target list for a gene from the TCGA network."""
         gene_upper = gene.strip().upper()
         network_data = self.tcga_cache.tcga_indices.get(tcga_network, {}) if self.tcga_cache else {}
@@ -3193,7 +3195,7 @@ class RegNetAgentsWorkflow:
             result = await self.modeling_agent.analyze_targets_detailed(
                 state['gene'],
                 cell_type,
-                max_targets=25
+                max_targets=200
             )
 
             state['targets_analysis'] = result
