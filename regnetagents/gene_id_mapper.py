@@ -16,6 +16,7 @@ class GeneIDMapper:
         self.cache_file = cache_file
         self.cache = self._load_cache()
         self._populate_from_uniprot()  # Pre-populate with local data
+        self._alias_cache: Dict = {}  # in-memory: gene_upper -> {canonical, aliases}
         print(f"Fast gene mapping initialized: {len(self.cache['symbol_to_ensembl'])} genes cached", file=sys.stderr)
         
     def _load_cache(self) -> Dict:
@@ -100,6 +101,48 @@ class GeneIDMapper:
                 result[symbol.upper()] = ensembl_id
         return result
     
+    def resolve_aliases(self, gene_symbol: str, timeout: float = 5.0) -> Dict:
+        """
+        Query MyGeneInfo for the canonical HGNC symbol and known aliases.
+
+        Used as a fallback when a gene symbol is not found in the local cache so
+        that older HGNC symbols, synonyms, and alternative names can be tried.
+
+        Returns dict with:
+          canonical: str | None  — primary HGNC symbol from MyGeneInfo
+          aliases:   list[str]   — other known symbols (uppercased)
+
+        Falls back to {"canonical": None, "aliases": []} on any error or timeout.
+        """
+        gene_upper = gene_symbol.upper()
+        if gene_upper in self._alias_cache:
+            return self._alias_cache[gene_upper]
+
+        result: Dict = {"canonical": None, "aliases": []}
+        try:
+            import requests
+            ssl_verify = os.environ.get("REGNETAGENTS_SSL_NO_VERIFY", "0") != "1"
+            resp = requests.get(
+                "https://mygene.info/v3/query",
+                params={"q": f"symbol:{gene_upper}", "species": "human", "fields": "symbol,alias"},
+                timeout=timeout,
+                verify=ssl_verify,
+            )
+            if resp.status_code == 200:
+                hits = resp.json().get("hits", [])
+                if hits:
+                    hit = hits[0]
+                    result["canonical"] = hit.get("symbol")
+                    raw_aliases = hit.get("alias", [])
+                    if isinstance(raw_aliases, str):
+                        raw_aliases = [raw_aliases]
+                    result["aliases"] = [a.upper() for a in raw_aliases if isinstance(a, str)]
+        except Exception:
+            pass
+
+        self._alias_cache[gene_upper] = result
+        return result
+
     def get_cache_stats(self) -> Dict:
         """Get cache statistics"""
         return {

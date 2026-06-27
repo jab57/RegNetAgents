@@ -11,7 +11,10 @@ Tests network queries against the pre-computed cache, including:
 - top_n parameter
 """
 
+from unittest.mock import patch, MagicMock
+
 from regnetagents_langgraph_mcp_server import get_workflow
+from regnetagents.gene_id_mapper import GeneIDMapper
 
 
 async def test_query_network_top_regulators():
@@ -81,3 +84,60 @@ async def test_query_network_top_n():
     agent = workflow.modeling_agent
     result = agent.query_network("top_regulators", "epithelial_cell", top_n=3)
     assert len(result.get("results", [])) == 3
+
+
+async def test_query_network_invalid_gene_has_aliases_tried():
+    """gene_neighbors for FAKEGENE → error includes aliases_tried field."""
+    workflow = await get_workflow()
+    agent = workflow.modeling_agent
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {"hits": [{"symbol": "FAKEGENE2", "alias": ["FG2", "FKGN"]}]}
+    with patch("requests.get", return_value=mock_resp):
+        result = agent.query_network("gene_neighbors", "epithelial_cell", gene="FAKEGENE")
+    assert result.get("error") is True
+    assert "aliases_tried" in result
+
+
+def test_resolve_aliases_returns_canonical_and_aliases():
+    """resolve_aliases parses MyGeneInfo response correctly."""
+    mapper = GeneIDMapper.__new__(GeneIDMapper)
+    mapper._alias_cache = {}
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {
+        "hits": [{"symbol": "CTNNB1", "alias": ["CATNB", "MRD19", "armadillo"]}]
+    }
+    with patch("requests.get", return_value=mock_resp):
+        result = mapper.resolve_aliases("CATNB")
+    assert result["canonical"] == "CTNNB1"
+    assert "CATNB" in result["aliases"]
+    assert "ARMADILLO" in result["aliases"]
+
+
+def test_resolve_aliases_graceful_on_network_error():
+    """resolve_aliases returns empty result when MyGeneInfo is unreachable."""
+    mapper = GeneIDMapper.__new__(GeneIDMapper)
+    mapper._alias_cache = {}
+    with patch("requests.get", side_effect=Exception("connection refused")):
+        result = mapper.resolve_aliases("TP53")
+    assert result == {"canonical": None, "aliases": []}
+
+
+def test_resolve_aliases_uses_cache():
+    """resolve_aliases does not call requests.get on repeated queries."""
+    mapper = GeneIDMapper.__new__(GeneIDMapper)
+    mapper._alias_cache = {"TP53": {"canonical": "TP53", "aliases": ["P53"]}}
+    with patch("requests.get", side_effect=AssertionError("should not call")):
+        result = mapper.resolve_aliases("TP53")
+    assert result["canonical"] == "TP53"
+
+
+async def test_find_master_regulators_alias_in_query_summary():
+    """find_master_regulators query_summary includes genes_resolved_via_alias key."""
+    workflow = await get_workflow()
+    agent = workflow.modeling_agent
+    # Use a known gene so something is found in the network
+    result = agent.find_master_regulators(["TP53", "MYC"], cell_type="epithelial_cell")
+    assert "query_summary" in result
+    assert "genes_resolved_via_alias" in result["query_summary"]

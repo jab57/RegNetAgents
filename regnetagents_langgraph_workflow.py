@@ -244,6 +244,18 @@ class RegNetAgentsModelingAgent:
         # Initialize gene mapper for ID conversion (GREmLN networks only)
         self.gene_mapper = GeneIDMapper()
 
+    def _get_alias_candidates(self, gene_upper: str) -> list:
+        """Return canonical + alias symbols from MyGeneInfo, excluding the original symbol."""
+        info = self.gene_mapper.resolve_aliases(gene_upper)
+        seen = {gene_upper}
+        candidates = []
+        for sym in ([info["canonical"]] if info["canonical"] else []) + info["aliases"]:
+            s = sym.upper()
+            if s not in seen:
+                seen.add(s)
+                candidates.append(s)
+        return candidates
+
     def _convert_ensembl_to_symbol(self, ensembl_id: str) -> Optional[str]:
         """Convert Ensembl ID to gene symbol. Returns None when lookup fails."""
         if not ensembl_id:
@@ -460,6 +472,43 @@ class RegNetAgentsModelingAgent:
                 }
             }
 
+        # Try alias resolution before declaring not found
+        for candidate in self._get_alias_candidates(gene_upper):
+            cand_eid = self.gene_mapper.symbol_to_ensembl(candidate)
+            if cand_eid and cand_eid in all_genes:
+                gene_upper = candidate
+                ensembl_id = cand_eid
+                # Fall through to the found branch below by re-checking
+                targets = regulator_targets.get(ensembl_id, [])
+                regulators = target_regulators.get(ensembl_id, [])
+                num_targets = len(targets)
+                num_regulators = len(regulators)
+                if num_targets > 20:
+                    regulatory_role = "hub_regulator"
+                elif num_regulators > 15:
+                    regulatory_role = "heavily_regulated"
+                elif num_targets > 5 and num_regulators > 5:
+                    regulatory_role = "intermediate_node"
+                elif num_targets > 0:
+                    regulatory_role = "regulator"
+                else:
+                    regulatory_role = "weakly_regulated"
+                pagerank_normalized = network_data.get('pagerank_normalized', {})
+                pagerank = round(pagerank_normalized.get(ensembl_id, 0.0), 6)
+                return {
+                    "found": True,
+                    "gene": gene_upper,
+                    "ensembl_id": ensembl_id,
+                    "cell_type": cell_type,
+                    "resolved_from": gene.strip().upper(),
+                    "quick_stats": {
+                        "num_regulators": num_regulators,
+                        "num_targets": num_targets,
+                        "regulatory_role": regulatory_role,
+                        "pagerank": pagerank
+                    }
+                }
+
         # Gene not found — build suggestions via fuzzy matching
         # Collect known gene symbols from the mapper cache
         known_symbols = list(self.gene_mapper.cache.get("symbol_to_ensembl", {}).keys())
@@ -629,13 +678,23 @@ class RegNetAgentsModelingAgent:
             all_genes_set = set(all_genes)
 
             if not ensembl_id or ensembl_id not in all_genes_set:
-                return {
-                    "error": True,
-                    "query_type": query_type,
-                    "gene": gene_upper,
-                    "cell_type": cell_type,
-                    "message": f"Gene '{gene_upper}' not found in {cell_type} network"
-                }
+                aliases_tried = []
+                for candidate in self._get_alias_candidates(gene_upper):
+                    aliases_tried.append(candidate)
+                    cand_eid = self.gene_mapper.symbol_to_ensembl(candidate)
+                    if cand_eid and cand_eid in all_genes_set:
+                        gene_upper = candidate
+                        ensembl_id = cand_eid
+                        break
+                else:
+                    return {
+                        "error": True,
+                        "query_type": query_type,
+                        "gene": gene.strip().upper(),
+                        "cell_type": cell_type,
+                        "aliases_tried": aliases_tried,
+                        "message": f"Gene '{gene.strip().upper()}' not found in {cell_type} network"
+                    }
 
             raw_targets = regulator_targets.get(ensembl_id, [])
             raw_regulators = target_regulators.get(ensembl_id, [])
@@ -824,13 +883,21 @@ class RegNetAgentsModelingAgent:
             gene_upper = gene.strip().upper()
             all_genes_set = set(all_genes)
             if gene_upper not in all_genes_set:
-                return {
-                    "error": True,
-                    "query_type": query_type,
-                    "gene": gene_upper,
-                    "tcga_network": tcga_network,
-                    "message": f"Gene '{gene_upper}' not found in TCGA {tcga_network} network",
-                }
+                aliases_tried = []
+                for candidate in self._get_alias_candidates(gene_upper):
+                    aliases_tried.append(candidate)
+                    if candidate in all_genes_set:
+                        gene_upper = candidate
+                        break
+                else:
+                    return {
+                        "error": True,
+                        "query_type": query_type,
+                        "gene": gene.strip().upper(),
+                        "tcga_network": tcga_network,
+                        "aliases_tried": aliases_tried,
+                        "message": f"Gene '{gene.strip().upper()}' not found in TCGA {tcga_network} network",
+                    }
 
             target_list = []
             for tgt in regulator_targets.get(gene_upper, []):
@@ -934,14 +1001,22 @@ class RegNetAgentsModelingAgent:
         network_size = len(all_genes)
         all_genes_set = set(all_genes)
 
-        # Convert input gene symbols to Ensembl IDs
+        # Convert input gene symbols to Ensembl IDs, with alias fallback
         gene_set_ensembl = set()
         not_found = []
+        genes_resolved_via_alias = []
         for symbol in gene_set:
             symbol_upper = symbol.strip().upper()
             eid = self.gene_mapper.symbol_to_ensembl(symbol_upper)
             if eid and eid in all_genes_set:
                 gene_set_ensembl.add(eid)
+                continue
+            for candidate in self._get_alias_candidates(symbol_upper):
+                cand_eid = self.gene_mapper.symbol_to_ensembl(candidate)
+                if cand_eid and cand_eid in all_genes_set:
+                    gene_set_ensembl.add(cand_eid)
+                    genes_resolved_via_alias.append({"query": symbol_upper, "resolved_as": candidate})
+                    break
             else:
                 not_found.append(symbol_upper)
 
@@ -1012,6 +1087,7 @@ class RegNetAgentsModelingAgent:
                 "gene_set_size": len(gene_set),
                 "genes_found_in_network": gene_set_found,
                 "genes_not_found": not_found,
+                "genes_resolved_via_alias": genes_resolved_via_alias,
                 "network_size": network_size,
                 "cell_type": cell_type,
                 "total_regulators_tested": len(results)
@@ -1055,13 +1131,20 @@ class RegNetAgentsModelingAgent:
         network_size = len(all_genes)
         all_genes_set = set(all_genes)
 
-        # TCGA PKLs are symbol-keyed — no Ensembl conversion needed
+        # TCGA PKLs are symbol-keyed — no Ensembl conversion needed; alias fallback applied
         gene_set_symbols: set = set()
         not_found: list = []
+        genes_resolved_via_alias: list = []
         for symbol in gene_set:
             sym_upper = symbol.strip().upper()
             if sym_upper in all_genes_set:
                 gene_set_symbols.add(sym_upper)
+                continue
+            for candidate in self._get_alias_candidates(sym_upper):
+                if candidate in all_genes_set:
+                    gene_set_symbols.add(candidate)
+                    genes_resolved_via_alias.append({"query": sym_upper, "resolved_as": candidate})
+                    break
             else:
                 not_found.append(sym_upper)
 
@@ -1118,6 +1201,7 @@ class RegNetAgentsModelingAgent:
                 "gene_set_size": len(gene_set),
                 "genes_found_in_network": gene_set_found,
                 "genes_not_found": not_found,
+                "genes_resolved_via_alias": genes_resolved_via_alias,
                 "network_size": network_size,
                 "network_source": "tcga",
                 "tcga_network": tcga_network,
