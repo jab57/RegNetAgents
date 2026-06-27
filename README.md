@@ -248,6 +248,8 @@ Core tests run without Ollama or Claude Desktop. Tests requiring Ollama are skip
 - **Network Analysis**: Gene positions in regulatory networks
 - **Therapeutic Target Prioritization**: PageRank-based ranking of upstream regulators
 - **10 Cell Types**: Immune cells, blood cells, epithelial tissue
+- **14 TCGA Cancer Types**: Tumor-state ARACNe networks (blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec) with per-edge Mode of Action (MoA)
+- **Gene Alias Resolution**: Automatic fallback via MyGeneInfo when a query symbol is not found — resolves synonyms and canonical HGNC names before returning a miss
 - **Domain Insights**: 4 agents produce categorical assessments (high/moderate/low) with evidence factors derived from network topology
 - **Cross-Domain Contradiction Detection**: Automatic rule-based flagging of inconsistencies across domain agents
 - **Pathway Enrichment**: Reactome API with FDR correction
