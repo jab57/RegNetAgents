@@ -12,6 +12,22 @@ if TYPE_CHECKING:
     from regnetagents_langgraph_workflow import RegNetAgentsModelingAgent
 
 
+def _extract_symbols_with_weights(entries) -> tuple[set, dict]:
+    """Collapse gene_neighbors entries to a symbol set plus a symbol->weight map.
+
+    Entries are dicts with a "gene" key and (for TCGA-sourced entries) a
+    "likelihood" MI-weight key; legacy/non-dict entries (plain symbol strings)
+    yield an empty weights dict.
+    """
+    if not entries:
+        return set(), {}
+    if isinstance(entries[0], dict):
+        symbols = {e["gene"] for e in entries if "gene" in e}
+        weights = {e["gene"]: e.get("likelihood") for e in entries if "gene" in e}
+        return symbols, weights
+    return set(entries), {}
+
+
 def compare_network_contexts(
     agent: "RegNetAgentsModelingAgent",
     gene: str,
@@ -66,17 +82,10 @@ def compare_network_contexts(
     # --- Extract regulator and target sets -----------------------------------
     # Both GREmLN and TCGA gene_neighbors return regulators/targets at the
     # top level of the result dict (not nested under a "gene_neighbors" key).
-    def _extract_symbols(entries) -> set:
-        if not entries:
-            return set()
-        if isinstance(entries[0], dict):
-            return {e["gene"] for e in entries if "gene" in e}
-        return set(entries)
-
-    pop_regulators   = _extract_symbols(pop_result.get("regulators", []))
-    pop_targets      = _extract_symbols(pop_result.get("targets", []))
-    tumor_regulators = _extract_symbols(tumor_result.get("regulators", []))
-    tumor_targets    = _extract_symbols(tumor_result.get("targets", []))
+    pop_regulators, _                    = _extract_symbols_with_weights(pop_result.get("regulators", []))
+    pop_targets, _                       = _extract_symbols_with_weights(pop_result.get("targets", []))
+    tumor_regulators, tumor_reg_weights  = _extract_symbols_with_weights(tumor_result.get("regulators", []))
+    tumor_targets, _                     = _extract_symbols_with_weights(tumor_result.get("targets", []))
 
     # --- Compute overlaps ----------------------------------------------------
     reg_conserved    = sorted(pop_regulators & tumor_regulators)
@@ -118,6 +127,7 @@ def compare_network_contexts(
             "conserved_fraction":        reg_conserved_fraction,
             "population_averaged_only":  reg_pop_only,
             "tumor_state_only":          reg_tumor_only,
+            "tumor_state_only_weights":  {g: tumor_reg_weights.get(g) for g in reg_tumor_only},
         },
         "targets": {
             "population_averaged_total": len(pop_targets),

@@ -12,7 +12,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
-from regnetagents.context_comparison import compare_network_contexts
+from regnetagents.context_comparison import compare_network_contexts, _extract_symbols_with_weights
 
 
 @pytest.fixture(scope="module")
@@ -140,6 +140,86 @@ def test_graceful_error_gene_not_in_network(agent):
     """Gene absent from GREmLN → error dict, no exception."""
     result = compare_network_contexts(agent, "NOTAREALGENE999", "brca")
     assert result.get("error") is True
+
+
+# ---------------------------------------------------------------------------
+# MI edge-weight field (tumor_state_only_weights)
+# ---------------------------------------------------------------------------
+
+def test_extract_symbols_with_weights_dict_input():
+    entries = [{"gene": "TF1", "likelihood": 0.5}, {"gene": "TF2"}]
+    symbols, weights = _extract_symbols_with_weights(entries)
+    assert symbols == {"TF1", "TF2"}
+    assert weights == {"TF1": 0.5, "TF2": None}
+
+
+def test_extract_symbols_with_weights_legacy_input():
+    """Legacy plain-string entries (no dict/weight info) → empty weights dict, no error."""
+    symbols, weights = _extract_symbols_with_weights(["TF1", "TF2"])
+    assert symbols == {"TF1", "TF2"}
+    assert weights == {}
+
+
+def test_extract_symbols_with_weights_empty_input():
+    symbols, weights = _extract_symbols_with_weights([])
+    assert symbols == set()
+    assert weights == {}
+
+
+def test_tumor_state_only_weights_keys_match_tumor_state_only():
+    """tumor_state_only_weights must have exactly the same keys as tumor_state_only — no more, no fewer."""
+    class _FakeAgent:
+        def __init__(self):
+            self._call = 0
+
+        def query_network(self, query_type, gene=None, cell_type=None,
+                          network_source=None, tcga_network=None, **kw):
+            self._call += 1
+            if self._call == 1:
+                # population-averaged: TF0-4
+                return {"error": False, "regulators": [{"gene": f"TF{i}"} for i in range(5)], "targets": []}
+            # tumor-state: TF3-9 (TF5-9 are tumor-only), with MI weights
+            return {
+                "error": False,
+                "regulators": [{"gene": f"TF{i}", "likelihood": round(i * 0.1, 2)} for i in range(3, 10)],
+                "targets": [],
+            }
+
+    result = compare_network_contexts(_FakeAgent(), "GENE", "brca")
+    reg = result["regulators"]
+    assert set(reg["tumor_state_only_weights"].keys()) == set(reg["tumor_state_only"])
+    assert reg["tumor_state_only_weights"]["TF9"] == 0.9
+
+
+def test_tumor_state_only_weights_legacy_string_entries_no_error():
+    """Legacy plain-string regulator entries must not raise and must yield None weights."""
+    class _FakeAgent:
+        def __init__(self):
+            self._call = 0
+
+        def query_network(self, query_type, gene=None, cell_type=None,
+                          network_source=None, tcga_network=None, **kw):
+            self._call += 1
+            if self._call == 1:
+                return {"error": False, "regulators": [], "targets": []}
+            return {"error": False, "regulators": ["TF1", "TF2"], "targets": []}
+
+    result = compare_network_contexts(_FakeAgent(), "GENE", "brca")
+    reg = result["regulators"]
+    assert reg["tumor_state_only"] == ["TF1", "TF2"]
+    assert reg["tumor_state_only_weights"] == {"TF1": None, "TF2": None}
+
+
+def test_tumor_state_only_weights_present_on_real_query(agent):
+    """Integration check against the real TCGA/GREmLN caches."""
+    if not _tcga_available(agent):
+        pytest.skip("TCGA cache not built")
+
+    result = compare_network_contexts(agent, "MYC", "coad")
+    assert result.get("error") is not True
+    reg = result["regulators"]
+    assert "tumor_state_only_weights" in reg
+    assert set(reg["tumor_state_only_weights"].keys()) == set(reg["tumor_state_only"])
 
 
 # ---------------------------------------------------------------------------
