@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "regnetagents"
-version = "1.2.7"
+version = "1.2.8"
 description = "A multi-agent LLM system for gene regulatory network analysis"
 readme = "README.md"
 license = {text = "MIT"}
