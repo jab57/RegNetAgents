@@ -1497,12 +1497,38 @@ class RegNetAgentsModelingAgent:
 
         return interpretation
 
+_TRUSTSTORE_INJECTED = False
+
+
+def _use_system_trust_store():
+    """Route TLS verification through the OS trust store (once per process).
+
+    Institutional networks frequently run a TLS-inspecting proxy (Zscaler,
+    Netskope, Norton, etc.) whose root CA is installed in the system trust
+    store but not in certifi's bundle. Without this, HTTPS calls to
+    reactome.org fail with CERTIFICATE_VERIFY_FAILED even though a browser
+    on the same machine works fine. truststore delegates verification to the
+    OS, which sees the proxy's root. No-op if truststore isn't installed.
+    """
+    global _TRUSTSTORE_INJECTED
+    if _TRUSTSTORE_INJECTED:
+        return
+    try:
+        import truststore
+        truststore.inject_into_ssl()
+        _TRUSTSTORE_INJECTED = True
+        logger.info("TLS verification routed through the system trust store (truststore)")
+    except ImportError:
+        logger.debug("truststore not installed; using certifi bundle for TLS verification")
+
+
 class PathwayEnricherAgent:
     """Agent for Reactome pathway enrichment analysis."""
     def __init__(self):
         try:
             import requests
             import certifi
+            _use_system_trust_store()
             self.requests = requests
             self.certifi = certifi
             self.reactome_base_url = "https://reactome.org/AnalysisService"
