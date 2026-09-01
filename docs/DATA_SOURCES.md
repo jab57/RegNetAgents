@@ -618,6 +618,74 @@ asyncio.run(main())
 
 ---
 
+## IntOGen Cancer-Driver Gene Compendium
+
+Used by `compare_network_contexts` (the `driver_gene_roles` / `tumor_state_only_known_drivers`
+fields) and the standalone `annotate_cancer_drivers` MCP tool to flag which regulators are
+known cancer-driver genes and their consensus mode of action.
+
+### Data Source
+
+| | |
+|---|---|
+| **Source** | IntOGen — Compendium of Mutational Cancer Driver Genes |
+| **Publication** | Martínez-Jiménez F, Muiños F, et al. (2020). "A compendium of mutational cancer driver genes." *Nature Reviews Cancer* 20(10):555–572. doi:10.1038/s41568-020-0290-x |
+| **Release used** | 2024.09.20 (`IntOGen-Drivers-20240920.zip`) |
+| **Download** | https://www.intogen.org/download (no account or registration) |
+| **License** | CC0 1.0 Universal — public domain. Full text committed at `regnetagents/reference_data/INTOGEN_LICENSE.txt`. |
+
+### Bundled File
+
+`regnetagents/reference_data/intogen_drivers.tsv` — a trimmed, pre-collapsed snapshot
+committed to the repo. **No download or setup step is required** — driver annotation works
+on a clean checkout.
+
+- Two columns: `symbol`, `role`. `#`-prefixed provenance comments at the top record the
+  source release, download URL, license, citation, and generation date.
+- `role` is one of `oncogene`, `tumor_suppressor`, `mixed`, `ambiguous` (633 genes total).
+- Every gene in the file is a driver; `role` is advisory directional context. For genes
+  IntOGen detected in only one or two cohorts the directional call can be unreliable.
+
+### How `role` Is Derived
+
+IntOGen's `Compendium_Cancer_Genes.tsv` has one row per gene × cohort × cancer type, each
+with a `ROLE` of `Act`, `LoF`, or `ambiguous`. These per-cohort calls are collapsed to one
+value per gene by majority vote:
+
+| Collapsed `role` | Rule |
+|---|---|
+| `oncogene` | `Act` calls outnumber `LoF` calls |
+| `tumor_suppressor` | `LoF` calls outnumber `Act` calls |
+| `mixed` | exact `Act` / `LoF` tie |
+| `ambiguous` | only `ambiguous` calls (or blank/unrecognized) |
+
+### Coverage Caveat
+
+IntOGen identifies drivers by positive selection in somatic point mutations, so it
+under-covers genes driven mainly by fusion, copy-number alteration, or epigenetic
+silencing (which curated resources such as OncoKB / COSMIC CGC include). A gene **absent**
+from this annotation is "not a positive-selection driver in IntOGen's compendium" — not
+necessarily "not a cancer driver." Cite Martínez-Jiménez et al. 2020 whenever this
+annotation informs a reported result.
+
+### Refreshing to a Newer IntOGen Release
+
+Routine maintenance, not automated — IntOGen cuts a release roughly annually. The recipe
+also lives in the `regnetagents/driver_gene_client.py` module docstring.
+
+1. Download the current release ZIP from https://www.intogen.org/download and unzip it.
+2. From `Compendium_Cancer_Genes.tsv`, collapse the per-cohort `ROLE` calls to one role per
+   `SYMBOL` using the majority-vote rules above.
+3. Write the two-column `symbol` / `role` TSV to
+   `regnetagents/reference_data/intogen_drivers.tsv`, refreshing the `#` provenance header
+   (source archive name, release date, generation date, gene count).
+4. Replace `regnetagents/reference_data/INTOGEN_LICENSE.txt` with the `LICENSE.txt` from the
+   new archive if it changed.
+5. Run `pytest tests/test_driver_gene_client.py` — the well-known-gene spot checks
+   (KRAS → `oncogene`, TP53 → `tumor_suppressor`, etc.) guard against a malformed rebuild.
+
+---
+
 # APPENDIX: For Advanced Users
 
 **⚠️ The following sections are for advanced users who want to generate networks for additional cell types not included in the RegNetAgents tutorial.**
@@ -814,6 +882,10 @@ When using RegNetAgents, please acknowledge:
 
 3. **ARACNe Algorithm**
    - Citation: Lachmann, A., et al. (2016). "ARACNe-AP: gene network reverse engineering through adaptive partitioning inference of mutual information." *Bioinformatics*, 32(14), 2233-2235.
+
+4. **IntOGen Compendium of Mutational Cancer Driver Genes** (source of the cancer-driver annotation used by `compare_network_contexts` and `annotate_cancer_drivers`)
+   - Citation: Martínez-Jiménez, F., Muiños, F., et al. (2020). "A compendium of mutational cancer driver genes." *Nature Reviews Cancer*, 20(10), 555-572. doi:10.1038/s41568-020-0290-x
+   - Release 2024.09.20, CC0 1.0 Universal. Download: https://www.intogen.org/download
 
 ### RegNetAgents Software Citation
 
