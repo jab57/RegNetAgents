@@ -133,11 +133,12 @@ Compare MYC regulatory wiring between epithelial cells and colorectal tumor cont
 ```
 
 ### 10. `annotate_cancer_drivers`
-Tag any list of gene symbols with cancer-driver status from the IntOGen Compendium of Mutational Cancer Driver Genes (CC0). Returns `is_driver` and a consensus `role` (oncogene/tumor_suppressor/mixed/ambiguous) per gene — no network query involved, so it works on genes from any source (a panel, `find_master_regulators` output, etc.).
+Tag any list of gene symbols with cancer-driver status from the IntOGen Compendium of Mutational Cancer Driver Genes (CC0). Returns `is_driver` and a consensus pan-cancer `role` (oncogene/tumor_suppressor/mixed/ambiguous) per gene — no network query involved, so it works on genes from any source (a panel, `find_master_regulators` output, etc.). Pass an optional `cancer_type` (TCGA code) to also get `tissue_matched: bool` — whether IntOGen called the gene a driver in that specific cancer type.
 
 **Example**:
 ```
 Which of these genes are known cancer drivers: MYC, TP53, ACTB, KRAS?
+Of those, which are drivers specifically in colorectal cancer?
 ```
 
 ### 11-16. Other tools

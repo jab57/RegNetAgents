@@ -124,6 +124,13 @@ def compare_network_contexts(
     tumor_state_only_known_drivers = sorted(
         g for g in reg_tumor_only if driver_gene_roles.get(g) is not None
     )
+    # Tissue-matched subset: tumor-acquired known drivers that IntOGen called
+    # specifically in *this* cancer_type (not just somewhere pan-cancer).
+    # Presence only -- `driver_gene_roles` values stay pan-cancer regardless.
+    tumor_state_only_tissue_matched_drivers = sorted(
+        g for g in tumor_state_only_known_drivers
+        if driver_gene_client.is_tissue_matched(g, cancer_type)
+    )
 
     # --- Regulatory rewiring classification (rule-based) ---------------------
     if reg_conserved_fraction >= 0.6:
@@ -148,6 +155,7 @@ def compare_network_contexts(
             "tumor_state_only_weights":  {g: tumor_reg_weights.get(g) for g in reg_tumor_only},
             "driver_gene_roles":              driver_gene_roles,
             "tumor_state_only_known_drivers": tumor_state_only_known_drivers,
+            "tumor_state_only_tissue_matched_drivers": tumor_state_only_tissue_matched_drivers,
         },
         "targets": {
             "population_averaged_total": len(pop_targets),
@@ -162,6 +170,7 @@ def compare_network_contexts(
             "conserved_fraction_regulators":    reg_conserved_fraction,
             "tumor_specific_regulator_count":   len(reg_tumor_only),
             "tumor_state_only_known_driver_count": len(tumor_state_only_known_drivers),
+            "tumor_state_only_tissue_matched_driver_count": len(tumor_state_only_tissue_matched_drivers),
         },
         "driver_annotation_available": driver_gene_client.driver_data_available(),
     }

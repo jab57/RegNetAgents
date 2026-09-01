@@ -1394,15 +1394,20 @@ async def handle_list_tools() -> list[Tool]:
               {{
                 "driver_annotation_available": bool,   # false if the reference file failed to load
                 "results": {{
-                  "<GENE>": {{"is_driver": bool, "role": "oncogene"|"tumor_suppressor"|"mixed"|"ambiguous"|null}}
+                  "<GENE>": {{"is_driver": bool, "role": "oncogene"|"tumor_suppressor"|"mixed"|"ambiguous"|null,
+                             "tissue_matched": bool}}   # only when cancer_type is given
                 }}
               }}
-            `role` is IntOGen's consensus mode-of-action (majority vote of per-cohort
-            calls) and is advisory -- for genes seen in only 1-2 cohorts it may be
-            unreliable; `is_driver` is the dependable signal. IntOGen is a mutational
-            positive-selection compendium, so it under-covers fusion / copy-number /
-            epigenetically driven genes -- absence means "not a positive-selection
-            driver in IntOGen", not "not a cancer driver".
+            `role` is IntOGen's consensus PAN-CANCER mode-of-action (majority vote of
+            per-cohort calls) and is advisory -- for genes seen in only 1-2 cohorts it
+            may be unreliable; `is_driver` is the dependable signal. IntOGen is a
+            mutational positive-selection compendium, so it under-covers fusion /
+            copy-number / epigenetically driven genes -- absence means "not a
+            positive-selection driver in IntOGen", not "not a cancer driver".
+
+            Optional `cancer_type` (a TCGA code): adds `tissue_matched` per gene --
+            whether IntOGen called the gene a driver specifically in that cancer type,
+            not just somewhere pan-cancer. Presence only; `role` stays pan-cancer.
 
             Cite: {driver_gene_client.CITATION}
             """,
@@ -1413,6 +1418,11 @@ async def handle_list_tools() -> list[Tool]:
                         "type": "array",
                         "items": {"type": "string"},
                         "description": "Gene symbols to annotate (e.g. ['MYC', 'TP53', 'ACTB'])"
+                    },
+                    "cancer_type": {
+                        "type": "string",
+                        "enum": ["blca", "brca", "cesc", "coad", "hnsc", "kirc", "lihc", "luad", "lusc", "ov", "paad", "prad", "stad", "ucec"],
+                        "description": "Optional TCGA code; when given, each result also carries tissue_matched: bool"
                     }
                 },
                 "required": ["genes"]
@@ -1738,12 +1748,22 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
 
         elif name == "annotate_cancer_drivers":
             genes = arguments["genes"]
+            cancer_type = arguments.get("cancer_type")
 
-            logger.info(f"Annotating {len(genes)} gene(s) against IntOGen driver compendium")
+            if cancer_type is not None and cancer_type.strip().lower() not in driver_gene_client.TCGA_CANCER_TYPE_CODES:
+                return [TextContent(type="text", text=json.dumps({
+                    "error": f"Unknown cancer_type '{cancer_type}'. "
+                             f"Expected one of: {sorted(driver_gene_client.TCGA_CANCER_TYPE_CODES)}",
+                }, indent=2))]
+
+            logger.info(
+                f"Annotating {len(genes)} gene(s) against IntOGen driver compendium"
+                + (f" (tissue-matched to {cancer_type})" if cancer_type else "")
+            )
 
             result = {
                 "driver_annotation_available": driver_gene_client.driver_data_available(),
-                "results": driver_gene_client.annotate_genes(genes),
+                "results": driver_gene_client.annotate_genes(genes, cancer_type=cancer_type),
                 "source": driver_gene_client.CITATION,
             }
 

@@ -637,14 +637,48 @@ known cancer-driver genes and their consensus mode of action.
 ### Bundled File
 
 `regnetagents/reference_data/intogen_drivers.tsv` — a trimmed, pre-collapsed snapshot
-committed to the repo. **No download or setup step is required** — driver annotation works
-on a clean checkout.
+committed to the repo (633 genes). **No download or setup step is required** — driver
+annotation works on a clean checkout. `#`-prefixed provenance comments at the top record
+the source release, download URL, license, citation, generation date, and the
+IntOGen→TCGA cancer-type mapping.
 
-- Two columns: `symbol`, `role`. `#`-prefixed provenance comments at the top record the
-  source release, download URL, license, citation, and generation date.
-- `role` is one of `oncogene`, `tumor_suppressor`, `mixed`, `ambiguous` (633 genes total).
-- Every gene in the file is a driver; `role` is advisory directional context. For genes
-  IntOGen detected in only one or two cohorts the directional call can be unreliable.
+| Column | Meaning |
+|---|---|
+| `symbol` | HGNC gene symbol (uppercase). Positionally first; never changes meaning. |
+| `role` | Pan-cancer consensus mode of action — `oncogene` / `tumor_suppressor` / `mixed` / `ambiguous`. The **sole authoritative role**, regardless of tissue match. |
+| `n_cancer_types` | How many of IntOGen's distinct cancer types (max 86 in this release) called the gene a driver — a "how established / pan-cancer is this driver" breadth signal. Deliberately **not** `len(cancer_types)`. |
+| `cancer_types` | Semicolon-separated RegNetAgents TCGA codes (subset of the 14) the gene was called in, via the IntOGen→TCGA mapping below. **Presence only — no per-cancer-type role is stored** (per-cohort role calls are too noisy: they flag CCND1, a canonical oncogene, as `LoF` in HNSC). Empty for a driver with no RegNetAgents-mappable cancer type (e.g. a blood-cancer-only driver). |
+
+Every gene in the file is a driver; `role` is advisory directional context. For genes
+IntOGen detected in only one or two cohorts the directional call can be unreliable.
+
+`compare_network_contexts` exposes `regulators.tumor_state_only_tissue_matched_drivers`
+(known drivers whose IntOGen call includes the queried `cancer_type`) alongside the
+pan-cancer `tumor_state_only_known_drivers`; `annotate_cancer_drivers` takes an optional
+`cancer_type` and adds `tissue_matched: bool` per gene.
+
+### IntOGen → RegNetAgents TCGA Cancer-Type Mapping
+
+IntOGen's `CANCER_TYPE` uses ~86 codes in its own vocabulary; RegNetAgents has 14 TCGA
+networks. The mapping (committed in `regnetagents/driver_gene_client.py` as
+`INTOGEN_TO_TCGA_CANCER_TYPE`, verified against the 2024.09.20 release):
+
+| RegNetAgents | IntOGen codes | | RegNetAgents | IntOGen codes |
+|---|---|---|---|---|
+| `blca` | BLCA, BLADDER | | `luad` | LUAD, NSCLC, LUNG |
+| `brca` | BRCA | | `lusc` | LUSC, NSCLC, LUNG |
+| `cesc` | CESC, CEAD | | `ov` | OVT |
+| `coad` | COAD, COADREAD, READ | | `paad` | PAAD, PANCREAS |
+| `hnsc` | HNSC | | `prad` | PRAD, PROSTATE |
+| `kirc` | CCRCC, RCC | | `stad` | STAD, STOMACH, EGC |
+| `lihc` | HCC | | `ucec` | UCEC |
+
+- `READ` (rectal) folds into `coad` — no separate rectal network. `EGC` folds into `stad`.
+- `NSCLC` / `LUNG` are pooled non-subtype cohorts — counted for **both** `luad` and `lusc`.
+- Deliberately **excluded** (distinct tumor biology despite similar organ/name): `NPC`
+  (vs `hnsc`), `PRCC` / `CHRCC` (papillary/chromophobe renal, vs `kirc`'s clear cell),
+  `LIHB` (hepatoblastoma, vs `lihc`'s hepatocellular), `PANET` (neuroendocrine, vs
+  `paad`'s adenocarcinoma), `UCS`, `MGCT`.
 
 ### How `role` Is Derived
 
@@ -674,15 +708,19 @@ Routine maintenance, not automated — IntOGen cuts a release roughly annually. 
 also lives in the `regnetagents/driver_gene_client.py` module docstring.
 
 1. Download the current release ZIP from https://www.intogen.org/download and unzip it.
-2. From `Compendium_Cancer_Genes.tsv`, collapse the per-cohort `ROLE` calls to one role per
-   `SYMBOL` using the majority-vote rules above.
-3. Write the two-column `symbol` / `role` TSV to
+2. From `Compendium_Cancer_Genes.tsv`, per `SYMBOL`: collapse the per-cohort `ROLE` calls to
+   one `role` (majority-vote rules above); count distinct `CANCER_TYPE` values →
+   `n_cancer_types`; map `CANCER_TYPE` through `INTOGEN_TO_TCGA_CANCER_TYPE` → the sorted
+   `cancer_types` list.
+3. Write the four-column `symbol` / `role` / `n_cancer_types` / `cancer_types` TSV to
    `regnetagents/reference_data/intogen_drivers.tsv`, refreshing the `#` provenance header
-   (source archive name, release date, generation date, gene count).
+   (source archive name, release date, generation date, gene count, mapping).
 4. Replace `regnetagents/reference_data/INTOGEN_LICENSE.txt` with the `LICENSE.txt` from the
-   new archive if it changed.
+   new archive if it changed. Re-check `INTOGEN_TO_TCGA_CANCER_TYPE` against the new
+   release's `CANCER_TYPE` vocabulary — codes can be added or renamed between releases.
 5. Run `pytest tests/test_driver_gene_client.py` — the well-known-gene spot checks
-   (KRAS → `oncogene`, TP53 → `tumor_suppressor`, etc.) guard against a malformed rebuild.
+   (KRAS → `oncogene`/tissue-matched in `coad`, TP53 → `tumor_suppressor`, VHL → `kirc`,
+   MYC → empty `cancer_types`) guard against a malformed rebuild.
 
 ---
 

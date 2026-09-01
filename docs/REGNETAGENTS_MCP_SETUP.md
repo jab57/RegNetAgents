@@ -278,15 +278,16 @@ Once installed, you can ask Claude Desktop natural language questions:
     - Compare regulatory wiring for a gene across population-averaged (GREmLN) and tumor-state (TCGA) networks in a single call
     - Returns conserved regulators, regulators lost in tumor, regulators gained in tumor
     - Classifies rewiring level (low / moderate / high) by Jaccard overlap of regulator sets
-    - Includes IntOGen-backed cancer-driver annotation on the regulator sets (`driver_gene_roles`, `tumor_state_only_known_drivers`) — see `annotate_cancer_drivers` below for the reference source
+    - Includes IntOGen-backed cancer-driver annotation on the regulator sets (`driver_gene_roles`, pan-cancer `tumor_state_only_known_drivers`, and `tumor_state_only_tissue_matched_drivers` — the subset IntOGen called specifically in the queried `cancer_type`) — see `annotate_cancer_drivers` below for the reference source
     - Parameters: gene, cancer_type, cell_type
 
 15. **annotate_cancer_drivers**
     - Tag a list of gene symbols with cancer-driver status from the IntOGen Compendium of Mutational Cancer Driver Genes (release 2024.09.20, CC0)
     - Pure annotation utility — no network query, no LangGraph workflow
-    - Returns `is_driver` and consensus `role` (oncogene / tumor_suppressor / mixed / ambiguous) per gene, plus a `driver_annotation_available` flag
+    - Returns `is_driver` and consensus pan-cancer `role` (oncogene / tumor_suppressor / mixed / ambiguous) per gene, plus a `driver_annotation_available` flag
+    - Optional `cancer_type` (a TCGA code) adds `tissue_matched: bool` per gene — whether IntOGen called it a driver in that specific cancer type, not just pan-cancer. `role` stays pan-cancer. An unknown code returns an error.
     - IntOGen is a mutational positive-selection compendium — absence means "not a positive-selection driver in IntOGen", not "not a cancer driver"
-    - Parameters: genes (list of gene symbols)
+    - Parameters: genes (list of gene symbols), cancer_type (optional TCGA code)
 
 ### Utility Tools
 

@@ -1,643 +1,664 @@
 # IntOGen Compendium of Mutational Cancer Driver Genes - trimmed snapshot
 # Source archive: IntOGen-Drivers-20240920.zip (release 2024.09.20; archive dir 2024-06-18_IntOGen-Drivers)
-# Source file: Compendium_Cancer_Genes.tsv  (columns SYMBOL, ROLE)
+# Source file: Compendium_Cancer_Genes.tsv  (one row per gene x cohort x cancer type; columns SYMBOL, ROLE, CANCER_TYPE)
 # Download: https://www.intogen.org/download   License: CC0 1.0 Universal (public domain)
 # Citation: Martinez-Jimenez et al., A compendium of mutational cancer driver genes, Nature Reviews Cancer 2020 (doi:10.1038/s41568-020-0290-x)
 # Snapshot generated: 2026-09-01
-# role = majority vote of per-cohort IntOGen ROLE calls (Act/LoF/ambiguous) collapsed to one value per gene:
-#   oncogene = Act majority | tumor_suppressor = LoF majority | mixed = exact Act/LoF tie | ambiguous = only ambiguous calls
+#
+# Columns:
+#   symbol           - HGNC gene symbol (uppercase)
+#   role             - consensus mode of action; majority vote of per-cohort IntOGen ROLE
+#                      calls (Act/LoF/ambiguous) collapsed to one value per gene:
+#                      oncogene = Act majority | tumor_suppressor = LoF majority
+#                      mixed = exact Act/LoF tie | ambiguous = only ambiguous calls
+#   n_cancer_types   - breadth: count of distinct IntOGen CANCER_TYPE values (max 86 in
+#                      this release) in which the gene was called a driver. General
+#                      'how pan-cancer is this driver' signal; NOT len(cancer_types).
+#   cancer_types     - semicolon-separated RegNetAgents TCGA codes (subset of the 14) the
+#                      gene was called in, via the IntOGen->TCGA cancer-type mapping.
+#                      PRESENCE ONLY - no per-cancer-type role is stored (per-cohort role
+#                      calls are too noisy: e.g. they flag CCND1, a canonical oncogene, as
+#                      LoF in HNSC). Empty when the gene has no RegNetAgents-mappable type
+#                      (e.g. a driver only in blood cancers). 'role' above stays the sole
+#                      authoritative role regardless of tissue match.
+#   IntOGen->TCGA mapping (2026-09-01): blca<-BLCA,BLADDER | brca<-BRCA |
+#     cesc<-CESC,CEAD | coad<-COAD,COADREAD,READ | hnsc<-HNSC | kirc<-CCRCC,RCC |
+#     lihc<-HCC | luad<-LUAD,NSCLC,LUNG | lusc<-LUSC,NSCLC,LUNG | ov<-OVT |
+#     paad<-PAAD,PANCREAS | prad<-PRAD,PROSTATE | stad<-STAD,STOMACH,EGC | ucec<-UCEC.
+#     NSCLC/LUNG are pooled non-subtype cohorts -> counted for both luad and lusc.
+#     Excluded as distinct tumor biology: NPC, PRCC, CHRCC, LIHB, PANET, UCS, MGCT.
 # 633 genes: {'oncogene': 282, 'tumor_suppressor': 297, 'mixed': 46, 'ambiguous': 8}
-symbol	role
-ABCC4	oncogene
-ABL1	tumor_suppressor
-ABL2	oncogene
-ACKR3	oncogene
-ACSL3	oncogene
-ACSL6	oncogene
-ACSM3	oncogene
-ACVR1	oncogene
-ACVR1B	tumor_suppressor
-ACVR2A	tumor_suppressor
-ADAMTS9	tumor_suppressor
-AFDN	tumor_suppressor
-AFF1	tumor_suppressor
-AFF3	mixed
-AFF4	oncogene
-AJUBA	tumor_suppressor
-AKAP9	oncogene
-AKT1	oncogene
-AKT3	oncogene
-ALDH2	oncogene
-ALK	oncogene
-ALPK1	oncogene
-AMER1	tumor_suppressor
-ANK1	oncogene
-ANKRD11	tumor_suppressor
-APC	tumor_suppressor
-AR	oncogene
-ARAF	oncogene
-ARHGAP35	tumor_suppressor
-ARHGAP5	tumor_suppressor
-ARHGEF10	tumor_suppressor
-ARHGEF10L	tumor_suppressor
-ARHGEF12	mixed
-ARID1A	tumor_suppressor
-ARID1B	tumor_suppressor
-ARID2	tumor_suppressor
-ARNT	tumor_suppressor
-ASXL1	tumor_suppressor
-ASXL2	tumor_suppressor
-ATF7IP	tumor_suppressor
-ATG7	tumor_suppressor
-ATM	tumor_suppressor
-ATP1A1	oncogene
-ATP2B3	mixed
-ATR	tumor_suppressor
-ATRX	tumor_suppressor
-AXIN1	tumor_suppressor
-B2M	tumor_suppressor
-BAP1	tumor_suppressor
-BARD1	oncogene
-BAZ1A	tumor_suppressor
-BCL10	tumor_suppressor
-BCL11A	oncogene
-BCL11B	oncogene
-BCL2	oncogene
-BCL6	mixed
-BCL7A	oncogene
-BCL9	tumor_suppressor
-BCL9L	tumor_suppressor
-BCLAF1	oncogene
-BCOR	tumor_suppressor
-BCORL1	tumor_suppressor
-BCR	oncogene
-BIRC3	oncogene
-BIRC6	tumor_suppressor
-BMP6	oncogene
-BMPR1A	tumor_suppressor
-BRAF	oncogene
-BRCA1	tumor_suppressor
-BRCA2	tumor_suppressor
-BRD4	oncogene
-BRD7	tumor_suppressor
-BTG1	mixed
-BTG2	oncogene
-BTK	oncogene
-CACNA1D	oncogene
-CADM2	oncogene
-CAMTA1	oncogene
-CANT1	oncogene
-CARD11	oncogene
-CASP8	tumor_suppressor
-CASZ1	tumor_suppressor
-CBFB	tumor_suppressor
-CBL	tumor_suppressor
-CBLB	oncogene
-CCAR1	tumor_suppressor
-CCDC6	tumor_suppressor
-CCND1	mixed
-CCND2	tumor_suppressor
-CCND3	oncogene
-CCNT1	ambiguous
-CCR7	tumor_suppressor
-CD209	oncogene
-CD274	tumor_suppressor
-CD58	tumor_suppressor
-CD79B	oncogene
-CDC73	oncogene
-CDH1	tumor_suppressor
-CDH10	oncogene
-CDH11	oncogene
-CDK12	tumor_suppressor
-CDK4	tumor_suppressor
-CDKN1A	tumor_suppressor
-CDKN1B	tumor_suppressor
-CDKN2A	tumor_suppressor
-CDKN2C	oncogene
-CDX2	tumor_suppressor
-CEBPA	mixed
-CEP89	oncogene
-CHD2	tumor_suppressor
-CHD4	oncogene
-CHD7	tumor_suppressor
-CHEK2	oncogene
-CHRDL1	tumor_suppressor
-CIC	tumor_suppressor
-CIITA	oncogene
-CLIP1	tumor_suppressor
-CLTC	oncogene
-CLTCL1	tumor_suppressor
-CMTR2	tumor_suppressor
-CNOT3	oncogene
-CNOT9	oncogene
-CNTRL	tumor_suppressor
-COL1A1	tumor_suppressor
-COL2A1	tumor_suppressor
-COL6A3	tumor_suppressor
-COL6A6	tumor_suppressor
-CPEB3	oncogene
-CREBBP	tumor_suppressor
-CRLF2	tumor_suppressor
-CRTC1	oncogene
-CSF1R	tumor_suppressor
-CSF3R	tumor_suppressor
-CSMD3	oncogene
-CSPG4	oncogene
-CTCF	tumor_suppressor
-CTNNA1	mixed
-CTNNA2	oncogene
-CTNNB1	oncogene
-CTNND2	oncogene
-CUL3	tumor_suppressor
-CUX1	tumor_suppressor
-CXCR4	tumor_suppressor
-CYLD	tumor_suppressor
-CYP2C8	oncogene
-CYSLTR2	mixed
-DAXX	tumor_suppressor
-DCAF12L2	oncogene
-DCC	tumor_suppressor
-DDB2	mixed
-DDR2	tumor_suppressor
-DDX3X	oncogene
-DDX6	mixed
-DGCR8	oncogene
-DHX9	oncogene
-DICER1	tumor_suppressor
-DIS3	oncogene
-DNMT3A	tumor_suppressor
-DOT1L	tumor_suppressor
-DROSHA	tumor_suppressor
-DSP	tumor_suppressor
-DTX1	tumor_suppressor
-DUSP16	tumor_suppressor
-EBF1	mixed
-EFTUD2	oncogene
-EGFR	oncogene
-EGR2	oncogene
-EIF1AX	oncogene
-EIF3E	oncogene
-EIF4A2	tumor_suppressor
-ELF3	mixed
-ELF4	tumor_suppressor
-ELK4	oncogene
-ELL	mixed
-ELN	tumor_suppressor
-EP300	tumor_suppressor
-EPAS1	oncogene
-EPHA2	tumor_suppressor
-EPHA3	oncogene
-EPHA7	tumor_suppressor
-EPS15	oncogene
-ERBB2	oncogene
-ERBB3	oncogene
-ERBB4	tumor_suppressor
-ERCC2	oncogene
-ERCC3	tumor_suppressor
-ERG	oncogene
-ESR1	oncogene
-ESRRA	oncogene
-ETV1	mixed
-ETV4	oncogene
-ETV5	oncogene
-ETV6	oncogene
-EWSR1	mixed
-EZH2	oncogene
-FAM135B	tumor_suppressor
-FAM174B	oncogene
-FANCA	oncogene
-FAS	tumor_suppressor
-FAT1	tumor_suppressor
-FAT2	tumor_suppressor
-FAT3	oncogene
-FAT4	oncogene
-FBLN2	tumor_suppressor
-FBN2	tumor_suppressor
-FBXO11	tumor_suppressor
-FBXW7	tumor_suppressor
-FCGR2B	tumor_suppressor
-FCRL4	tumor_suppressor
-FGD1	oncogene
-FGD5	oncogene
-FGFR1	oncogene
-FGFR2	oncogene
-FGFR3	oncogene
-FGFR4	tumor_suppressor
-FHIT	oncogene
-FLCN	tumor_suppressor
-FLG	oncogene
-FLT3	oncogene
-FLT4	tumor_suppressor
-FMN2	tumor_suppressor
-FNDC3B	tumor_suppressor
-FOXA1	oncogene
-FOXA2	tumor_suppressor
-FOXL2	oncogene
-FOXO1	oncogene
-FOXO3	oncogene
-FOXP1	tumor_suppressor
-FUBP1	mixed
-FUS	ambiguous
-GATA2	oncogene
-GATA3	mixed
-GLI1	tumor_suppressor
-GMPS	oncogene
-GNA11	oncogene
-GNA13	tumor_suppressor
-GNAI2	oncogene
-GNAQ	oncogene
-GNAS	oncogene
-GPAA1	oncogene
-GPC5	mixed
-GRIN2A	oncogene
-GRM3	tumor_suppressor
-GSK3B	tumor_suppressor
-GTF2I	oncogene
-H3-3A	oncogene
-H3C2	oncogene
-H4C9	oncogene
-HCAR3	oncogene
-HDAC4	oncogene
-HGF	oncogene
-HIF1A	oncogene
-HIP1	tumor_suppressor
-HLA-A	tumor_suppressor
-HLA-B	tumor_suppressor
-HLA-C	tumor_suppressor
-HLA-DQA1	oncogene
-HNF1A	tumor_suppressor
-HNRNPA2B1	oncogene
-HOXC13	tumor_suppressor
-HRAS	oncogene
-HSP90AA1	tumor_suppressor
-HSP90AB1	tumor_suppressor
-HSPG2	oncogene
-ID3	tumor_suppressor
-IDH1	oncogene
-IDH2	oncogene
-IKBKB	oncogene
-IKZF1	oncogene
-IKZF3	oncogene
-IL6ST	oncogene
-IL7R	oncogene
-ING1	tumor_suppressor
-INPPL1	tumor_suppressor
-IRAK1	tumor_suppressor
-IRF1	tumor_suppressor
-IRF4	oncogene
-IRS4	mixed
-ITGAV	tumor_suppressor
-JAK1	tumor_suppressor
-JAK2	mixed
-JAK3	oncogene
-KAT6A	tumor_suppressor
-KAT6B	tumor_suppressor
-KAT7	tumor_suppressor
-KDM3B	tumor_suppressor
-KDM5A	oncogene
-KDM5C	tumor_suppressor
-KDM6A	tumor_suppressor
-KDR	oncogene
-KEAP1	mixed
-KIF5B	oncogene
-KIT	oncogene
-KLF4	oncogene
-KLF5	oncogene
-KLF6	tumor_suppressor
-KLHL6	mixed
-KMT2A	tumor_suppressor
-KMT2B	tumor_suppressor
-KMT2C	tumor_suppressor
-KMT2D	tumor_suppressor
-KMT5A	oncogene
-KNL1	tumor_suppressor
-KNSTRN	oncogene
-KRAS	oncogene
-LATS1	tumor_suppressor
-LATS2	tumor_suppressor
-LDB1	tumor_suppressor
-LEF1	tumor_suppressor
-LIFR	oncogene
-LPA	tumor_suppressor
-LRIG3	tumor_suppressor
-LRP1B	oncogene
-LSM14A	oncogene
-LYN	oncogene
-LZTR1	tumor_suppressor
-MACC1	tumor_suppressor
-MAF	oncogene
-MALT1	oncogene
-MAML2	tumor_suppressor
-MAP2K1	oncogene
-MAP2K4	tumor_suppressor
-MAP2K7	tumor_suppressor
-MAP3K1	tumor_suppressor
-MAPK1	oncogene
-MARK2	tumor_suppressor
-MAX	oncogene
-MB21D2	tumor_suppressor
-MCM7	tumor_suppressor
-MDGA2	oncogene
-MDM2	oncogene
-MECOM	mixed
-MED12	oncogene
-MED23	tumor_suppressor
-MEF2B	tumor_suppressor
-MEN1	tumor_suppressor
-MET	oncogene
-MGA	tumor_suppressor
-MIB2	tumor_suppressor
-MLLT1	oncogene
-MLLT3	ambiguous
-MLLT6	mixed
-MPL	ambiguous
-MSI2	tumor_suppressor
-MSN	tumor_suppressor
-MTOR	oncogene
-MUC6	oncogene
-MYC	mixed
-MYCN	oncogene
-MYD88	oncogene
-MYEOV	oncogene
-MYH11	mixed
-MYH9	tumor_suppressor
-MYO5A	oncogene
-N4BP2	tumor_suppressor
-NACA	oncogene
-NBEA	tumor_suppressor
-NCAPH	oncogene
-NCKIPSD	tumor_suppressor
-NCOA1	ambiguous
-NCOA2	mixed
-NCOR1	tumor_suppressor
-NCOR2	tumor_suppressor
-NF1	tumor_suppressor
-NF2	tumor_suppressor
-NFATC2	mixed
-NFE2L2	oncogene
-NFKB2	mixed
-NFKBIA	tumor_suppressor
-NFKBIE	tumor_suppressor
-NIN	tumor_suppressor
-NIPBL	tumor_suppressor
-NKTR	oncogene
-NKX2-1	tumor_suppressor
-NOTCH1	tumor_suppressor
-NOTCH2	tumor_suppressor
-NPM1	oncogene
-NPRL2	tumor_suppressor
-NRAS	oncogene
-NRG1	oncogene
-NRK	tumor_suppressor
-NSD1	tumor_suppressor
-NSD2	oncogene
-NSD3	tumor_suppressor
-NT5C3A	oncogene
-NTRK1	oncogene
-NTRK2	oncogene
-NTRK3	mixed
-NUMA1	tumor_suppressor
-NUP214	oncogene
-NUP98	oncogene
-NUTM1	tumor_suppressor
-NUTM2D	oncogene
-NVL	oncogene
-NXF1	tumor_suppressor
-P2RY8	oncogene
-PABPC1	oncogene
-PALB2	tumor_suppressor
-PARP4	oncogene
-PAX5	mixed
-PBRM1	tumor_suppressor
-PCBP1	oncogene
-PCM1	tumor_suppressor
-PCMTD1	tumor_suppressor
-PDCD1LG2	oncogene
-PDGFRA	oncogene
-PDGFRB	oncogene
-PDZD2	tumor_suppressor
-PEG3	tumor_suppressor
-PER3	oncogene
-PHF6	tumor_suppressor
-PI4KA	oncogene
-PICALM	tumor_suppressor
-PIK3CA	oncogene
-PIK3CB	oncogene
-PIK3R1	tumor_suppressor
-PIM1	mixed
-PLAG1	oncogene
-PLCG1	oncogene
-PLXNC1	tumor_suppressor
-PML	tumor_suppressor
-PMS2	ambiguous
-POLD1	tumor_suppressor
-POLE	oncogene
-POLQ	tumor_suppressor
-POT1	oncogene
-POU2F2	oncogene
-PPM1D	tumor_suppressor
-PPP2R1A	oncogene
-PPP3CA	tumor_suppressor
-PPP6C	oncogene
-PRDM1	tumor_suppressor
-PRDM16	ambiguous
-PRDM2	tumor_suppressor
-PREX2	oncogene
-PRKAR1A	mixed
-PRKCB	oncogene
-PRKCD	tumor_suppressor
-PRKD1	oncogene
-PRKD2	oncogene
-PRUNE2	tumor_suppressor
-PSIP1	tumor_suppressor
-PSPC1	oncogene
-PTCH1	tumor_suppressor
-PTEN	tumor_suppressor
-PTK6	oncogene
-PTMA	oncogene
-PTPN11	oncogene
-PTPN13	tumor_suppressor
-PTPN14	tumor_suppressor
-PTPN3	tumor_suppressor
-PTPN6	tumor_suppressor
-PTPRB	tumor_suppressor
-PTPRC	tumor_suppressor
-PTPRD	oncogene
-PTPRK	tumor_suppressor
-PTPRT	oncogene
-PWWP2A	tumor_suppressor
-QKI	mixed
-RAC1	oncogene
-RAD21	tumor_suppressor
-RAD50	oncogene
-RAF1	oncogene
-RANBP2	tumor_suppressor
-RAP1B	tumor_suppressor
-RAP1GDS1	mixed
-RASA1	tumor_suppressor
-RASA2	tumor_suppressor
-RB1	tumor_suppressor
-RBFOX1	tumor_suppressor
-RBM10	tumor_suppressor
-RBM15	tumor_suppressor
-RBM38	tumor_suppressor
-RBM39	oncogene
-RECQL4	tumor_suppressor
-RELA	tumor_suppressor
-REST	tumor_suppressor
-RET	oncogene
-RGPD3	tumor_suppressor
-RGS7	oncogene
-RHOA	oncogene
-RHPN2	tumor_suppressor
-RIPK1	tumor_suppressor
-RNF213	tumor_suppressor
-RNF43	tumor_suppressor
-RNF6	tumor_suppressor
-ROBO2	mixed
-ROS1	tumor_suppressor
-RPL10	oncogene
-RPL22	tumor_suppressor
-RPL5	tumor_suppressor
-RPS3A	oncogene
-RPS6KA3	tumor_suppressor
-RRAGC	oncogene
-RRAS2	oncogene
-RRN3	oncogene
-RSPO2	oncogene
-RUNX1	tumor_suppressor
-RUNX1T1	oncogene
-RXRA	oncogene
-SALL4	oncogene
-SAMHD1	tumor_suppressor
-SDCBP	tumor_suppressor
-SDHA	oncogene
-SETBP1	oncogene
-SETD1B	tumor_suppressor
-SETD2	tumor_suppressor
-SETDB1	oncogene
-SF3B1	oncogene
-SGK1	oncogene
-SH2B3	oncogene
-SHTN1	oncogene
-SIN3A	tumor_suppressor
-SIRPA	oncogene
-SIX1	oncogene
-SLC34A2	oncogene
-SMAD2	tumor_suppressor
-SMAD3	tumor_suppressor
-SMAD4	tumor_suppressor
-SMARCA2	oncogene
-SMARCA4	oncogene
-SMARCB1	oncogene
-SMARCD1	tumor_suppressor
-SMC1A	oncogene
-SMO	oncogene
-SND1	oncogene
-SNX29	mixed
-SOCS1	oncogene
-SOS1	oncogene
-SOX17	oncogene
-SOX21	tumor_suppressor
-SOX9	tumor_suppressor
-SP140	tumor_suppressor
-SPEN	tumor_suppressor
-SPOP	oncogene
-SRGAP3	oncogene
-SRSF2	oncogene
-STAG2	tumor_suppressor
-STAT3	oncogene
-STAT5B	oncogene
-STAT6	oncogene
-STK11	tumor_suppressor
-SUFU	tumor_suppressor
-SUSD2	oncogene
-SUZ12	mixed
-TAF15	tumor_suppressor
-TAF1L	tumor_suppressor
-TAL1	ambiguous
-TAL2	oncogene
-TBL1XR1	oncogene
-TBX3	mixed
-TCF12	tumor_suppressor
-TCF4	tumor_suppressor
-TCF7L2	tumor_suppressor
-TCL1A	tumor_suppressor
-TEC	oncogene
-TENT5C	tumor_suppressor
-TERT	oncogene
-TET1	tumor_suppressor
-TET2	tumor_suppressor
-TFAP4	oncogene
-TFG	oncogene
-TFRC	mixed
-TGFBR1	tumor_suppressor
-TGFBR2	tumor_suppressor
-TGIF1	tumor_suppressor
-THRAP3	tumor_suppressor
-TMPRSS2	oncogene
-TMSB4X	tumor_suppressor
-TNC	oncogene
-TNFAIP3	tumor_suppressor
-TNFRSF14	tumor_suppressor
-TOP1	mixed
-TOP2A	oncogene
-TP53	tumor_suppressor
-TP63	tumor_suppressor
-TPR	mixed
-TRAF3	tumor_suppressor
-TRAF7	oncogene
-TRIM24	oncogene
-TRIM33	tumor_suppressor
-TRIM49C	oncogene
-TRIP11	tumor_suppressor
-TRMT12	oncogene
-TRRAP	oncogene
-TSC1	tumor_suppressor
-TSC2	tumor_suppressor
-TSHR	mixed
-U2AF1	oncogene
-U2AF2	oncogene
-UBE2A	tumor_suppressor
-UBR5	tumor_suppressor
-UBXN11	oncogene
-USP6	oncogene
-USP7	tumor_suppressor
-USP8	oncogene
-USP9X	tumor_suppressor
-VAV1	tumor_suppressor
-VHL	tumor_suppressor
-WAS	oncogene
-WNK2	oncogene
-WNT1	tumor_suppressor
-WT1	tumor_suppressor
-WWTR1	oncogene
-XPO1	oncogene
-ZBTB16	mixed
-ZBTB20	tumor_suppressor
-ZBTB48	oncogene
-ZBTB7B	tumor_suppressor
-ZCCHC8	oncogene
-ZCRB1	oncogene
-ZEB1	oncogene
-ZFHX3	tumor_suppressor
-ZFP36L1	mixed
-ZMYM2	oncogene
-ZMYM3	tumor_suppressor
-ZNF208	oncogene
-ZNF274	oncogene
-ZNF331	oncogene
-ZNF395	oncogene
-ZNF429	tumor_suppressor
-ZNF521	oncogene
-ZNF626	oncogene
-ZNF680	oncogene
-ZNF721	oncogene
-ZNF750	tumor_suppressor
-ZNF780A	oncogene
-ZNF814	oncogene
-ZNF90	oncogene
-ZNF93	oncogene
-ZNRF3	tumor_suppressor
-ZRSR2	tumor_suppressor
-ZXDB	tumor_suppressor
+symbol	role	n_cancer_types	cancer_types
+ABCC4	oncogene	1	
+ABL1	tumor_suppressor	1	ucec
+ABL2	oncogene	2	brca;ucec
+ACKR3	oncogene	1	ov
+ACSL3	oncogene	1	
+ACSL6	oncogene	1	
+ACSM3	oncogene	1	
+ACVR1	oncogene	3	hnsc;ucec
+ACVR1B	tumor_suppressor	5	brca;coad;luad;paad
+ACVR2A	tumor_suppressor	7	coad;lihc;paad;prad;stad;ucec
+ADAMTS9	tumor_suppressor	1	
+AFDN	tumor_suppressor	2	brca;coad
+AFF1	tumor_suppressor	1	
+AFF3	mixed	2	luad
+AFF4	oncogene	1	lihc
+AJUBA	tumor_suppressor	1	hnsc
+AKAP9	oncogene	10	blca;brca;hnsc;kirc;lihc;stad;ucec
+AKT1	oncogene	9	brca;cesc;coad;prad;ucec
+AKT3	oncogene	2	prad
+ALDH2	oncogene	1	
+ALK	oncogene	6	brca;lihc;luad;lusc;prad
+ALPK1	oncogene	1	paad
+AMER1	tumor_suppressor	4	coad
+ANK1	oncogene	6	coad;luad;prad
+ANKRD11	tumor_suppressor	1	
+APC	tumor_suppressor	22	coad;lihc;luad;lusc;prad;stad
+AR	oncogene	14	brca;coad;luad;lusc;prad;stad
+ARAF	oncogene	3	luad
+ARHGAP35	tumor_suppressor	9	blca;brca;kirc;lusc;ov;ucec
+ARHGAP5	tumor_suppressor	5	blca;paad
+ARHGEF10	tumor_suppressor	4	blca;luad;lusc
+ARHGEF10L	tumor_suppressor	2	kirc
+ARHGEF12	mixed	2	brca;kirc
+ARID1A	tumor_suppressor	38	blca;brca;cesc;coad;kirc;lihc;luad;lusc;ov;paad;prad;stad;ucec
+ARID1B	tumor_suppressor	20	blca;brca;cesc;coad;kirc;lihc;lusc;paad;prad;stad;ucec
+ARID2	tumor_suppressor	21	hnsc;lihc;luad;lusc;ov;paad;stad
+ARNT	tumor_suppressor	1	
+ASXL1	tumor_suppressor	14	blca;brca;coad;hnsc;kirc;prad;stad
+ASXL2	tumor_suppressor	2	blca
+ATF7IP	tumor_suppressor	2	luad;ucec
+ATG7	tumor_suppressor	1	kirc
+ATM	tumor_suppressor	24	blca;brca;coad;kirc;lihc;luad;lusc;paad;prad;stad;ucec
+ATP1A1	oncogene	1	brca
+ATP2B3	mixed	1	brca
+ATR	tumor_suppressor	4	luad;lusc;stad
+ATRX	tumor_suppressor	14	ov
+AXIN1	tumor_suppressor	3	lihc
+B2M	tumor_suppressor	7	cesc;hnsc;luad;lusc
+BAP1	tumor_suppressor	14	brca;cesc;kirc;lihc;paad;stad
+BARD1	oncogene	1	prad
+BAZ1A	tumor_suppressor	1	
+BCL10	tumor_suppressor	2	
+BCL11A	oncogene	1	
+BCL11B	oncogene	3	
+BCL2	oncogene	3	
+BCL6	mixed	2	
+BCL7A	oncogene	4	
+BCL9	tumor_suppressor	3	coad;stad
+BCL9L	tumor_suppressor	2	coad
+BCLAF1	oncogene	5	prad;stad
+BCOR	tumor_suppressor	18	coad;luad;paad;stad;ucec
+BCORL1	tumor_suppressor	5	coad;paad
+BCR	oncogene	6	lusc
+BIRC3	oncogene	2	lusc
+BIRC6	tumor_suppressor	15	blca;brca;coad;hnsc;kirc;lihc;luad;ucec
+BMP6	oncogene	1	prad
+BMPR1A	tumor_suppressor	1	stad
+BRAF	oncogene	28	blca;brca;coad;luad;lusc;ov;prad;stad;ucec
+BRCA1	tumor_suppressor	4	blca;brca;ov
+BRCA2	tumor_suppressor	14	blca;brca;cesc;hnsc;kirc;lihc;lusc;ov;paad;prad
+BRD4	oncogene	4	blca;hnsc;kirc;prad
+BRD7	tumor_suppressor	2	lihc
+BTG1	mixed	4	
+BTG2	oncogene	4	
+BTK	oncogene	1	
+CACNA1D	oncogene	5	brca;kirc;lihc;stad
+CADM2	oncogene	1	
+CAMTA1	oncogene	2	prad
+CANT1	oncogene	1	
+CARD11	oncogene	7	coad;lihc;ov
+CASP8	tumor_suppressor	11	blca;brca;cesc;hnsc;stad
+CASZ1	tumor_suppressor	1	prad
+CBFB	tumor_suppressor	1	brca
+CBL	tumor_suppressor	3	
+CBLB	oncogene	2	luad;lusc
+CCAR1	tumor_suppressor	1	
+CCDC6	tumor_suppressor	1	
+CCND1	mixed	3	hnsc;ucec
+CCND2	tumor_suppressor	2	
+CCND3	oncogene	4	
+CCNT1	ambiguous	1	
+CCR7	tumor_suppressor	1	
+CD209	oncogene	3	brca;lusc;stad
+CD274	tumor_suppressor	1	
+CD58	tumor_suppressor	2	
+CD79B	oncogene	3	
+CDC73	oncogene	1	ucec
+CDH1	tumor_suppressor	6	blca;brca;stad
+CDH10	oncogene	4	luad;lusc;paad;ucec
+CDH11	oncogene	6	coad;lihc;lusc;stad
+CDK12	tumor_suppressor	9	blca;cesc;kirc;ov;prad;stad
+CDK4	tumor_suppressor	1	
+CDKN1A	tumor_suppressor	3	blca;lihc
+CDKN1B	tumor_suppressor	5	brca;lihc;prad
+CDKN2A	tumor_suppressor	29	blca;brca;coad;hnsc;kirc;lihc;luad;lusc;paad;stad
+CDKN2C	oncogene	3	
+CDX2	tumor_suppressor	1	
+CEBPA	mixed	1	
+CEP89	oncogene	1	coad
+CHD2	tumor_suppressor	4	blca
+CHD4	oncogene	7	coad;hnsc;kirc;ucec
+CHD7	tumor_suppressor	1	
+CHEK2	oncogene	1	brca
+CHRDL1	tumor_suppressor	1	
+CIC	tumor_suppressor	3	lihc;luad
+CIITA	oncogene	2	hnsc
+CLIP1	tumor_suppressor	2	cesc
+CLTC	oncogene	5	brca;kirc;lihc
+CLTCL1	tumor_suppressor	2	lihc;prad
+CMTR2	tumor_suppressor	1	luad
+CNOT3	oncogene	2	prad
+CNOT9	oncogene	2	
+CNTRL	tumor_suppressor	3	
+COL1A1	tumor_suppressor	5	paad
+COL2A1	tumor_suppressor	1	
+COL6A3	tumor_suppressor	1	
+COL6A6	tumor_suppressor	1	paad
+CPEB3	oncogene	1	
+CREBBP	tumor_suppressor	25	blca;brca;hnsc;kirc;lihc;luad;lusc;ov;paad
+CRLF2	tumor_suppressor	1	luad
+CRTC1	oncogene	1	
+CSF1R	tumor_suppressor	2	brca
+CSF3R	tumor_suppressor	3	blca;hnsc
+CSMD3	oncogene	18	blca;brca;coad;hnsc;lihc;luad;lusc;ov;paad;prad;stad;ucec
+CSPG4	oncogene	1	brca
+CTCF	tumor_suppressor	4	brca;hnsc;ucec
+CTNNA1	mixed	2	cesc;coad
+CTNNA2	oncogene	7	hnsc;lihc;luad;paad;prad
+CTNNB1	oncogene	20	coad;lihc;luad;lusc;ov;prad;stad;ucec
+CTNND2	oncogene	6	luad;lusc;ov;paad
+CUL3	tumor_suppressor	3	kirc;lusc
+CUX1	tumor_suppressor	7	brca;luad;lusc;paad
+CXCR4	tumor_suppressor	4	paad
+CYLD	tumor_suppressor	11	blca;brca;coad;hnsc;kirc;luad;lusc;prad;stad
+CYP2C8	oncogene	2	
+CYSLTR2	mixed	2	cesc
+DAXX	tumor_suppressor	3	paad
+DCAF12L2	oncogene	4	coad;luad;prad
+DCC	tumor_suppressor	5	coad;lihc;paad;prad
+DDB2	mixed	2	blca
+DDR2	tumor_suppressor	1	lihc
+DDX3X	oncogene	12	brca;hnsc
+DDX6	mixed	2	
+DGCR8	oncogene	4	
+DHX9	oncogene	1	lihc
+DICER1	tumor_suppressor	4	coad;ucec
+DIS3	oncogene	1	
+DNMT3A	tumor_suppressor	9	brca;kirc;lihc
+DOT1L	tumor_suppressor	2	
+DROSHA	tumor_suppressor	3	lusc;paad
+DSP	tumor_suppressor	1	
+DTX1	tumor_suppressor	1	
+DUSP16	tumor_suppressor	1	coad
+EBF1	mixed	4	lusc
+EFTUD2	oncogene	1	
+EGFR	oncogene	13	brca;coad;luad;lusc
+EGR2	oncogene	1	
+EIF1AX	oncogene	6	luad;lusc;prad;ucec
+EIF3E	oncogene	1	cesc
+EIF4A2	tumor_suppressor	1	brca
+ELF3	mixed	3	blca;coad
+ELF4	tumor_suppressor	2	
+ELK4	oncogene	1	hnsc
+ELL	mixed	2	ov
+ELN	tumor_suppressor	2	brca
+EP300	tumor_suppressor	19	blca;brca;cesc;coad;hnsc;lihc;luad;lusc;stad
+EPAS1	oncogene	1	
+EPHA2	tumor_suppressor	1	
+EPHA3	oncogene	5	brca;prad;stad
+EPHA7	tumor_suppressor	3	coad;lihc;luad
+EPS15	oncogene	1	prad
+ERBB2	oncogene	16	blca;brca;cesc;coad;luad;lusc;ov;stad;ucec
+ERBB3	oncogene	11	blca;brca;cesc;coad;prad;stad;ucec
+ERBB4	tumor_suppressor	10	blca;brca;coad;kirc;lihc;prad;stad
+ERCC2	oncogene	1	blca
+ERCC3	tumor_suppressor	2	cesc
+ERG	oncogene	1	
+ESR1	oncogene	4	brca;lusc;ucec
+ESRRA	oncogene	1	
+ETV1	mixed	2	brca;coad
+ETV4	oncogene	1	
+ETV5	oncogene	1	
+ETV6	oncogene	3	blca
+EWSR1	mixed	2	
+EZH2	oncogene	6	
+FAM135B	tumor_suppressor	6	hnsc;lusc;paad;ucec
+FAM174B	oncogene	3	prad
+FANCA	oncogene	1	prad
+FAS	tumor_suppressor	3	cesc
+FAT1	tumor_suppressor	28	blca;brca;cesc;hnsc;kirc;lusc;ov;paad;prad;ucec
+FAT2	tumor_suppressor	1	
+FAT3	oncogene	21	brca;coad;hnsc;kirc;lusc;paad;prad;stad
+FAT4	oncogene	24	brca;coad;lihc;luad;prad;stad
+FBLN2	tumor_suppressor	7	blca;hnsc;lihc;paad;prad
+FBN2	tumor_suppressor	1	
+FBXO11	tumor_suppressor	3	
+FBXW7	tumor_suppressor	22	blca;brca;cesc;coad;hnsc;luad;lusc;paad;stad;ucec
+FCGR2B	tumor_suppressor	1	
+FCRL4	tumor_suppressor	1	paad
+FGD1	oncogene	1	prad
+FGD5	oncogene	1	
+FGFR1	oncogene	7	blca;ov;paad
+FGFR2	oncogene	5	brca;lusc;ucec
+FGFR3	oncogene	7	blca;hnsc;lusc
+FGFR4	tumor_suppressor	2	ucec
+FHIT	oncogene	1	
+FLCN	tumor_suppressor	1	luad
+FLG	oncogene	2	
+FLT3	oncogene	2	
+FLT4	tumor_suppressor	10	blca;kirc;lihc;luad;lusc;ucec
+FMN2	tumor_suppressor	1	paad
+FNDC3B	tumor_suppressor	1	
+FOXA1	oncogene	2	brca;prad
+FOXA2	tumor_suppressor	1	ucec
+FOXL2	oncogene	1	ov
+FOXO1	oncogene	4	lusc
+FOXO3	oncogene	2	
+FOXP1	tumor_suppressor	2	brca;prad
+FUBP1	mixed	3	brca
+FUS	ambiguous	1	lihc
+GATA2	oncogene	2	hnsc
+GATA3	mixed	2	brca
+GLI1	tumor_suppressor	1	
+GMPS	oncogene	1	lihc
+GNA11	oncogene	2	
+GNA13	tumor_suppressor	3	blca
+GNAI2	oncogene	1	
+GNAQ	oncogene	4	lihc;luad;lusc
+GNAS	oncogene	8	brca;coad;lihc;luad;paad
+GPAA1	oncogene	1	blca
+GPC5	mixed	2	ov
+GRIN2A	oncogene	5	blca;coad;paad
+GRM3	tumor_suppressor	3	
+GSK3B	tumor_suppressor	1	stad
+GTF2I	oncogene	1	
+H3-3A	oncogene	2	
+H3C2	oncogene	4	blca;brca
+H4C9	oncogene	1	
+HCAR3	oncogene	1	
+HDAC4	oncogene	1	
+HGF	oncogene	1	
+HIF1A	oncogene	1	
+HIP1	tumor_suppressor	3	
+HLA-A	tumor_suppressor	14	blca;cesc;coad;hnsc;lusc
+HLA-B	tumor_suppressor	5	cesc;hnsc
+HLA-C	tumor_suppressor	1	
+HLA-DQA1	oncogene	1	
+HNF1A	tumor_suppressor	2	lihc
+HNRNPA2B1	oncogene	1	lihc
+HOXC13	tumor_suppressor	1	brca
+HRAS	oncogene	14	blca;brca;coad;hnsc;lusc;prad
+HSP90AA1	tumor_suppressor	1	brca
+HSP90AB1	tumor_suppressor	1	
+HSPG2	oncogene	1	blca
+ID3	tumor_suppressor	4	
+IDH1	oncogene	15	lihc;prad
+IDH2	oncogene	5	blca
+IKBKB	oncogene	1	
+IKZF1	oncogene	3	
+IKZF3	oncogene	3	
+IL6ST	oncogene	3	lihc;prad
+IL7R	oncogene	4	lihc;stad
+ING1	tumor_suppressor	2	coad;ucec
+INPPL1	tumor_suppressor	1	ucec
+IRAK1	tumor_suppressor	1	
+IRF1	tumor_suppressor	1	
+IRF4	oncogene	5	
+IRS4	mixed	2	blca;paad
+ITGAV	tumor_suppressor	1	stad
+JAK1	tumor_suppressor	8	brca;ov;prad;stad;ucec
+JAK2	mixed	5	blca;brca;luad;lusc
+JAK3	oncogene	1	
+KAT6A	tumor_suppressor	1	
+KAT6B	tumor_suppressor	5	brca;prad
+KAT7	tumor_suppressor	1	blca
+KDM3B	tumor_suppressor	2	
+KDM5A	oncogene	1	
+KDM5C	tumor_suppressor	7	hnsc;kirc;luad;ov;paad
+KDM6A	tumor_suppressor	18	blca;brca;hnsc;lihc;lusc;paad;prad;stad
+KDR	oncogene	7	brca;luad;paad
+KEAP1	mixed	6	lihc;luad;lusc
+KIF5B	oncogene	1	hnsc
+KIT	oncogene	4	
+KLF4	oncogene	3	brca;lihc
+KLF5	oncogene	3	blca;cesc;lusc
+KLF6	tumor_suppressor	1	
+KLHL6	mixed	2	
+KMT2A	tumor_suppressor	9	blca;lihc;ov;paad;prad
+KMT2B	tumor_suppressor	2	lihc
+KMT2C	tumor_suppressor	39	blca;brca;cesc;coad;hnsc;kirc;lihc;luad;lusc;ov;paad;prad;stad;ucec
+KMT2D	tumor_suppressor	46	blca;brca;cesc;hnsc;kirc;lihc;luad;lusc;ov;paad;prad;stad;ucec
+KMT5A	oncogene	1	brca
+KNL1	tumor_suppressor	3	lihc
+KNSTRN	oncogene	1	
+KRAS	oncogene	36	blca;brca;cesc;coad;lihc;luad;lusc;ov;paad;prad;stad;ucec
+LATS1	tumor_suppressor	6	brca;cesc;ov;paad
+LATS2	tumor_suppressor	3	lusc
+LDB1	tumor_suppressor	2	
+LEF1	tumor_suppressor	1	lihc
+LIFR	oncogene	2	
+LPA	tumor_suppressor	1	paad
+LRIG3	tumor_suppressor	1	blca
+LRP1B	oncogene	40	brca;coad;hnsc;kirc;lihc;luad;lusc;ov;paad;prad;stad
+LSM14A	oncogene	1	ucec
+LYN	oncogene	2	
+LZTR1	tumor_suppressor	4	lihc;prad;ucec
+MACC1	tumor_suppressor	1	luad
+MAF	oncogene	1	
+MALT1	oncogene	1	
+MAML2	tumor_suppressor	3	lusc
+MAP2K1	oncogene	5	luad;lusc
+MAP2K4	tumor_suppressor	8	brca;coad;lihc;paad;stad
+MAP2K7	tumor_suppressor	1	stad
+MAP3K1	tumor_suppressor	10	brca;cesc;coad;kirc;lihc;ucec
+MAPK1	oncogene	4	cesc;hnsc;lihc
+MARK2	tumor_suppressor	1	paad
+MAX	oncogene	8	brca;ucec
+MB21D2	tumor_suppressor	4	hnsc;lusc
+MCM7	tumor_suppressor	1	cesc
+MDGA2	oncogene	1	
+MDM2	oncogene	1	
+MECOM	mixed	4	brca;prad;ucec
+MED12	oncogene	9	cesc;prad;ucec
+MED23	tumor_suppressor	1	brca
+MEF2B	tumor_suppressor	3	
+MEN1	tumor_suppressor	8	blca;brca;lihc;luad;lusc;paad
+MET	oncogene	7	kirc;luad;lusc
+MGA	tumor_suppressor	4	luad;prad
+MIB2	tumor_suppressor	1	hnsc
+MLLT1	oncogene	1	
+MLLT3	ambiguous	1	
+MLLT6	mixed	2	
+MPL	ambiguous	1	hnsc
+MSI2	tumor_suppressor	1	
+MSN	tumor_suppressor	4	kirc
+MTOR	oncogene	11	blca;brca;coad;kirc;lihc;ucec
+MUC6	oncogene	3	lihc;lusc
+MYC	mixed	4	
+MYCN	oncogene	7	ucec
+MYD88	oncogene	4	
+MYEOV	oncogene	1	prad
+MYH11	mixed	10	brca;hnsc;prad
+MYH9	tumor_suppressor	10	blca;brca;coad;hnsc;luad;lusc;ov;stad
+MYO5A	oncogene	4	brca;lihc;luad;lusc
+N4BP2	tumor_suppressor	3	lihc
+NACA	oncogene	3	blca
+NBEA	tumor_suppressor	11	brca;cesc;coad;lihc;luad;ov;stad
+NCAPH	oncogene	1	
+NCKIPSD	tumor_suppressor	1	ucec
+NCOA1	ambiguous	1	paad
+NCOA2	mixed	4	luad;lusc;stad
+NCOR1	tumor_suppressor	13	blca;brca;hnsc;luad;prad
+NCOR2	tumor_suppressor	8	brca;coad;lihc;prad
+NF1	tumor_suppressor	33	blca;brca;coad;hnsc;kirc;lihc;luad;lusc;ov;stad
+NF2	tumor_suppressor	10	cesc;hnsc;kirc;lihc;ov;paad
+NFATC2	mixed	2	coad;paad
+NFE2L2	oncogene	9	blca;cesc;hnsc;lihc;luad;lusc;ucec
+NFKB2	mixed	2	
+NFKBIA	tumor_suppressor	4	
+NFKBIE	tumor_suppressor	5	luad
+NIN	tumor_suppressor	3	coad;stad
+NIPBL	tumor_suppressor	2	luad;lusc
+NKTR	oncogene	1	
+NKX2-1	tumor_suppressor	1	
+NOTCH1	tumor_suppressor	26	blca;brca;cesc;coad;hnsc;luad;lusc;ov
+NOTCH2	tumor_suppressor	13	blca;brca;hnsc;prad
+NPM1	oncogene	1	lihc
+NPRL2	tumor_suppressor	1	paad
+NRAS	oncogene	22	coad;lihc;luad;lusc;ov;prad;ucec
+NRG1	oncogene	3	stad
+NRK	tumor_suppressor	1	lusc
+NSD1	tumor_suppressor	11	blca;cesc;hnsc;lusc;stad;ucec
+NSD2	oncogene	4	
+NSD3	tumor_suppressor	1	lusc
+NT5C3A	oncogene	1	
+NTRK1	oncogene	1	brca
+NTRK2	oncogene	3	
+NTRK3	mixed	2	stad
+NUMA1	tumor_suppressor	2	brca
+NUP214	oncogene	2	
+NUP98	oncogene	1	lusc
+NUTM1	tumor_suppressor	2	ov
+NUTM2D	oncogene	1	
+NVL	oncogene	1	
+NXF1	tumor_suppressor	1	
+P2RY8	oncogene	4	
+PABPC1	oncogene	7	lihc;lusc
+PALB2	tumor_suppressor	1	ov
+PARP4	oncogene	3	coad;luad
+PAX5	mixed	2	prad
+PBRM1	tumor_suppressor	15	cesc;coad;kirc;luad;lusc;stad;ucec
+PCBP1	oncogene	5	coad
+PCM1	tumor_suppressor	1	
+PCMTD1	tumor_suppressor	1	
+PDCD1LG2	oncogene	2	
+PDGFRA	oncogene	7	lusc
+PDGFRB	oncogene	3	
+PDZD2	tumor_suppressor	1	
+PEG3	tumor_suppressor	1	paad
+PER3	oncogene	1	luad
+PHF6	tumor_suppressor	4	luad
+PI4KA	oncogene	1	
+PICALM	tumor_suppressor	1	
+PIK3CA	oncogene	47	blca;brca;cesc;coad;hnsc;kirc;lihc;luad;lusc;ov;paad;prad;stad;ucec
+PIK3CB	oncogene	3	blca;prad
+PIK3R1	tumor_suppressor	15	brca;coad;hnsc;lusc;ov;prad;stad;ucec
+PIM1	mixed	3	
+PLAG1	oncogene	2	brca
+PLCG1	oncogene	4	kirc
+PLXNC1	tumor_suppressor	1	
+PML	tumor_suppressor	1	luad;lusc
+PMS2	ambiguous	1	lihc
+POLD1	tumor_suppressor	2	brca
+POLE	oncogene	2	blca
+POLQ	tumor_suppressor	3	lusc;ucec
+POT1	oncogene	5	
+POU2F2	oncogene	3	
+PPM1D	tumor_suppressor	5	brca;luad
+PPP2R1A	oncogene	8	coad;ov;ucec
+PPP3CA	tumor_suppressor	1	stad
+PPP6C	oncogene	3	
+PRDM1	tumor_suppressor	5	prad
+PRDM16	ambiguous	1	
+PRDM2	tumor_suppressor	3	lihc
+PREX2	oncogene	12	blca;brca;coad;lihc;ov;paad;prad;stad
+PRKAR1A	mixed	3	
+PRKCB	oncogene	4	hnsc;prad;stad
+PRKCD	tumor_suppressor	1	
+PRKD1	oncogene	3	coad;prad
+PRKD2	oncogene	1	
+PRUNE2	tumor_suppressor	1	
+PSIP1	tumor_suppressor	2	blca
+PSPC1	oncogene	1	lusc
+PTCH1	tumor_suppressor	11	
+PTEN	tumor_suppressor	38	blca;brca;cesc;coad;hnsc;kirc;lihc;luad;lusc;ov;prad;stad;ucec
+PTK6	oncogene	1	
+PTMA	oncogene	1	
+PTPN11	oncogene	9	coad
+PTPN13	tumor_suppressor	3	blca;paad;ucec
+PTPN14	tumor_suppressor	1	
+PTPN3	tumor_suppressor	1	paad
+PTPN6	tumor_suppressor	2	
+PTPRB	tumor_suppressor	5	ov
+PTPRC	tumor_suppressor	4	lihc
+PTPRD	oncogene	11	brca;ov;paad;stad
+PTPRK	tumor_suppressor	3	blca;kirc;luad;lusc
+PTPRT	oncogene	7	hnsc;lihc;ov;paad;stad
+PWWP2A	tumor_suppressor	1	stad
+QKI	mixed	2	
+RAC1	oncogene	3	hnsc
+RAD21	tumor_suppressor	2	lusc
+RAD50	oncogene	1	
+RAF1	oncogene	1	blca
+RANBP2	tumor_suppressor	5	kirc;lihc;lusc
+RAP1B	tumor_suppressor	1	blca
+RAP1GDS1	mixed	2	kirc
+RASA1	tumor_suppressor	2	hnsc;lusc
+RASA2	tumor_suppressor	1	
+RB1	tumor_suppressor	33	blca;brca;cesc;hnsc;lihc;luad;lusc;ov;paad;prad;stad;ucec
+RBFOX1	tumor_suppressor	1	prad
+RBM10	tumor_suppressor	6	blca;coad;luad;lusc;paad
+RBM15	tumor_suppressor	1	luad
+RBM38	tumor_suppressor	1	
+RBM39	oncogene	1	ucec
+RECQL4	tumor_suppressor	1	stad
+RELA	tumor_suppressor	1	stad
+REST	tumor_suppressor	1	
+RET	oncogene	6	luad;lusc
+RGPD3	tumor_suppressor	3	lihc;lusc
+RGS7	oncogene	4	brca;luad;lusc
+RHOA	oncogene	10	blca;hnsc;prad;stad
+RHPN2	tumor_suppressor	3	brca;luad;lusc
+RIPK1	tumor_suppressor	1	
+RNF213	tumor_suppressor	10	blca;kirc;lusc;prad;ucec
+RNF43	tumor_suppressor	12	coad;lusc;ov;paad;prad;stad;ucec
+RNF6	tumor_suppressor	1	coad
+ROBO2	mixed	11	coad;lihc;prad;stad
+ROS1	tumor_suppressor	5	hnsc;lihc;ov;prad;stad
+RPL10	oncogene	2	
+RPL22	tumor_suppressor	1	lihc
+RPL5	tumor_suppressor	3	luad
+RPS3A	oncogene	1	
+RPS6KA3	tumor_suppressor	1	lihc
+RRAGC	oncogene	1	
+RRAS2	oncogene	1	ucec
+RRN3	oncogene	1	coad
+RSPO2	oncogene	1	coad
+RUNX1	tumor_suppressor	5	brca
+RUNX1T1	oncogene	6	lihc;lusc;prad
+RXRA	oncogene	1	blca
+SALL4	oncogene	1	
+SAMHD1	tumor_suppressor	1	
+SDCBP	tumor_suppressor	1	hnsc
+SDHA	oncogene	3	lihc
+SETBP1	oncogene	1	
+SETD1B	tumor_suppressor	8	hnsc;luad;lusc;ov;paad;stad
+SETD2	tumor_suppressor	23	kirc;lihc;luad;lusc;paad;prad;stad
+SETDB1	oncogene	8	brca;coad;hnsc;lihc;paad;ucec
+SF3B1	oncogene	14	blca;brca;lihc;luad;lusc;paad;prad
+SGK1	oncogene	4	
+SH2B3	oncogene	1	
+SHTN1	oncogene	1	
+SIN3A	tumor_suppressor	2	
+SIRPA	oncogene	5	cesc;coad
+SIX1	oncogene	1	
+SLC34A2	oncogene	3	coad;luad
+SMAD2	tumor_suppressor	2	coad
+SMAD3	tumor_suppressor	2	coad;paad
+SMAD4	tumor_suppressor	18	brca;cesc;coad;hnsc;luad;lusc;paad;prad;stad
+SMARCA2	oncogene	1	
+SMARCA4	oncogene	26	blca;coad;hnsc;kirc;lihc;luad;lusc;ov;paad;stad
+SMARCB1	oncogene	5	
+SMARCD1	tumor_suppressor	2	brca
+SMC1A	oncogene	1	
+SMO	oncogene	7	lihc
+SND1	oncogene	1	cesc
+SNX29	mixed	2	blca
+SOCS1	oncogene	4	coad
+SOS1	oncogene	1	ucec
+SOX17	oncogene	1	ucec
+SOX21	tumor_suppressor	1	prad
+SOX9	tumor_suppressor	2	coad
+SP140	tumor_suppressor	1	
+SPEN	tumor_suppressor	11	brca;cesc;kirc;luad;prad
+SPOP	oncogene	5	prad;ucec
+SRGAP3	oncogene	1	
+SRSF2	oncogene	1	
+STAG2	tumor_suppressor	11	blca;kirc;lusc;ucec
+STAT3	oncogene	4	
+STAT5B	oncogene	1	ov
+STAT6	oncogene	3	
+STK11	tumor_suppressor	7	cesc;luad;lusc
+SUFU	tumor_suppressor	1	
+SUSD2	oncogene	1	lusc
+SUZ12	mixed	3	prad
+TAF15	tumor_suppressor	2	blca
+TAF1L	tumor_suppressor	1	coad
+TAL1	ambiguous	1	lihc
+TAL2	oncogene	1	
+TBL1XR1	oncogene	7	brca
+TBX3	mixed	3	brca;coad
+TCF12	tumor_suppressor	2	
+TCF4	tumor_suppressor	2	
+TCF7L2	tumor_suppressor	4	coad;lihc
+TCL1A	tumor_suppressor	1	
+TEC	oncogene	1	
+TENT5C	tumor_suppressor	1	
+TERT	oncogene	1	
+TET1	tumor_suppressor	8	coad;lihc;stad
+TET2	tumor_suppressor	7	kirc
+TFAP4	oncogene	2	
+TFG	oncogene	1	lihc
+TFRC	mixed	2	luad;lusc;prad
+TGFBR1	tumor_suppressor	1	
+TGFBR2	tumor_suppressor	9	cesc;coad;hnsc;kirc;paad;stad
+TGIF1	tumor_suppressor	1	coad
+THRAP3	tumor_suppressor	1	
+TMPRSS2	oncogene	1	prad
+TMSB4X	tumor_suppressor	3	
+TNC	oncogene	7	blca;lusc;ov
+TNFAIP3	tumor_suppressor	1	
+TNFRSF14	tumor_suppressor	3	
+TOP1	mixed	2	lihc
+TOP2A	oncogene	1	stad
+TP53	tumor_suppressor	74	blca;brca;cesc;coad;hnsc;kirc;lihc;luad;lusc;ov;paad;prad;stad;ucec
+TP63	tumor_suppressor	5	blca;cesc;hnsc
+TPR	mixed	2	lihc
+TRAF3	tumor_suppressor	1	
+TRAF7	oncogene	1	
+TRIM24	oncogene	1	prad
+TRIM33	tumor_suppressor	1	
+TRIM49C	oncogene	1	stad
+TRIP11	tumor_suppressor	1	blca
+TRMT12	oncogene	1	
+TRRAP	oncogene	9	blca;hnsc;kirc;luad
+TSC1	tumor_suppressor	9	blca;brca;coad;kirc;lihc;luad;stad
+TSC2	tumor_suppressor	10	blca;lihc;paad;stad
+TSHR	mixed	2	coad
+U2AF1	oncogene	9	luad;lusc;paad;prad;stad;ucec
+U2AF2	oncogene	1	
+UBE2A	tumor_suppressor	1	
+UBR5	tumor_suppressor	6	brca;stad
+UBXN11	oncogene	1	
+USP6	oncogene	8	brca;coad;lihc;lusc;prad
+USP7	tumor_suppressor	2	
+USP8	oncogene	3	lihc;lusc
+USP9X	tumor_suppressor	6	lihc;prad
+VAV1	tumor_suppressor	1	luad
+VHL	tumor_suppressor	3	kirc
+WAS	oncogene	1	
+WNK2	oncogene	3	lihc
+WNT1	tumor_suppressor	1	
+WT1	tumor_suppressor	3	paad
+WWTR1	oncogene	1	ov
+XPO1	oncogene	3	
+ZBTB16	mixed	2	prad
+ZBTB20	tumor_suppressor	1	
+ZBTB48	oncogene	1	
+ZBTB7B	tumor_suppressor	1	
+ZCCHC8	oncogene	1	stad
+ZCRB1	oncogene	1	
+ZEB1	oncogene	6	luad;lusc
+ZFHX3	tumor_suppressor	10	blca;brca;lihc;prad;ucec
+ZFP36L1	mixed	2	blca
+ZMYM2	oncogene	1	prad
+ZMYM3	tumor_suppressor	8	brca;hnsc;luad;prad
+ZNF208	oncogene	1	
+ZNF274	oncogene	1	
+ZNF331	oncogene	1	
+ZNF395	oncogene	1	luad;lusc
+ZNF429	tumor_suppressor	4	blca;lihc;prad
+ZNF521	oncogene	9	cesc;lihc;lusc;ov;paad
+ZNF626	oncogene	1	
+ZNF680	oncogene	1	
+ZNF721	oncogene	1	
+ZNF750	tumor_suppressor	2	lusc
+ZNF780A	oncogene	1	
+ZNF814	oncogene	1	stad
+ZNF90	oncogene	1	
+ZNF93	oncogene	1	
+ZNRF3	tumor_suppressor	1	
+ZRSR2	tumor_suppressor	1	
+ZXDB	tumor_suppressor	1	brca

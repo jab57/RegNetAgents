@@ -103,6 +103,81 @@ def test_annotate_genes_empty_input():
     assert dgc.annotate_genes([]) == {}
 
 
+def test_annotate_genes_with_cancer_type_adds_tissue_matched():
+    result = dgc.annotate_genes(["KRAS", "MYC", "ACTB"], cancer_type="coad")
+    # KRAS is called by IntOGen in colorectal -> tissue-matched
+    assert result["KRAS"] == {"is_driver": True, "role": dgc.ROLE_ONCOGENE, "tissue_matched": True}
+    # MYC is an IntOGen driver, but only in blood cancers -> not tissue-matched for coad
+    assert result["MYC"]["is_driver"] is True
+    assert result["MYC"]["tissue_matched"] is False
+    # ACTB isn't a driver at all
+    assert result["ACTB"] == {"is_driver": False, "role": None, "tissue_matched": False}
+
+
+def test_annotate_genes_without_cancer_type_omits_tissue_matched():
+    result = dgc.annotate_genes(["KRAS"])
+    assert "tissue_matched" not in result["KRAS"]
+
+
+# ---------------------------------------------------------------------------
+# tissue matching (cancer_types column / is_tissue_matched)
+# ---------------------------------------------------------------------------
+
+def test_load_driver_cancer_types_parses_column():
+    m = dgc.load_driver_cancer_types()
+    assert len(m) > 500
+    assert all(isinstance(v, set) for v in m.values())
+    # every code is a valid RegNetAgents TCGA code
+    all_codes = set().union(*m.values()) if m else set()
+    assert all_codes <= dgc.TCGA_CANCER_TYPE_CODES
+
+
+def test_tissue_match_three_states_for_coad():
+    # (a) tissue-matched, (b) driver elsewhere only, (c) not a driver
+    assert dgc.is_tissue_matched("KRAS", "coad") is True           # (a)
+    assert dgc.is_tissue_matched("MYC", "coad") is False           # (b) driver, but blood-cancer only
+    assert dgc.get_driver_roles().get("MYC") is not None           #     ...still a known driver
+    assert dgc.is_tissue_matched("ACTB", "coad") is False          # (c)
+    assert dgc.get_driver_roles().get("ACTB") is None              #     ...and not a driver
+
+
+def test_tissue_match_uses_intogen_to_tcga_mapping():
+    # VHL is IntOGen-called under CCRCC/RCC, which map to kirc; exact-code
+    # matching on "KIRC" would miss it.
+    assert dgc.is_tissue_matched("VHL", "kirc") is True
+    assert "CCRCC" in dgc.INTOGEN_TO_TCGA_CANCER_TYPE
+    assert dgc.INTOGEN_TO_TCGA_CANCER_TYPE["CCRCC"] == ("kirc",)
+
+
+def test_tissue_match_case_insensitive():
+    assert dgc.is_tissue_matched("kras", "COAD") is True
+
+
+def test_tissue_match_unknown_cancer_type_is_false_not_error():
+    assert dgc.is_tissue_matched("KRAS", "melanoma") is False
+    assert dgc.is_tissue_matched("KRAS", "") is False
+
+
+def test_blood_cancer_only_driver_has_empty_cancer_types():
+    # MYC: IntOGen driver (blood cancers), no RegNetAgents-mappable cancer type.
+    m = dgc.load_driver_cancer_types()
+    assert m["MYC"] == set()
+
+
+def test_empty_cancer_types_cell_parses_to_empty_set_not_singleton(tmp_path):
+    snapshot = tmp_path / "custom.tsv"
+    snapshot.write_text(
+        "# header comment\n"
+        "symbol\trole\tn_cancer_types\tcancer_types\n"
+        "FOO\toncogene\t3\t\n"
+        "BAR\ttumor_suppressor\t5\tcoad;brca\n",
+        encoding="utf-8",
+    )
+    m = dgc.load_driver_cancer_types(snapshot)
+    assert m["FOO"] == set()          # not {""}
+    assert m["BAR"] == {"coad", "brca"}
+
+
 # ---------------------------------------------------------------------------
 # blank/unrecognized role handling
 # ---------------------------------------------------------------------------

@@ -322,3 +322,64 @@ def test_driver_annotation_fields_present_on_real_query(agent):
     assert result["interpretation"]["tumor_state_only_known_driver_count"] == len(
         reg["tumor_state_only_known_drivers"]
     )
+
+
+# ---------------------------------------------------------------------------
+# Tissue-matched driver annotation (IntOGen per-cancer-type presence)
+# ---------------------------------------------------------------------------
+
+def test_tissue_matched_drivers_three_states():
+    """tumor_state_only_tissue_matched_drivers must distinguish:
+    (a) known driver called by IntOGen in *this* cancer type,
+    (b) known driver called only in *other* cancer types,
+    (c) not a driver at all.
+    """
+    class _FakeAgent:
+        def __init__(self):
+            self._call = 0
+
+        def query_network(self, query_type, gene=None, cell_type=None,
+                          network_source=None, tcga_network=None, **kw):
+            self._call += 1
+            if self._call == 1:
+                return {"error": False, "regulators": [], "targets": []}
+            # KRAS: IntOGen driver, called in colorectal -> tissue-matched for coad
+            # MYC:  IntOGen driver, blood-cancer only -> known but NOT tissue-matched
+            # TF1:  not a driver
+            return {
+                "error": False,
+                "regulators": [{"gene": "KRAS"}, {"gene": "MYC"}, {"gene": "TF1"}],
+                "targets": [],
+            }
+
+    result = compare_network_contexts(_FakeAgent(), "GENE", "coad")
+    reg = result["regulators"]
+
+    assert reg["tumor_state_only_known_drivers"] == ["KRAS", "MYC"]      # (a)+(b), not (c)
+    assert reg["tumor_state_only_tissue_matched_drivers"] == ["KRAS"]    # (a) only
+    # strict-subset structural invariant
+    assert set(reg["tumor_state_only_tissue_matched_drivers"]).issubset(
+        set(reg["tumor_state_only_known_drivers"])
+    )
+    assert result["interpretation"]["tumor_state_only_tissue_matched_driver_count"] == 1
+    # roles are untouched by tissue-match status -- still pan-cancer
+    assert reg["driver_gene_roles"]["MYC"] == "mixed"
+    assert reg["driver_gene_roles"]["KRAS"] == "oncogene"
+
+
+def test_tissue_matched_drivers_present_on_real_query(agent):
+    if not _tcga_available(agent):
+        pytest.skip("TCGA cache not built")
+
+    result = compare_network_contexts(agent, "MYC", "coad")
+    assert result.get("error") is not True
+    reg = result["regulators"]
+
+    assert "tumor_state_only_tissue_matched_drivers" in reg
+    assert isinstance(reg["tumor_state_only_tissue_matched_drivers"], list)
+    assert set(reg["tumor_state_only_tissue_matched_drivers"]).issubset(
+        set(reg["tumor_state_only_known_drivers"])
+    )
+    assert result["interpretation"]["tumor_state_only_tissue_matched_driver_count"] == len(
+        reg["tumor_state_only_tissue_matched_drivers"]
+    )
