@@ -235,3 +235,90 @@ def test_query_network_unaffected(agent):
         network_source="cell_type",
     )
     assert result.get("error") is not True
+
+
+# ---------------------------------------------------------------------------
+# Cancer-driver annotation (IntOGen)
+# ---------------------------------------------------------------------------
+
+def test_driver_annotation_known_drivers_filtered_correctly():
+    """`tumor_state_only_known_drivers` must contain only regulators with a
+    non-None IntOGen role -- regression check for `driver_gene_roles.get(g) is
+    not None`. Writing this as `if g in driver_gene_roles` would be a no-op
+    (every regulator is a key of that dict) and silently defeat the filter."""
+    class _FakeAgent:
+        def __init__(self):
+            self._call = 0
+
+        def query_network(self, query_type, gene=None, cell_type=None,
+                          network_source=None, tcga_network=None, **kw):
+            self._call += 1
+            if self._call == 1:
+                return {"error": False, "regulators": [], "targets": []}
+            # KRAS is an unambiguous IntOGen oncogene (84 Act calls, 0 LoF);
+            # TF1/TF2 are synthetic non-drivers.
+            return {
+                "error": False,
+                "regulators": [{"gene": "KRAS"}, {"gene": "TF1"}, {"gene": "TF2"}],
+                "targets": [],
+            }
+
+    result = compare_network_contexts(_FakeAgent(), "GENE", "brca")
+    reg = result["regulators"]
+    assert reg["tumor_state_only"] == ["KRAS", "TF1", "TF2"]
+    assert reg["tumor_state_only_known_drivers"] == ["KRAS"]
+    assert reg["driver_gene_roles"]["KRAS"] == "oncogene"
+    assert reg["driver_gene_roles"]["TF1"] is None
+    assert reg["driver_gene_roles"]["TF2"] is None
+    assert result["interpretation"]["tumor_state_only_known_driver_count"] == 1
+    assert result["driver_annotation_available"] is True
+
+
+def test_driver_annotation_no_known_drivers_gives_empty_list():
+    class _FakeAgent:
+        def __init__(self):
+            self._call = 0
+
+        def query_network(self, query_type, gene=None, cell_type=None,
+                          network_source=None, tcga_network=None, **kw):
+            self._call += 1
+            if self._call == 1:
+                return {"error": False, "regulators": [], "targets": []}
+            return {
+                "error": False,
+                "regulators": [{"gene": "TF1"}, {"gene": "TF2"}],
+                "targets": [],
+            }
+
+    result = compare_network_contexts(_FakeAgent(), "GENE", "brca")
+    reg = result["regulators"]
+    assert reg["tumor_state_only_known_drivers"] == []
+    assert result["interpretation"]["tumor_state_only_known_driver_count"] == 0
+
+
+def test_driver_annotation_fields_present_on_real_query(agent):
+    """Integration check against the real TCGA/GREmLN caches (issue: cancer-driver
+    annotation, IntOGen)."""
+    if not _tcga_available(agent):
+        pytest.skip("TCGA cache not built — run scripts/build_tcga_cache.py --all")
+
+    from regnetagents.driver_gene_client import VALID_ROLES
+
+    result = compare_network_contexts(agent, "MYC", "coad")
+    assert result.get("error") is not True
+
+    assert isinstance(result["driver_annotation_available"], bool)
+    assert result["driver_annotation_available"] is True
+
+    reg = result["regulators"]
+    assert isinstance(reg["driver_gene_roles"], dict)
+    assert isinstance(reg["tumor_state_only_known_drivers"], list)
+    # every "known driver" is a strict subset of tumor_state_only, and every
+    # role recorded for one is a real collapsed IntOGen role, never None
+    assert set(reg["tumor_state_only_known_drivers"]).issubset(set(reg["tumor_state_only"]))
+    for g in reg["tumor_state_only_known_drivers"]:
+        assert reg["driver_gene_roles"][g] in VALID_ROLES
+
+    assert result["interpretation"]["tumor_state_only_known_driver_count"] == len(
+        reg["tumor_state_only_known_drivers"]
+    )

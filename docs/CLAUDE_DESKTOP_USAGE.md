@@ -61,7 +61,7 @@ Claude should respond with genes that have saved results.
 
 ## Available MCP Tools
 
-Claude Desktop can now use these tools (15 tools + 6 prompt templates):
+Claude Desktop can now use these tools (16 tools + 6 prompt templates):
 
 ### 1. `validate_gene`
 Quick gene name check (<100ms). Returns basic stats if found, or fuzzy-matched suggestions for misspelled names. Use before full analysis to catch typos.
@@ -125,14 +125,22 @@ epithelial cells?
 ```
 
 ### 9. `compare_network_contexts`
-Compare regulatory wiring for a gene across population-averaged (GREmLN) and tumor-state (TCGA) networks. Returns conserved regulators, context-specific regulators, and a rewiring classification (low/moderate/high).
+Compare regulatory wiring for a gene across population-averaged (GREmLN) and tumor-state (TCGA) networks. Returns conserved regulators, context-specific regulators, a rewiring classification (low/moderate/high), and IntOGen-backed cancer-driver annotation on the regulator sets.
 
 **Example**:
 ```
 Compare MYC regulatory wiring between epithelial cells and colorectal tumor context
 ```
 
-### 10-15. Other tools
+### 10. `annotate_cancer_drivers`
+Tag any list of gene symbols with cancer-driver status from the IntOGen Compendium of Mutational Cancer Driver Genes (CC0). Returns `is_driver` and a consensus `role` (oncogene/tumor_suppressor/mixed/ambiguous) per gene — no network query involved, so it works on genes from any source (a panel, `find_master_regulators` output, etc.).
+
+**Example**:
+```
+Which of these genes are known cancer drivers: MYC, TP53, ACTB, KRAS?
+```
+
+### 11-16. Other tools
 - `pathway_focused_analysis`
 - `cross_cell_comparison`
 - `workflow_status`

@@ -8,6 +8,8 @@ regulatory programs for a given gene. All logic is rule-based — no LLM require
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from . import driver_gene_client
+
 if TYPE_CHECKING:
     from regnetagents_langgraph_workflow import RegNetAgentsModelingAgent
 
@@ -107,6 +109,22 @@ def compare_network_contexts(
         round(len(tgt_conserved) / len(tgt_union), 4) if tgt_union else 0.0
     )
 
+    # --- Cancer-driver annotation (IntOGen, always-on) ----------------------
+    # In-memory dict lookup after the first call warms the cache; annotates the
+    # union of all regulators. `driver_gene_roles` maps every regulator to its
+    # collapsed IntOGen role or None (non-driver). `tumor_state_only_known_drivers`
+    # is the "signal vs. noise" list: tumor-acquired regulators that are known
+    # cancer drivers -- filter on the *value* (a non-None role), never on `g in
+    # driver_gene_roles` (every regulator is a key of that dict).
+    driver_roles_map = driver_gene_client.get_driver_roles()
+    driver_gene_roles = {
+        g: driver_roles_map.get(g)
+        for g in (reg_conserved + reg_pop_only + reg_tumor_only)
+    }
+    tumor_state_only_known_drivers = sorted(
+        g for g in reg_tumor_only if driver_gene_roles.get(g) is not None
+    )
+
     # --- Regulatory rewiring classification (rule-based) ---------------------
     if reg_conserved_fraction >= 0.6:
         rewiring = "low"
@@ -128,6 +146,8 @@ def compare_network_contexts(
             "population_averaged_only":  reg_pop_only,
             "tumor_state_only":          reg_tumor_only,
             "tumor_state_only_weights":  {g: tumor_reg_weights.get(g) for g in reg_tumor_only},
+            "driver_gene_roles":              driver_gene_roles,
+            "tumor_state_only_known_drivers": tumor_state_only_known_drivers,
         },
         "targets": {
             "population_averaged_total": len(pop_targets),
@@ -141,5 +161,7 @@ def compare_network_contexts(
             "regulatory_rewiring":              rewiring,
             "conserved_fraction_regulators":    reg_conserved_fraction,
             "tumor_specific_regulator_count":   len(reg_tumor_only),
+            "tumor_state_only_known_driver_count": len(tumor_state_only_known_drivers),
         },
+        "driver_annotation_available": driver_gene_client.driver_data_available(),
     }

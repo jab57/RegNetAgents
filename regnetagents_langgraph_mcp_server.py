@@ -71,6 +71,7 @@ from mcp.server.lowlevel.helper_types import ReadResourceContents
 
 # Import our LangGraph workflow
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow, GeneAnalysisState, CellType
+from regnetagents import driver_gene_client
 
 # Configure logging with more detail
 # IMPORTANT: MCP uses stdout for JSON-RPC transport, so all logging MUST go to stderr
@@ -386,10 +387,14 @@ async def handle_list_prompts() -> list[types.Prompt]:
         types.Prompt(
             name="candidate_prioritization",
             description=(
-                "Two-step regulatory candidate prioritization workflow from the RegNetAgents NAR paper. "
-                "Step 1: identifies source-labeled regulatory candidates (TCGA-only / GREmLN-only / Both) "
-                "filtered against OncoKB. Step 2: runs comprehensive domain analysis per candidate with "
-                "source-driven network routing. Returns a structured summary table."
+                "Two-step regulatory candidate prioritization workflow. "
+                "Step 1: `compare_network_contexts` returns source-labeled regulators "
+                "(TCGA-only / GREmLN-only / Both); its `regulators.tumor_state_only_known_drivers` "
+                "field lists the tumor-acquired regulators that are known IntOGen cancer drivers "
+                "(check the top-level `driver_annotation_available` flag first -- if false, treat "
+                "driver status as unknown, not absent). Step 2: runs comprehensive domain analysis "
+                "per candidate with source-driven network routing. Returns a structured summary table. "
+                f"Cancer-driver annotations: {driver_gene_client.CITATION}."
             ),
             arguments=[
                 types.PromptArgument(
@@ -574,9 +579,13 @@ async def handle_get_prompt(name: str, arguments: dict | None) -> types.GetPromp
             f"Please run the regulatory candidate prioritization workflow for **{gene}** "
             f"in **TCGA {cancer_type.upper()}** using the following two-step process:\n\n"
             f"**Step 1 — Identify source-labeled candidates:**\n"
-            f"Use `compare_network_contexts` with `gene=\"{gene}\"` and `cancer_type=\"{cancer_type}\"` "
-            f"to retrieve the OncoKB-filtered candidate shortlist. Note the source label for each candidate "
-            f"(TCGA-only, GREmLN-only, or Both) and MoA where available.\n\n"
+            f"Use `compare_network_contexts` with `gene=\"{gene}\"` and `cancer_type=\"{cancer_type}\"`. "
+            f"In the result, `regulators.tumor_state_only_known_drivers` is the IntOGen-backed shortlist "
+            f"of tumor-acquired regulators that are known cancer drivers, and `regulators.driver_gene_roles` "
+            f"gives each regulator's role (oncogene / tumor_suppressor / mixed / ambiguous / null). "
+            f"If the top-level `driver_annotation_available` is false, treat driver flags as unknown rather "
+            f"than absent. Note the source label for each candidate (TCGA-only, GREmLN-only, or Both) and "
+            f"MoA where available.\n\n"
             f"**Step 2 — Comprehensive domain analysis per candidate:**\n"
             f"For each candidate returned in Step 1, run `comprehensive_gene_analysis` with "
             f"source-driven network routing:\n"
@@ -1370,6 +1379,45 @@ async def handle_list_tools() -> list[Tool]:
                 "required": ["gene", "cancer_type"]
             }
         ),
+        Tool(
+            name="annotate_cancer_drivers",
+            description=f"""
+            Tag a list of gene symbols with cancer-driver status from the IntOGen
+            Compendium of Mutational Cancer Driver Genes (release 2024.09.20, CC0).
+
+            Pure annotation utility -- no network query, no LangGraph workflow. Use it
+            to flag likely real cancer-driver regulators (vs. ARACNe network noise) in
+            genes from any source: gene panels, top TF drivers from
+            find_master_regulators, divergent regulators from cross-cancer comparisons.
+
+            Returns:
+              {{
+                "driver_annotation_available": bool,   # false if the reference file failed to load
+                "results": {{
+                  "<GENE>": {{"is_driver": bool, "role": "oncogene"|"tumor_suppressor"|"mixed"|"ambiguous"|null}}
+                }}
+              }}
+            `role` is IntOGen's consensus mode-of-action (majority vote of per-cohort
+            calls) and is advisory -- for genes seen in only 1-2 cohorts it may be
+            unreliable; `is_driver` is the dependable signal. IntOGen is a mutational
+            positive-selection compendium, so it under-covers fusion / copy-number /
+            epigenetically driven genes -- absence means "not a positive-selection
+            driver in IntOGen", not "not a cancer driver".
+
+            Cite: {driver_gene_client.CITATION}
+            """,
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "genes": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Gene symbols to annotate (e.g. ['MYC', 'TP53', 'ACTB'])"
+                    }
+                },
+                "required": ["genes"]
+            }
+        ),
     ]
 
 @server.call_tool()
@@ -1688,6 +1736,19 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
 
             return [TextContent(type="text", text=json.dumps(result, indent=2))]
 
+        elif name == "annotate_cancer_drivers":
+            genes = arguments["genes"]
+
+            logger.info(f"Annotating {len(genes)} gene(s) against IntOGen driver compendium")
+
+            result = {
+                "driver_annotation_available": driver_gene_client.driver_data_available(),
+                "results": driver_gene_client.annotate_genes(genes),
+                "source": driver_gene_client.CITATION,
+            }
+
+            return [TextContent(type="text", text=json.dumps(result, indent=2))]
+
         elif name == "query_network":
             query_type = arguments["query_type"]
             network_source = arguments.get("network_source", "cell_type")
@@ -1804,7 +1865,9 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                             "cancer_type": "required — one of: brca, coad, hnsc, luad, lusc, ov, prad, ucec"
                         },
                         "what_it_does": (
-                            "Step 1: compare_network_contexts → source-labeled OncoKB-filtered candidate shortlist. "
+                            "Step 1: compare_network_contexts → source-labeled regulators; "
+                            "regulators.tumor_state_only_known_drivers flags known IntOGen cancer drivers "
+                            "among tumor-acquired regulators (respect the driver_annotation_available flag). "
                             "Step 2: comprehensive_gene_analysis per candidate with source-driven network routing "
                             "(TCGA-only→tcga_network, GREmLN-only→cell_type, Both→tcga_network). "
                             "Returns structured summary table: candidate | source | MoA | oncogenic potential | "

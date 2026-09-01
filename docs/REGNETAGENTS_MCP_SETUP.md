@@ -278,11 +278,19 @@ Once installed, you can ask Claude Desktop natural language questions:
     - Compare regulatory wiring for a gene across population-averaged (GREmLN) and tumor-state (TCGA) networks in a single call
     - Returns conserved regulators, regulators lost in tumor, regulators gained in tumor
     - Classifies rewiring level (low / moderate / high) by Jaccard overlap of regulator sets
+    - Includes IntOGen-backed cancer-driver annotation on the regulator sets (`driver_gene_roles`, `tumor_state_only_known_drivers`) — see `annotate_cancer_drivers` below for the reference source
     - Parameters: gene, cancer_type, cell_type
+
+15. **annotate_cancer_drivers**
+    - Tag a list of gene symbols with cancer-driver status from the IntOGen Compendium of Mutational Cancer Driver Genes (release 2024.09.20, CC0)
+    - Pure annotation utility — no network query, no LangGraph workflow
+    - Returns `is_driver` and consensus `role` (oncogene / tumor_suppressor / mixed / ambiguous) per gene, plus a `driver_annotation_available` flag
+    - IntOGen is a mutational positive-selection compendium — absence means "not a positive-selection driver in IntOGen", not "not a cancer driver"
+    - Parameters: genes (list of gene symbols)
 
 ### Utility Tools
 
-15. **list_prompts**
+16. **list_prompts**
     - List the available MCP prompt templates and how to use them
     - No parameters required
 
@@ -362,7 +370,7 @@ Two-step prioritization workflow: (1) runs `compare_network_contexts` to generat
 ┌─────────────────────────────────────────┐
 │   MCP Server (regnetagents_langgraph_mcp_server.py)
 │   • Protocol translation                │
-│   • Tool registration (15 tools)        │
+│   • Tool registration (16 tools)        │
 │   • Resource registration (3 resources) │
 │   • Prompt registration (6 prompts)     │
 │   • Claude Desktop integration          │

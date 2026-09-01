@@ -28,6 +28,7 @@ Compare MYC regulatory wiring between epithelial cells and colorectal tumor cont
 **Bundled (no download required):**
 - **GREmLN** (Zhang et al. 2026): 10 cell-type-specific ARACNe networks, population-averaged from 11M cells across 162 cell types (CELLxGENE Census 2024-07-01, CZ Biohub NY / Columbia University Califano Lab)
 - **TCGA ARACNe** (Lim & Califano): 14 cancer-type-specific tumor-state networks (blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec) — pre-built PKL caches included in the repo
+- **IntOGen driver genes** (Martínez-Jiménez et al. 2020, *Nature Reviews Cancer*, doi:10.1038/s41568-020-0290-x): cancer-driver gene compendium used by `compare_network_contexts` and `annotate_cancer_drivers` for driver annotation — release 2024.09.20, CC0 1.0 Universal (public domain), trimmed to gene symbol + consensus role and committed at `regnetagents/reference_data/intogen_drivers.tsv`; no setup step or account required
 
 To rebuild TCGA caches from source, see [INSTALL.md](INSTALL.md) for instructions using the Bioconductor `aracne.networks` package.
 
@@ -279,7 +280,8 @@ Key environment variables (set in `.env`):
 | `validate_gene` | Quick gene name check with fuzzy suggestions (<100ms) |
 | `query_network` | Instant network queries — top regulators, targets, neighbors, stats (<50ms); supports GREmLN (`network_source="cell_type"`) and TCGA tumor-state networks (`network_source="tcga"`) |
 | `find_master_regulators` | Identify TFs driving a gene signature (Fisher's exact test enrichment); works with both GREmLN and TCGA networks |
-| `compare_network_contexts` | Compare regulatory wiring for a gene across population-averaged (GREmLN) and tumor-state (TCGA) networks; returns conserved/context-specific regulators and rewiring classification |
+| `compare_network_contexts` | Compare regulatory wiring for a gene across population-averaged (GREmLN) and tumor-state (TCGA) networks; returns conserved/context-specific regulators, rewiring classification, and IntOGen-backed cancer-driver annotation |
+| `annotate_cancer_drivers` | Tag any list of gene symbols with cancer-driver status and consensus role (oncogene/tumor_suppressor/mixed/ambiguous) from the IntOGen driver compendium (CC0) |
 | `comprehensive_gene_analysis` | Full multi-agent domain analysis (cancer biology, druggability, clinical actionability, systems biology); accepts GREmLN cell-type (`cell_type`) or TCGA cancer-type (`tcga_network`) as network source |
 | `multi_gene_analysis` | Parallel processing of multiple genes |
 | `pathway_focused_analysis` | Reactome pathway enrichment |
