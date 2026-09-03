@@ -49,3 +49,15 @@ results/*.json
 # Internal planning docs
 RESEARCH_PAPER_PLAN.md
 data/
+
+# Private companion repo (jab57/RegNetAgents-private) - manuscript, planning
+# docs, and held-back analysis. Tracked in a separate git repo under private/.
+private/
+
+# Local scratch / build artifacts (never part of the repo)
+node_modules/
+package.json
+package-lock.json
+poster.*
+*.pptx
+paper_preview.pdf
