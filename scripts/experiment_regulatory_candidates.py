@@ -661,16 +661,25 @@ def save_target_table(all_targets: dict, cancer_type: str, out_dir: str) -> None
 
 
 async def _run_ctnnb1_demo_gene(workflow: RegNetAgentsWorkflow, gene: str) -> dict:
-    """One comprehensive_gene_analysis call for a single CTNNB1 BRCA candidate (Table 10)."""
+    """One comprehensive_gene_analysis call for a single CTNNB1 BRCA candidate (Table 10).
+
+    Field paths (domain_analysis.<agent>.insights.<field>, network_analysis.pagerank_normalized)
+    verified against results/ctnnb1_demo_results.json (the raw per-gene reports that backed the
+    published Table 10) -- all four genes' values matched Table 10 exactly through these paths.
+    """
     report = await workflow.run_analysis(gene=gene, tcga_network="brca", analysis_depth="comprehensive")
     domain = report.get("domain_analysis", {})
+
+    def _insight(agent_key: str, field: str):
+        return domain.get(agent_key, {}).get("insights", {}).get(field)
+
     return {
         "candidate": gene,
-        "oncogenic_potential":    domain.get("cancer_analysis", {}).get("oncogenic_potential"),
-        "druggability":           domain.get("drug_analysis", {}).get("druggability_assessment"),
-        "clinical_actionability": domain.get("clinical_analysis", {}).get("clinical_actionability"),
-        "network_vulnerability":  domain.get("systems_analysis", {}).get("network_vulnerability"),
-        "pagerank_brca":          report.get("network_analysis", {}).get("pagerank"),
+        "oncogenic_potential":    _insight("cancer_analysis", "oncogenic_potential"),
+        "druggability":           _insight("drug_analysis", "druggability_assessment"),
+        "clinical_actionability": _insight("clinical_analysis", "clinical_actionability"),
+        "network_vulnerability":  _insight("systems_analysis", "network_vulnerability"),
+        "pagerank_brca":          report.get("network_analysis", {}).get("pagerank_normalized"),
     }
 
 
