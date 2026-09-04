@@ -16,12 +16,14 @@ Reference datasets (pre-downloaded to data/):
 Outputs:
   results/
   - experiment_rewiring_results.json           : full statistics
-  - target_list_brca.csv                       : source-labeled candidate list, BRCA
-  - target_list_coad.csv                       : source-labeled candidate list, COAD
   - target_list_brca.png                       : candidate counts by source, BRCA (NAR Fig 2A)
   - target_list_coad.png                       : candidate counts by source, COAD (NAR Fig 2B)
   - experiment_rewiring_barchart_brca.png      : regulator count bar chart, BRCA
   - experiment_rewiring_barchart_coad.png      : regulator count bar chart, COAD
+
+  supplementary/  (named directly in the paper's Data Availability section)
+  - table_s1_brca_candidates.csv                : source-labeled candidate list, BRCA
+  - table_s2_coad_candidates.csv                : source-labeled candidate list, COAD
 
   manuscript/  (NAR paper figures — overwrite in place)
   - figure_heatmap_brca.png                    : OR enrichment heatmap, BRCA (NAR Fig 3A)
@@ -79,6 +81,11 @@ RANDOM_SEED    = 42
 ONCOKB_PATH    = "data/oncokb_cancer_genes.tsv"
 RESULTS_DIR    = "results"
 MANUSCRIPT_DIR = "manuscript"
+SUPPLEMENTARY_DIR = "supplementary"
+# Maps cancer_type -> supplementary table number, per the paper's Data Availability
+# section (only BRCA/COAD have a named supplementary CSV; other cancer types fall
+# back to writing under RESULTS_DIR).
+SUPPLEMENTARY_TABLE_NUMBER = {"brca": 1, "coad": 2}
 
 # ── Reference set loaders ──────────────────────────────────────────────────────
 
@@ -614,9 +621,18 @@ def _direction(moa) -> str:
 
 
 def save_target_table(all_targets: dict, cancer_type: str, out_dir: str) -> None:
-    """Write source-labeled target list to CSV."""
-    ct   = cancer_type.upper()
-    path = os.path.join(out_dir, f"target_list_{cancer_type.lower()}.csv")
+    """Write source-labeled target list to CSV.
+
+    BRCA/COAD write directly to their named supplementary table
+    (supplementary/table_sN_<cancer_type>_candidates.csv), matching the paper's
+    Data Availability section. Other cancer types fall back to out_dir.
+    """
+    ct = cancer_type.upper()
+    table_n = SUPPLEMENTARY_TABLE_NUMBER.get(cancer_type.lower())
+    if table_n is not None:
+        path = os.path.join(SUPPLEMENTARY_DIR, f"table_s{table_n}_{cancer_type.lower()}_candidates.csv")
+    else:
+        path = os.path.join(out_dir, f"target_list_{cancer_type.lower()}.csv")
     fields = ["focal_gene", "regulator", "source", "oncokb_role", "moa", "direction"]
     rows = []
     for focal_gene, targets in all_targets.items():
