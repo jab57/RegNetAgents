@@ -20,6 +20,8 @@ Outputs:
   - target_list_coad.png                       : candidate counts by source, COAD (NAR Fig 2B)
   - experiment_rewiring_barchart_brca.png      : regulator count bar chart, BRCA
   - experiment_rewiring_barchart_coad.png      : regulator count bar chart, COAD
+  - ctnnb1_demo_results.json                    : Table 10, section 3.6 application demo
+                                                  (illustrative; not a core statistical claim)
 
   supplementary/  (named directly in the paper's Data Availability section)
   - table_s1_brca_candidates.csv                : source-labeled candidate list, BRCA
@@ -39,6 +41,7 @@ Usage:
 Dependencies (all in requirements.txt): scipy, numpy, matplotlib, seaborn
 """
 
+import asyncio
 import csv
 import json
 import math
@@ -86,6 +89,11 @@ SUPPLEMENTARY_DIR = "supplementary"
 # section (only BRCA/COAD have a named supplementary CSV; other cancer types fall
 # back to writing under RESULTS_DIR).
 SUPPLEMENTARY_TABLE_NUMBER = {"brca": 1, "coad": 2}
+
+# Section 3.6 / Table 10: OncoKB-overlapping CTNNB1 BRCA candidates (Table 1),
+# analyzed via comprehensive_gene_analysis on the TCGA BRCA network.
+CTNNB1_DEMO_FOCAL_GENE = "CTNNB1"
+CTNNB1_DEMO_GENES = ["YAP1", "DDR2", "IL6ST", "ARID3A"]
 
 # ── Reference set loaders ──────────────────────────────────────────────────────
 
@@ -652,6 +660,43 @@ def save_target_table(all_targets: dict, cancer_type: str, out_dir: str) -> None
     print(f"[{ct}] Target list ({len(rows)} entries) -> {path}")
 
 
+async def _run_ctnnb1_demo_gene(workflow: RegNetAgentsWorkflow, gene: str) -> dict:
+    """One comprehensive_gene_analysis call for a single CTNNB1 BRCA candidate (Table 10)."""
+    report = await workflow.run_analysis(gene=gene, tcga_network="brca", analysis_depth="comprehensive")
+    domain = report.get("domain_analysis", {})
+    return {
+        "candidate": gene,
+        "oncogenic_potential":    domain.get("cancer_analysis", {}).get("oncogenic_potential"),
+        "druggability":           domain.get("drug_analysis", {}).get("druggability_assessment"),
+        "clinical_actionability": domain.get("clinical_analysis", {}).get("clinical_actionability"),
+        "network_vulnerability":  domain.get("systems_analysis", {}).get("network_vulnerability"),
+        "pagerank_brca":          report.get("network_analysis", {}).get("pagerank"),
+    }
+
+
+def save_ctnnb1_demo(agent, workflow: RegNetAgentsWorkflow, out_dir: str) -> None:
+    """Reproduce Table 10 (section 3.6): domain agent summary for the CTNNB1 BRCA
+    candidate shortlist (comprehensive_gene_analysis, TCGA BRCA network). Illustrative
+    application demo, not part of the core statistical claims (see section 3.1-3.5).
+    """
+    tcga_neighbors = agent.query_network(
+        "gene_neighbors", gene=CTNNB1_DEMO_FOCAL_GENE, network_source="tcga", tcga_network="brca"
+    )
+    moa_map = {r["gene"]: r.get("moa") for r in tcga_neighbors.get("regulators", [])}
+
+    async def _run_all():
+        return [await _run_ctnnb1_demo_gene(workflow, g) for g in CTNNB1_DEMO_GENES]
+
+    rows = asyncio.run(_run_all())
+    for row in rows:
+        row["moa"] = _direction(moa_map.get(row["candidate"]))
+
+    path = os.path.join(out_dir, "ctnnb1_demo_results.json")
+    with open(path, "w") as f:
+        json.dump(rows, f, indent=2)
+    print(f"[CTNNB1 demo] Table 10 ({len(rows)} candidates) -> {path}")
+
+
 def plot_target_list(all_targets: dict, cancer_type: str) -> None:
     """Stacked bar: OncoKB targets per source per focal gene."""
     ct    = cancer_type.upper()
@@ -1167,6 +1212,10 @@ def run_experiment() -> None:
     out_json = os.path.join(RESULTS_DIR, "experiment_rewiring_results.json")
     with open(out_json, "w") as f:
         json.dump(output, f, indent=2)
+
+    # Section 3.6 / Table 10 (illustrative application demo, not a core statistical claim)
+    save_ctnnb1_demo(agent, workflow, RESULTS_DIR)
+
     print(f"\nResults -> {out_json}")
     print(f"Figures  -> {MANUSCRIPT_DIR}/figure_workflow.png  (NAR Fig 1)")
     print(f"            {MANUSCRIPT_DIR}/figure_heatmap_brca.png  (NAR Fig 3A)")
@@ -1181,6 +1230,7 @@ def run_experiment() -> None:
     print(f"            {MANUSCRIPT_DIR}/target_list_coad.png  (NAR Fig 2B)")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_brca.png")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_coad.png")
+    print(f"            {RESULTS_DIR}/ctnnb1_demo_results.json  (Table 10)")
     print("\nDone.")
 
 
