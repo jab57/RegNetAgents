@@ -11,7 +11,7 @@ Complete installation instructions for setting up RegNetAgents MCP Server with C
 Before you begin, ensure you have:
 
 - **Python 3.10 or later** ([Download](https://www.python.org/downloads/))
-- **Git** ([Download](https://git-scm.com/downloads)) — network data files are included in the repository; Git LFS is not required
+- **Git** ([Download](https://git-scm.com/downloads)) with **Git LFS** ([Download](https://git-lfs.com)) — the network data files (`.csv`, `.h5`, `.pt`, `.h5ad`) are tracked via Git LFS; without it installed, `git clone` will silently produce pointer-file stubs instead of real network data
 - **4GB+ RAM** minimum; 8GB+ recommended if using a local LLM (Ollama)
 
 **Optional:**
@@ -57,7 +57,11 @@ git clone https://github.com/jab57/RegNetAgents.git
 cd RegNetAgents
 ```
 
-All network data files are included as regular git files and download automatically with the clone. No Git LFS is required.
+Network data files (TCGA `network.csv` files and a few others) are tracked via **Git LFS**
+and download automatically with `git clone` **if Git LFS is installed** — see Prerequisites
+above. If you cloned without it, install Git LFS and run `git lfs pull` from inside the
+repo to fetch the real files (otherwise those paths will contain small LFS pointer-file
+stubs instead of actual network data).
 
 ---
 
