@@ -85,6 +85,9 @@ regnetagents-server = "regnetagents_langgraph_mcp_server:main"
 where = ["."]
 include = ["regnetagents*"]
 
+[tool.setuptools]
+py-modules = ["regnetagents_langgraph_mcp_server", "regnetagents_langgraph_workflow"]
+
 [tool.setuptools.package-data]
 regnetagents = ["models/**/*"]
 
