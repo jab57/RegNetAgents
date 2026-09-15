@@ -54,33 +54,33 @@ def check_git_lfs():
         print("  Install from: https://git-lfs.github.com")
         return False
 
-    # Check if network files are actually downloaded (not just pointers)
-    sample_file = Path("models/networks/epithelial_cell/network_index.pkl")
+    # Check if the LFS-tracked TCGA data is actually downloaded (not just pointers).
+    # Per .gitattributes, only *.csv/*.h5/*.pt/*.h5ad are LFS-tracked — the GREmLN
+    # network_index.pkl files are NOT, so a pointer-stub check must target a real
+    # LFS-tracked file (a TCGA network.csv) or it can never actually detect the
+    # failure mode it exists to catch.
+    sample_file = Path("models/networks/tcga/brca/network.csv")
 
     if not sample_file.exists():
-        print(f"{WARN} Sample network file not found")
+        print(f"{WARN} Sample TCGA network file not found")
         print("  Network files may not be present yet")
         return True  # Don't fail - network check will catch this
 
-    # Read first bytes to check if it's a real file or a Git LFS pointer
+    # Git LFS pointer files are a small text stub starting with this exact line;
+    # a real network.csv starts with a comma-separated header row instead.
     try:
-        with open(sample_file, 'rb') as f:
-            first_bytes = f.read(20)
+        with open(sample_file, 'r', encoding='utf-8', errors='replace') as f:
+            first_line = f.readline()
 
-        # Check if it's a text pointer (Git LFS not pulled)
-        if first_bytes.startswith(b'version'):
-            print(f"{CROSS} Network files are Git LFS pointers (not downloaded)")
+        if first_line.startswith('version https://git-lfs.github.com/spec/v1'):
+            print(f"{CROSS} TCGA network files are Git LFS pointers (not downloaded)")
             print("  Fix this by running:")
             print("    git lfs pull")
             print("  This will download ~1.2 GB of network data")
             return False
-        # Check if it's a pickle file (correct)
-        elif first_bytes.startswith(b'\x80\x03') or first_bytes.startswith(b'\x80\x04'):
-            print(f"{CHECK} Network files downloaded correctly")
-            return True
         else:
-            print(f"{WARN} Network file format unexpected")
-            return True  # Let network loading test catch any issues
+            print(f"{CHECK} TCGA network files downloaded correctly")
+            return True
 
     except Exception as e:
         print(f"{WARN} Could not verify network file: {e}")
@@ -335,7 +335,7 @@ def main():
         ("Network Data", check_network_data()),
         ("Cache Directory", check_cache_directory()),
         ("Core Modules", check_core_modules()),
-        ("Git LFS (optional)", check_git_lfs()),
+        ("Git LFS", check_git_lfs()),
         ("Ollama (optional)", check_ollama()),
     ]
 
@@ -345,9 +345,9 @@ def main():
 
     passed = sum(1 for _, result in checks if result)
     total = len(checks)
-    required = total - 2  # Git LFS and Ollama are optional
+    required = total - 1  # Ollama is optional; Git LFS validates real TCGA data now
 
-    print(f"\nTotal checks: {total} ({required} required, 2 optional: Git LFS, Ollama)")
+    print(f"\nTotal checks: {total} ({required} required, 1 optional: Ollama)")
     print(f"Time taken: {total_time:.1f} seconds\n")
 
     for name, result in checks:
