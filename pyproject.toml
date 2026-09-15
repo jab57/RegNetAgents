@@ -79,7 +79,7 @@ Repository = "https://github.com/jab57/RegNetAgents.git"
 Issues = "https://github.com/jab57/RegNetAgents/issues"
 
 [project.scripts]
-regnetagents-server = "regnetagents_langgraph_mcp_server:main"
+regnetagents-server = "regnetagents_langgraph_mcp_server:run"
 
 [tool.setuptools.packages.find]
 where = ["."]
