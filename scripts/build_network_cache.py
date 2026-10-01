@@ -47,6 +47,10 @@ import networkx as nx
 
 MYGENE_URL = "https://mygene.info/v3/query"
 
+# Prefix of GeneIDMapper's synthetic placeholder IDs — must match
+# regnetagents/gene_id_mapper.py SYNTHETIC_ID_PREFIX (this script is standalone).
+SYNTHETIC_ID_PREFIX = "ENSG_CACHED_"
+
 # Cell types supported by RegNetAgents (with available network data)
 SUPPORTED_CELL_TYPES = [
     'cd14_monocytes',
@@ -532,16 +536,31 @@ def update_gene_id_cache(output_dir: str, cache_path: str = "cache/gene_id_cache
     missing = sorted(all_ensg - set(e2s.keys()))
     print(f"  Missing from cache: {len(missing):,}")
 
-    if not missing:
+    # Repair symbol->ENSG entries that still hold a synthetic placeholder although
+    # the cache already knows the real ID (older caches; see gene_id_mapper.py).
+    repaired = 0
+    for ensg, symbol in sorted(e2s.items()):
+        if ensg.startswith(SYNTHETIC_ID_PREFIX) or not symbol:
+            continue
+        current = s2e.get(symbol)
+        if current is None or current.startswith(SYNTHETIC_ID_PREFIX):
+            s2e[symbol] = ensg
+            repaired += 1
+    print(f"  Placeholder symbol->ENSG entries repaired: {repaired:,}")
+
+    if not missing and not repaired:
         print("  Cache already complete — nothing to do.")
         return
 
-    new_mappings = ensg_to_symbol_batch(missing)
+    new_mappings = ensg_to_symbol_batch(missing) if missing else {}
 
     # Update both directions
     for ensg, symbol in new_mappings.items():
         e2s[ensg] = symbol
-        if symbol not in s2e:
+        # Replace synthetic ENSG_CACHED_* placeholders (see gene_id_mapper.py), not
+        # just missing entries — otherwise the real ID never reaches symbol_to_ensembl.
+        current = s2e.get(symbol)
+        if current is None or current.startswith(SYNTHETIC_ID_PREFIX):
             s2e[symbol] = ensg
 
     id_cache["ensembl_to_symbol"] = e2s

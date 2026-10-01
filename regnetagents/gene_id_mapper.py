@@ -9,12 +9,18 @@ import pickle
 import os
 import sys
 
+# Prefix of the placeholder IDs _populate_from_uniprot() creates for symbols with no
+# known Ensembl ID. They are never network node IDs.
+SYNTHETIC_ID_PREFIX = "ENSG_CACHED_"
+
+
 class GeneIDMapper:
     """Maps between gene symbols and Ensembl IDs using the local gene_id_cache.pkl."""
-    
+
     def __init__(self, cache_file: str = "cache/gene_id_cache.pkl"):
         self.cache_file = cache_file
         self.cache = self._load_cache()
+        self._repair_synthetic_symbol_ids()  # Must run before placeholders are added
         self._populate_from_uniprot()  # Pre-populate with local data
         self._alias_cache: Dict = {}  # in-memory: gene_upper -> {canonical, aliases}
         print(f"Fast gene mapping initialized: {len(self.cache['symbol_to_ensembl'])} genes cached", file=sys.stderr)
@@ -36,6 +42,24 @@ class GeneIDMapper:
                 pickle.dump(self.cache, f)
         except Exception as e:
             print(f"Warning: Could not save cache: {e}", file=sys.stderr)
+
+    def _repair_synthetic_symbol_ids(self):
+        """Point symbol_to_ensembl at real Ensembl IDs wherever the cache has one.
+
+        ensembl_to_symbol holds the real ID of every network gene, but older caches
+        stored a synthetic placeholder in symbol_to_ensembl for most symbols, which
+        made those genes unreachable by symbol ("not found in network"). Existing
+        real mappings are kept; a symbol with several real IDs takes the lowest, for
+        determinism. In-memory only — the cache file is not rewritten here.
+        """
+        s2e = self.cache["symbol_to_ensembl"]
+        for ensembl_id, symbol in sorted(self.cache["ensembl_to_symbol"].items()):
+            if ensembl_id.startswith(SYNTHETIC_ID_PREFIX) or not symbol:
+                continue
+            key = symbol.upper()
+            current = s2e.get(key)
+            if current is None or current.startswith(SYNTHETIC_ID_PREFIX):
+                s2e[key] = ensembl_id
 
     def _populate_from_uniprot(self):
         """Pre-populate cache with genes from UniProt database to avoid API calls"""
@@ -60,7 +84,7 @@ class GeneIDMapper:
                 if gene_upper not in self.cache["symbol_to_ensembl"]:
                     # Create synthetic Ensembl-style ID for fast lookups
                     # In practice, you'd use real Ensembl IDs, but this eliminates API calls
-                    synthetic_ensembl = f"ENSG_CACHED_{gene_name}"
+                    synthetic_ensembl = f"{SYNTHETIC_ID_PREFIX}{gene_name}"
 
                     self.cache["symbol_to_ensembl"][gene_upper] = synthetic_ensembl
                     self.cache["ensembl_to_symbol"][synthetic_ensembl] = gene_upper
