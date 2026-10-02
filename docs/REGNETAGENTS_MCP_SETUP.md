@@ -408,6 +408,8 @@ Two-step prioritization workflow: (1) runs `compare_network_contexts` to generat
 
 **Solution**: Gene may not be present in the selected cell type network. Try a different cell type or verify gene symbol is correct.
 
+**Note**: Versions before the gene-ID mapper fix wrongly reported ~9,400 GREmLN genes (~64%) as not found when queried by symbol. If a gene you expect to be present is reported missing, upgrade to the latest release. See [GENE_MAPPING_ARCHITECTURE.md](GENE_MAPPING_ARCHITECTURE.md).
+
 ### MCP Server Not Appearing in Claude Desktop
 
 **Solutions**:

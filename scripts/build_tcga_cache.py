@@ -30,7 +30,8 @@ Gene ID strategy:
     - MyGene.info batch POST is used at build time to validate that symbols
       are real human genes (≥90% must resolve to canonical Ensembl IDs).
     - PKL is stored as symbol-keyed (id_type: "symbol").
-    - Do NOT use GeneIDMapper — it creates synthetic IDs that mask true resolution.
+    - Do NOT use GeneIDMapper — it assigns placeholder IDs (ENSG_CACHED_*) to symbols
+      with no known Ensembl ID, which would mask whether a symbol truly resolves.
 """
 
 import argparse

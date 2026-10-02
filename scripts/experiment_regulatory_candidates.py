@@ -68,7 +68,8 @@ BRCA_GENES  = [
     "TP53", "MYC", "CTNNB1", "CCND1",          # original panel
     "BRCA1", "BRCA2", "PIK3CA", "PTEN",         # BRCA hallmarks
     "RB1", "ERBB2", "ESR1", "GATA3",            # additional BRCA drivers
-]  # CDH1 not in GREmLN epithelial network
+    "CDH1",                                     # lobular BRCA driver
+]
 COAD_GENES  = [
     "TP53", "MYC", "CTNNB1", "CCND1",           # original panel
     "KRAS", "APC", "SMAD4",                      # original COAD panel
