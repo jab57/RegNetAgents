@@ -26,6 +26,9 @@ Outputs:
   supplementary/  (named directly in the paper's Data Availability section)
   - table_s1_brca_candidates.csv                : source-labeled candidate list, BRCA
   - table_s2_coad_candidates.csv                : source-labeled candidate list, COAD
+  - table_s3_tier_specificity.csv               : focal genes vs random genes, per tier
+                                                  (the "tier_specificity" key of the JSON
+                                                  above holds the per-gene detail)
 
   manuscript/  (NAR paper figures — overwrite in place)
   - figure_heatmap_brca.png                    : OR enrichment heatmap, BRCA (NAR Fig 3A)
@@ -90,6 +93,15 @@ SUPPLEMENTARY_DIR = "supplementary"
 # section (only BRCA/COAD have a named supplementary CSV; other cancer types fall
 # back to writing under RESULTS_DIR).
 SUPPLEMENTARY_TABLE_NUMBER = {"brca": 1, "coad": 2}
+
+# Tier specificity (Table S3): focal panel vs random non-OncoKB genes
+TIER_NULL_N_RANDOM     = 300
+TIER_NULL_SEEDS        = [RANDOM_SEED, 1, 2, 3, 4]
+TIER_NULL_RESAMPLES    = 2000   # random panels drawn per seed for the Stouffer Z null
+TIER_LOGOR_PERMUTATIONS = 5000  # label permutations per seed for the log-OR test
+# Floor for Stouffer Z: a Fisher p that underflows to 0 would give Z=+inf.
+TIER_P_FLOOR           = 1e-15
+TIER_SPECIFICITY_TABLE = "table_s3_tier_specificity.csv"
 
 # Section 3.6 / Table 10: OncoKB-overlapping CTNNB1 BRCA candidates (Table 1),
 # analyzed via comprehensive_gene_analysis on the TCGA BRCA network.
@@ -1137,6 +1149,242 @@ def run_gremln_comparison(
     return out
 
 
+# ── Tier specificity: focal genes vs random genes (Table S3) ──────────────────
+
+def _tier_sets(symbol: str, gremln_idx: dict, e2s: dict, sym2id: dict,
+               tcga_idx: dict, tcga_bg: set):
+    """(tcga_only, gremln_only) regulator sets read straight from the network
+    indices, or None if the gene is not in both networks. Gives the same sets as
+    compare_network_contexts (checked against it for every focal gene)."""
+    ensg = sym2id.get(symbol)
+    if ensg is None or symbol not in tcga_bg:
+        return None
+    g = {(e2s.get(r) or r).upper() for r in gremln_idx["target_regulators"].get(ensg, [])}
+    t = {r.upper() for r in tcga_idx["target_regulators"].get(symbol, [])}
+    return t - g, g - t
+
+
+def _haldane_log_or(query: set, reference: set, background: set) -> float:
+    """Log odds ratio with +0.5 in every cell (finite when a cell is zero)."""
+    bg = background | query
+    a = len(query & reference)
+    b = len(query) - a
+    c = len((bg - query) & reference)
+    d = len(bg) - len(query) - c
+    return float(np.log(((a + .5) * (d + .5)) / ((b + .5) * (c + .5))))
+
+
+def _tier_test(query: set, reference: set, background: set) -> dict:
+    if len(query) < 3:
+        return {"skipped": True, "n": len(query)}
+    f = fisher_enrichment(query, reference, background)
+    return {"skipped": False, "n": len(query), "overlap": f["ref_overlap"],
+            "or": f["odds_ratio"], "p": f["p_value"],
+            "log_or": _haldane_log_or(query, reference, background)}
+
+
+def _tier_rows_testable(rows: dict) -> list:
+    return [r for r in rows.values() if not r.get("skipped", True)]
+
+
+def _tier_add_fdr(rows: dict) -> None:
+    names = [g for g, r in rows.items() if not r.get("skipped", True)]
+    for g, q in zip(names, bh_fdr([rows[g]["p"] for g in names])):
+        rows[g]["fdr"] = q
+
+
+def _tier_stouffer(rows: list) -> float:
+    ps = [max(r["p"], TIER_P_FLOOR) for r in rows]
+    return stouffer_z(ps, [r["n"] for r in rows])["combined_z"]
+
+
+def _tier_summary(rows: dict) -> dict:
+    t = _tier_rows_testable(rows)
+    if not t:
+        return {"testable": 0}
+    return {
+        "testable":       len(t),
+        "median_or":      float(np.median([r["or"] for r in t])),
+        "frac_p_lt_0.05": sum(r["p"] < 0.05 for r in t) / len(t),
+        "n_fdr_lt_0.05":  sum(r.get("fdr", 1.0) < 0.05 for r in t),
+        "stouffer_z":     _tier_stouffer(t),
+    }
+
+
+def _focal_vs_random(focal_rows: dict, random_rows: dict, seed: int) -> dict:
+    """
+    Compare the focal panel with random genes two ways:
+      - Stouffer Z (the paper's statistic) vs TIER_NULL_RESAMPLES random panels of
+        the same size; grows with candidate-set size, so read it with care.
+      - Mean log OR, focal minus random, permutation test; size-independent.
+    """
+    f, n = _tier_rows_testable(focal_rows), _tier_rows_testable(random_rows)
+    focal_z = _tier_stouffer(f)
+    rng = np.random.default_rng(seed)
+    null_zs = np.array([
+        _tier_stouffer([n[i] for i in rng.choice(len(n), len(f), replace=False)])
+        for _ in range(TIER_NULL_RESAMPLES)
+    ])
+    f_lor = np.array([r["log_or"] for r in f])
+    n_lor = np.array([r["log_or"] for r in n])
+    observed = f_lor.mean() - n_lor.mean()
+    pooled, k = np.concatenate([f_lor, n_lor]), len(f_lor)
+    perm = np.empty(TIER_LOGOR_PERMUTATIONS)
+    for i in range(TIER_LOGOR_PERMUTATIONS):
+        x = rng.permutation(pooled)
+        perm[i] = x[:k].mean() - x[k:].mean()
+    return {
+        "seed":                 seed,
+        "n_focal":              len(f),
+        "n_random":             len(n),
+        "focal_z":              focal_z,
+        "random_z_median":      float(np.median(null_zs)),
+        "random_z_95th":        float(np.percentile(null_zs, 95)),
+        "stouffer_empirical_p": float((np.sum(null_zs >= focal_z) + 1) / (len(null_zs) + 1)),
+        "focal_geomean_or":     float(np.exp(f_lor.mean())),
+        "random_geomean_or":    float(np.exp(n_lor.mean())),
+        "logor_permutation_p":  float((np.sum(perm >= observed) + 1) / (len(perm) + 1)),
+    }
+
+
+def run_tier_specificity(agent, workflow, oncokb_raw: set,
+                         brca_comparisons: dict, coad_comparisons: dict) -> dict:
+    """
+    Do focal cancer genes' candidates beat random genes' candidates?
+
+    Regulators are themselves ~2.5x enriched in OncoKB relative to all genes, so
+    any gene's candidates look enriched against an all-gene background. This runs
+    the TCGA-only and GREmLN-only tests on TIER_NULL_N_RANDOM random genes (in both
+    networks, not OncoKB, not focal/control) per seed, and compares the focal panel
+    with them — under the paper's all-gene background and a regulator-only one.
+    Control genes are also run through both tiers for reference.
+    """
+    print("\n" + "=" * 70)
+    print("Tier specificity: focal genes vs random genes (Table S3)")
+    print("=" * 70)
+
+    import pickle as _pickle
+    with open("cache/gene_id_cache.pkl", "rb") as f:
+        e2s = _pickle.load(f).get("ensembl_to_symbol", {})
+    gremln_idx = agent.cache.network_indices[CELL_TYPE]
+    in_net = set(gremln_idx["all_genes"])
+    sym2id: dict = {}  # symbol -> in-network Ensembl ID
+    for ensg, sym in e2s.items():
+        if ensg in in_net:
+            sym2id.setdefault(sym.upper(), ensg)
+    g_bg   = {e2s[e].upper() for e in gremln_idx["all_genes"] if e in e2s}
+    g_regs = {e2s[e].upper() for e in gremln_idx["regulator_targets"] if e in e2s}
+
+    def regulator_bias(regs: set, bg: set) -> dict:
+        a, b = len(oncokb_raw & regs) / len(regs), len(oncokb_raw & bg) / len(bg)
+        return {"n_regulators": len(regs), "n_background": len(bg),
+                "oncokb_frac_regulators": a, "oncokb_frac_background": b, "ratio": a / b}
+
+    out: dict = {
+        "config": {"n_random": TIER_NULL_N_RANDOM, "seeds": TIER_NULL_SEEDS,
+                   "n_null_resamples": TIER_NULL_RESAMPLES,
+                   "n_logor_permutations": TIER_LOGOR_PERMUTATIONS},
+        "regulator_bias": {"gremln": regulator_bias(g_regs, g_bg)},
+    }
+    focal = {"brca": BRCA_GENES, "coad": COAD_GENES}
+    pipeline = {"brca": brca_comparisons, "coad": coad_comparisons}
+    excluded = set(BRCA_GENES) | set(COAD_GENES) | set(HOUSEKEEPING_GENES) | set(NEUTRAL_GENES)
+
+    for ct in ["brca", "coad"]:
+        CT = ct.upper()
+        tcga_idx = workflow.tcga_cache.tcga_indices[ct]
+        t_bg   = {g.upper() for g in tcga_idx["all_genes"]}
+        t_regs = {g.upper() for g in tcga_idx["regulator_targets"]}
+        out["regulator_bias"][ct] = regulator_bias(t_regs, t_bg)
+
+        backgrounds = {
+            "all_gene_bg":  {"tcga": (oncokb_raw & t_bg, t_bg),
+                             "gremln": (oncokb_raw & g_bg, g_bg)},
+            "regulator_bg": {"tcga": (oncokb_raw & t_regs, t_regs),
+                             "gremln": (oncokb_raw & g_regs, g_regs)},
+        }
+        groups = {"focal": focal[ct], "housekeeping": HOUSEKEEPING_GENES,
+                  "neutral": NEUTRAL_GENES}
+
+        sets = {g: _tier_sets(g, gremln_idx, e2s, sym2id, tcga_idx, t_bg)
+                for genes in groups.values() for g in genes}
+        for g, comp in pipeline[ct].items():  # must match compare_network_contexts
+            r = comp["regulators"]
+            via_pipeline = ({x.upper() for x in r["tumor_state_only"]},
+                            {x.upper() for x in r["population_averaged_only"]})
+            if sets.get(g) != via_pipeline:
+                raise RuntimeError(f"[{CT}] {g}: tier sets differ from compare_network_contexts")
+
+        pool = sorted((g_bg & t_bg) - oncokb_raw - excluded)
+        random_sets = {}
+        for seed in TIER_NULL_SEEDS:
+            sample = random.Random(seed).sample(pool, min(TIER_NULL_N_RANDOM, len(pool)))
+            random_sets[seed] = {
+                g: s for g in sample
+                if (s := _tier_sets(g, gremln_idx, e2s, sym2id, tcga_idx, t_bg)) is not None}
+
+        out[ct] = {}
+        for bg_name, tiers in backgrounds.items():
+            out[ct][bg_name] = {}
+            for tier, (ref, bg) in tiers.items():
+                ix = 0 if tier == "tcga" else 1
+                res: dict = {}
+                for grp, genes in groups.items():
+                    rows = {g: ({"skipped": True, "error": "not in both networks"}
+                                if sets[g] is None else _tier_test(sets[g][ix], ref, bg))
+                            for g in genes}
+                    _tier_add_fdr(rows)
+                    res[grp] = {"genes": rows, "summary": _tier_summary(rows)}
+                per_seed = []
+                for seed, rs in random_sets.items():
+                    random_rows = {g: _tier_test(s[ix], ref, bg) for g, s in rs.items()}
+                    _tier_add_fdr(random_rows)
+                    if seed == RANDOM_SEED:
+                        res["random_genes"] = {"seed": seed, "summary": _tier_summary(random_rows)}
+                    per_seed.append(_focal_vs_random(res["focal"]["genes"], random_rows, seed))
+                res["focal_vs_random_by_seed"] = per_seed
+                out[ct][bg_name][tier] = res
+                lo = min(r["logor_permutation_p"] for r in per_seed)
+                hi = max(r["logor_permutation_p"] for r in per_seed)
+                print(f"[{CT} {bg_name} {tier}-only] focal Z={per_seed[0]['focal_z']:.2f}  "
+                      f"focal vs random log-OR p={lo:.3f}-{hi:.3f} ({len(per_seed)} seeds)")
+    return out
+
+
+def save_tier_specificity_table(tier_results: dict) -> None:
+    """One row per cancer type x tier x background x seed -> supplementary Table S3."""
+    path = os.path.join(SUPPLEMENTARY_DIR, TIER_SPECIFICITY_TABLE)
+    fields = ["cancer_type", "tier", "background", "seed", "n_focal", "n_random",
+              "focal_geomean_or", "random_geomean_or", "logor_permutation_p",
+              "focal_stouffer_z", "random_stouffer_z_median", "stouffer_empirical_p"]
+    tier_label = {"tcga": "TCGA-only", "gremln": "GREmLN-only"}
+    bg_label = {"all_gene_bg": "all genes", "regulator_bg": "regulators only"}
+    rows = []
+    for ct in ["brca", "coad"]:
+        for bg_name in ["all_gene_bg", "regulator_bg"]:
+            for tier in ["tcga", "gremln"]:
+                for r in tier_results[ct][bg_name][tier]["focal_vs_random_by_seed"]:
+                    rows.append({
+                        "cancer_type":              ct.upper(),
+                        "tier":                     tier_label[tier],
+                        "background":               bg_label[bg_name],
+                        "seed":                     r["seed"],
+                        "n_focal":                  r["n_focal"],
+                        "n_random":                 r["n_random"],
+                        "focal_geomean_or":         round(r["focal_geomean_or"], 3),
+                        "random_geomean_or":        round(r["random_geomean_or"], 3),
+                        "logor_permutation_p":      round(r["logor_permutation_p"], 4),
+                        "focal_stouffer_z":         round(r["focal_z"], 3),
+                        "random_stouffer_z_median": round(r["random_z_median"], 3),
+                        "stouffer_empirical_p":     round(r["stouffer_empirical_p"], 4),
+                    })
+    with open(path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"Tier specificity table ({len(rows)} rows) -> {path}")
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def run_experiment() -> None:
@@ -1187,6 +1435,10 @@ def run_experiment() -> None:
         coad_bg=coad_bg,
     )
 
+    # ── Tier specificity: focal genes vs random genes (Table S3) ──────────────
+    tier_specificity = run_tier_specificity(agent, workflow, oncokb_raw, brca_comp, coad_comp)
+    save_tier_specificity_table(tier_specificity)
+
     # ── Save combined JSON ─────────────────────────────────────────────────────
     output = {
         "config": {
@@ -1214,6 +1466,7 @@ def run_experiment() -> None:
             "coad": coad_neutral,
         },
         "gremln_comparison": gremln_comparison,
+        "tier_specificity":  tier_specificity,
     }
     plot_gremln_heatmap(gremln_comparison, "brca", BRCA_GENES)
     plot_gremln_heatmap(gremln_comparison, "coad", COAD_GENES)
@@ -1241,6 +1494,7 @@ def run_experiment() -> None:
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_brca.png")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_coad.png")
     print(f"            {RESULTS_DIR}/ctnnb1_demo_results.json  (Table 10)")
+    print(f"            {SUPPLEMENTARY_DIR}/{TIER_SPECIFICITY_TABLE}  (Table S3)")
     print("\nDone.")
 
 
