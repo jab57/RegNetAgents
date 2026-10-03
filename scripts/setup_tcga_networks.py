@@ -45,8 +45,10 @@ sys.path.insert(0, REPO_ROOT)
 
 LICENSE_URL = ("https://bioconductor.org/packages/release/data/experiment/"
                "licenses/aracne.networks/LICENSE")
+# Version-pinned Bioconductor URLs (the generic "release/" URL changes at every
+# Bioconductor release). Network data are identical in 1.36.0 and 1.38.0; from 1.39.x
+# the package no longer contains the .rda data files.
 DOWNLOAD_URLS = [
-    "https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz",
     "https://bioconductor.org/packages/3.23/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz",
     "https://bioconductor.org/packages/3.22/data/experiment/src/contrib/aracne.networks_1.36.0.tar.gz",
 ]
@@ -147,6 +149,12 @@ def main() -> None:
     failures = []
     try:
         with tarfile.open(tarball, "r:gz") as tf:
+            names = set(tf.getnames())
+            missing = [ct for ct in types if f"aracne.networks/data/{RDA_NAMES[ct]}" not in names]
+            if missing:
+                sys.exit("ERROR: this aracne.networks tarball has no network data files "
+                         f"({', '.join(missing)}). Use version 1.36.0 or 1.38.0, e.g.\n  "
+                         + DOWNLOAD_URLS[0])
             rda_sha = {}
             for ct in types:
                 member = tf.extractfile(f"aracne.networks/data/{RDA_NAMES[ct]}")
