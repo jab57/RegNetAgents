@@ -513,8 +513,8 @@ GBM and LAML are intentionally excluded — no reference network of the appropri
 
 ### Data Source
 
-**Package**: Bioconductor `aracne.networks` (Lim & Califano, 2018)
-**Source paper**: Lim, W.K. & Califano, A. (2018). "Mapping the hallmarks of lung adenocarcinoma with massively parallel sequencing." *Cell Syst.* 6(4):446–460. doi:10.1016/j.cels.2018.02.011
+**Package**: Bioconductor `aracne.networks` (author: Federico M. Giorgi; maintainers: F. M. Giorgi, M. J. Alvarez)
+**Inference method**: ARACNe-AP — Lachmann A, et al. (2016). "ARACNe-AP: gene network reverse engineering through adaptive partitioning inference of mutual information." *Bioinformatics* 32(14):2233–2235. doi:10.1093/bioinformatics/btw216
 **Download URL**: `https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz`
 
 Networks are derived from TCGA tumor RNA-seq data processed through the ARACNe-AP algorithm at the Califano Lab (Columbia University).

@@ -380,7 +380,7 @@ After completing installation, you have:
 ## Optional: TCGA Tumor-State Networks
 
 RegNetAgents supports a second set of regulatory networks derived from TCGA
-bulk RNA-seq data via ARACNe (Lim & Califano). The pre-built PKL caches for
+bulk RNA-seq data via ARACNe (Bioconductor `aracne.networks`). The pre-built PKL caches for
 all 14 cancer types are **included in the repository** — cloning the repo is
 sufficient for standard use. The instructions below are for reproducibility
 or rebuilding from scratch.
