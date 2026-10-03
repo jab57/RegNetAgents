@@ -277,9 +277,9 @@ def plot_workflow_figure() -> None:
          "Source (TCGA-only / GREmLN-only / Both)  ·  IntOGen role",
          "MoA direction (activating / repressive)  for TCGA-only"))
 
-    arrow(7.0, 6.2, "TCGA-only candidates")
+    arrow(7.0, 6.2, "TCGA-only and GREmLN-only candidates")
 
-    box(4.2, 2.1, C_ENRICH, "ENRICHMENT VALIDATION",
+    box(4.2, 2.1, C_ENRICH, "ENRICHMENT TESTS",
         ("Fisher's exact test  ·  IntOGen reference",
          "BH-FDR correction  ·  comparison with random genes"))
 
