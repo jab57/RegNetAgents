@@ -707,7 +707,20 @@ annotation informs a reported result.
 Routine maintenance, not automated — IntOGen cuts a release roughly annually. The recipe
 also lives in the `regnetagents/driver_gene_client.py` module docstring.
 
+> **Licensing guardrail.** The bundled snapshot is redistributed under CC0 because the
+> IntOGen *driver-gene* archive (`IntOGen-Drivers-*.zip`) ships a CC0 `LICENSE.txt`.
+> - Rebuild **only** from that driver-gene archive's `Compendium_Cancer_Genes.tsv`.
+> - **Never** mix in BoostDM data or other IntOGen-associated downloads. They are separate
+>   resources with their own licenses.
+> - Before replacing the snapshot, confirm the new archive's `LICENSE.txt` is still CC0. If
+>   the license has changed, stop: the file can no longer be bundled under the current
+>   terms.
+>
+> Refreshing also changes the reference set used by `scripts/experiment_regulatory_candidates.py`.
+> The research paper's results are tied to release 2024.09.20, so record the release used.
+
 1. Download the current release ZIP from https://www.intogen.org/download and unzip it.
+   Confirm it is the driver-gene archive and that its `LICENSE.txt` is CC0 (see above).
 2. From `Compendium_Cancer_Genes.tsv`, per `SYMBOL`: collapse the per-cohort `ROLE` calls to
    one `role` (majority-vote rules above); count distinct `CANCER_TYPE` values →
    `n_cancer_types`; map `CANCER_TYPE` through `INTOGEN_TO_TCGA_CANCER_TYPE` → the sorted

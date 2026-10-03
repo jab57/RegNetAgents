@@ -49,6 +49,11 @@ release from https://www.intogen.org/download, and from
 -- ``Act`` majority -> ``oncogene``, ``LoF`` majority -> ``tumor_suppressor``,
 exact tie -> ``mixed``, only-ambiguous -> ``ambiguous`` -- then write the
 two-column snapshot with refreshed provenance comments.
+
+Licensing: rebuild only from the IntOGen driver-gene archive (the
+``IntOGen-Drivers-*.zip`` release), and only if its ``LICENSE.txt`` is still CC0.
+Never mix in BoostDM or other IntOGen-associated downloads, which are licensed
+separately. See docs/DATA_SOURCES.md, "Refreshing to a Newer IntOGen Release".
 """
 
 from __future__ import annotations
