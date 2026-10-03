@@ -281,7 +281,7 @@ def plot_workflow_figure() -> None:
 
     box(4.2, 2.1, C_ENRICH, "ENRICHMENT VALIDATION",
         ("Fisher's exact test  ·  IntOGen reference",
-         "Permutation control (n=1,000)  ·  BH-FDR correction"))
+         "BH-FDR correction  ·  comparison with random genes"))
 
     arrow(4.2, 3.4)
 
