@@ -487,8 +487,8 @@ def plot_neg_controls(
     ax.set_xticklabels(all_lbls, fontsize=10)
     ax.set_ylabel("Odds Ratio vs. IntOGen", fontsize=10)
     ax.set_title(
-        f"Negative control validation ({ct}): cancer driver genes vs. housekeeping genes\n"
-        "Red = cancer focal genes; teal = housekeeping negative controls (expected OR ~1)",
+        f"Housekeeping gene controls ({ct.upper()}): cancer driver genes vs. housekeeping genes\n"
+        "Red = cancer focal genes; teal = housekeeping controls (TCGA-only candidates)",
         fontsize=11,
     )
     from matplotlib.patches import Patch
@@ -544,8 +544,8 @@ def plot_neutral_controls(
     ax.set_xticklabels(all_lbls, fontsize=10)
     ax.set_ylabel("Odds Ratio vs. IntOGen", fontsize=10)
     ax.set_title(
-        f"Neutral control validation ({ct}): cancer driver genes vs. tumor-expressed non-driver genes\n"
-        "Red = cancer focal genes; orange = neutral controls (tumor-expressed, non-IntOGen; expected OR ~1)",
+        f"Neutral gene controls ({ct.upper()}): cancer driver genes vs. tumor-expressed non-driver genes\n"
+        "Red = cancer focal genes; orange = neutral controls (tumor-expressed, non-IntOGen)",
         fontsize=11,
     )
     from matplotlib.patches import Patch
@@ -659,7 +659,7 @@ def plot_target_list(all_targets: dict, cancer_type: str) -> None:
     ax.set_xticklabels(genes, fontsize=11)
     ax.set_ylabel("IntOGen-overlapping regulators", fontsize=10)
     ax.set_title(
-        f"{ct}: Candidate therapeutic regulators by network source\n"
+        f"{ct.upper()}: Candidate regulators by network source\n"
         "(IntOGen-filtered; source indicates which network context identified each regulator)",
         fontsize=11,
     )
