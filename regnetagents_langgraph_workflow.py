@@ -57,6 +57,13 @@ load_dotenv()
 # Import existing components
 from regnetagents import GeneIDMapper, CompleteGeneService
 from regnetagents.tcga_registry import TCGA_NETWORK_REGISTRY, TCGA_CANCER_TYPES
+
+# TCGA networks are not bundled (Bioconductor aracne.networks is under a Columbia
+# University evaluation license); users install them locally.
+TCGA_SETUP_HINT = (
+    "TCGA networks are not included with RegNetAgents (aracne.networks license). "
+    "Install them with: python scripts/setup_tcga_networks.py --accept-license"
+)
 from enum import Enum
 import pickle
 import os
@@ -225,8 +232,7 @@ class TCGANetworkCache:
             )
         else:
             logger.info(
-                "No TCGA network caches found. "
-                "Download CSVs and run: python scripts/build_tcga_cache.py --all"
+                f"No TCGA network caches found. {TCGA_SETUP_HINT}"
             )
 
     def get_thresholds(self, cancer_type: str) -> dict:
@@ -788,8 +794,7 @@ class RegNetAgentsModelingAgent:
             return {
                 "error": True,
                 "query_type": query_type,
-                "message": "TCGA cache is not initialised. "
-                           "Run: python scripts/build_tcga_cache.py --all",
+                "message": f"TCGA cache is not initialised. {TCGA_SETUP_HINT}",
             }
 
         network_data = self.tcga_cache.tcga_indices.get(tcga_network, {})
@@ -800,8 +805,8 @@ class RegNetAgentsModelingAgent:
                 "tcga_network": tcga_network,
                 "message": (
                     f"No TCGA network loaded for '{tcga_network}'. "
-                    f"Available: {sorted(self.tcga_cache.tcga_indices) or 'none — run build_tcga_cache.py'}. "
-                    f"Valid cancer types: {TCGA_CANCER_TYPES}"
+                    f"Available: {sorted(self.tcga_cache.tcga_indices) or 'none'}. "
+                    f"Valid cancer types: {TCGA_CANCER_TYPES}. {TCGA_SETUP_HINT}"
                 ),
             }
 
@@ -1112,8 +1117,7 @@ class RegNetAgentsModelingAgent:
         if self.tcga_cache is None:
             return {
                 "error": True,
-                "message": "TCGA cache is not initialised. "
-                           "Run: python scripts/build_tcga_cache.py --all",
+                "message": f"TCGA cache is not initialised. {TCGA_SETUP_HINT}",
             }
 
         network_data = self.tcga_cache.tcga_indices.get(tcga_network, {})
@@ -1122,7 +1126,8 @@ class RegNetAgentsModelingAgent:
                 "error": True,
                 "message": (
                     f"No TCGA network loaded for '{tcga_network}'. "
-                    f"Available: {sorted(self.tcga_cache.tcga_indices) or 'none'}."
+                    f"Available: {sorted(self.tcga_cache.tcga_indices) or 'none'}. "
+                    f"{TCGA_SETUP_HINT}"
                 ),
             }
 
@@ -2874,7 +2879,7 @@ class RegNetAgentsWorkflow:
                 "tcga_network": tcga_network,
                 "regulatory_role": "unknown",
                 "error": True,
-                "message": f"No TCGA network loaded for '{tcga_network}'"
+                "message": f"No TCGA network loaded for '{tcga_network}'. {TCGA_SETUP_HINT}"
             }
 
         regulator_targets = network_data.get("regulator_targets", {})

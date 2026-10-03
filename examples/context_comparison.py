@@ -5,8 +5,9 @@ Compares regulatory wiring for MYC across population-averaged epithelial
 (GREmLN) and colorectal tumor-state (TCGA COAD) networks.
 
 Requirements:
-    TCGA caches must be built first:
-        python scripts/build_tcga_cache.py --all
+    TCGA networks must be installed first (not bundled; aracne.networks license):
+        pip install -e ".[tcga]"
+        python scripts/setup_tcga_networks.py --accept-license
 
 Usage:
     python examples/context_comparison.py
@@ -28,8 +29,8 @@ def main():
     agent = workflow.modeling_agent
 
     if agent.tcga_cache is None or not agent.tcga_cache.tcga_indices:
-        print("\nTCGA cache not found. Build it first:")
-        print("    python scripts/build_tcga_cache.py --all")
+        print("\nTCGA networks not installed (not bundled; aracne.networks license). Install:")
+        print("    python scripts/setup_tcga_networks.py --accept-license")
         sys.exit(1)
 
     print("\nComparing MYC regulatory wiring:")

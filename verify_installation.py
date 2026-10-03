@@ -15,7 +15,6 @@ License: MIT
 
 import sys
 import os
-import subprocess
 import pickle
 import time
 from pathlib import Path
@@ -33,58 +32,21 @@ def print_header(text):
     print(f"{'=' * 60}\n")
 
 
-def check_git_lfs():
-    """Check if Git LFS is installed and files are downloaded."""
-    print("\nChecking Git LFS...")
-
-    # Check if git lfs command exists
-    try:
-        result = subprocess.run(['git', 'lfs', 'version'],
-                              capture_output=True, text=True, timeout=5)
-        if result.returncode == 0:
-            version = result.stdout.strip().split('\n')[0]
-            print(f"  Git LFS installed: {version}")
-        else:
-            print(f"{CROSS} Git LFS not installed")
-            print("  Install from: https://git-lfs.github.com")
-            print("  Or run: git lfs install")
-            return False
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        print(f"{CROSS} Git LFS not found")
-        print("  Install from: https://git-lfs.github.com")
-        return False
-
-    # Check if the LFS-tracked TCGA data is actually downloaded (not just pointers).
-    # Per .gitattributes, only *.csv/*.h5/*.pt/*.h5ad are LFS-tracked — the GREmLN
-    # network_index.pkl files are NOT, so a pointer-stub check must target a real
-    # LFS-tracked file (a TCGA network.csv) or it can never actually detect the
-    # failure mode it exists to catch.
-    sample_file = Path("models/networks/tcga/brca/network.csv")
-
-    if not sample_file.exists():
-        print(f"{WARN} Sample TCGA network file not found")
-        print("  Network files may not be present yet")
-        return True  # Don't fail - network check will catch this
-
-    # Git LFS pointer files are a small text stub starting with this exact line;
-    # a real network.csv starts with a comma-separated header row instead.
-    try:
-        with open(sample_file, 'r', encoding='utf-8', errors='replace') as f:
-            first_line = f.readline()
-
-        if first_line.startswith('version https://git-lfs.github.com/spec/v1'):
-            print(f"{CROSS} TCGA network files are Git LFS pointers (not downloaded)")
-            print("  Fix this by running:")
-            print("    git lfs pull")
-            print("  This will download ~1.2 GB of network data")
-            return False
-        else:
-            print(f"{CHECK} TCGA network files downloaded correctly")
-            return True
-
-    except Exception as e:
-        print(f"{WARN} Could not verify network file: {e}")
-        return True  # Don't fail on read errors
+def check_tcga_networks():
+    """Optional: are the TCGA networks installed? (They are not bundled.)"""
+    print("\nChecking TCGA networks (optional)...")
+    from regnetagents.tcga_registry import TCGA_CANCER_TYPES
+    installed = [ct for ct in TCGA_CANCER_TYPES
+                 if Path(f"models/networks/tcga/{ct}/network_index.pkl").exists()]
+    if len(installed) == len(TCGA_CANCER_TYPES):
+        print(f"{CHECK} All {len(installed)} TCGA networks installed")
+        return True
+    print(f"{WARN} TCGA networks installed: {len(installed)}/{len(TCGA_CANCER_TYPES)}")
+    print("  They are not included with RegNetAgents (aracne.networks license).")
+    print("  TCGA-based tools need them; everything else works without them. Install with:")
+    print('    pip install -e ".[tcga]"')
+    print("    python scripts/setup_tcga_networks.py --accept-license")
+    return bool(installed)
 
 
 def check_python_version():
@@ -335,7 +297,7 @@ def main():
         ("Network Data", check_network_data()),
         ("Cache Directory", check_cache_directory()),
         ("Core Modules", check_core_modules()),
-        ("Git LFS", check_git_lfs()),
+        ("TCGA networks (optional)", check_tcga_networks()),
         ("Ollama (optional)", check_ollama()),
     ]
 
@@ -345,9 +307,9 @@ def main():
 
     passed = sum(1 for _, result in checks if result)
     total = len(checks)
-    required = total - 1  # Ollama is optional; Git LFS validates real TCGA data now
+    required = total - 2  # Ollama and the TCGA networks are optional
 
-    print(f"\nTotal checks: {total} ({required} required, 1 optional: Ollama)")
+    print(f"\nTotal checks: {total} ({required} required, 2 optional: Ollama, TCGA networks)")
     print(f"Time taken: {total_time:.1f} seconds\n")
 
     for name, result in checks:
@@ -366,7 +328,7 @@ def main():
         print("  2. Restart Claude Desktop completely")
         print("  3. Test with: 'Analyze TP53 in epithelial cells'\n")
         return 0
-    elif passed >= required:  # All required checks passed (Ollama optional)
+    elif all(result for name, result in checks if "(optional)" not in name):
         print(f"\n{CHECK} READY TO USE (optional features disabled)\n")
         print("RegNetAgents will work with rule-based mode.")
         print("\nOptional enhancements:")

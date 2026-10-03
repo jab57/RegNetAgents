@@ -10,7 +10,7 @@ Unit tests (always run):
 
 Integration tests (skipped when TCGA PKLs are absent):
     Test against the real BRCA cache if it is present on disk.  Run these
-    after executing `python scripts/build_tcga_cache.py --cancer-type brca`.
+    after installing them with `python scripts/setup_tcga_networks.py --accept-license`.
 
 All tests follow the same async + get_workflow() pattern used elsewhere in
 this test suite.

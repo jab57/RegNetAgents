@@ -1148,7 +1148,7 @@ def run_experiment() -> None:
 
     for ct in ["brca", "coad"]:
         if not workflow.tcga_cache.tcga_indices.get(ct):
-            print(f"ERROR: No TCGA cache for '{ct}'. Run build_tcga_cache.py first.")
+            print(f"ERROR: No TCGA network for '{ct}'. Install: python scripts/setup_tcga_networks.py --accept-license")
             sys.exit(1)
 
     download_oncokb_if_missing(ONCOKB_PATH)

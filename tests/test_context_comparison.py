@@ -2,7 +2,7 @@
 Tests for compare_network_contexts (issue #17).
 
 Requires TCGA caches to be built:
-    python scripts/build_tcga_cache.py --all
+    python scripts/setup_tcga_networks.py --accept-license
 """
 
 import pytest
@@ -31,7 +31,7 @@ def _tcga_available(agent) -> bool:
 
 def test_basic_comparison_myc_coad(agent):
     if not _tcga_available(agent):
-        pytest.skip("TCGA cache not built — run scripts/build_tcga_cache.py --all")
+        pytest.skip("TCGA networks not installed — run scripts/setup_tcga_networks.py --accept-license")
 
     result = compare_network_contexts(agent, "MYC", "coad")
 
@@ -300,7 +300,7 @@ def test_driver_annotation_fields_present_on_real_query(agent):
     """Integration check against the real TCGA/GREmLN caches (issue: cancer-driver
     annotation, IntOGen)."""
     if not _tcga_available(agent):
-        pytest.skip("TCGA cache not built — run scripts/build_tcga_cache.py --all")
+        pytest.skip("TCGA networks not installed — run scripts/setup_tcga_networks.py --accept-license")
 
     from regnetagents.driver_gene_client import VALID_ROLES
 
