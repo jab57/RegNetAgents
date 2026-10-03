@@ -2,7 +2,7 @@
 """
 Convert TCGA ARACNe network CSVs to pickle cache format for RegNetAgents.
 
-Source data: Bioconductor aracne.networks package (Lim & Califano).
+Source data: Bioconductor aracne.networks package (Giorgi FM).
 Extract CSVs using scripts/extract_tcga_networks.py, then run this script.
 
 Quick start:
