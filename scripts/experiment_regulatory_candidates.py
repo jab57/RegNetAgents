@@ -8,10 +8,12 @@ paper (Briefings in Bioinformatics).
 
 For each focal gene in BRCA and COAD, queries both the GREmLN epithelial
 network and the TCGA tumor network, then generates a source-labeled candidate
-therapeutic target list filtered by OncoKB cancer driver annotation.
+therapeutic target list filtered by IntOGen cancer driver annotation.
 
-Reference datasets (pre-downloaded to data/):
-  - data/oncokb_cancer_genes.tsv   : OncoKB pan-cancer driver list
+Reference dataset (committed to the repo, no download):
+  - regnetagents/reference_data/intogen_drivers.tsv : IntOGen Compendium of
+    Mutational Cancer Driver Genes, release 2024.09.20 (CC0 1.0), pan-cancer
+    (all genes, any role). v1/v2 of the paper used IntOGen; v3 uses IntOGen.
 
 Outputs:
   results/
@@ -20,8 +22,6 @@ Outputs:
   - target_list_coad.png                       : candidate counts by source, COAD (NAR Fig 2B)
   - experiment_rewiring_barchart_brca.png      : regulator count bar chart, BRCA
   - experiment_rewiring_barchart_coad.png      : regulator count bar chart, COAD
-  - ctnnb1_demo_results.json                    : Table 10, section 3.6 application demo
-                                                  (illustrative; not a core statistical claim)
 
   supplementary/  (named directly in the paper's Data Availability section)
   - table_s1_brca_candidates.csv                : source-labeled candidate list, BRCA
@@ -44,7 +44,6 @@ Usage:
 Dependencies (all in requirements.txt): scipy, numpy, matplotlib, seaborn
 """
 
-import asyncio
 import csv
 import json
 import math
@@ -63,6 +62,7 @@ from scipy import stats
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from regnetagents.context_comparison import compare_network_contexts
+from regnetagents.driver_gene_client import load_driver_roles
 from regnetagents_langgraph_workflow import RegNetAgentsWorkflow
 
 # ── Configuration ──────────────────────────────────────────────────────────────
@@ -80,12 +80,13 @@ COAD_GENES  = [
     "FBXW7", "TCF7L2", "RNF43",                 # additional CRC drivers
 ]
 HOUSEKEEPING_GENES = ["ACTB", "GAPDH", "HPRT1", "LDHA", "TUBB"]
-NEUTRAL_GENES      = ["FASN", "PCNA", "PKM", "PABPC1", "VIM"]
+# PABPC1 was dropped in v3: it is an IntOGen driver (LIHC, LUSC), so it no longer
+# meets the "non-driver" definition of this panel.
+NEUTRAL_GENES      = ["FASN", "PCNA", "PKM", "VIM"]
 CELL_TYPE   = "epithelial_cell"
 N_PERMUTATIONS = 1000
 RANDOM_SEED    = 42
 
-ONCOKB_PATH    = "data/oncokb_cancer_genes.tsv"
 RESULTS_DIR    = "results"
 MANUSCRIPT_DIR = "manuscript"
 SUPPLEMENTARY_DIR = "supplementary"
@@ -94,7 +95,7 @@ SUPPLEMENTARY_DIR = "supplementary"
 # back to writing under RESULTS_DIR).
 SUPPLEMENTARY_TABLE_NUMBER = {"brca": 1, "coad": 2}
 
-# Tier specificity (Table S3): focal panel vs random non-OncoKB genes
+# Tier specificity (Table S3): focal panel vs random non-IntOGen genes
 TIER_NULL_N_RANDOM     = 300
 TIER_NULL_SEEDS        = [RANDOM_SEED, 1, 2, 3, 4]
 TIER_NULL_RESAMPLES    = 2000   # random panels drawn per seed for the Stouffer Z null
@@ -103,59 +104,16 @@ TIER_LOGOR_PERMUTATIONS = 5000  # label permutations per seed for the log-OR tes
 TIER_P_FLOOR           = 1e-15
 TIER_SPECIFICITY_TABLE = "table_s3_tier_specificity.csv"
 
-# Section 3.6 / Table 10: OncoKB-overlapping CTNNB1 BRCA candidates (Table 1),
-# analyzed via comprehensive_gene_analysis on the TCGA BRCA network.
-CTNNB1_DEMO_FOCAL_GENE = "CTNNB1"
-CTNNB1_DEMO_GENES = ["YAP1", "DDR2", "IL6ST", "ARID3A"]
+# ── Reference set loader ───────────────────────────────────────────────────────
 
-# ── Reference set loaders ──────────────────────────────────────────────────────
+def load_intogen_roles() -> dict:
+    """Return {SYMBOL: role} for every gene in the committed IntOGen snapshot.
 
-def download_oncokb_if_missing(path: str) -> None:
-    """Download OncoKB cancer gene list from public API if not present locally."""
-    if os.path.exists(path):
-        return
-    import urllib.request
-    url = "https://www.oncokb.org/api/v1/utils/cancerGeneList"
-    print(f"OncoKB file not found. Downloading from {url} ...")
-    try:
-        req = urllib.request.Request(url, headers={"Accept": "application/json"})
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            data = json.loads(resp.read().decode())
-        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        with open(path, "w", newline="") as f:
-            writer = csv.writer(f, delimiter="\t")
-            writer.writerow(["Hugo Symbol", "Gene Type"])
-            for entry in data:
-                writer.writerow([
-                    entry.get("hugoSymbol", ""),
-                    entry.get("geneType", "OTHER"),
-                ])
-        print(f"OncoKB cancer gene list saved to {path} ({len(data)} genes)")
-    except Exception as exc:
-        print(f"ERROR: Could not download OncoKB data: {exc}")
-        print("Please download manually from https://www.oncokb.org/cancer-genes")
-        sys.exit(1)
-
-
-def load_oncokb(path: str) -> set:
-    """Return symbol set for ONCOGENE / TSG / ONCOGENE_AND_TSG genes."""
-    genes = set()
-    with open(path) as f:
-        for row in csv.DictReader(f, delimiter="\t"):
-            if row["Gene Type"] in {"ONCOGENE", "TSG", "ONCOGENE_AND_TSG"}:
-                genes.add(row["Hugo Symbol"].strip().upper())
-    return genes
-
-
-def load_oncokb_roles(path: str) -> dict:
-    """Return {symbol: role} for ONCOGENE / TSG / ONCOGENE_AND_TSG genes."""
-    roles = {}
-    with open(path) as f:
-        for row in csv.DictReader(f, delimiter="\t"):
-            gt = row["Gene Type"]
-            if gt in {"ONCOGENE", "TSG", "ONCOGENE_AND_TSG"}:
-                roles[row["Hugo Symbol"].strip().upper()] = gt
-    return roles
+    Pan-cancer, any role (oncogene / tumor_suppressor / mixed / ambiguous); the
+    reference set is the full key set. Uses the same loader as the tool's driver
+    annotation (regnetagents.driver_gene_client).
+    """
+    return load_driver_roles()
 
 
 # ── Statistics ─────────────────────────────────────────────────────────────────
@@ -181,7 +139,9 @@ def fisher_enrichment(query: set, reference: set, background: set) -> dict:
     return {
         "a": a, "b": b, "c": c, "d": d,
         "odds_ratio":  round(or_val, 4),
-        "p_value":     round(p_val, 6),
+        # Full precision: rounding to 6 decimals turned p < 5e-7 into 0, which made
+        # stouffer_z return +inf and distorted BH-FDR.
+        "p_value":     p_val,
         "query_size":  len(query),
         "ref_overlap": a,
     }
@@ -235,7 +195,8 @@ def stouffer_z(p_values: list, weights: list = None) -> dict:
     """Stouffer's weighted combined Z-score from a list of one-tailed p-values."""
     if not p_values:
         return {"combined_z": float("nan"), "combined_p": float("nan")}
-    zs = np.array([stats.norm.ppf(1 - p) if p < 1.0 else 0.0 for p in p_values])
+    # isf(p) == ppf(1 - p) but keeps precision for tiny p; floor keeps p = 0 finite.
+    zs = np.array([stats.norm.isf(max(p, 1e-300)) if p < 1.0 else 0.0 for p in p_values])
     w  = np.ones(len(zs)) if weights is None else np.array(weights, dtype=float)
     z  = float(np.dot(w, zs) / np.sqrt(np.dot(w, w)))
     p  = float(1 - stats.norm.cdf(z))
@@ -312,14 +273,14 @@ def plot_workflow_figure() -> None:
     arrow(9.8, 9.0, "TCGA-only + GREmLN-only candidates")
 
     box(7.0, 2.3, C_CAND, "SOURCE-LABELED CANDIDATE LIST",
-        ("Filter all candidates against OncoKB",
-         "Source (TCGA-only / GREmLN-only / Both)  ·  OncoKB role",
+        ("Filter all candidates against IntOGen",
+         "Source (TCGA-only / GREmLN-only / Both)  ·  IntOGen role",
          "MoA direction (activating / repressive)  for TCGA-only"))
 
     arrow(7.0, 6.2, "TCGA-only candidates")
 
     box(4.2, 2.1, C_ENRICH, "ENRICHMENT VALIDATION",
-        ("Fisher's exact test  ·  OncoKB reference",
+        ("Fisher's exact test  ·  IntOGen reference",
          "Permutation control (n=1,000)  ·  BH-FDR correction"))
 
     arrow(4.2, 3.4)
@@ -342,8 +303,8 @@ def plot_or_heatmap(
     """Heatmap: rows = focal genes, columns = reference sets, values = OR."""
     ct = cancer_type.lower()
     CT = cancer_type.upper()
-    ref_keys   = ["oncokb"]
-    ref_labels = ["OncoKB\n(pan-cancer)"]
+    ref_keys   = ["intogen"]
+    ref_labels = ["IntOGen\n(pan-cancer)"]
 
     or_matrix    = []
     annot_matrix = []
@@ -379,7 +340,7 @@ def plot_or_heatmap(
     )
     ax.set_title(
         f"Enrichment of {CT}-specific regulators in cancer driver gene set\n"
-        "(* BH-FDR < 0.05, ** BH-FDR < 0.01; primary test = OncoKB)",
+        "(* BH-FDR < 0.05, ** BH-FDR < 0.01; primary test = IntOGen)",
         fontsize=11,
     )
     ax.set_xlabel("Reference gene set", fontsize=10)
@@ -419,7 +380,7 @@ def plot_gremln_heatmap(
         or_matrix,
         annot=annot_matrix,
         fmt="",
-        xticklabels=["OncoKB\n(pan-cancer)"],
+        xticklabels=["IntOGen\n(pan-cancer)"],
         yticklabels=genes,
         cmap="RdBu",
         center=1.0,
@@ -451,13 +412,13 @@ def plot_regulator_counts(
     cancer_type: str,
     out_dir: str,
 ) -> None:
-    """Bar chart: conserved vs. cancer-specific regulators, with OncoKB overlap."""
+    """Bar chart: conserved vs. cancer-specific regulators, with IntOGen overlap."""
     ct = cancer_type.lower()
     CT = cancer_type.upper()
     conserved_n = [comparisons[g]["regulators"]["conserved_count"] for g in genes]
     specific_n  = [len(comparisons[g]["regulators"]["tumor_state_only"]) for g in genes]
-    oncokb_n    = [
-        results[g]["enrichment"].get("oncokb", {}).get("ref_overlap", 0)
+    intogen_n    = [
+        results[g]["enrichment"].get("intogen", {}).get("ref_overlap", 0)
         for g in genes
     ]
 
@@ -468,14 +429,14 @@ def plot_regulator_counts(
            label="Conserved regulators", color="#4e79a7")
     ax.bar(x + width / 2, specific_n, width,
            label=f"{CT}-specific regulators", color="#f28e2b")
-    ax.bar(x + width / 2, oncokb_n, width,
-           label=f"{CT}-specific + OncoKB", color="#e15759", alpha=0.85)
+    ax.bar(x + width / 2, intogen_n, width,
+           label=f"{CT}-specific + IntOGen", color="#e15759", alpha=0.85)
     ax.set_xticks(x)
     ax.set_xticklabels(genes, fontsize=11)
     ax.set_ylabel("Number of regulators", fontsize=10)
     ax.set_title(
         f"Conserved vs. {CT}-specific regulators per focal gene\n"
-        "(red overlay = overlap with OncoKB cancer drivers)",
+        "(red overlay = overlap with IntOGen cancer drivers)",
         fontsize=11,
     )
     ax.legend(fontsize=9)
@@ -493,14 +454,14 @@ def plot_neg_controls(
     neg_genes: list,
     cancer_type: str,
 ) -> None:
-    """Bar chart: OncoKB OR for focal cancer genes vs. housekeeping negative controls."""
+    """Bar chart: IntOGen OR for focal cancer genes vs. housekeeping negative controls."""
     ct = cancer_type.upper()
 
     focal_ors  = []
     focal_lbls = []
     for g in focal_genes:
         if g in focal_results and not focal_results[g].get("skipped"):
-            v = focal_results[g]["enrichment"].get("oncokb", {}).get("odds_ratio", 0)
+            v = focal_results[g]["enrichment"].get("intogen", {}).get("odds_ratio", 0)
             focal_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
             focal_lbls.append(g)
 
@@ -508,7 +469,7 @@ def plot_neg_controls(
     neg_lbls = []
     for g in neg_genes:
         if g in neg_results and not neg_results[g].get("skipped", True):
-            v = neg_results[g]["enrichment"].get("oncokb", {}).get("odds_ratio", 0)
+            v = neg_results[g]["enrichment"].get("intogen", {}).get("odds_ratio", 0)
             neg_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
             neg_lbls.append(g)
 
@@ -524,7 +485,7 @@ def plot_neg_controls(
     ax.axhline(1.0, color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
     ax.set_xticks(x)
     ax.set_xticklabels(all_lbls, fontsize=10)
-    ax.set_ylabel("Odds Ratio vs. OncoKB", fontsize=10)
+    ax.set_ylabel("Odds Ratio vs. IntOGen", fontsize=10)
     ax.set_title(
         f"Negative control validation ({ct}): cancer driver genes vs. housekeeping genes\n"
         "Red = cancer focal genes; teal = housekeeping negative controls (expected OR ~1)",
@@ -550,14 +511,14 @@ def plot_neutral_controls(
     neutral_genes: list,
     cancer_type: str,
 ) -> None:
-    """Bar chart: OncoKB OR for focal cancer genes vs. tumor-expressed neutral controls."""
+    """Bar chart: IntOGen OR for focal cancer genes vs. tumor-expressed neutral controls."""
     ct = cancer_type.upper()
 
     focal_ors  = []
     focal_lbls = []
     for g in focal_genes:
         if g in focal_results and not focal_results[g].get("skipped"):
-            v = focal_results[g]["enrichment"].get("oncokb", {}).get("odds_ratio", 0)
+            v = focal_results[g]["enrichment"].get("intogen", {}).get("odds_ratio", 0)
             focal_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
             focal_lbls.append(g)
 
@@ -565,7 +526,7 @@ def plot_neutral_controls(
     neutral_lbls = []
     for g in neutral_genes:
         if g in neutral_results and not neutral_results[g].get("skipped", True):
-            v = neutral_results[g]["enrichment"].get("oncokb", {}).get("odds_ratio", 0)
+            v = neutral_results[g]["enrichment"].get("intogen", {}).get("odds_ratio", 0)
             neutral_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
             neutral_lbls.append(g)
 
@@ -581,16 +542,16 @@ def plot_neutral_controls(
     ax.axhline(1.0, color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
     ax.set_xticks(x)
     ax.set_xticklabels(all_lbls, fontsize=10)
-    ax.set_ylabel("Odds Ratio vs. OncoKB", fontsize=10)
+    ax.set_ylabel("Odds Ratio vs. IntOGen", fontsize=10)
     ax.set_title(
         f"Neutral control validation ({ct}): cancer driver genes vs. tumor-expressed non-driver genes\n"
-        "Red = cancer focal genes; orange = neutral controls (tumor-expressed, non-OncoKB; expected OR ~1)",
+        "Red = cancer focal genes; orange = neutral controls (tumor-expressed, non-IntOGen; expected OR ~1)",
         fontsize=11,
     )
     from matplotlib.patches import Patch
     ax.legend(
         handles=[Patch(color="#e15759", label="Cancer driver genes"),
-                 Patch(color="#f28e2b", label="Neutral (tumor-expressed, non-OncoKB)")],
+                 Patch(color="#f28e2b", label="Neutral (tumor-expressed, non-IntOGen)")],
         fontsize=9,
     )
     plt.tight_layout()
@@ -602,9 +563,9 @@ def plot_neutral_controls(
 
 # ── Target list (source-labeled) ───────────────────────────────────────────────
 
-def generate_target_list(comparison: dict, oncokb: set, moa_map: dict, oncokb_roles: dict) -> list:
+def generate_target_list(comparison: dict, intogen: set, moa_map: dict, intogen_roles: dict) -> list:
     """
-    Return all OncoKB-overlapping regulators from either network, labeled by source.
+    Return all IntOGen-overlapping regulators from either network, labeled by source.
 
     Source values:
       "Both"         — present in both GREmLN and TCGA networks (highest confidence)
@@ -616,18 +577,18 @@ def generate_target_list(comparison: dict, oncokb: set, moa_map: dict, oncokb_ro
     normal_only = set(comparison["regulators"]["population_averaged_only"])
 
     rows = []
-    for g in sorted(conserved & oncokb):
+    for g in sorted(conserved & intogen):
         rows.append({"regulator": g, "source": "Both",
                      "moa": moa_map.get(g), "direction": _direction(moa_map.get(g)),
-                     "oncokb_role": oncokb_roles.get(g, "")})
-    for g in sorted(tumor_only & oncokb):
+                     "intogen_role": intogen_roles.get(g, "")})
+    for g in sorted(tumor_only & intogen):
         rows.append({"regulator": g, "source": "TCGA-only",
                      "moa": moa_map.get(g), "direction": _direction(moa_map.get(g)),
-                     "oncokb_role": oncokb_roles.get(g, "")})
-    for g in sorted(normal_only & oncokb):
+                     "intogen_role": intogen_roles.get(g, "")})
+    for g in sorted(normal_only & intogen):
         rows.append({"regulator": g, "source": "GREmLN-only",
                      "moa": None, "direction": "",
-                     "oncokb_role": oncokb_roles.get(g, "")})
+                     "intogen_role": intogen_roles.get(g, "")})
 
     # sort: Both first, then TCGA-only (activating before repressive), then GREmLN-only
     order = {"Both": 0, "TCGA-only": 1, "GREmLN-only": 2}
@@ -654,7 +615,7 @@ def save_target_table(all_targets: dict, cancer_type: str, out_dir: str) -> None
         path = os.path.join(SUPPLEMENTARY_DIR, f"table_s{table_n}_{cancer_type.lower()}_candidates.csv")
     else:
         path = os.path.join(out_dir, f"target_list_{cancer_type.lower()}.csv")
-    fields = ["focal_gene", "regulator", "source", "oncokb_role", "moa", "direction"]
+    fields = ["focal_gene", "regulator", "source", "intogen_role", "moa", "direction"]
     rows = []
     for focal_gene, targets in all_targets.items():
         for entry in targets:
@@ -662,7 +623,7 @@ def save_target_table(all_targets: dict, cancer_type: str, out_dir: str) -> None
                 "focal_gene":  focal_gene,
                 "regulator":   entry["regulator"],
                 "source":      entry["source"],
-                "oncokb_role": entry.get("oncokb_role", ""),
+                "intogen_role": entry.get("intogen_role", ""),
                 "moa":         round(entry["moa"], 3) if entry["moa"] is not None else "",
                 "direction":   entry["direction"],
             })
@@ -673,54 +634,9 @@ def save_target_table(all_targets: dict, cancer_type: str, out_dir: str) -> None
     print(f"[{ct}] Target list ({len(rows)} entries) -> {path}")
 
 
-async def _run_ctnnb1_demo_gene(workflow: RegNetAgentsWorkflow, gene: str) -> dict:
-    """One comprehensive_gene_analysis call for a single CTNNB1 BRCA candidate (Table 10).
-
-    Field paths (domain_analysis.<agent>.insights.<field>, network_analysis.pagerank_normalized)
-    verified against results/ctnnb1_demo_results.json (the raw per-gene reports that backed the
-    published Table 10) -- all four genes' values matched Table 10 exactly through these paths.
-    """
-    report = await workflow.run_analysis(gene=gene, tcga_network="brca", analysis_depth="comprehensive")
-    domain = report.get("domain_analysis", {})
-
-    def _insight(agent_key: str, field: str):
-        return domain.get(agent_key, {}).get("insights", {}).get(field)
-
-    return {
-        "candidate": gene,
-        "oncogenic_potential":    _insight("cancer_analysis", "oncogenic_potential"),
-        "druggability":           _insight("drug_analysis", "druggability_assessment"),
-        "clinical_actionability": _insight("clinical_analysis", "clinical_actionability"),
-        "network_vulnerability":  _insight("systems_analysis", "network_vulnerability"),
-        "pagerank_brca":          report.get("network_analysis", {}).get("pagerank_normalized"),
-    }
-
-
-def save_ctnnb1_demo(agent, workflow: RegNetAgentsWorkflow, out_dir: str) -> None:
-    """Reproduce Table 10 (section 3.6): domain agent summary for the CTNNB1 BRCA
-    candidate shortlist (comprehensive_gene_analysis, TCGA BRCA network). Illustrative
-    application demo, not part of the core statistical claims (see section 3.1-3.5).
-    """
-    tcga_neighbors = agent.query_network(
-        "gene_neighbors", gene=CTNNB1_DEMO_FOCAL_GENE, network_source="tcga", tcga_network="brca"
-    )
-    moa_map = {r["gene"]: r.get("moa") for r in tcga_neighbors.get("regulators", [])}
-
-    async def _run_all():
-        return [await _run_ctnnb1_demo_gene(workflow, g) for g in CTNNB1_DEMO_GENES]
-
-    rows = asyncio.run(_run_all())
-    for row in rows:
-        row["moa"] = _direction(moa_map.get(row["candidate"]))
-
-    path = os.path.join(out_dir, "ctnnb1_demo_results.json")
-    with open(path, "w") as f:
-        json.dump(rows, f, indent=2)
-    print(f"[CTNNB1 demo] Table 10 ({len(rows)} candidates) -> {path}")
-
 
 def plot_target_list(all_targets: dict, cancer_type: str) -> None:
-    """Stacked bar: OncoKB targets per source per focal gene."""
+    """Stacked bar: IntOGen targets per source per focal gene."""
     ct    = cancer_type.upper()
     genes = [g for g, t in all_targets.items() if t]
     if not genes:
@@ -741,10 +657,10 @@ def plot_target_list(all_targets: dict, cancer_type: str) -> None:
            label="GREmLN-only", color="#4dac26")
     ax.set_xticks(list(x))
     ax.set_xticklabels(genes, fontsize=11)
-    ax.set_ylabel("OncoKB-overlapping regulators", fontsize=10)
+    ax.set_ylabel("IntOGen-overlapping regulators", fontsize=10)
     ax.set_title(
         f"{ct}: Candidate therapeutic regulators by network source\n"
-        "(OncoKB-filtered; source indicates which network context identified each regulator)",
+        "(IntOGen-filtered; source indicates which network context identified each regulator)",
         fontsize=11,
     )
     ax.legend(fontsize=9)
@@ -760,8 +676,8 @@ def run_cancer_analysis(
     workflow,
     cancer_type: str,
     focal_genes: list,
-    oncokb_raw: set,
-    oncokb_roles: dict,
+    intogen_raw: set,
+    intogen_roles: dict,
     out_dir: str,
 ) -> tuple:
     """
@@ -775,10 +691,10 @@ def run_cancer_analysis(
     background = set(workflow.tcga_cache.tcga_indices[ct].get("all_genes", []))
     print(f"\n[{CT}] Background (TCGA gene universe): {len(background):,} genes")
 
-    oncokb = oncokb_raw & background
-    print(f"[{CT}] OncoKB in background: {len(oncokb):,} genes")
+    intogen = intogen_raw & background
+    print(f"[{CT}] IntOGen in background: {len(intogen):,} genes")
 
-    ref_sets = {"oncokb": oncokb}
+    ref_sets = {"intogen": intogen}
 
     # Cross-context comparisons
     print(f"[{CT}] Running compare_network_contexts for {focal_genes} ...")
@@ -823,7 +739,7 @@ def run_cancer_analysis(
         )
         moa_map = {r["gene"]: r.get("moa") for r in tcga_neighbors.get("regulators", [])}
         gene_res["moa_extension"] = {g: moa_map[g] for g in specific if g in moa_map}
-        gene_res["target_list"]   = generate_target_list(comp, oncokb, moa_map, oncokb_roles)
+        gene_res["target_list"]   = generate_target_list(comp, intogen, moa_map, intogen_roles)
 
         if len(specific) < 3:
             print(f"  {gene}: skipping -- only {len(specific)} {ct}-specific regulators")
@@ -850,10 +766,10 @@ def run_cancer_analysis(
 
     # BH-FDR across primary tests
     testable = [g for g in focal_genes if g in results and not results[g]["skipped"]]
-    primary_ps = [results[g]["enrichment"]["oncokb"]["p_value"] for g in testable]
+    primary_ps = [results[g]["enrichment"]["intogen"]["p_value"] for g in testable]
     fdr_vals   = bh_fdr(primary_ps)
     for gene, adj_p in zip(testable, fdr_vals):
-        results[gene]["enrichment"]["oncokb"]["fdr_adjusted_p"] = round(adj_p, 6)
+        results[gene]["enrichment"]["intogen"]["fdr_adjusted_p"] = round(adj_p, 6)
 
     # Stouffer combined Z
     combined_stats: dict = {}
@@ -884,7 +800,7 @@ def run_cancer_analysis(
 def run_negative_controls(
     agent,
     cancer_type: str,
-    oncokb_raw: set,
+    intogen_raw: set,
     background: set,
 ) -> dict:
     """
@@ -894,8 +810,8 @@ def run_negative_controls(
     """
     ct = cancer_type.lower()
     CT = cancer_type.upper()
-    oncokb = oncokb_raw & background
-    ref_sets = {"oncokb": oncokb}
+    intogen = intogen_raw & background
+    ref_sets = {"intogen": intogen}
 
     print(f"\n[NEG CTRL / {CT}] Running housekeeping gene controls: {HOUSEKEEPING_GENES}")
     neg_results: dict = {}
@@ -931,23 +847,23 @@ def run_negative_controls(
 def run_neutral_controls(
     agent,
     cancer_type: str,
-    oncokb_raw: set,
+    intogen_raw: set,
     background: set,
 ) -> dict:
     """
-    Run the same enrichment test on tumor-expressed, non-OncoKB, non-housekeeping
+    Run the same enrichment test on tumor-expressed, non-IntOGen, non-housekeeping
     genes (FASN, PCNA, PKM, PABPC1, VIM).
 
     These genes are present in the TCGA network (tumor-expressed) and have
     substantial network connectivity, but have no cancer-driver annotation in
-    OncoKB. Expected result: OR ≈ 1 — validates that the enrichment seen for
+    IntOGen. Expected result: OR ≈ 1 — validates that the enrichment seen for
     cancer driver genes requires cancer-specific biology, not merely tumor-network
     membership or high network degree.
     """
     ct = cancer_type.lower()
     CT = cancer_type.upper()
-    oncokb = oncokb_raw & background
-    ref_sets = {"oncokb": oncokb}
+    intogen = intogen_raw & background
+    ref_sets = {"intogen": intogen}
 
     print(f"\n[NEUTRAL CTRL / {CT}] Running tumor-expressed neutral gene controls: {NEUTRAL_GENES}")
     neutral_results: dict = {}
@@ -986,17 +902,17 @@ def run_gremln_comparison(
     agent,
     brca_comparisons: dict,
     coad_comparisons: dict,
-    oncokb_raw: set,
+    intogen_raw: set,
     brca_bg: set,
     coad_bg: set,
 ) -> dict:
     """
-    Formal enrichment analysis of GREmLN-only candidates vs OncoKB, mirroring
+    Formal enrichment analysis of GREmLN-only candidates vs IntOGen, mirroring
     the TCGA analysis in run_cancer_analysis().
 
     Background: GREmLN epithelial_cell gene universe (ENSG->symbol via pre-built
     gene ID cache; run build_network_cache.py --enrich-gene-cache for full coverage).
-    Reference: OncoKB cancer genes intersected with GREmLN background.
+    Reference: IntOGen cancer genes intersected with GREmLN background.
 
     Runs per-gene Fisher's exact test + permutation control (n=1,000), BH-FDR
     correction across testable genes, and Stouffer Z per cancer type.
@@ -1004,10 +920,10 @@ def run_gremln_comparison(
     Note: the GREmLN epithelial_cell network is not cancer-type-specific (it is a
     pan-tissue healthy epithelial network), so the background is the same for BRCA
     and COAD. Results should be interpreted as measuring enrichment of normal
-    epithelial regulatory candidates in OncoKB, not tumor-specific enrichment.
+    epithelial regulatory candidates in IntOGen, not tumor-specific enrichment.
     """
     print("\n" + "=" * 70)
-    print("GREmLN-only OncoKB enrichment analysis (formal statistics)")
+    print("GREmLN-only IntOGen enrichment analysis (formal statistics)")
     print("Background: GREmLN epithelial_cell gene universe")
     print("=" * 70)
 
@@ -1024,12 +940,12 @@ def run_gremln_comparison(
     gremln_idx = agent.cache.network_indices.get(CELL_TYPE, {})
     ensg_ids   = gremln_idx.get("all_genes", set())
     gremln_bg  = {e2s[e].upper() for e in ensg_ids if e in e2s}
-    oncokb_g   = oncokb_raw & gremln_bg
+    intogen_g   = intogen_raw & gremln_bg
     coverage   = 100 * len(gremln_bg) / max(len(ensg_ids), 1)
 
     print(f"\nGREmLN background: {len(gremln_bg):,} symbols from {len(ensg_ids):,} "
           f"ENSG IDs ({coverage:.0f}% coverage)")
-    print(f"OncoKB in GREmLN background: {len(oncokb_g):,}")
+    print(f"IntOGen in GREmLN background: {len(intogen_g):,}")
 
     # Gene universe overlap between GREmLN and each TCGA network
     print("\nGene universe overlap (GREmLN epithelial_cell vs TCGA):")
@@ -1055,7 +971,7 @@ def run_gremln_comparison(
         ("coad", coad_comparisons, coad_bg, COAD_GENES),
     ]:
         CT = cancer.upper()
-        oncokb_t = oncokb_raw & tcga_bg
+        intogen_t = intogen_raw & tcga_bg
         out[cancer] = {"universe_overlap": universe_overlap[cancer]}
 
         print(f"\n[GREmLN / {CT}] Fisher's exact tests + permutation controls ...")
@@ -1070,7 +986,7 @@ def run_gremln_comparison(
 
             # TCGA-only enrichment (against TCGA background, for reference)
             if len(tcga_only) >= 3:
-                t = fisher_enrichment(tcga_only, oncokb_t, tcga_bg)
+                t = fisher_enrichment(tcga_only, intogen_t, tcga_bg)
                 t_or, t_n, t_ov = t["odds_ratio"], t["query_size"], t["ref_overlap"]
             else:
                 t_or, t_n, t_ov = 0.0, len(tcga_only), 0
@@ -1079,9 +995,9 @@ def run_gremln_comparison(
             gene_res: dict = {
                 "tcga_only_or":               t_or,
                 "tcga_only_n":                t_n,
-                "tcga_only_oncokb_overlap":   t_ov,
+                "tcga_only_intogen_overlap":   t_ov,
                 "gremln_only_n":              len(gremln_only),
-                "gremln_only_oncokb_overlap": 0,
+                "gremln_only_intogen_overlap": 0,
                 "gremln_only_or":             0.0,
                 "gremln_only_p":              1.0,
                 "gremln_only_emp_p":          1.0,
@@ -1095,21 +1011,21 @@ def run_gremln_comparison(
                 gene_results[gene] = gene_res
                 continue
 
-            g_fisher = fisher_enrichment(gremln_only, oncokb_g, gremln_bg)
+            g_fisher = fisher_enrichment(gremln_only, intogen_g, gremln_bg)
             g_perm   = permutation_test(
-                gremln_only, oncokb_g, gremln_bg,
+                gremln_only, intogen_g, gremln_bg,
                 n=N_PERMUTATIONS, seed=RANDOM_SEED,
             )
             gene_res.update({
                 "gremln_only_or":             g_fisher["odds_ratio"],
                 "gremln_only_p":              g_fisher["p_value"],
                 "gremln_only_emp_p":          g_perm["empirical_p"],
-                "gremln_only_oncokb_overlap": g_fisher["ref_overlap"],
+                "gremln_only_intogen_overlap": g_fisher["ref_overlap"],
             })
             gene_results[gene] = gene_res
 
             print(
-                f"  {gene:7s} vs oncokb (GREmLN)              : "
+                f"  {gene:7s} vs intogen (GREmLN)              : "
                 f"OR={g_fisher['odds_ratio']:5.2f}  p={g_fisher['p_value']:.4f}  "
                 f"emp_p={g_perm['empirical_p']:.4f}  "
                 f"overlap={g_fisher['ref_overlap']}/{g_fisher['query_size']}"
@@ -1128,7 +1044,7 @@ def run_gremln_comparison(
             ws = [gene_results[g]["gremln_only_n"] for g in testable]
             gremln_stouffer = stouffer_z(gremln_ps, ws)
             print(f"\n[GREmLN / {CT}] Stouffer combined Z (GREmLN-only, all testable):")
-            print(f"  oncokb (GREmLN background)      : "
+            print(f"  intogen (GREmLN background)      : "
                   f"Z={gremln_stouffer['combined_z']:6.3f}  "
                   f"p={gremln_stouffer['combined_p']:.4f}")
         else:
@@ -1138,7 +1054,7 @@ def run_gremln_comparison(
             "gene_results":      gene_results,
             "combined_stouffer": gremln_stouffer,
             "background_size":   len(gremln_bg),
-            "oncokb_in_bg":      len(oncokb_g),
+            "intogen_in_bg":      len(intogen_g),
             "coverage_pct":      round(coverage, 1),
         }
 
@@ -1247,15 +1163,15 @@ def _focal_vs_random(focal_rows: dict, random_rows: dict, seed: int) -> dict:
     }
 
 
-def run_tier_specificity(agent, workflow, oncokb_raw: set,
+def run_tier_specificity(agent, workflow, intogen_raw: set,
                          brca_comparisons: dict, coad_comparisons: dict) -> dict:
     """
     Do focal cancer genes' candidates beat random genes' candidates?
 
-    Regulators are themselves ~2.5x enriched in OncoKB relative to all genes, so
+    Regulators are themselves enriched in cancer genes relative to all genes, so
     any gene's candidates look enriched against an all-gene background. This runs
     the TCGA-only and GREmLN-only tests on TIER_NULL_N_RANDOM random genes (in both
-    networks, not OncoKB, not focal/control) per seed, and compares the focal panel
+    networks, not IntOGen, not focal/control) per seed, and compares the focal panel
     with them — under the paper's all-gene background and a regulator-only one.
     Control genes are also run through both tiers for reference.
     """
@@ -1276,9 +1192,9 @@ def run_tier_specificity(agent, workflow, oncokb_raw: set,
     g_regs = {e2s[e].upper() for e in gremln_idx["regulator_targets"] if e in e2s}
 
     def regulator_bias(regs: set, bg: set) -> dict:
-        a, b = len(oncokb_raw & regs) / len(regs), len(oncokb_raw & bg) / len(bg)
+        a, b = len(intogen_raw & regs) / len(regs), len(intogen_raw & bg) / len(bg)
         return {"n_regulators": len(regs), "n_background": len(bg),
-                "oncokb_frac_regulators": a, "oncokb_frac_background": b, "ratio": a / b}
+                "intogen_frac_regulators": a, "intogen_frac_background": b, "ratio": a / b}
 
     out: dict = {
         "config": {"n_random": TIER_NULL_N_RANDOM, "seeds": TIER_NULL_SEEDS,
@@ -1298,10 +1214,10 @@ def run_tier_specificity(agent, workflow, oncokb_raw: set,
         out["regulator_bias"][ct] = regulator_bias(t_regs, t_bg)
 
         backgrounds = {
-            "all_gene_bg":  {"tcga": (oncokb_raw & t_bg, t_bg),
-                             "gremln": (oncokb_raw & g_bg, g_bg)},
-            "regulator_bg": {"tcga": (oncokb_raw & t_regs, t_regs),
-                             "gremln": (oncokb_raw & g_regs, g_regs)},
+            "all_gene_bg":  {"tcga": (intogen_raw & t_bg, t_bg),
+                             "gremln": (intogen_raw & g_bg, g_bg)},
+            "regulator_bg": {"tcga": (intogen_raw & t_regs, t_regs),
+                             "gremln": (intogen_raw & g_regs, g_regs)},
         }
         groups = {"focal": focal[ct], "housekeeping": HOUSEKEEPING_GENES,
                   "neutral": NEUTRAL_GENES}
@@ -1315,7 +1231,7 @@ def run_tier_specificity(agent, workflow, oncokb_raw: set,
             if sets.get(g) != via_pipeline:
                 raise RuntimeError(f"[{CT}] {g}: tier sets differ from compare_network_contexts")
 
-        pool = sorted((g_bg & t_bg) - oncokb_raw - excluded)
+        pool = sorted((g_bg & t_bg) - intogen_raw - excluded)
         random_sets = {}
         for seed in TIER_NULL_SEEDS:
             sample = random.Random(seed).sample(pool, min(TIER_NULL_N_RANDOM, len(pool)))
@@ -1388,7 +1304,8 @@ def save_tier_specificity_table(tier_results: dict) -> None:
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def run_experiment() -> None:
-    os.makedirs(RESULTS_DIR, exist_ok=True)
+    for d in (RESULTS_DIR, MANUSCRIPT_DIR, SUPPLEMENTARY_DIR):
+        os.makedirs(d, exist_ok=True)
     random.seed(RANDOM_SEED)
 
     print("Loading RegNetAgents workflow...")
@@ -1400,28 +1317,27 @@ def run_experiment() -> None:
             print(f"ERROR: No TCGA cache for '{ct}'. Run build_tcga_cache.py first.")
             sys.exit(1)
 
-    download_oncokb_if_missing(ONCOKB_PATH)
-    oncokb_raw   = load_oncokb(ONCOKB_PATH)
-    oncokb_roles = load_oncokb_roles(ONCOKB_PATH)
-    print(f"OncoKB drivers: {len(oncokb_raw):,} total")
+    intogen_roles = load_intogen_roles()
+    intogen_raw   = set(intogen_roles)
+    print(f"IntOGen drivers: {len(intogen_raw):,} total")
 
     # ── BRCA analysis ──────────────────────────────────────────────────────────
     (brca_comp, brca_res, brca_bg,
      brca_stouffer, brca_testable) = run_cancer_analysis(
-        agent, workflow, "brca", BRCA_GENES, oncokb_raw, oncokb_roles, RESULTS_DIR,
+        agent, workflow, "brca", BRCA_GENES, intogen_raw, intogen_roles, RESULTS_DIR,
     )
-    brca_neg     = run_negative_controls(agent, "brca", oncokb_raw, brca_bg)
-    brca_neutral = run_neutral_controls(agent, "brca", oncokb_raw, brca_bg)
+    brca_neg     = run_negative_controls(agent, "brca", intogen_raw, brca_bg)
+    brca_neutral = run_neutral_controls(agent, "brca", intogen_raw, brca_bg)
     plot_neg_controls(brca_res, brca_neg, brca_testable, HOUSEKEEPING_GENES, "brca")
     plot_neutral_controls(brca_res, brca_neutral, brca_testable, NEUTRAL_GENES, "brca")
 
     # ── COAD analysis ──────────────────────────────────────────────────────────
     (coad_comp, coad_res, coad_bg,
      coad_stouffer, coad_testable) = run_cancer_analysis(
-        agent, workflow, "coad", COAD_GENES, oncokb_raw, oncokb_roles, RESULTS_DIR,
+        agent, workflow, "coad", COAD_GENES, intogen_raw, intogen_roles, RESULTS_DIR,
     )
-    coad_neg     = run_negative_controls(agent, "coad", oncokb_raw, coad_bg)
-    coad_neutral = run_neutral_controls(agent, "coad", oncokb_raw, coad_bg)
+    coad_neg     = run_negative_controls(agent, "coad", intogen_raw, coad_bg)
+    coad_neutral = run_neutral_controls(agent, "coad", intogen_raw, coad_bg)
     plot_neg_controls(coad_res, coad_neg, coad_testable, HOUSEKEEPING_GENES, "coad")
     plot_neutral_controls(coad_res, coad_neutral, coad_testable, NEUTRAL_GENES, "coad")
 
@@ -1430,13 +1346,13 @@ def run_experiment() -> None:
         agent,
         brca_comparisons=brca_comp,
         coad_comparisons=coad_comp,
-        oncokb_raw=oncokb_raw,
+        intogen_raw=intogen_raw,
         brca_bg=brca_bg,
         coad_bg=coad_bg,
     )
 
     # ── Tier specificity: focal genes vs random genes (Table S3) ──────────────
-    tier_specificity = run_tier_specificity(agent, workflow, oncokb_raw, brca_comp, coad_comp)
+    tier_specificity = run_tier_specificity(agent, workflow, intogen_raw, brca_comp, coad_comp)
     save_tier_specificity_table(tier_specificity)
 
     # ── Save combined JSON ─────────────────────────────────────────────────────
@@ -1476,9 +1392,6 @@ def run_experiment() -> None:
     with open(out_json, "w") as f:
         json.dump(output, f, indent=2)
 
-    # Section 3.6 / Table 10 (illustrative application demo, not a core statistical claim)
-    save_ctnnb1_demo(agent, workflow, RESULTS_DIR)
-
     print(f"\nResults -> {out_json}")
     print(f"Figures  -> {MANUSCRIPT_DIR}/figure_workflow.png  (NAR Fig 1)")
     print(f"            {MANUSCRIPT_DIR}/figure_heatmap_brca.png  (NAR Fig 3A)")
@@ -1493,7 +1406,6 @@ def run_experiment() -> None:
     print(f"            {MANUSCRIPT_DIR}/target_list_coad.png  (NAR Fig 2B)")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_brca.png")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_coad.png")
-    print(f"            {RESULTS_DIR}/ctnnb1_demo_results.json  (Table 10)")
     print(f"            {SUPPLEMENTARY_DIR}/{TIER_SPECIFICITY_TABLE}  (Table S3)")
     print("\nDone.")
 
