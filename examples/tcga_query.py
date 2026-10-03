@@ -16,19 +16,12 @@ What this shows:
 
 Prerequisites:
 --------------
-1. Download the Bioconductor aracne.networks tarball (~213 MB):
-       curl -o /tmp/aracne.networks.tar.gz \
-         https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz
+The TCGA networks are not bundled (Bioconductor aracne.networks is under a Columbia
+University evaluation license). Install them from Bioconductor:
+       pip install -e ".[tcga]"
+       python scripts/setup_tcga_networks.py --accept-license
 
-2. Extract network CSVs (requires: pip install rdata):
-       python scripts/extract_tcga_networks.py \
-           --tarball /tmp/aracne.networks.tar.gz \
-           --output-dir models/networks/tcga
-
-3. Build the PKL caches:
-       python scripts/build_tcga_cache.py --all
-
-See docs/DATA_SOURCES.md for full instructions.
+See models/networks/tcga/README.md and docs/DATA_SOURCES.md.
 
 Usage:
 ------
@@ -73,15 +66,10 @@ async def main():
     if not _check_tcga_available(workflow, TCGA_CANCER):
         print(
             f"\nNo TCGA cache found for '{TCGA_CANCER}'.\n"
-            "To use this example:\n"
-            "  1. Download the Bioconductor tarball:\n"
-            "     curl -o /tmp/aracne.networks.tar.gz \\\n"
-            "       https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz\n"
-            "  2. Extract CSVs (requires: pip install rdata):\n"
-            "     python scripts/extract_tcga_networks.py \\\n"
-            "         --tarball /tmp/aracne.networks.tar.gz --output-dir models/networks/tcga\n"
-            "  3. Build caches:  python scripts/build_tcga_cache.py --all\n"
-            "  See docs/DATA_SOURCES.md for full instructions.\n"
+            "TCGA networks are not bundled (aracne.networks license). Install them:\n"
+            "  pip install -e \".[tcga]\"\n"
+            "  python scripts/setup_tcga_networks.py --accept-license\n"
+            "  See models/networks/tcga/README.md and docs/DATA_SOURCES.md.\n"
         )
         return
 

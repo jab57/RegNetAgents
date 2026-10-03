@@ -488,7 +488,7 @@ with open('network_index.pkl', 'wb') as f:
 
 RegNetAgents optionally supports **14 TCGA cancer-type-specific ARACNe networks** derived from The Cancer Genome Atlas (TCGA) tumor expression data. These complement the GREmLN cell-type networks with tumor-state regulatory wiring and include **Mode of Action (MoA)** annotations (activation vs. repression) not present in the GREmLN networks.
 
-> **Note for standard users:** TCGA network PKL caches are included in the repository (`models/networks/tcga/`). No separate download is required unless you need to rebuild from source CSVs.
+> **Not included in the repository.** `aracne.networks` is distributed under a Columbia University software evaluation license (non-commercial academic research only; no redistribution — [full license](https://bioconductor.org/packages/release/data/experiment/licenses/aracne.networks/LICENSE)). RegNetAgents therefore does not ship these networks. Install them from Bioconductor with `python scripts/setup_tcga_networks.py --accept-license` (see [Installing the TCGA networks](#installing-the-tcga-networks)). Everything else in RegNetAgents works without them.
 
 ### Supported Cancer Types
 
@@ -534,46 +534,35 @@ TP53,MDM2,-1.0,0.251
 |--------|-------------|
 | `Regulator` | Gene symbol of the regulatory TF |
 | `Target` | Gene symbol of the target gene |
-| `MoA` | Mode of Action: +1 activation, -1 repression, 0 unknown |
+| `MoA` | Mode of Action, a continuous value in [−1, 1] derived from regulator–target expression correlation: > 0 activating, < 0 repressive |
 | `Likelihood` | Edge confidence score (0–1) |
 
-### How to Rebuild from Source
-
-The PKL caches are pre-built and included in the repo. To rebuild from the authoritative Bioconductor source:
-
-#### Step 1: Download the Bioconductor tarball (~213 MB)
+### Installing the TCGA Networks
 
 ```bash
-curl -o /tmp/aracne.networks.tar.gz \
-  https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz
+pip install -e ".[tcga]"                                   # adds the rdata reader
+python scripts/setup_tcga_networks.py --accept-license    # all 14 types (~213 MB download)
+python scripts/setup_tcga_networks.py --accept-license --cancer-type brca coad   # a subset
 ```
 
-#### Step 2: Install required Python packages
+`scripts/setup_tcga_networks.py`:
 
-```bash
-pip install rdata networkx
-```
+1. Shows the license notice and only proceeds with `--accept-license`.
+2. Downloads `aracne.networks` from Bioconductor (or uses `--tarball <path>`).
+3. Checks each network's `.rda` data file against a recorded SHA-256. The network data
+   are byte-identical in `aracne.networks` 1.36.0 and 1.38.0 (verified 2026-10-03), so
+   either version works.
+4. Converts Entrez IDs to gene symbols with a **frozen** mapping
+   (`scripts/data/tcga_entrez_to_symbol.json.gz` — gene identifiers only, no network
+   data). Live MyGene.info lookups would drift as genes are renamed. Writes
+   `network.csv` and checks it against a recorded SHA-256, so every install reproduces
+   exactly the networks RegNetAgents was built and evaluated with.
+5. Builds `network_index.pkl` (PageRank, empirical thresholds) via
+   `scripts/build_tcga_cache.py`.
 
-#### Step 3: Extract network CSVs
-
-```bash
-# Converts Entrez IDs → gene symbols via MyGene.info (~5 min, requires internet)
-python scripts/extract_tcga_networks.py \
-    --tarball /tmp/aracne.networks.tar.gz \
-    --output-dir models/networks/tcga
-```
-
-#### Step 4: Build PKL caches
-
-```bash
-# All 14 cancer types
-python scripts/build_tcga_cache.py --all
-
-# Or a single cancer type (faster for testing)
-python scripts/build_tcga_cache.py --cancer-type brca
-```
-
-This computes PageRank, empirical thresholds, and writes `network_index.pkl` for each cancer type. The `--skip-validation` flag skips MyGene.info symbol validation (use for offline/CI builds).
+The lower-level scripts remain available. `extract_tcga_networks.py` uses live
+MyGene.info lookups, so its output can differ slightly from the reference networks.
+`build_tcga_cache.py` builds caches from existing CSVs.
 
 ### Network Statistics
 

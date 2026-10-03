@@ -11,7 +11,7 @@ Complete installation instructions for setting up RegNetAgents MCP Server with C
 Before you begin, ensure you have:
 
 - **Python 3.10 or later** ([Download](https://www.python.org/downloads/))
-- **Git** ([Download](https://git-scm.com/downloads)) with **Git LFS** ([Download](https://git-lfs.com)) — the network data files (`.csv`, `.h5`, `.pt`, `.h5ad`) are tracked via Git LFS; without it installed, `git clone` will silently produce pointer-file stubs instead of real network data
+- **Git** ([Download](https://git-scm.com/downloads))
 - **4GB+ RAM** minimum; 8GB+ recommended if using a local LLM (Ollama)
 
 **Optional:**
@@ -57,11 +57,9 @@ git clone https://github.com/jab57/RegNetAgents.git
 cd RegNetAgents
 ```
 
-Network data files (TCGA `network.csv` files and a few others) are tracked via **Git LFS**
-and download automatically with `git clone` **if Git LFS is installed** — see Prerequisites
-above. If you cloned without it, install Git LFS and run `git lfs pull` from inside the
-repo to fetch the real files (otherwise those paths will contain small LFS pointer-file
-stubs instead of actual network data).
+The GREmLN cell-type networks are included in the repository. The TCGA tumor-state
+networks are installed separately — see
+[Optional: TCGA Tumor-State Networks](#optional-tcga-tumor-state-networks).
 
 ---
 
@@ -380,46 +378,36 @@ After completing installation, you have:
 ## Optional: TCGA Tumor-State Networks
 
 RegNetAgents supports a second set of regulatory networks derived from TCGA
-bulk RNA-seq data via ARACNe (Bioconductor `aracne.networks`). The pre-built PKL caches for
-all 14 cancer types are **included in the repository** — cloning the repo is
-sufficient for standard use. The instructions below are for reproducibility
-or rebuilding from scratch.
+bulk RNA-seq data via ARACNe, from the Bioconductor package `aracne.networks`
+(author Federico M. Giorgi).
+
+**These networks are not included in the repository.** `aracne.networks` is
+distributed under a Columbia University software evaluation license
+(non-commercial academic research only; no redistribution — read the
+[full license](https://bioconductor.org/packages/release/data/experiment/licenses/aracne.networks/LICENSE)).
+The setup script downloads the package from Bioconductor, so you obtain it from the
+official source under its own license, and builds the networks locally. Everything
+else in RegNetAgents works without them.
 
 **Supported cancer types:** blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec
 (all epithelial-origin; GBM and LAML excluded — see DATA_SOURCES.md)
 
-### Step 1: Download the Bioconductor tarball (~213 MB)
+### Step 1: Install
 
 ```bash
-curl -o /tmp/aracne.networks.tar.gz \
-  https://bioconductor.org/packages/release/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz
+pip install -e ".[tcga]"                                     # adds the rdata reader
+python scripts/setup_tcga_networks.py --accept-license      # all 14 types (~213 MB download)
+python scripts/setup_tcga_networks.py --accept-license --cancer-type brca coad   # or a subset
 ```
 
-### Step 2: Extract network CSVs
+The script shows the license notice and only proceeds with `--accept-license`. It
+checks each downloaded network against a recorded checksum and converts gene IDs
+with a frozen mapping (`scripts/data/tcga_entrez_to_symbol.json.gz`), so every
+install produces exactly the networks RegNetAgents was built and evaluated with —
+no MyGene.info calls. Already have the tarball? Add `--tarball path/to/aracne.networks_1.38.0.tar.gz`.
+Caches are written to `models/networks/tcga/{cancer_type}/network_index.pkl`.
 
-Requires `pip install rdata`. Converts Entrez IDs to gene symbols via MyGene.info (~5 min, internet required):
-
-```bash
-python scripts/extract_tcga_networks.py \
-    --tarball /tmp/aracne.networks.tar.gz \
-    --output-dir models/networks/tcga
-```
-
-### Step 3: Build the caches
-
-```bash
-# Build all 14 TCGA caches (requires internet for MyGene.info validation)
-python scripts/build_tcga_cache.py --all
-
-# Or build a single cancer type
-python scripts/build_tcga_cache.py --cancer-type brca
-```
-
-Each build takes ~30–60 seconds per cancer type (symbol validation + PageRank
-+ threshold computation). Caches are written to
-`models/networks/tcga/{cancer_type}/network_index.pkl`.
-
-### Step 3: Verify
+### Step 2: Verify
 
 ```bash
 python examples/tcga_query.py

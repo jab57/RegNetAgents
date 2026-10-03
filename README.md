@@ -27,10 +27,10 @@ Compare MYC regulatory wiring between epithelial cells and colorectal tumor cont
 
 **Bundled (no download required):**
 - **GREmLN** (Zhang et al. 2026): 10 cell-type-specific ARACNe networks, population-averaged from 11M cells across 162 cell types (CELLxGENE Census 2024-07-01, CZ Biohub NY / Columbia University Califano Lab)
-- **TCGA ARACNe** (Bioconductor `aracne.networks`, Giorgi): 14 cancer-type-specific tumor-state networks (blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec) — pre-built PKL caches included in the repo
 - **IntOGen driver genes** (Martínez-Jiménez et al. 2020, *Nature Reviews Cancer*, doi:10.1038/s41568-020-0290-x): cancer-driver gene compendium used by `compare_network_contexts` and `annotate_cancer_drivers` for driver annotation — release 2024.09.20, CC0 1.0 Universal (public domain), trimmed to gene symbol + consensus role and committed at `regnetagents/reference_data/intogen_drivers.tsv`; no setup step or account required
 
-To rebuild TCGA caches from source, see [INSTALL.md](INSTALL.md) for instructions using the Bioconductor `aracne.networks` package.
+**Installed separately (not redistributed):**
+- **TCGA ARACNe** (Bioconductor `aracne.networks`, Giorgi): 14 cancer-type-specific tumor-state networks (blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec). `aracne.networks` is distributed under a Columbia University software evaluation license (non-commercial academic research only; no redistribution), so RegNetAgents does not ship these networks. Install them from Bioconductor with `python scripts/setup_tcga_networks.py --accept-license` (see [INSTALL.md](INSTALL.md#optional-tcga-tumor-state-networks)). Everything else works without them.
 
 See [DATA_SOURCES.md](docs/DATA_SOURCES.md) for complete details.
 

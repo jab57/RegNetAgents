@@ -44,12 +44,9 @@ def load_network(name: str) -> nx.DiGraph:
     if not os.path.exists(csv_path):
         raise FileNotFoundError(
             f"TCGA network CSV not found: {csv_path}\n"
-            "Extract CSVs from the Bioconductor aracne.networks tarball:\n"
-            "  python scripts/extract_tcga_networks.py \\\n"
-            "      --tarball /tmp/aracne.networks.tar.gz \\\n"
-            "      --output-dir models/networks/tcga\n"
-            f"  python scripts/build_tcga_cache.py --cancer-type {name}\n"
-            "See docs/DATA_SOURCES.md for full instructions."
+            "TCGA networks are not included with RegNetAgents (aracne.networks license).\n"
+            f"Install them: python scripts/setup_tcga_networks.py --accept-license --cancer-type {name}\n"
+            "See models/networks/tcga/README.md and docs/DATA_SOURCES.md."
         )
 
     G = nx.DiGraph()
