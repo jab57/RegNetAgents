@@ -330,19 +330,20 @@ def main():
         return 0
     elif all(result for name, result in checks if "(optional)" not in name):
         print(f"\n{CHECK} READY TO USE (optional features disabled)\n")
-        print("RegNetAgents will work with rule-based mode.")
+        print("Core features work (rule-based mode).")
         print("\nOptional enhancements:")
-        print("  • Install Ollama for LLM-powered insights")
-        print("    → https://ollama.com/download")
-        print("    → ollama pull llama3.1:8b\n")
+        print("  - TCGA tumor-state networks (not bundled; aracne.networks license):")
+        print('      pip install -e ".[tcga]"')
+        print("      python scripts/setup_tcga_networks.py --accept-license")
+        print("  - Ollama for LLM-powered insights:")
+        print("      https://ollama.com/download, then: ollama pull llama3.1:8b\n")
         return 0
     else:
         print(f"\n{CROSS} INSTALLATION INCOMPLETE\n")
         print("Please fix the failed checks above.")
         print("\nCommon fixes:")
-        print("  • Missing packages: pip install -r requirements.txt")
-        print("  • Git LFS not pulled: git lfs pull")
-        print("  • Network data missing: git lfs install && git lfs pull\n")
+        print("  - Missing packages: pip install -r requirements.txt")
+        print("  - GREmLN network data missing: re-clone the repository\n")
         return 1
 
 
