@@ -1213,6 +1213,26 @@ def run_tier_specificity(agent, workflow, intogen_raw: set,
         t_regs = {g.upper() for g in tcga_idx["regulator_targets"]}
         out["regulator_bias"][ct] = regulator_bias(t_regs, t_bg)
 
+        # How many of the focal genes' TCGA regulators could never be "Both"? A TCGA
+        # regulator can only be shared if it is also a GREmLN regulator, so count those
+        # absent from the GREmLN network and those present but never regulators there.
+        focal_tcga_regs = [r.upper() for g in focal[ct]
+                           for r in tcga_idx["target_regulators"].get(g, [])]
+        absent = sum(r not in g_bg for r in focal_tcga_regs)
+        not_reg = sum(r in g_bg and r not in g_regs for r in focal_tcga_regs)
+        n = len(focal_tcga_regs)
+        out.setdefault("focal_regulator_coverage", {})[ct] = {
+            "focal_tcga_regulators": n,
+            "absent_from_gremln": absent,
+            "in_gremln_not_regulator": not_reg,
+            "frac_absent": absent / n,
+            "frac_in_gremln_not_regulator": not_reg / n,
+            "frac_cannot_be_both": (absent + not_reg) / n,
+        }
+        print(f"[{CT}] Focal TCGA regulators: {n}; absent from GREmLN {absent} "
+              f"({absent / n:.1%}); in GREmLN but never a regulator {not_reg} "
+              f"({not_reg / n:.1%}); cannot be 'Both' {(absent + not_reg) / n:.1%}")
+
         backgrounds = {
             "all_gene_bg":  {"tcga": (intogen_raw & t_bg, t_bg),
                              "gremln": (intogen_raw & g_bg, g_bg)},
