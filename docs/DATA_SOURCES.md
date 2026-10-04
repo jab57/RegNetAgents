@@ -488,7 +488,7 @@ with open('network_index.pkl', 'wb') as f:
 
 RegNetAgents optionally supports **14 TCGA cancer-type-specific ARACNe networks** derived from The Cancer Genome Atlas (TCGA) tumor expression data. These complement the GREmLN cell-type networks with tumor-state regulatory wiring and include **Mode of Action (MoA)** annotations (activation vs. repression) not present in the GREmLN networks.
 
-> **Not included in the repository.** `aracne.networks` is distributed under a Columbia University software evaluation license (non-commercial academic research only; no redistribution — [full license](https://bioconductor.org/packages/release/data/experiment/licenses/aracne.networks/LICENSE)). RegNetAgents therefore does not ship these networks. Install them from Bioconductor with `python scripts/setup_tcga_networks.py --accept-license` (see [Installing the TCGA networks](#installing-the-tcga-networks)). Everything else in RegNetAgents works without them.
+> **Not included in the repository.** The `aracne.networks` authors publish the network files on Zenodo ([doi:10.5281/zenodo.22918956](https://doi.org/10.5281/zenodo.22918956)) under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (attribution; non-commercial use only; no sharing of modified versions). The Bioconductor package itself carries a Columbia University software evaluation license ([full license](https://bioconductor.org/packages/release/data/experiment/licenses/aracne.networks/LICENSE)). RegNetAgents does not ship these networks. Install them with `python scripts/setup_tcga_networks.py --accept-license` (see [Installing the TCGA networks](#installing-the-tcga-networks)). Everything else in RegNetAgents works without them.
 
 ### Supported Cancer Types
 
@@ -515,7 +515,8 @@ GBM and LAML are intentionally excluded — no reference network of the appropri
 
 **Package**: Bioconductor `aracne.networks` (author: Federico M. Giorgi; maintainers: F. M. Giorgi, M. J. Alvarez)
 **Inference method**: ARACNe-AP — Lachmann A, et al. (2016). "ARACNe-AP: gene network reverse engineering through adaptive partitioning inference of mutual information." *Bioinformatics* 32(14):2233–2235. doi:10.1093/bioinformatics/btw216
-**Download URL**: `https://bioconductor.org/packages/3.23/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz`
+**Network data**: Giorgi FM, Alvarez MJ (2026). *ARACNe-AP gene regulatory networks from TCGA tumor datasets* [Data set]. Zenodo. doi:10.5281/zenodo.22918956 — CC BY-NC-ND 4.0; files identical to those in `aracne.networks` up to 1.39.0
+**Download URLs**: `https://zenodo.org/records/22918956` (default); fallback `https://bioconductor.org/packages/3.23/data/experiment/src/contrib/aracne.networks_1.38.0.tar.gz`
 
 Networks are derived from TCGA tumor RNA-seq data processed through the ARACNe-AP algorithm at the Califano Lab (Columbia University).
 
@@ -548,10 +549,12 @@ python scripts/setup_tcga_networks.py --accept-license --cancer-type brca coad  
 `scripts/setup_tcga_networks.py`:
 
 1. Shows the license notice and only proceeds with `--accept-license`.
-2. Downloads `aracne.networks` from Bioconductor (or uses `--tarball <path>`).
+2. Downloads the network `.rda` files from the Zenodo record (default), or reads them
+   from a Bioconductor `aracne.networks` tarball (`--source bioconductor` or
+   `--tarball <path>`).
 3. Checks each network's `.rda` data file against a recorded SHA-256. The network data
-   are byte-identical in `aracne.networks` 1.36.0 and 1.38.0 (verified 2026-10-03), so
-   either version works.
+   are byte-identical in `aracne.networks` 1.36.0 and 1.38.0 (verified 2026-10-03) and
+   in the Zenodo record (all 14 types verified 2026-10-04), so any of these works.
 4. Converts Entrez IDs to gene symbols with a **frozen** mapping
    (`scripts/data/tcga_entrez_to_symbol.json.gz` — gene identifiers only, no network
    data). Live MyGene.info lookups would drift as genes are renamed. Writes

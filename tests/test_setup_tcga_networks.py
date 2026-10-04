@@ -23,8 +23,21 @@ def test_requires_accept_license_and_never_downloads(monkeypatch):
 
 
 def test_license_notice_points_to_license():
-    assert "evaluation license" in S.LICENSE_NOTICE
-    assert S.LICENSE_URL in S.LICENSE_NOTICE
+    assert "CC BY-NC-ND 4.0" in S.LICENSE_NOTICE["zenodo"]
+    assert S.ZENODO_LICENSE_URL in S.LICENSE_NOTICE["zenodo"]
+    assert S.ZENODO_RECORD in S.LICENSE_NOTICE["zenodo"]
+    assert "evaluation license" in S.LICENSE_NOTICE["bioconductor"]
+    assert S.BIOC_LICENSE_URL in S.LICENSE_NOTICE["bioconductor"]
+
+
+def test_default_source_is_zenodo_and_never_downloads_without_acceptance(monkeypatch):
+    def no_download(*_args, **_kwargs):
+        raise AssertionError("download attempted without --accept-license")
+
+    monkeypatch.setattr(S, "download_zenodo_rda", no_download)
+    monkeypatch.setattr(sys, "argv", ["setup_tcga_networks.py", "--cancer-type", "brca"])
+    with pytest.raises(SystemExit):
+        S.main()
 
 
 def test_frozen_symbol_map_covers_all_cancer_types():

@@ -6,8 +6,8 @@ network CSV file paths and human-readable labels. GBM and LAML are
 intentionally excluded — no reference network of the appropriate cell
 lineage exists in RegNetAgents for these cancer types.
 
-The networks are not bundled (Bioconductor aracne.networks is under a Columbia
-University evaluation license). Install them locally from Bioconductor:
+The networks are not bundled (aracne.networks data: CC BY-NC-ND 4.0, no sharing of
+modified versions). Install them locally from the authors' Zenodo record:
 
     python scripts/setup_tcga_networks.py --accept-license
 

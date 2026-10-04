@@ -16,8 +16,8 @@ What this shows:
 
 Prerequisites:
 --------------
-The TCGA networks are not bundled (Bioconductor aracne.networks is under a Columbia
-University evaluation license). Install them from Bioconductor:
+The TCGA networks are not bundled (aracne.networks data: CC BY-NC-ND 4.0, no sharing
+of modified versions). Install them from the authors' Zenodo record:
        pip install -e ".[tcga]"
        python scripts/setup_tcga_networks.py --accept-license
 

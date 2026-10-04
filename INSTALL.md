@@ -379,15 +379,14 @@ After completing installation, you have:
 
 RegNetAgents supports a second set of regulatory networks derived from TCGA
 bulk RNA-seq data via ARACNe, from the Bioconductor package `aracne.networks`
-(author Federico M. Giorgi).
+(Giorgi FM, Alvarez MJ).
 
-**These networks are not included in the repository.** `aracne.networks` is
-distributed under a Columbia University software evaluation license
-(non-commercial academic research only; no redistribution — read the
-[full license](https://bioconductor.org/packages/release/data/experiment/licenses/aracne.networks/LICENSE)).
-The setup script downloads the package from Bioconductor, so you obtain it from the
-official source under its own license, and builds the networks locally. Everything
-else in RegNetAgents works without them.
+**These networks are not included in the repository.** The package authors publish
+the network files on Zenodo ([doi:10.5281/zenodo.22918956](https://doi.org/10.5281/zenodo.22918956)) under
+[CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/): credit the authors, non-commercial use only, and do not share
+modified versions. The setup script downloads them from that record, so you obtain
+them from the official source under their own license, and builds the networks locally
+for your own use. Everything else in RegNetAgents works without them.
 
 **Supported cancer types:** blca, brca, cesc, coad, hnsc, kirc, lihc, luad, lusc, ov, paad, prad, stad, ucec
 (all epithelial-origin; GBM and LAML excluded — see DATA_SOURCES.md)
@@ -404,7 +403,9 @@ The script shows the license notice and only proceeds with `--accept-license`. I
 checks each downloaded network against a recorded checksum and converts gene IDs
 with a frozen mapping (`scripts/data/tcga_entrez_to_symbol.json.gz`), so every
 install produces exactly the networks RegNetAgents was built and evaluated with —
-no MyGene.info calls. Already have the tarball? Add `--tarball path/to/aracne.networks_1.38.0.tar.gz`.
+no MyGene.info calls. To use the Bioconductor package instead (its own Columbia
+University evaluation license applies), add `--source bioconductor`, or
+`--tarball path/to/aracne.networks_1.38.0.tar.gz` if you already have it.
 Caches are written to `models/networks/tcga/{cancer_type}/network_index.pkl`.
 
 ### Step 2: Verify

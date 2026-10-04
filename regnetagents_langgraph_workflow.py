@@ -58,8 +58,8 @@ load_dotenv()
 from regnetagents import GeneIDMapper, CompleteGeneService
 from regnetagents.tcga_registry import TCGA_NETWORK_REGISTRY, TCGA_CANCER_TYPES
 
-# TCGA networks are not bundled (Bioconductor aracne.networks is under a Columbia
-# University evaluation license); users install them locally.
+# TCGA networks are not bundled (aracne.networks data: CC BY-NC-ND 4.0, no sharing of
+# modified versions); users install them locally.
 TCGA_SETUP_HINT = (
     "TCGA networks are not included with RegNetAgents (aracne.networks license). "
     "Install them with: python scripts/setup_tcga_networks.py --accept-license"

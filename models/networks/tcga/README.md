@@ -1,12 +1,12 @@
 # TCGA tumor-state networks (not included)
 
 The 14 TCGA ARACNe networks used by RegNetAgents come from the Bioconductor package
-[`aracne.networks`](https://bioconductor.org/packages/aracne.networks) (author Federico M.
-Giorgi). That package is distributed under a Columbia University software evaluation
-license: non-commercial academic research use only, and no redistribution. RegNetAgents
-therefore does not ship the networks.
+[`aracne.networks`](https://bioconductor.org/packages/aracne.networks) (Giorgi FM,
+Alvarez MJ). Its authors publish the network files on Zenodo
+(https://doi.org/10.5281/zenodo.22918956) under CC BY-NC-ND 4.0: attribution, non-commercial use only, and no sharing of
+modified versions. RegNetAgents therefore does not ship the networks.
 
-Install them locally (downloads the package from Bioconductor; you accept its license):
+Install them locally (downloads the files from Zenodo; you accept their license):
 
 ```bash
 pip install -e ".[tcga]"

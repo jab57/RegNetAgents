@@ -61,8 +61,8 @@ package-lock.json
 poster.*
 *.pptx
 paper_preview.pdf
-# TCGA networks are not redistributed (aracne.networks is under a Columbia University
-# evaluation license). Install them locally: python scripts/setup_tcga_networks.py --accept-license
+# TCGA networks are not redistributed (aracne.networks data: CC BY-NC-ND 4.0, no
+# sharing of modified versions). Install them locally: python scripts/setup_tcga_networks.py --accept-license
 models/networks/tcga/*/network.csv
 models/networks/tcga/*/network_index.pkl
 # Frozen gene-ID mapping for setup_tcga_networks.py (identifiers only; no network data)
