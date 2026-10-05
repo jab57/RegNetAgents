@@ -186,26 +186,30 @@ def plot_workflow_figure() -> None:
     C_ENRICH   = "#FFF0B8"   # light yellow
     C_OUTPUT   = "#F4E8E8"   # light pink
 
-    fig, ax = plt.subplots(figsize=(7, 13))
+    PAD = 0.15   # FancyBboxPatch pad: drawn boxes extend this far beyond their coordinates
+    GAP = 0.95   # vertical space between boxes, for the arrows
+    fig, ax = plt.subplots(figsize=(7, 11.5))
     ax.set_xlim(0, 10)
-    ax.set_ylim(0, 18)
+    ax.set_ylim(0, 18.4)
     ax.axis("off")
 
     def box(y, h, color, title, lines=(), title_size=11):
-        patch = FancyBboxPatch((1, y), 8, h, boxstyle="round,pad=0.15",
+        patch = FancyBboxPatch((1, y), 8, h, boxstyle=f"round,pad={PAD}",
                                facecolor=color, edgecolor="#555555", linewidth=1.2)
         ax.add_patch(patch)
-        ax.text(5, y + h - 0.38, title, ha="center", va="top",
+        ax.text(5, y + h - 0.25, title, ha="center", va="top",
                 fontsize=title_size, fontweight="bold")
         for i, line in enumerate(lines):
-            ax.text(5, y + h - 0.78 - i * 0.42, line, ha="center", va="top",
+            ax.text(5, y + h - 0.72 - i * 0.42, line, ha="center", va="top",
                     fontsize=9, color="#333333")
 
-    def arrow(y_top, y_bot, label=""):
-        ax.annotate("", xy=(5, y_bot), xytext=(5, y_top),
+    def arrow(y_from, y_to, label=""):
+        # y_from = bottom of the upper box, y_to = top of the lower box (coordinates);
+        # start and end just outside the padded outlines so arrows never cross a box
+        ax.annotate("", xy=(5, y_to + PAD + 0.05), xytext=(5, y_from - PAD - 0.05),
                     arrowprops=dict(arrowstyle="->", color="#444444", lw=1.5))
         if label:
-            ax.text(5.25, (y_top + y_bot) / 2, label, ha="left", va="center",
+            ax.text(5.25, (y_from + y_to) / 2, label, ha="left", va="center",
                     fontsize=8, color="#555555", style="italic")
 
     def sub_boxes(y, h, labels, colors):
@@ -213,51 +217,60 @@ def plot_workflow_figure() -> None:
         w = 7.0 / n
         for i, (lbl, c) in enumerate(zip(labels, colors)):
             x0 = 1.5 + i * w
-            patch = FancyBboxPatch((x0, y), w - 0.15, h,
-                                   boxstyle="round,pad=0.1",
+            patch = FancyBboxPatch((x0, y), w - 0.25, h,
+                                   boxstyle="round,pad=0.08",
                                    facecolor=c, edgecolor="#888888", linewidth=0.8)
             ax.add_patch(patch)
-            ax.text(x0 + (w - 0.15) / 2, y + h / 2, lbl, ha="center", va="center",
+            ax.text(x0 + (w - 0.25) / 2, y + h / 2, lbl, ha="center", va="center",
                     fontsize=9, fontweight="bold")
 
-    # ── boxes top→bottom ───────────────────────────────────────────────────────
-    box(15.5, 1.9, C_INPUT, "INPUT",
+    # ── boxes top→bottom, stacked with a fixed gap ─────────────────────────────
+    top = 18.1
+    def place(h):
+        nonlocal top
+        y = top - h
+        top = y - GAP
+        return y
+
+    y1 = place(1.3)
+    box(y1, 1.3, C_INPUT, "INPUT",
         ("Focal gene  ·  GREmLN cell type  ·  TCGA cancer type",))
 
-    arrow(15.5, 14.7)
-
-    box(12.9, 1.9, C_AGENT, "compare_network_contexts  (RegNetAgents)",
+    y2 = place(1.75)
+    arrow(y1, y2 + 1.75)
+    box(y2, 1.75, C_AGENT, "compare_network_contexts  (RegNetAgents)",
         ("Query focal gene in GREmLN epithelial_cell",
          "and TCGA ARACNe tumor network"))
 
-    arrow(12.9, 12.1)
-
-    box(9.8, 2.8, C_CLASS, "REGULATOR CLASSIFICATION", ())
-    sub_boxes(10.15, 0.9,
+    y3 = place(2.6)
+    arrow(y2, y3 + 2.6)
+    box(y3, 2.6, C_CLASS, "REGULATOR CLASSIFICATION", ())
+    sub_boxes(y3 + 0.95, 0.75,
               ["Both", "GREmLN-only", "TCGA-only"],
               ["#c8e6c8", "#ffe0b2", "#ffcccc"])
-    ax.text(5, 10.05,
+    ax.text(5, y3 + 0.4,
             "Context-specificity = 1 − J,  J = |GREmLN ∩ TCGA| / |GREmLN ∪ TCGA|",
-            ha="center", va="top", fontsize=8.5, color="#444444")
+            ha="center", va="center", fontsize=8.5, color="#444444")
 
-    arrow(9.8, 9.0, "TCGA-only + GREmLN-only candidates")
+    y4 = place(2.2)
+    arrow(y3, y4 + 2.2, "all regulators, labeled by source")
+    box(y4, 2.2, C_CAND, "SOURCE-LABELED CANDIDATE LIST",
+        ("Filter all regulators against IntOGen",
+         "Source (Both / TCGA-only / GREmLN-only)  ·  IntOGen role",
+         "MoA direction (activating / repressive) for TCGA-sourced entries"))
 
-    box(7.0, 2.3, C_CAND, "SOURCE-LABELED CANDIDATE LIST",
-        ("Filter all candidates against IntOGen",
-         "Source (TCGA-only / GREmLN-only / Both)  ·  IntOGen role",
-         "MoA direction (activating / repressive)  for TCGA-only"))
-
-    arrow(7.0, 6.2, "TCGA-only and GREmLN-only candidates")
-
-    box(4.2, 2.1, C_ENRICH, "ENRICHMENT TESTS",
+    y5 = place(1.75)
+    arrow(y4, y5 + 1.75, "TCGA-only and GREmLN-only tiers tested")
+    box(y5, 1.75, C_ENRICH, "ENRICHMENT TESTS",
         ("Fisher's exact test  ·  IntOGen reference",
          "BH-FDR correction  ·  comparison with random genes"))
 
-    arrow(4.2, 3.4)
-
-    box(1.5, 2.0, C_OUTPUT, "OUTPUT",
+    y6 = place(1.75)
+    arrow(y5, y6 + 1.75)
+    box(y6, 1.75, C_OUTPUT, "OUTPUT",
         ("Source-labeled candidate list  ·  OR · BH-FDR per gene",
          "Stouffer Z across panel"))
+    ax.set_ylim(y6 - PAD - 0.2, 18.4)   # trim unused space below the last box
 
     plt.tight_layout()
     out = os.path.join(MANUSCRIPT_DIR, "figure_workflow.png")
