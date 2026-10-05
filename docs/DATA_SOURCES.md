@@ -14,6 +14,7 @@ RegNetAgents currently supports **10 human cell types** with pre-computed gene r
 **Download Location**: [GREmLN Quickstart Tutorial](https://virtualcellmodels.cziscience.com/quickstart/gremln-quickstart) (networks available via Google Drive)
 **Underlying Data**: [CellxGene Data Portal](https://cellxgene.cziscience.com/) (11M scRNA-seq profiles, 162 cell types from Census release 2024-07-01)
 **Networks Used**: 10 cell types (drawn from 11M cells across 162 cell types)
+**Terms**: the pre-computed networks are part of the GREmLN Quickstart tutorial data, obtained under the [Virtual Cells Platform Terms of Use](https://virtualcellmodels.cziscience.com/terms-of-use) (scientific research use). The GREmLN model is MIT-licensed; no separate license is stated for the tutorial networks. The underlying CELLxGENE Census data are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — cite CZI Cell Science Program et al., *Nucleic Acids Research* 2025, doi:10.1093/nar/gkae1142, as well as Zhang et al. (2025).
 **Processing Method**: ARACNe algorithm via RegNetAgents framework
 **Development Team**: Zhang et al. (2025), Califano Lab (Columbia University / CZ Biohub NY)
 **Format**: Pre-computed networks as TSV files (network.tsv), converted to optimized pickle caches (network_index.pkl)
@@ -977,6 +978,15 @@ Bird, J.A. (2026). *RegNetAgents: Multi-Agent LLM Framework for Gene Regulatory 
 ## Gene Annotation Database
 
 RegNetAgents includes a pre-built gene annotation database (`regnetagents/models/gene_embeddings/gene_annotations/NCBI_UniProt_summary_of_genes.json`) that provides protein function summaries for all genes in the 10 cell-type networks. This file is included in the repository — no download or rebuild is required for standard use.
+
+### Sources and licensing
+
+The summaries are retrieved through MyGene.info and come from two upstream sources, each marked in the text:
+
+- `[provided by RefSeq ...]` — NCBI RefSeq gene summaries (NCBI; see the [NCBI website and data usage policies](https://www.ncbi.nlm.nih.gov/home/about/policies/)).
+- `[provided by Alliance of Genome Resources ...]` — Alliance of Genome Resources automated gene descriptions, licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (attribution: Alliance of Genome Resources, https://www.alliancegenome.org).
+
+MyGene.info: Xin J, et al. (2016) *Genome Biology* 17:91. These summaries are not covered by the MIT license of the RegNetAgents source code.
 
 ### How It Was Built
 
