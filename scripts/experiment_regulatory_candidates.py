@@ -4,7 +4,7 @@
 experiment_regulatory_candidates.py
 ====================================
 Cross-context regulatory candidate identification for the RegNetAgents research
-paper (Briefings in Bioinformatics).
+paper.
 
 For each focal gene in BRCA and COAD, queries both the GREmLN epithelial
 network and the TCGA tumor network, then generates a source-labeled candidate
@@ -13,13 +13,11 @@ therapeutic target list filtered by IntOGen cancer driver annotation.
 Reference dataset (committed to the repo, no download):
   - regnetagents/reference_data/intogen_drivers.tsv : IntOGen Compendium of
     Mutational Cancer Driver Genes, release 2024.09.20 (CC0 1.0), pan-cancer
-    (all genes, any role). v1/v2 of the paper used IntOGen; v3 uses IntOGen.
+    (all genes, any role). Versions 1-2 of the paper used OncoKB; v3 uses IntOGen.
 
 Outputs:
   results/
   - experiment_rewiring_results.json           : full statistics
-  - target_list_brca.png                       : candidate counts by source, BRCA (NAR Fig 2A)
-  - target_list_coad.png                       : candidate counts by source, COAD (NAR Fig 2B)
   - experiment_rewiring_barchart_brca.png      : regulator count bar chart, BRCA
   - experiment_rewiring_barchart_coad.png      : regulator count bar chart, COAD
 
@@ -30,11 +28,13 @@ Outputs:
                                                   (the "tier_specificity" key of the JSON
                                                   above holds the per-gene detail)
 
-  manuscript/  (NAR paper figures — overwrite in place)
-  - figure_heatmap_brca.png                    : OR enrichment heatmap, BRCA (NAR Fig 3A)
-  - figure_heatmap_coad.png                    : OR enrichment heatmap, COAD (NAR Fig 3B)
-  - figure_negcontrol_brca.png                 : negative controls, BRCA (NAR Fig 4A)
-  - figure_negcontrol_coad.png                 : negative controls, COAD (NAR Fig 4B)
+  manuscript/  (paper figures — overwrite in place)
+  - figure_workflow.png                        : analysis pipeline schematic (Fig 1)
+  - target_list_brca.png / _coad.png           : candidate counts by source (Fig 2A/2B)
+  - figure_heatmap_brca.png / _coad.png        : TCGA-only OR heatmaps (Fig 3A/3B)
+  - figure_heatmap_gremln_brca.png / _coad.png : GREmLN-only OR heatmaps (Fig 3C/3D)
+  - figure_negcontrol_brca.png / _coad.png     : housekeeping controls (Fig 4A/4B)
+  - figure_neutralcontrol_brca.png / _coad.png : neutral controls (Fig 5A/5B)
 
 Background: all genes in each cancer type's TCGA network (symbol-native PKL).
 
@@ -54,6 +54,7 @@ import sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import numpy as np
 import seaborn as sns
 from scipy import stats
@@ -84,7 +85,6 @@ HOUSEKEEPING_GENES = ["ACTB", "GAPDH", "HPRT1", "LDHA", "TUBB"]
 # meets the "non-driver" definition of this panel.
 NEUTRAL_GENES      = ["FASN", "PCNA", "PKM", "VIM"]
 CELL_TYPE   = "epithelial_cell"
-N_PERMUTATIONS = 1000
 RANDOM_SEED    = 42
 
 RESULTS_DIR    = "results"
@@ -147,36 +147,6 @@ def fisher_enrichment(query: set, reference: set, background: set) -> dict:
     }
 
 
-def permutation_test(
-    query: set,
-    reference: set,
-    background: set,
-    n: int = 1000,
-    seed: int = 42,
-) -> dict:
-    """
-    Empirical null: draw n random gene sets of the same size as query from
-    background and compute their odds ratios. Returns empirical p-value.
-    """
-    rng = random.Random(seed)
-    bg_list = sorted(background)
-    size    = min(len(query), len(bg_list))
-    obs_or  = fisher_enrichment(query, reference, background)["odds_ratio"]
-    null_ors = [
-        fisher_enrichment(
-            set(rng.sample(bg_list, size)), reference, background
-        )["odds_ratio"]
-        for _ in range(n)
-    ]
-    emp_p = sum(1 for x in null_ors if x >= obs_or) / n
-    return {
-        "observed_or":   obs_or,
-        "empirical_p":   round(emp_p, 4),
-        "null_or_mean":  round(float(np.mean(null_ors)), 4),
-        "null_or_std":   round(float(np.std(null_ors)),  4),
-    }
-
-
 def bh_fdr(p_values: list) -> list:
     """Benjamini-Hochberg FDR correction. Returns adjusted p-values."""
     n = len(p_values)
@@ -206,7 +176,7 @@ def stouffer_z(p_values: list, weights: list = None) -> dict:
 # ── Figures ────────────────────────────────────────────────────────────────────
 
 def plot_workflow_figure() -> None:
-    """Figure 1: NAR paper analysis pipeline schematic."""
+    """Figure 1: paper analysis pipeline schematic."""
     from matplotlib.patches import FancyBboxPatch
 
     C_INPUT    = "#E8F4F8"   # light blue
@@ -293,7 +263,7 @@ def plot_workflow_figure() -> None:
     out = os.path.join(MANUSCRIPT_DIR, "figure_workflow.png")
     plt.savefig(out, dpi=150, bbox_inches="tight")
     plt.close()
-    print(f"            {out}  (NAR Fig 1)")
+    print(f"            {out}  (Fig 1)")
 
 
 
@@ -391,6 +361,12 @@ def plot_gremln_heatmap(
         cbar_kws={"label": "Odds Ratio"},
         mask=np.array([[math.isnan(row[0])] for row in or_matrix]),
     )
+    # Masked (not tested, n < 3) cells: grey and labeled, so they cannot be read as OR ~ 1
+    for i, row in enumerate(or_matrix):
+        if math.isnan(row[0]):
+            ax.add_patch(Rectangle((0, i), 1, 1, color="#d9d9d9", zorder=0.5))
+            ax.text(0.5, i + 0.5, "n/a (n < 3)", ha="center", va="center",
+                    fontsize=10, color="#404040")
     ax.set_title(
         f"Enrichment of {CT} GREmLN-only candidates in cancer driver gene set\n"
         "(* BH-FDR < 0.05, ** BH-FDR < 0.01; GREmLN epithelial_cell background)",
@@ -447,6 +423,18 @@ def plot_regulator_counts(
     plt.close()
 
 
+OR_BAR_CAP = 20.0  # control bar charts: taller bars are drawn at the cap and labeled
+
+
+def _label_capped_bars(ax, raw_values: list) -> None:
+    """Write the true OR above any bar that was truncated at OR_BAR_CAP."""
+    capped = [(i, raw) for i, raw in enumerate(raw_values) if raw > OR_BAR_CAP]
+    for i, raw in capped:
+        ax.text(i, OR_BAR_CAP, f"{raw:.1f}", ha="center", va="bottom", fontsize=9)
+    if capped:
+        ax.set_ylim(top=OR_BAR_CAP * 1.12)  # room for the label
+
+
 def plot_neg_controls(
     focal_results: dict,
     neg_results: dict,
@@ -458,19 +446,24 @@ def plot_neg_controls(
     ct = cancer_type.upper()
 
     focal_ors  = []
+    focal_raw  = []
     focal_lbls = []
     for g in focal_genes:
         if g in focal_results and not focal_results[g].get("skipped"):
             v = focal_results[g]["enrichment"].get("intogen", {}).get("odds_ratio", 0)
-            focal_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
+            raw = float(v) if not math.isnan(float(v)) else 0.0
+            focal_raw.append(raw)
+            focal_ors.append(min(raw, OR_BAR_CAP))
             focal_lbls.append(g)
 
     neg_ors  = []
+    neg_raw  = []
     neg_lbls = []
     for g in neg_genes:
         if g in neg_results and not neg_results[g].get("skipped", True):
             v = neg_results[g]["enrichment"].get("intogen", {}).get("odds_ratio", 0)
-            neg_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
+            neg_raw.append(float(v) if not math.isnan(float(v)) else 0.0)
+            neg_ors.append(min(neg_raw[-1], OR_BAR_CAP))
             neg_lbls.append(g)
 
     all_ors  = focal_ors  + [None] + neg_ors
@@ -482,6 +475,7 @@ def plot_neg_controls(
     for i, (v, c) in enumerate(zip(all_ors, colors)):
         if v is not None:
             ax.bar(i, v, color=c)
+    _label_capped_bars(ax, focal_raw + [0.0] + neg_raw)
     ax.axhline(1.0, color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
     ax.set_xticks(x)
     ax.set_xticklabels(all_lbls, fontsize=10)
@@ -515,19 +509,24 @@ def plot_neutral_controls(
     ct = cancer_type.upper()
 
     focal_ors  = []
+    focal_raw  = []
     focal_lbls = []
     for g in focal_genes:
         if g in focal_results and not focal_results[g].get("skipped"):
             v = focal_results[g]["enrichment"].get("intogen", {}).get("odds_ratio", 0)
-            focal_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
+            raw = float(v) if not math.isnan(float(v)) else 0.0
+            focal_raw.append(raw)
+            focal_ors.append(min(raw, OR_BAR_CAP))
             focal_lbls.append(g)
 
     neutral_ors  = []
+    neutral_raw  = []
     neutral_lbls = []
     for g in neutral_genes:
         if g in neutral_results and not neutral_results[g].get("skipped", True):
             v = neutral_results[g]["enrichment"].get("intogen", {}).get("odds_ratio", 0)
-            neutral_ors.append(min(float(v), 20.0) if not math.isnan(float(v)) else 0)
+            neutral_raw.append(float(v) if not math.isnan(float(v)) else 0.0)
+            neutral_ors.append(min(neutral_raw[-1], OR_BAR_CAP))
             neutral_lbls.append(g)
 
     all_ors  = focal_ors  + [None] + neutral_ors
@@ -539,6 +538,7 @@ def plot_neutral_controls(
     for i, (v, c) in enumerate(zip(all_ors, colors)):
         if v is not None:
             ax.bar(i, v, color=c)
+    _label_capped_bars(ax, focal_raw + [0.0] + neutral_raw)
     ax.axhline(1.0, color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
     ax.set_xticks(x)
     ax.set_xticklabels(all_lbls, fontsize=10)
@@ -568,13 +568,13 @@ def generate_target_list(comparison: dict, intogen: set, moa_map: dict, intogen_
     Return all IntOGen-overlapping regulators from either network, labeled by source.
 
     Source values:
-      "Both"         — present in both GREmLN and TCGA networks (highest confidence)
+      "Both"         — present in both GREmLN and TCGA networks
       "TCGA-only"    — tumor-selective; MoA available
-      "GREmLN-only"  — present in normal epithelium only
+      "GREmLN-only"  — present in the GREmLN population-averaged reference only
     """
     conserved   = set(comparison["regulators"]["conserved"])
     tumor_only  = set(comparison["regulators"]["tumor_state_only"])
-    normal_only = set(comparison["regulators"]["population_averaged_only"])
+    gremln_only = set(comparison["regulators"]["population_averaged_only"])
 
     rows = []
     for g in sorted(conserved & intogen):
@@ -585,7 +585,7 @@ def generate_target_list(comparison: dict, intogen: set, moa_map: dict, intogen_
         rows.append({"regulator": g, "source": "TCGA-only",
                      "moa": moa_map.get(g), "direction": _direction(moa_map.get(g)),
                      "intogen_role": intogen_roles.get(g, "")})
-    for g in sorted(normal_only & intogen):
+    for g in sorted(gremln_only & intogen):
         rows.append({"regulator": g, "source": "GREmLN-only",
                      "moa": None, "direction": "",
                      "intogen_role": intogen_roles.get(g, "")})
@@ -715,7 +715,7 @@ def run_cancer_analysis(
         )
 
     # Enrichment tests
-    print(f"[{CT}] Fisher's exact tests + permutation controls ...")
+    print(f"[{CT}] Fisher's exact tests ...")
     results: dict = {}
     for gene, comp in comparisons.items():
         specific = set(comp["regulators"]["tumor_state_only"])
@@ -728,7 +728,6 @@ def run_cancer_analysis(
                 "conserved_fraction":    comp["regulators"]["conserved_fraction"],
             },
             "enrichment":    {},
-            "permutation":   {},
             "moa_extension": {},
             "skipped": False,
         }
@@ -749,16 +748,10 @@ def run_cancer_analysis(
 
         for ref_name, ref_set in ref_sets.items():
             fisher = fisher_enrichment(specific, ref_set, background)
-            perm   = permutation_test(
-                specific, ref_set, background,
-                n=N_PERMUTATIONS, seed=RANDOM_SEED,
-            )
-            gene_res["enrichment"][ref_name]  = fisher
-            gene_res["permutation"][ref_name] = perm
+            gene_res["enrichment"][ref_name] = fisher
             print(
                 f"  {gene:7s} vs {ref_name:<32}: "
                 f"OR={fisher['odds_ratio']:5.2f}  p={fisher['p_value']:.4f}  "
-                f"emp_p={perm['empirical_p']:.4f}  "
                 f"overlap={fisher['ref_overlap']}/{fisher['query_size']}"
             )
 
@@ -804,9 +797,11 @@ def run_negative_controls(
     background: set,
 ) -> dict:
     """
-    Run the same enrichment test on housekeeping genes.
-    Expected result: OR ≈ 1 (no enrichment) — validates that the enrichment
-    seen for cancer driver genes is specific, not a general network property.
+    Run the same enrichment test on housekeeping genes, which produce TCGA-only
+    candidate sets of comparable size to the focal genes but have no cancer-driver
+    role. Their ORs are compared with the focal genes' and with random genes'
+    (run_tier_specificity); regulators are driver-rich in general, so ORs above 1
+    are expected even without cancer-specific signal.
     """
     ct = cancer_type.lower()
     CT = cancer_type.upper()
@@ -852,13 +847,13 @@ def run_neutral_controls(
 ) -> dict:
     """
     Run the same enrichment test on tumor-expressed, non-IntOGen, non-housekeeping
-    genes (FASN, PCNA, PKM, PABPC1, VIM).
+    genes (NEUTRAL_GENES: FASN, PCNA, PKM, VIM).
 
     These genes are present in the TCGA network (tumor-expressed) and have
     substantial network connectivity, but have no cancer-driver annotation in
-    IntOGen. Expected result: OR ≈ 1 — validates that the enrichment seen for
-    cancer driver genes requires cancer-specific biology, not merely tumor-network
-    membership or high network degree.
+    IntOGen. They test whether tumor-network membership alone produces enrichment;
+    as for housekeeping genes, ORs above 1 are expected from the general
+    driver-richness of regulators (see run_tier_specificity).
     """
     ct = cancer_type.lower()
     CT = cancer_type.upper()
@@ -914,13 +909,15 @@ def run_gremln_comparison(
     gene ID cache; run build_network_cache.py --enrich-gene-cache for full coverage).
     Reference: IntOGen cancer genes intersected with GREmLN background.
 
-    Runs per-gene Fisher's exact test + permutation control (n=1,000), BH-FDR
-    correction across testable genes, and Stouffer Z per cancer type.
+    Runs per-gene Fisher's exact test, BH-FDR correction across testable genes, and
+    Stouffer Z per cancer type. (The size-matched permutation control of paper
+    versions 1-2 was removed: for a fixed set size it reproduces the Fisher p-value.)
 
     Note: the GREmLN epithelial_cell network is not cancer-type-specific (it is a
-    pan-tissue healthy epithelial network), so the background is the same for BRCA
-    and COAD. Results should be interpreted as measuring enrichment of normal
-    epithelial regulatory candidates in IntOGen, not tumor-specific enrichment.
+    pan-tissue, population-averaged single-cell reference built from CELLxGENE
+    Census data), so the background is the same for BRCA and COAD. Whether the
+    enrichment is specific to cancer genes is tested against random genes in
+    run_tier_specificity().
     """
     print("\n" + "=" * 70)
     print("GREmLN-only IntOGen enrichment analysis (formal statistics)")
@@ -974,7 +971,7 @@ def run_gremln_comparison(
         intogen_t = intogen_raw & tcga_bg
         out[cancer] = {"universe_overlap": universe_overlap[cancer]}
 
-        print(f"\n[GREmLN / {CT}] Fisher's exact tests + permutation controls ...")
+        print(f"\n[GREmLN / {CT}] Fisher's exact tests ...")
         gene_results: dict = {}
 
         for gene in focal_genes:
@@ -1000,7 +997,6 @@ def run_gremln_comparison(
                 "gremln_only_intogen_overlap": 0,
                 "gremln_only_or":             0.0,
                 "gremln_only_p":              1.0,
-                "gremln_only_emp_p":          1.0,
                 "gremln_only_fdr":            1.0,
                 "skipped": False,
             }
@@ -1012,14 +1008,9 @@ def run_gremln_comparison(
                 continue
 
             g_fisher = fisher_enrichment(gremln_only, intogen_g, gremln_bg)
-            g_perm   = permutation_test(
-                gremln_only, intogen_g, gremln_bg,
-                n=N_PERMUTATIONS, seed=RANDOM_SEED,
-            )
             gene_res.update({
                 "gremln_only_or":             g_fisher["odds_ratio"],
                 "gremln_only_p":              g_fisher["p_value"],
-                "gremln_only_emp_p":          g_perm["empirical_p"],
                 "gremln_only_intogen_overlap": g_fisher["ref_overlap"],
             })
             gene_results[gene] = gene_res
@@ -1027,7 +1018,6 @@ def run_gremln_comparison(
             print(
                 f"  {gene:7s} vs intogen (GREmLN)              : "
                 f"OR={g_fisher['odds_ratio']:5.2f}  p={g_fisher['p_value']:.4f}  "
-                f"emp_p={g_perm['empirical_p']:.4f}  "
                 f"overlap={g_fisher['ref_overlap']}/{g_fisher['query_size']}"
             )
 
@@ -1381,7 +1371,6 @@ def run_experiment() -> None:
             "brca_focal_genes": BRCA_GENES,
             "coad_focal_genes": COAD_GENES,
             "cell_type":        CELL_TYPE,
-            "n_permutations":   N_PERMUTATIONS,
         },
         "brca": {
             "background_size":   len(brca_bg),
@@ -1413,17 +1402,17 @@ def run_experiment() -> None:
         json.dump(output, f, indent=2)
 
     print(f"\nResults -> {out_json}")
-    print(f"Figures  -> {MANUSCRIPT_DIR}/figure_workflow.png  (NAR Fig 1)")
-    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_brca.png  (NAR Fig 3A)")
-    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_coad.png  (NAR Fig 3B)")
-    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_gremln_brca.png  (NAR Fig 3C)")
-    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_gremln_coad.png  (NAR Fig 3D)")
-    print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_brca.png  (NAR Fig 4A)")
-    print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_coad.png  (NAR Fig 4B)")
+    print(f"Figures  -> {MANUSCRIPT_DIR}/figure_workflow.png  (Fig 1)")
+    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_brca.png  (Fig 3A)")
+    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_coad.png  (Fig 3B)")
+    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_gremln_brca.png  (Fig 3C)")
+    print(f"            {MANUSCRIPT_DIR}/figure_heatmap_gremln_coad.png  (Fig 3D)")
+    print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_brca.png  (Fig 4A)")
+    print(f"            {MANUSCRIPT_DIR}/figure_negcontrol_coad.png  (Fig 4B)")
     print(f"            {MANUSCRIPT_DIR}/figure_neutralcontrol_brca.png  (neutral ctrl BRCA)")
     print(f"            {MANUSCRIPT_DIR}/figure_neutralcontrol_coad.png  (neutral ctrl COAD)")
-    print(f"            {MANUSCRIPT_DIR}/target_list_brca.png  (NAR Fig 2A)")
-    print(f"            {MANUSCRIPT_DIR}/target_list_coad.png  (NAR Fig 2B)")
+    print(f"            {MANUSCRIPT_DIR}/target_list_brca.png  (Fig 2A)")
+    print(f"            {MANUSCRIPT_DIR}/target_list_coad.png  (Fig 2B)")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_brca.png")
     print(f"            {RESULTS_DIR}/experiment_rewiring_barchart_coad.png")
     print(f"            {SUPPLEMENTARY_DIR}/{TIER_SPECIFICITY_TABLE}  (Table S3)")
