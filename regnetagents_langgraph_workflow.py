@@ -90,6 +90,24 @@ class CellType(Enum):
     # FIBROBLASTS = "fibroblasts"
     # ENDOTHELIAL_CELLS = "endothelial_cells"
 
+def classify_regulatory_role(num_targets: int, num_regulators: int, thresholds: dict) -> str:
+    """Regulatory role from out-degree (targets) and in-degree (regulators).
+
+    Uses the queried network's empirical thresholds (90th percentile = *_high,
+    75th percentile = *_moderate; see threshold_config.json). Shared by the
+    GREmLN and TCGA analysis paths and by validate_gene so they always agree.
+    """
+    if num_targets > thresholds["target_high"]:
+        return "hub_regulator"        # Regulates many genes
+    if num_regulators > thresholds["regulator_high"]:
+        return "heavily_regulated"    # Controlled by many regulators
+    if num_targets > thresholds["target_moderate"] and num_regulators > thresholds["regulator_moderate"]:
+        return "intermediate_node"    # Balanced regulatory role
+    if num_targets > 0:
+        return "regulator"            # Has downstream targets
+    return "weakly_regulated"         # No targets
+
+
 class RegNetAgentsCache:
     """Gene regulatory network cache for storing analysis results."""
 
@@ -300,16 +318,7 @@ class RegNetAgentsModelingAgent:
             num_regulators = len(regulators)
             num_targets = len(targets)
 
-            if num_targets > thresholds["target_high"]:
-                regulatory_role = "hub_regulator"      # Regulates many genes (high priority)
-            elif num_regulators > thresholds["regulator_high"]:
-                regulatory_role = "heavily_regulated"  # Controlled by many regulators
-            elif num_targets > thresholds["target_moderate"] and num_regulators > thresholds["regulator_moderate"]:
-                regulatory_role = "intermediate_node"  # Balanced regulatory role
-            elif num_targets > 0:
-                regulatory_role = "regulator"          # Has downstream targets
-            else:
-                regulatory_role = "weakly_regulated"   # Few regulators, no targets
+            regulatory_role = classify_regulatory_role(num_targets, num_regulators, thresholds)
 
         # Determine if gene is actually in the network (has connections)
         in_network = len(regulators) > 0 or len(targets) > 0
@@ -449,17 +458,9 @@ class RegNetAgentsModelingAgent:
             num_targets = len(targets)
             num_regulators = len(regulators)
 
-            # Determine regulatory role (same logic as analyze_gene_network_context)
-            if num_targets > 20:
-                regulatory_role = "hub_regulator"
-            elif num_regulators > 15:
-                regulatory_role = "heavily_regulated"
-            elif num_targets > 5 and num_regulators > 5:
-                regulatory_role = "intermediate_node"
-            elif num_targets > 0:
-                regulatory_role = "regulator"
-            else:
-                regulatory_role = "weakly_regulated"
+            # Same percentile rules as analyze_gene_network_context
+            regulatory_role = classify_regulatory_role(
+                num_targets, num_regulators, self.cache.get_thresholds(cell_type))
 
             # Look up PageRank using Ensembl ID (cache keys are Ensembl IDs, not symbols)
             pagerank_normalized = network_data.get('pagerank_normalized', {})
@@ -489,16 +490,8 @@ class RegNetAgentsModelingAgent:
                 regulators = target_regulators.get(ensembl_id, [])
                 num_targets = len(targets)
                 num_regulators = len(regulators)
-                if num_targets > 20:
-                    regulatory_role = "hub_regulator"
-                elif num_regulators > 15:
-                    regulatory_role = "heavily_regulated"
-                elif num_targets > 5 and num_regulators > 5:
-                    regulatory_role = "intermediate_node"
-                elif num_targets > 0:
-                    regulatory_role = "regulator"
-                else:
-                    regulatory_role = "weakly_regulated"
+                regulatory_role = classify_regulatory_role(
+                    num_targets, num_regulators, self.cache.get_thresholds(cell_type))
                 pagerank_normalized = network_data.get('pagerank_normalized', {})
                 pagerank = round(pagerank_normalized.get(ensembl_id, 0.0), 6)
                 return {
@@ -2897,18 +2890,8 @@ class RegNetAgentsWorkflow:
                       else RegNetAgentsCache.DEFAULT_THRESHOLDS)
         total_degree = num_regulators + num_targets
 
-        # Same percentile rules as the GREmLN path (_analyze_gene_network_context), using this
-        # cancer type's 90th/75th-percentile thresholds from threshold_config.json.
-        if num_targets > thresholds["target_high"]:
-            regulatory_role = "hub_regulator"
-        elif num_regulators > thresholds["regulator_high"]:
-            regulatory_role = "heavily_regulated"
-        elif num_targets > thresholds["target_moderate"] and num_regulators > thresholds["regulator_moderate"]:
-            regulatory_role = "intermediate_node"
-        elif num_targets > 0:
-            regulatory_role = "regulator"
-        else:
-            regulatory_role = "weakly_regulated"
+        # Same percentile rules as the GREmLN path, using this cancer type's thresholds.
+        regulatory_role = classify_regulatory_role(num_targets, num_regulators, thresholds)
 
         # MoA summary for targets
         targets_with_moa = []
