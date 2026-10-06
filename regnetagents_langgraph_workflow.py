@@ -2893,20 +2893,20 @@ class RegNetAgentsWorkflow:
         num_targets = len(targets)
         pagerank_val = pagerank.get(gene_upper, 0.0)
 
-        thresholds = self.tcga_cache.get_thresholds(tcga_network) if self.tcga_cache else {}
-        high_pr = thresholds.get("pagerank_high", 0.001)
-        high_deg = thresholds.get("degree_high", 50)
-        mod_deg = thresholds.get("degree_moderate", 20)
+        thresholds = (self.tcga_cache.get_thresholds(tcga_network) if self.tcga_cache
+                      else RegNetAgentsCache.DEFAULT_THRESHOLDS)
         total_degree = num_regulators + num_targets
 
-        if num_targets >= high_deg and pagerank_val >= high_pr:
-            regulatory_role = "master_regulator"
-        elif num_targets >= mod_deg or pagerank_val >= high_pr:
+        # Same percentile rules as the GREmLN path (_analyze_gene_network_context), using this
+        # cancer type's 90th/75th-percentile thresholds from threshold_config.json.
+        if num_targets > thresholds["target_high"]:
             regulatory_role = "hub_regulator"
+        elif num_regulators > thresholds["regulator_high"]:
+            regulatory_role = "heavily_regulated"
+        elif num_targets > thresholds["target_moderate"] and num_regulators > thresholds["regulator_moderate"]:
+            regulatory_role = "intermediate_node"
         elif num_targets > 0:
             regulatory_role = "regulator"
-        elif num_regulators > 0:
-            regulatory_role = "target_gene"
         else:
             regulatory_role = "weakly_regulated"
 
