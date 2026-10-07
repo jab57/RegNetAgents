@@ -17,9 +17,10 @@ What it does:
   3. Checks each network's data file against the SHA-256 recorded below
      (identical in the Zenodo record and aracne.networks 1.36.0 and 1.38.0).
   4. Converts Entrez IDs to gene symbols with a frozen mapping
-     (scripts/data/tcga_entrez_to_symbol.json.gz), writes
-     models/networks/tcga/<type>/network.csv and checks its SHA-256, so every
-     install reproduces exactly the networks used by RegNetAgents and its paper.
+     (scripts/data/tcga_entrez_to_symbol.json.gz), builds the network CSV and
+     checks its SHA-256, and only then moves it to
+     models/networks/tcga/<type>/network.csv, so every install reproduces
+     exactly the networks used by RegNetAgents and its paper.
   5. Builds models/networks/tcga/<type>/network_index.pkl.
 
 Usage:
@@ -147,6 +148,22 @@ def write_csv(edges: list, path: str) -> bytes:
         return fh.read()
 
 
+def install_csv(edges: list, path: str, expected_sha256: str) -> bool:
+    """Write the network CSV to a temp file and move it to ``path`` only if its
+    SHA-256 matches. On a mismatch no new file is written to ``path`` (an
+    earlier verified file there is left untouched)."""
+    tmp_path = path + ".tmp"
+    try:
+        written = write_csv(edges, tmp_path)
+        if sha256(written) != expected_sha256:
+            return False
+        os.replace(tmp_path, path)
+        return True
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+
+
 def main() -> None:
     from extract_tcga_networks import CANCER_TYPE_MAP, RDA_NAMES, regulon_to_edges
 
@@ -228,10 +245,10 @@ def main() -> None:
         regulon = parse_rda(raw[ct], ct)
         edges, _ = regulon_to_edges(regulon, symbol_map_for(maps, ct))
         csv_path = os.path.join(args.output_dir, ct, "network.csv")
-        written = write_csv(edges, csv_path)
-        if sha256(written) != expected["csv_sha256"]:
+        if not install_csv(edges, csv_path, expected["csv_sha256"]):
             failures.append(ct)
-            print(f"  ERROR: rebuilt {csv_path} does not match the expected checksum.")
+            print(f"  ERROR: rebuilt {csv_path} does not match the expected checksum; "
+                  "not installed.")
             continue
         print(f"  {len(edges):,} edges -> {csv_path} (checksum verified)")
         build_tcga_cache(ct, output_dir=args.output_dir, skip_validation=True)

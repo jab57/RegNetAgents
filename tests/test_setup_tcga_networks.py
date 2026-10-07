@@ -40,6 +40,31 @@ def test_default_source_is_zenodo_and_never_downloads_without_acceptance(monkeyp
         S.main()
 
 
+EDGES = [{"Regulator": "TP53", "Target": "MDM2", "MoA": 1.0, "Likelihood": 1.0}]
+
+
+def test_install_csv_moves_file_into_place_only_on_checksum_match(tmp_path):
+    path = str(tmp_path / "brca" / "network.csv")
+    good = S.sha256(S.write_csv(EDGES, str(tmp_path / "ref.csv")))
+    assert S.install_csv(EDGES, path, good)
+    assert os.listdir(tmp_path / "brca") == ["network.csv"]
+
+
+def test_install_csv_leaves_no_file_on_checksum_mismatch(tmp_path):
+    path = str(tmp_path / "brca" / "network.csv")
+    assert not S.install_csv(EDGES, path, "0" * 64)
+    assert os.listdir(tmp_path / "brca") == []
+
+
+def test_install_csv_keeps_earlier_verified_file_on_mismatch(tmp_path):
+    path = tmp_path / "brca" / "network.csv"
+    path.parent.mkdir()
+    path.write_bytes(b"verified")
+    assert not S.install_csv(EDGES, str(path), "0" * 64)
+    assert path.read_bytes() == b"verified"
+    assert os.listdir(path.parent) == ["network.csv"]
+
+
 def test_frozen_symbol_map_covers_all_cancer_types():
     data = S.load_symbol_maps()
     assert set(data["types"]) == set(TCGA_CANCER_TYPES)
