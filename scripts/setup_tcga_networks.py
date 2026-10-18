@@ -38,6 +38,7 @@ import gzip
 import hashlib
 import json
 import os
+import shutil
 import sys
 import tarfile
 import tempfile
@@ -110,11 +111,17 @@ def symbol_map_for(data: dict, cancer_type: str) -> dict:
     return m
 
 
+def _open(url: str):
+    # bioconductor.org returns HTTP 403 to urllib's default User-Agent.
+    return urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "RegNetAgents"}))
+
+
 def download(dest: str) -> str:
     for url in DOWNLOAD_URLS:
         try:
             print(f"Downloading {url} ...")
-            urllib.request.urlretrieve(url, dest)
+            with _open(url) as resp, open(dest, "wb") as fh:
+                shutil.copyfileobj(resp, fh)
             return dest
         except Exception as exc:  # try the next mirror/version
             print(f"  failed: {exc}")
@@ -125,7 +132,7 @@ def download(dest: str) -> str:
 def download_zenodo_rda(name: str) -> bytes:
     url = ZENODO_FILE_URL.format(name=name)
     print(f"Downloading {url} ...")
-    with urllib.request.urlopen(url) as resp:
+    with _open(url) as resp:
         return resp.read()
 
 
@@ -228,7 +235,8 @@ def main() -> None:
     finally:
         if tmpdir and not args.keep_tarball:
             try:
-                os.remove(tarball)
+                if tarball:
+                    os.remove(tarball)
                 os.rmdir(tmpdir)
             except OSError:
                 pass
